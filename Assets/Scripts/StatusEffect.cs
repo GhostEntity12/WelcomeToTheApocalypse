@@ -5,8 +5,11 @@ using UnityEngine.UI;
 
 public enum TriggerType
 {
+    // Trigger at the start of the character's turn.
     OnTurnStart,
+    // Trigger when the character deals damage to something.
     OnDealDamage,
+    // Trigger when the character takes damage.
     OnTakeDamage
 }
 
