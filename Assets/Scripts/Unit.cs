@@ -17,13 +17,13 @@ public enum Allegiance
 public class Unit : MonoBehaviour
 {
     // The starting health of the character.
-    public int m_StartingHealth = 10;
+    public int m_StartingHealth = 6;
 
     // The current health of the character.
     private int m_CurrentHealth = 0;
 
     // The starting movement of the character.
-    public int m_StartingMovement = 6;
+    public int m_StartingMovement = 5;
 
     // The current movement of the character.
     private int m_CurrentMovement = 0;
@@ -68,7 +68,14 @@ public class Unit : MonoBehaviour
     public int GetCurrentHealth() { return m_CurrentHealth; }
 
     // Increase the character's current health.
-    public void IncreaseCurrentHealth(int increase) { m_CurrentHealth += increase; }
+    public void IncreaseCurrentHealth(int increase) 
+    {
+        m_CurrentHealth += increase;
+        
+        // Don't go over that max starting health.
+        if (m_CurrentHealth < m_StartingHealth)
+            m_CurrentHealth = m_StartingHealth;
+    }
 
     // Decrease the character's current health.
     public void DecreaseCurrentHealth(int decrease)
@@ -100,7 +107,7 @@ public class Unit : MonoBehaviour
     //public List<Skill> GetSkills() { return m_Skills; }
 
     // Set the movement path of the character.
-    // public void SetMovementPath(Queue<GridNode> path)
+    //public void SetMovementPath(Queue<GridNode> path)
     //{
     //    m_MovementPath = path;
     //    m_Moving = true
