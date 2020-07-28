@@ -15,4 +15,6 @@ public class Node
 	public GridObject obstacle;
 
 	public GameObject unit;
+
+	public GameObject tile;
 }
