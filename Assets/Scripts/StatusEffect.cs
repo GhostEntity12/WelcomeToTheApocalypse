@@ -24,5 +24,5 @@ public abstract class StatusEffect : MonoBehaviour
     public string m_StatusDescription;
 
     // Check the preconditions for the status effect to take effect.
-    protected abstract void CheckPrecondition(TriggerType trigger);
+    protected abstract bool CheckPrecondition(TriggerType trigger);
 }
