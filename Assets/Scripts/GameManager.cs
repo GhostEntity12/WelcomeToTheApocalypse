@@ -16,8 +16,10 @@ public class GameManager : MonoBehaviour
     // Raycast for translating the mouse's screen position to world position.
     private RaycastHit m_MouseWorldPosition = new RaycastHit();
 
+    // Ray for raycasting the mouse's position.
     private Ray m_MouseRay = new Ray();
 
+    // Reference to the main camera.
     private Camera m_MainCamera = null;
 
     private void Awake()
@@ -44,6 +46,7 @@ public class GameManager : MonoBehaviour
         m_TurnOrder.Enqueue(m_TurnOrder.Dequeue());
     }
 
+    // Get instance of the game manager.
     public GameManager GetInstance()
     {
         if (m_Instance == null)
