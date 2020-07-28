@@ -73,7 +73,7 @@ public class Unit : MonoBehaviour
         m_CurrentHealth += increase;
         
         // Don't go over that max starting health.
-        if (m_CurrentHealth < m_StartingHealth)
+        if (m_CurrentHealth > m_StartingHealth)
             m_CurrentHealth = m_StartingHealth;
     }
 
