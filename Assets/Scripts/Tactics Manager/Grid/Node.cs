@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class Node
 {
+
+	public int[] m_neighbours = new int[8];
 	public int x;
 	public int y;
 	public int z;
+	public float fCost;
+	public float gCost;
 
 	public bool isWalkable;
 
@@ -28,6 +32,7 @@ public class Node
 
 	public void Reset()
 	{
+		tile.SetActive(false);
 		visited = false;
 		parentNode = null;
 		distance = 0;

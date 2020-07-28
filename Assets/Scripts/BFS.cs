@@ -10,7 +10,7 @@ namespace Ghost
         /// <param name="radius">How large the area to return is</param>
         /// <param name="startNode">The center node</param>
         /// <returns>The list of nodes to return</returns>
-        public static List<Node> GetTilesWithinRadius(int radius, Node startNode, bool canSelectObstacles = false, bool resetsTiles = true, bool resetsColor = true)
+        public static List<Node> GetNodesWithinRadius(int radius, Node startNode, bool canSelectObstacles = false)
         {
             List<Node> nodesInRadius = new List<Node>();
 
@@ -30,14 +30,15 @@ namespace Ghost
 
                 if (n.distance < radius)
                 {
-                    foreach (Node tile in n.adjacentNodes)
+                    foreach (Node node in n.adjacentNodes)
                     {
-                        if (!tile.visited)
+                        if (!node.visited)
                         {
-                            tile.parentNode = n;
-                            tile.visited = true;
-                            tile.distance = 1 + n.distance;
-                            process.Enqueue(tile);
+							node.tile.SetActive(true);
+                            node.parentNode = n;
+                            node.visited = true;
+                            node.distance = 1 + n.distance;
+                            process.Enqueue(node);
                         }
                     }
                 }
