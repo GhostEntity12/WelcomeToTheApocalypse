@@ -10,6 +10,8 @@ public class Grid : MonoBehaviour
 	float xzScale = 1f;
 	[SerializeField]
 	float yScale = 1f;
+	[SerializeField]
+	bool tileActive;
 
 	Vector3 minPosition;
 
@@ -174,14 +176,14 @@ public class Grid : MonoBehaviour
 					if (n.isWalkable)
 					{
 						node.transform.position = node.transform.position = new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z);
-						Instantiate(node, node.transform.position, node.transform.rotation, nodeArray.transform);
+						n.tile = Instantiate(node, node.transform.position, node.transform.rotation, nodeArray.transform);
+						n.tile.SetActive(tileActive);
 						RaycastHit hit;
 						Vector3 origin = n.worldPosition;
 						origin.y += yScale - 0.1f;
 						if (Physics.Raycast(origin, Vector3.down, out hit, yScale - .1f))
 						{
 							n.worldPosition = hit.point;
-							print("World Pos changed");
 						}
 					}
 					if (n.obstacle != null)
