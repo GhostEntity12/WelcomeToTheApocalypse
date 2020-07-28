@@ -6,7 +6,7 @@ public class CameraMovement : MonoBehaviour
 {
     public float m_MoveSpeed = 3.0f;
 
-    public Bounds m_Bounds;
+    public BoxCollider m_Bounds;
 
     private Vector3 m_MovementInput = Vector3.zero;
 
@@ -22,23 +22,5 @@ public class CameraMovement : MonoBehaviour
 
         // Move the camera.
         transform.position += (m_MovementInput * m_MoveSpeed);
-
-        // Check bounds.
-
-        // Along z.
-        // Outside max z.
-        if (transform.position.z > m_Bounds.extents.z)
-            transform.position = new Vector3(transform.position.x, transform.position.y, m_Bounds.max.z);
-        // Outside min z.
-        //else if (transform.position.z < m_Bounds.extents.z)
-        //    transform.position = new Vector3(transform.position.x, transform.position.y, m_Bounds.min.z);
-
-        // Along x.
-        // Outside max x.
-        if (transform.position.x > m_Bounds.extents.x)
-            transform.position = new Vector3(m_Bounds.min.x, transform.position.y, transform.position.z);
-        // Outside min x.
-        //else if (transform.position.x < m_Bounds.extents.x)
-        //    transform.position = new Vector3(m_Bounds.min.x, transform.position.y, transform.position.z);
     }
 }
