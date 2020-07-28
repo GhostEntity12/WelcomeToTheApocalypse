@@ -6,8 +6,6 @@ public class CameraMovement : MonoBehaviour
 {
     public float m_MoveSpeed = 3.0f;
 
-    public BoxCollider m_Bounds;
-
     private Vector3 m_MovementInput = Vector3.zero;
 
     // Update is called once per frame
