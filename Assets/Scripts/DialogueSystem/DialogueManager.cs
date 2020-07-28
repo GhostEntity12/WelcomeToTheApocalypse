@@ -9,11 +9,11 @@ using static Ghost.Fade;
 
 public class DialogueManager : MonoBehaviour
 {
+    public static DialogueManager instance;
+
     bool isFading;
     bool isDisplayingText;
     IEnumerator displayDialogueCoroutine;
-
-    public bool DEBUGTriggerDialogue;
 
     [Header("UI")]
     CanvasGroup canvasGroup;
@@ -33,7 +33,7 @@ public class DialogueManager : MonoBehaviour
 
     [Header("File")]
     [Tooltip("The scene to load")]
-    public string sceneName;
+    public TextAsset sceneName;
     [Tooltip("Whether to clear the scene after it has run")]
     public bool clearAfterScene;
 
@@ -48,6 +48,7 @@ public class DialogueManager : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         canvasGroup = GetComponent<CanvasGroup>(); // Gets the canvas group to deal with fading opacity
         foreach (CharacterPortraitContainer characterPortraits in Resources.LoadAll<CharacterPortraitContainer>("Characters")) // Creates the dictionary
         {
@@ -135,16 +136,8 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (DEBUGTriggerDialogue && canvasGroup.alpha == 0)
-        {
-            DEBUGTriggerDialogue = false;
-            TriggerDialogue(sceneName);
-        }
-
-
         if (Input.GetKeyDown(KeyCode.Return) && canvasGroup.interactable) // If enter is pressed and the textboxes are visible
         {
-            print(isDisplayingText);
             if (isDisplayingText) // If the system is currently typing out, finish and return
             {
                 StopCoroutine(displayDialogueCoroutine); // Stops the typing out
@@ -156,7 +149,7 @@ public class DialogueManager : MonoBehaviour
             {
                 if (clearAfterScene) // Clears the scene if told to
                 {
-                    sceneName = string.Empty;
+                    sceneName = null;
                 }
 
                 StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 0, PostFade)); // Fades out the UI
@@ -170,19 +163,27 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    // DEBUG
     [ContextMenu("Trigger Dialogue")]
-    public void TriggerDialogue(string _sceneName)
+    void TriggerDialogue() => TriggerDialogue(sceneName);
+    public void TriggerDialogue(TextAsset _sceneName)
     {
         ClearDialogueBox();
         sceneName = _sceneName;
 
         // Loads the file into memory
-        TextAsset file = Resources.Load<TextAsset>($"Dialogue/{sceneName}");
+        TextAsset file = sceneName;
 
         // Throws error no matching file exists
         if (file == null)
         {
-            Debug.LogError($"File \"{sceneName}\" not found!");
+            Debug.LogError($"Dialogue file not found!");
+            return;
+        }
+        if (!file.name.StartsWith("DIA_"))
+        {
+            Debug.LogError($"\"{file.name}\" isn't a dialogue file!");
+            sceneName = null;
             return;
         }
 
@@ -203,12 +204,6 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     void PostFade()
     {
-        bool fadedIn = canvasGroup.alpha == 1;
-
-        if (fadedIn)
-        {
-            //LoadNewLine();
-        }
-        canvasGroup.interactable = canvasGroup.blocksRaycasts = fadedIn;
+        canvasGroup.interactable = canvasGroup.blocksRaycasts = canvasGroup.alpha == 1;
     }
 }
