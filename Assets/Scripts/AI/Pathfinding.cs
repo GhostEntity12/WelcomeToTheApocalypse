@@ -21,52 +21,52 @@ public class Pathfinding
         fCost = gCost + hCost;
     }
 
-    private List<Node> FindPath(int startX, int startY, int endX, int endY)
-    {
-        Node startNode = new Node();
-        Node endNode = new Node();
+    //private List<Node> FindPath(int startX, int startY, int endX, int endY)
+    //{
+    //    Node startNode = new Node();
+    //    Node endNode = new Node();
 
-        openList = new List<Node> { startNode };
-        closedList = new List<Node>();
+    //    openList = new List<Node> { startNode };
+    //    closedList = new List<Node>();
 
-        for (int x = 0; x < /*gridWidth*/; x++)
-        {
-            for (int y = 0; y < /*gridHeight*/; y++)
-            {
-                Node pathNode = new Node();
-                pathNode.gCost = int.MaxValue;
-                pathNode.CalculateFCost();
-                pathNode.parentNode = null;
-            }
-        }
+    //    //for (int x = 0; x < /*gridWidth*/; x++)
+    //    //{
+    //    //    for (int y = 0; y < /*gridHeight*/; y++)
+    //    //    {
+    //    //        Node pathNode = new Node();
+    //    //        pathNode.gCost = int.MaxValue;
+    //    //        //pathNode.CalculateFCost();
+    //    //        pathNode.parentNode = null;
+    //    //    }
+    //    //}
 
-        startNode.gCost = 0;
-        startNode.hCost = CalculateDistanceCost(startNode, endNode);
-        startNode.CalculateFCost();
+    //    startNode.gCost = 0;
+    //    //startNode.hCost = CalculateDistanceCost(startNode, endNode);
+    //    //startNode.CalculateFCost();
 
-        while (openList.Count > 0)
-        {
-            Node currentNode = GetLowestFCostNode(openList);
+    //    while (openList.Count > 0)
+    //    {
+    //        Node currentNode = GetLowestFCostNode(openList);
 
-            if (currentNode == endNode)
-            {
-                return CalculatePath(endNode);
-            }
+    //        if (currentNode == endNode)
+    //        {
+    //            return CalculatePath(endNode);
+    //        }
 
-            openList.Remove(currentNode);
-            closedList.Add(currentNode);
-        }
-    }
+    //        openList.Remove(currentNode);
+    //        closedList.Add(currentNode);
+    //    }
+    //}
 
-    private List<Node> GetNeighbourList(Node currentNode)
-    {
-        List<Node> neighbourList = new List<Node>();
+    //private List<Node> GetNeighbourList(Node currentNode)
+    //{
+    //    List<Node> neighbourList = new List<Node>();
 
-        if (currentNode.x - 1 >= 0)
-        { 
-            neighbourList.Add(GetN)
-        }
-    }
+    //    if (currentNode.x - 1 >= 0)
+    //    { 
+    //        neighbourList.Add(GetN)
+    //    }
+    //}
 
     private List<Node> CalculatePath(Node endNode)
     {
