@@ -1,16 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-    public enum TargetingState
-    {
-        // Player is currently selecting a node for movement.
-        Move,
-        // Player is currently selecting a node for attacking.
-        Attack,
-        // Player isn't selecting a node for anything. (just to be safe)
-        None
-    }
+using static Ghost.BFS;
+
+public enum TargetingState
+{
+    // Player is currently selecting a node for movement.
+    Move,
+    // Player is currently selecting a node for attacking.
+    Attack,
+    // Player isn't selecting a node for anything. (just to be safe)
+    None
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -43,8 +44,14 @@ public class GameManager : MonoBehaviour
         m_MouseRay.origin = m_MainCamera.transform.position;
     }
 
-    private void FixedUpdate()
+    // Was FixedUpdate, but it was missing inputs - James L
+    private void Update()
     {
+        // Could be doing this with multiple casts and layer masks.
+        // Implementation in commented out function below - James L
+
+        //Casting();
+
         // Get the position of where the player's mouse is pointing.
         m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit))
@@ -52,7 +59,7 @@ public class GameManager : MonoBehaviour
             // Mouse is over an object.
             m_RayHitObject = m_MouseWorldRayHit.collider.gameObject;
 
-            if(m_RayHitObject.tag == "Tile")
+            if (m_RayHitObject.CompareTag("Tile"))
             {
                 // Player selected a tile.
                 if (Input.GetMouseButtonDown(0))
@@ -83,5 +90,67 @@ public class GameManager : MonoBehaviour
             m_Instance = new GameManager();
 
         return m_Instance;
+    }
+
+    // Some of this feels like it's structured badly. Might want to discuss the architecture of this one. - James L
+    public void Casting()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray mousePointRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitInfo = new RaycastHit();
+
+            if (m_TargetingState == TargetingState.Attack && Physics.Raycast(mousePointRay, out hitInfo, Mathf.Infinity, 1 << 8)) // Hit a tile and is attacking
+            {
+                // If hit tile is in affectable range,
+                // Do attack
+
+                // else return;
+            }
+            else if (Physics.Raycast(mousePointRay, out hitInfo, Mathf.Infinity, 1 << 9)) // Hit a character
+            {
+                // Reset the nodes highlights before selecting the new unit
+                if (m_SelectedUnit)
+                {
+                    foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                    {
+                        n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                    }
+                }
+
+                // Store the new unit
+                m_SelectedUnit = hitInfo.transform.GetComponent<Unit>();
+                m_TargetingState = TargetingState.Move;
+
+                // Highlight the appropriate tiles
+                // Feels messy. Probably needs a refactor/move to different script, probably Unit.cs? - James L
+                // Would be simplified to 
+                // movableNodes = BFS.GetNodesWithinRadius(GetCurrentMovement(), Grid.m_Instance.GetNode(transform.position));
+                m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+                Grid.m_Instance.HighlightNodes(m_SelectedUnit.m_MovableNodes);
+
+            }
+            else if (m_TargetingState == TargetingState.Move && Physics.Raycast(mousePointRay, out hitInfo, Mathf.Infinity, 1 << 8)) // Hit a tile and is in the move state
+            {
+                Node target = Grid.m_Instance.GetNode(hitInfo.transform.position);
+                if (m_SelectedUnit.m_MovableNodes.Contains(target))
+                {
+                    // Clear the previously highlighted tiles
+                    foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                    {
+                        n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                    }
+
+                    m_SelectedUnit.SetTargetPosition(target.worldPosition);
+
+                    // Should remove the required movement here
+
+                    // Should we do this after the unit has finished moving? - James L
+                    // This is also basically just line 129/130. Should really spin this off into it's own function on Unit.cs. - James L
+                    m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), target);
+                    Grid.m_Instance.HighlightNodes(m_SelectedUnit.m_MovableNodes);
+                }
+            }
+        }
     }
 }
