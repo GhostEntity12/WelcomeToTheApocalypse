@@ -28,6 +28,8 @@ public class Unit : MonoBehaviour
     // The current movement of the character.
     private int m_CurrentMovement = 0;
 
+    public float m_MoveSpeed = 3.0f;
+
     // The skills avaliable to the character.
     //public List<Skill> m_Skills = new List<Skill>();
 
@@ -49,12 +51,29 @@ public class Unit : MonoBehaviour
     // The path for the character to take to get to their destination.
     private Queue<Node> m_MovementPath = new Queue<Node>();
 
+    private Vector3 m_TargetPosition = Vector3.zero;
+
     // On startup.
     void Awake()
     {
         m_CurrentHealth = m_StartingHealth;
 
         m_CurrentMovement = m_StartingMovement;
+    }
+
+    void Update()
+    {
+        // If have a target that the unit hasn't arrived at yet, move towards the target position.
+        // Would be refactored to move along path rather than towards a target position.
+        if (m_Moving)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, m_TargetPosition, m_MoveSpeed);
+            // If have arrived at positoin (0.01 units close to target is close enough).
+            if ((transform.position - m_TargetPosition).magnitude < 0.01f)
+            {
+                m_Moving = false;
+            }
+        }
     }
 
     // Set the character's health to something.
@@ -110,6 +129,12 @@ public class Unit : MonoBehaviour
     public void SetMovementPath(Queue<Node> path)
     {
         m_MovementPath = path;
+        m_Moving = true;
+    }
+
+    public void SetTargetPosition(Vector3 target)
+    {
+        m_TargetPosition = target;
         m_Moving = true;
     }
 }
