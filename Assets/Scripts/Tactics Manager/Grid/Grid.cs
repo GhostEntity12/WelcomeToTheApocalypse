@@ -11,7 +11,9 @@ public class Grid : MonoBehaviour
 	[SerializeField]
 	float yScale = 1f;
 	[SerializeField]
-	bool tileActive;
+	bool tileActive = false;
+
+	bool searched;
 
 	Vector3 minPosition;
 
@@ -27,7 +29,8 @@ public class Grid : MonoBehaviour
 	[Tooltip("Used to store the objects for the nodes")]
 	public GameObject nodeArray;
 
-	public GameObject unit;
+	//Will be deleted being used for testing
+	public List<GameObject> unit;
 	void Start()
 	{
 		ReadLevel();
@@ -177,7 +180,7 @@ public class Grid : MonoBehaviour
 
 					if (n.isWalkable)
 					{
-						node.transform.position = node.transform.position = new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z);
+						node.transform.position = new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z);
 						n.tile = Instantiate(node, node.transform.position, node.transform.rotation, nodeArray.transform);
 						n.tile.SetActive(tileActive);
 						RaycastHit hit;
@@ -199,6 +202,7 @@ public class Grid : MonoBehaviour
 			}
 
 		}
+		node.SetActive(false);
 		SetNodeNeighbours();
 	}
 
@@ -271,11 +275,14 @@ public class Grid : MonoBehaviour
 	public Node GetNode(Vector3 wp)
 	{
 		Vector3 p = wp - minPosition;
-		int x = Mathf.RoundToInt(p.x / xzScale);
+		int x = Mathf.FloorToInt(p.x / xzScale);
+		print("X: " + x);
 		#region Multiple floors
-		int y = Mathf.RoundToInt(p.y / yScale);
+		int y = Mathf.FloorToInt(p.y / yScale);
+		print("Y: " + y);
 		#endregion
-		int z = Mathf.RoundToInt(p.z / xzScale);
+		int z = Mathf.FloorToInt(p.z / xzScale);
+		print("Z: " + z);
 
 		return GetNode(x, y, z);
 	}
@@ -290,6 +297,7 @@ public class Grid : MonoBehaviour
 			return null;
 		}
 
+		print("Unit Node Pos: " + m_grid[a_x - 1, a_y, a_z].worldPosition);
 		return m_grid[a_x, a_y, a_z];
 	}
 	
@@ -301,10 +309,13 @@ public class Grid : MonoBehaviour
 
 	public void GetArea(int radius, GameObject gameObject)
 	{
-		print(GetNode(gameObject.transform.position).worldPosition);
-		Ghost.BFS.GetNodesWithinRadius(radius, GetNode(gameObject.transform.position));
-	}
 
+		foreach (Node node in Ghost.BFS.GetNodesWithinRadius(radius, GetNode(gameObject.transform.position)))
+		{
+			node.tile.SetActive(true);
+		}
+		GetNode(gameObject.transform.position).tile.SetActive(false);
+	}
 	private void OnDrawGizmos()
 	{
 		Gizmos.color = Color.black;
@@ -316,7 +327,25 @@ public class Grid : MonoBehaviour
 
 	void Update()
 	{
-		GetArea(4, unit);
+		if (!searched)
+		{
+			foreach (GameObject go in unit)
+			{
+				GetArea(4, go);
+			}
+			searched = true;
+		}
+	}
+
+	//Will be Deleted
+	[ContextMenu("Test")]
+	void Test()
+	{
+		foreach (GameObject go in unit)
+		{
+			print(go.name + " Node Pos: " + GetNode(go.transform.position).worldPosition);
+			print(go.name + " Pos: " + go.transform.position);
+		}
 	}
 	/*Multple Floor stuff will be deleted at a later date*/
 }

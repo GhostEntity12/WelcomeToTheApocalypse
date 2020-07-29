@@ -34,7 +34,6 @@ namespace Ghost
                     {
                         if (!node.visited)
                         {
-							node.tile.SetActive(true);
                             node.parentNode = n;
                             node.visited = true;
                             node.distance = 1 + n.distance;
