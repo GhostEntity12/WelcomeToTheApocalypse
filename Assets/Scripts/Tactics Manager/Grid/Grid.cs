@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+	public static Grid m_Instance = null;
 	
 	Node[,,] m_grid;
 	[SerializeField]
@@ -31,6 +32,12 @@ public class Grid : MonoBehaviour
 
 	//Will be deleted being used for testing
 	public List<GameObject> unit;
+
+	void Awake()
+	{
+		m_Instance = this;
+	}
+
 	void Start()
 	{
 		ReadLevel();
