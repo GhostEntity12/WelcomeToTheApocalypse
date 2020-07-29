@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using static Ghost.BFS;
+
 // VARIABLES AND FUNCTIONS THAT ARE COMMENTED ARE FOR SYSTEMS THAT HAVE YET TO BE CREATED, JUST TEMPORARY FOR GETTING IDEAS OUT.
 
 public enum Allegiance
@@ -140,5 +142,12 @@ public class Unit : MonoBehaviour
     {
         m_TargetPosition = target;
         m_Moving = true;
+    }
+
+    // Gets the nodes the unit can move to, stores them and highlights them
+    public void HighlightMovableNodes(Node startingNode = null)
+    {
+        m_MovableNodes = GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
+        Grid.m_Instance.HighlightNodes(m_MovableNodes);
     }
 }

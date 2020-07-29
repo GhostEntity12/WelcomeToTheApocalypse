@@ -123,11 +123,7 @@ public class GameManager : MonoBehaviour
                 m_TargetingState = TargetingState.Move;
 
                 // Highlight the appropriate tiles
-                // Feels messy. Probably needs a refactor/move to different script, probably Unit.cs? - James L
-                // Would be simplified to 
-                // movableNodes = BFS.GetNodesWithinRadius(GetCurrentMovement(), Grid.m_Instance.GetNode(transform.position));
-                m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-                Grid.m_Instance.HighlightNodes(m_SelectedUnit.m_MovableNodes);
+                m_SelectedUnit.HighlightMovableNodes();
 
             }
             else if (m_TargetingState == TargetingState.Move && Physics.Raycast(mousePointRay, out hitInfo, Mathf.Infinity, 1 << 8)) // Hit a tile and is in the move state
@@ -146,9 +142,7 @@ public class GameManager : MonoBehaviour
                     // Should remove the required movement here
 
                     // Should we do this after the unit has finished moving? - James L
-                    // This is also basically just line 129/130. Should really spin this off into it's own function on Unit.cs. - James L
-                    m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), target);
-                    Grid.m_Instance.HighlightNodes(m_SelectedUnit.m_MovableNodes);
+                    m_SelectedUnit.HighlightMovableNodes(target);
                 }
             }
         }
