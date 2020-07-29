@@ -302,7 +302,7 @@ public class Grid : MonoBehaviour
 	public void GetArea(int radius, GameObject gameObject)
 	{
 		print(GetNode(gameObject.transform.position).worldPosition);
-		Ghost.BFS.GetTilesWithinRadius(radius, GetNode(gameObject.transform.position));
+		Ghost.BFS.GetNodesWithinRadius(radius, GetNode(gameObject.transform.position));
 	}
 
 	private void OnDrawGizmos()

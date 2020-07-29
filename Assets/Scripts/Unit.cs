@@ -47,7 +47,7 @@ public class Unit : MonoBehaviour
     private bool m_Moving = false;
 
     // The path for the character to take to get to their destination.
-    //private Queue<GridNode> m_MovementPath = new Queue<GridNode>();
+    private Queue<Node> m_MovementPath = new Queue<Node>();
 
     // On startup.
     void Awake()
@@ -107,9 +107,9 @@ public class Unit : MonoBehaviour
     //public List<Skill> GetSkills() { return m_Skills; }
 
     // Set the movement path of the character.
-    //public void SetMovementPath(Queue<GridNode> path)
-    //{
-    //    m_MovementPath = path;
-    //    m_Moving = true
-    //}
+    public void SetMovementPath(Queue<Node> path)
+    {
+        m_MovementPath = path;
+        m_Moving = true;
+    }
 }

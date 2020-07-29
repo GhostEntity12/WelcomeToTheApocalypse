@@ -32,6 +32,7 @@ public class Node
 
 	public void Reset()
 	{
+		tile.SetActive(false);
 		visited = false;
 		parentNode = null;
 		distance = 0;
