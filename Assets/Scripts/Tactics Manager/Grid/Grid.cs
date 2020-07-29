@@ -205,6 +205,10 @@ public class Grid : MonoBehaviour
 		node.SetActive(false);
 		SetNodeNeighbours();
 	}
+	/* |5|2|6|
+	   |1| |3|
+	   |4|0|7| */
+
 
 	void SetNodeNeighbours()
 	{
@@ -212,6 +216,7 @@ public class Grid : MonoBehaviour
 		{
 			for (int z = 0; z < 60; ++z)
 			{
+				//
 				if (z > 0)
 				{
 					print("set 0");
@@ -238,36 +243,32 @@ public class Grid : MonoBehaviour
 				////4 South West
 				//if (z > 0 && x > 0)
 				//{
-				//	m_aapNodeList[x][z]->m_apNeighbours[4] = m_aapNodeList[x - 1][z - 1];
+				//	m_grid[x, 0, z].adjacentNodes.Add(m_grid[x - 1, 0, z - 1]);
 				//}
 				////5 North West
-				//if (x > 0 && z < m_nHeight - 1)
+				//if (x > 0 && z < 60 - 1)
 				//{
-				//	m_aapNodeList[x][z]->m_apNeighbours[5] = m_aapNodeList[x - 1][z + 1];
+				//	m_grid[x, 0, z].adjacentNodes.Add(m_grid[x - 1, 0, z + 1]);
 				//}
 				////6 North East
-				//if (z < m_nHeight - 1 && x < m_nWidth - 1)
+				//if (z < 60 - 1 && x < 60 - 1)
 				//{
-				//	m_aapNodeList[x][z]->m_apNeighbours[6] = m_aapNodeList[x + 1][z + 1];
+				//	m_grid[x, 0, z].adjacentNodes.Add(m_grid[x + 1, 0, z + 1]);
 				//}
 				////7 South East
-				//if (z > 0 && x < m_nWidth - 1)
+				//if (z > 0 && x < 60 - 1)
 				//{
-				//	m_aapNodeList[x][z]->m_apNeighbours[7] = m_aapNodeList[x + 1][z - 1];
+				//	m_grid[x, 0, z].adjacentNodes.Add(m_grid[x + 1, 0, z - 1]);
 				//}
 
-				//m_aapNodeList[x][z]->m_anCosts[0] = 10;
-				//m_aapNodeList[x][z]->m_anCosts[1] = 10;
-				//m_aapNodeList[x][z]->m_anCosts[2] = 10;
-				//m_aapNodeList[x][z]->m_anCosts[3] = 10;
-				////m_aapNodeList[x][y]->m_anCosts[4] = 14;
-				////m_aapNodeList[x][y]->m_anCosts[5] = 14;
-				////m_aapNodeList[x][y]->m_anCosts[6] = 14;
-				////m_aapNodeList[x][y]->m_anCosts[7] = 14;
-				//if (m_aapNodeList[x][z]->m_bFruit == true)
-				//{
-				//	m_v2Fruit = m_aapNodeList[x][z]->m_v2Position;
-				//}
+				m_grid[x, 0, z].m_costs[0] = 10;
+				m_grid[x, 0, z].m_costs[1] = 10;
+				m_grid[x, 0, z].m_costs[2] = 10;
+				m_grid[x, 0, z].m_costs[3] = 10;
+				m_grid[x, 0, z].m_costs[4] = 14;
+				m_grid[x, 0, z].m_costs[5] = 14;
+				m_grid[x, 0, z].m_costs[6] = 14;
+				m_grid[x, 0, z].m_costs[7] = 14;
 			}
 		}
 	}
