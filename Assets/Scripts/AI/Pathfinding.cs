@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class Pathfinding
 {
+    //The costs of movements along a path, these ints make the AI favor diagonal movements instead of jittering up, right movement.
     private const int moveDiagonalCost = 14;
     private const int moveStraightCost = 10;
 
+    //Reference to a grid.
+    //Create a list of nodes to track.
     private Grid grid;
     private List<Node> openList;
     private List<Node> closedList;
 
-    public int gCost;
-    public int fCost;
-    public int hCost;
+    //Movement costs.
+    public int gCost; //Cost of cheapest path from start to 'n'.
+    public int fCost; //Current best guess of how short the path can be.
+    public int hCost; //Heuristic cost.
 
     //NEEDED IN NODE CLASS.
     public void CalculateFCost()
@@ -68,31 +72,37 @@ public class Pathfinding
     //    }
     //}
 
+    //Does nothing for now.
     private List<Node> CalculatePath(Node endNode)
     {
         return null;
     }
 
+    //Calculate the distance cost betweent two nodes.
     private int CalculateDistanceCost(Node a, Node b)
     {
+        //Grab the bounds of x and y axis of nodes.
         int xDistance = Mathf.Abs(a.x - b.x);
         int yDistance = Mathf.Abs(a.y - b.y);
 
+        //Distance of padding between nodes.
         int remaining = Mathf.Abs(xDistance - yDistance);
 
+        //Return cost.
         return moveDiagonalCost * Mathf.Min(xDistance, yDistance) + moveStraightCost * remaining;
     }
 
+    //Returns the lowest possible path of nodes.
     private Node GetLowestFCostNode(List<Node> pathNodeList)
     {
         Node lowestFCostNode = pathNodeList[0];
 
         for (int i = 1; i < pathNodeList.Count; i++)
         {
-            if (pathNodeList[i].fCost < lowestFCostNode.fCost)
-            {
-                lowestFCostNode = pathNodeList[i];
-            }
+            //if (pathNodeList[i].fCost < lowestFCostNode.fCost)
+            //{
+            //    lowestFCostNode = pathNodeList[i];
+            //}
         }
 
         return lowestFCostNode;
