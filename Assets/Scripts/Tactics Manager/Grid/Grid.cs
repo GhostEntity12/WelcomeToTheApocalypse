@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Grid : MonoBehaviour
@@ -32,6 +33,9 @@ public class Grid : MonoBehaviour
 
 	//Will be deleted being used for testing
 	public List<GameObject> unit;
+
+	// DEBUG
+	List<Node> nodething = new List<Node>();
 
 	void Awake()
 	{
@@ -212,6 +216,10 @@ public class Grid : MonoBehaviour
 		node.SetActive(false);
 		SetNodeNeighbours();
 	}
+	/* |5|2|6|
+	   |1| |3|
+	   |4|0|7| */
+
 
 	void SetNodeNeighbours()
 	{
@@ -219,62 +227,59 @@ public class Grid : MonoBehaviour
 		{
 			for (int z = 0; z < 60; ++z)
 			{
+				//
 				if (z > 0)
 				{
-					print("set 0");
+					//print("set 0");
 					m_grid[x, 0, z].adjacentNodes.Add(m_grid[x, 0, z - 1]);
 				}
 				//1 West
 				if (x > 0)
 				{
-					print("set 1");
+					//print("set 1");
 					m_grid[x, 0, z].adjacentNodes.Add(m_grid[x - 1, 0, z]);
 				}
 				//2 North
 				if (z < 60 - 1)
 				{
-					print("set 2");
+					//print("set 2");
 					m_grid[x, 0, z].adjacentNodes.Add(m_grid[x, 0, z + 1]);
 				}
 				//3 East
 				if (x < 60 - 1)
 				{
-					print("set 3");
+					//print("set 3");
 					m_grid[x, 0, z].adjacentNodes.Add(m_grid[x + 1, 0, z]);
 				}
 				////4 South West
 				//if (z > 0 && x > 0)
 				//{
-				//	m_aapNodeList[x][z]->m_apNeighbours[4] = m_aapNodeList[x - 1][z - 1];
+				//	m_grid[x, 0, z].adjacentNodes.Add(m_grid[x - 1, 0, z - 1]);
 				//}
 				////5 North West
-				//if (x > 0 && z < m_nHeight - 1)
+				//if (x > 0 && z < 60 - 1)
 				//{
-				//	m_aapNodeList[x][z]->m_apNeighbours[5] = m_aapNodeList[x - 1][z + 1];
+				//	m_grid[x, 0, z].adjacentNodes.Add(m_grid[x - 1, 0, z + 1]);
 				//}
 				////6 North East
-				//if (z < m_nHeight - 1 && x < m_nWidth - 1)
+				//if (z < 60 - 1 && x < 60 - 1)
 				//{
-				//	m_aapNodeList[x][z]->m_apNeighbours[6] = m_aapNodeList[x + 1][z + 1];
+				//	m_grid[x, 0, z].adjacentNodes.Add(m_grid[x + 1, 0, z + 1]);
 				//}
 				////7 South East
-				//if (z > 0 && x < m_nWidth - 1)
+				//if (z > 0 && x < 60 - 1)
 				//{
-				//	m_aapNodeList[x][z]->m_apNeighbours[7] = m_aapNodeList[x + 1][z - 1];
+				//	m_grid[x, 0, z].adjacentNodes.Add(m_grid[x + 1, 0, z - 1]);
 				//}
 
-				//m_aapNodeList[x][z]->m_anCosts[0] = 10;
-				//m_aapNodeList[x][z]->m_anCosts[1] = 10;
-				//m_aapNodeList[x][z]->m_anCosts[2] = 10;
-				//m_aapNodeList[x][z]->m_anCosts[3] = 10;
-				////m_aapNodeList[x][y]->m_anCosts[4] = 14;
-				////m_aapNodeList[x][y]->m_anCosts[5] = 14;
-				////m_aapNodeList[x][y]->m_anCosts[6] = 14;
-				////m_aapNodeList[x][y]->m_anCosts[7] = 14;
-				//if (m_aapNodeList[x][z]->m_bFruit == true)
-				//{
-				//	m_v2Fruit = m_aapNodeList[x][z]->m_v2Position;
-				//}
+				m_grid[x, 0, z].m_costs[0] = 10;
+				m_grid[x, 0, z].m_costs[1] = 10;
+				m_grid[x, 0, z].m_costs[2] = 10;
+				m_grid[x, 0, z].m_costs[3] = 10;
+				m_grid[x, 0, z].m_costs[4] = 14;
+				m_grid[x, 0, z].m_costs[5] = 14;
+				m_grid[x, 0, z].m_costs[6] = 14;
+				m_grid[x, 0, z].m_costs[7] = 14;
 			}
 		}
 	}
@@ -316,12 +321,27 @@ public class Grid : MonoBehaviour
 
 	public void GetArea(int radius, GameObject gameObject)
 	{
-
 		foreach (Node node in Ghost.BFS.GetNodesWithinRadius(radius, GetNode(gameObject.transform.position)))
 		{
 			node.tile.SetActive(true);
 		}
-		GetNode(gameObject.transform.position).tile.SetActive(false);
+	}
+
+	public void HighlightNodes(List<Node> nodesToHighlight)
+	{
+		// Some ugly LINQ here, replace it if you want - James L
+		foreach (GameObject tile in nodesToHighlight.Select(n => n.tile))
+		{
+			tile.SetActive(true);
+		}
+	}
+
+	public void ClearNode()
+	{
+		foreach (Node node in nodething)
+		{
+			node.tile.SetActive(false);
+		}
 	}
 	private void OnDrawGizmos()
 	{
@@ -334,14 +354,14 @@ public class Grid : MonoBehaviour
 
 	void Update()
 	{
-		if (!searched)
-		{
-			foreach (GameObject go in unit)
-			{
-				GetArea(4, go);
-			}
-			searched = true;
-		}
+		//if (!searched)
+		//{
+		//	foreach (GameObject go in unit)
+		//	{
+		//		GetArea(4, go);
+		//	}
+		//	searched = true;
+		//}
 	}
 
 	//Will be Deleted

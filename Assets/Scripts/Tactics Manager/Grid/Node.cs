@@ -6,11 +6,14 @@ public class Node
 {
 
 	public int[] m_neighbours = new int[8];
+	public int[] m_costs = new int[8];
 	public int x;
 	public int y;
 	public int z;
-	public float fCost;
-	public float gCost;
+	public float fScore;
+	public float gScore;
+	public float hScore;
+
 
 	public bool isWalkable;
 
@@ -36,5 +39,10 @@ public class Node
 		visited = false;
 		parentNode = null;
 		distance = 0;
+	}
+
+	public void CalculateFCost()
+	{
+		fScore = gScore + hScore;
 	}
 }
