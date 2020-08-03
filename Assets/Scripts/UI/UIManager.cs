@@ -8,7 +8,7 @@ public enum UIStyle
 	Death, Pestilence, Famine, War, Enemy
 }
 
-public class UILoader : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
 	[System.Serializable]
 	public class UIData
@@ -19,6 +19,7 @@ public class UILoader : MonoBehaviour
 		public Color m_Light;
 		public Sprite m_SkillBg;
 	}
+
 	[Header("Debug")]
 	public UIStyle DEBUGStyle;
 
@@ -30,7 +31,6 @@ public class UILoader : MonoBehaviour
 	public UIData m_EnemyUIData;
 
 	[Header("Graphical Elements")]
-
 	public Image m_FaceBackground;
 	public Image m_SkillsBackground;
 	public Image m_TurnBackground;
@@ -38,15 +38,6 @@ public class UILoader : MonoBehaviour
 	public Image[] m_SkillSlots;
 
 	void OnValidate() => LoadUI(DEBUGStyle);
-
-	//[ContextMenu("Load Death UI")]
-	//void LoadDeath() => LoadUI(m_DeathUIData);
-
-	//[ContextMenu("Load Pestilence UI")]
-	//void LoadPestilence() => LoadUI(m_PestilenceUIData);
-	
-	//[ContextMenu("Load Famine UI")]
-	//void LoadFamine() => LoadUI(m_FamineUIData);
 
 	void LoadUI(UIData uiData)
 	{
