@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c747499049b27d43a3c180bda81eb79, type: 3}
+  m_Name: P_PestilencesMark
+  m_EditorClassIdentifier: 
+  m_SkillName: Pestilence's Mark
+  m_Icon: {fileID: 0}
+  m_Description: The user marks an enemy for death, dealing some damage immediately,
+    and a small amount of damage each turn.
+  targets: 2
+  targetType: 0
+  excludeCaster: 0
+  m_SkillType: 2
+  m_CooldownLength: 3
+  m_CooldownRemaining: 0
+  m_CastableDistance: 5
+  m_AffectedRange: 0
+  m_DamageAmount: 3
+  m_Effect: {fileID: 0}

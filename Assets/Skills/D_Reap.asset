@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1fe8379d33f858c4ab079cb799ac579f, type: 3}
-  m_Name: TestSkill
+  m_Name: D_Reap
   m_EditorClassIdentifier: 
-  m_SkillName: 
+  m_SkillName: Reap
   m_Icon: {fileID: 0}
-  m_Description: 
-  targets: 0
-  targetType: 0
+  m_Description: The user makes a series of wide, sweeping attacks, hitting all foes
+    within range.
+  targets: 2
+  targetType: 2
   excludeCaster: 0
   m_SkillType: 2
-  m_CooldownLength: 0
+  m_CooldownLength: 3
   m_CooldownRemaining: 0
-  m_CastableDistance: 0
-  m_AffectedRange: 0
-  m_DamageAmount: 0
+  m_CastableDistance: 5
+  m_AffectedRange: 3
+  m_DamageAmount: 5

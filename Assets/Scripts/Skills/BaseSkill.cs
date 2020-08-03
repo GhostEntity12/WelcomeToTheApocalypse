@@ -30,7 +30,7 @@ public class BaseSkill : ScriptableObject
     // The icon which represents the skill
     public Sprite m_Icon;
     //The skill's description
-    [TextArea(1, 3)]
+    [TextArea(1, 5)]
     public string m_Description;
 
     [Header("Targeting")]
