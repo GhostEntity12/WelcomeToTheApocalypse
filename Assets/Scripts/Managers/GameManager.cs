@@ -84,14 +84,14 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                //// Reset the nodes highlights before selecting the new unit
-                //if (m_SelectedUnit)
-                //{
-                //    foreach (Node n in m_SelectedUnit.m_MovableNodes)
-                //    {
-                //        n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
-                //    }
-                //}
+                // Reset the nodes highlights before selecting the new unit
+                if (m_SelectedUnit)
+                {
+                    foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                    {
+                        n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                    }
+                }
 
                 // Store the new unit
                 m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
@@ -111,22 +111,22 @@ public class GameManager : MonoBehaviour
                 // Select node to move to.
                 if (m_TargetingState == TargetingState.Move)
                 {
-                    //Node target = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
-                    //if (m_SelectedUnit.m_MovableNodes.Contains(target))
-                    //{
-                    //    // Clear the previously highlighted tiles
-                    //    foreach (Node n in m_SelectedUnit.m_MovableNodes)
-                    //    {
-                    //        n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
-                    //    }
-                    //
-                    //    m_SelectedUnit.SetTargetPosition(target.worldPosition);
-                    //
-                    //    // Should remove the required movement here
-                    //
-                    //    // Should we do this after the unit has finished moving? - James L
-                    //    m_SelectedUnit.HighlightMovableNodes(target);
-                    //}
+                    Node target = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
+                    if (m_SelectedUnit.m_MovableNodes.Contains(target))
+                    {
+                        // Clear the previously highlighted tiles
+                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                        {
+                            n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                        }
+                    
+                        m_SelectedUnit.SetTargetPosition(target.worldPosition);
+                    
+                        // Should remove the required movement here
+                    
+                        // Should we do this after the unit has finished moving? - James L
+                        m_SelectedUnit.HighlightMovableNodes(target);
+                    }
                 }
     
                 // Select character to use a skill on.
