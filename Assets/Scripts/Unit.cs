@@ -30,6 +30,7 @@ public class Unit : MonoBehaviour
     // The current movement of the character.
     private int m_CurrentMovement = 0;
 
+    // How fast the unit moves.
     public float m_MoveSpeed = 3.0f;
 
     // The skills avaliable to the character.

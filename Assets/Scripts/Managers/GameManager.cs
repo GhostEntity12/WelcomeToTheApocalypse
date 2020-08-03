@@ -84,7 +84,6 @@ public class GameManager : MonoBehaviour
         return m_Instance;
     }
 
-    // Some of this feels like it's structured badly. Might want to discuss the architecture of this one. - James L
     public void Casting()
     {
         m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
