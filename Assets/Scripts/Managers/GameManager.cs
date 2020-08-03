@@ -7,15 +7,16 @@ public enum TargetingState
 {
     // Player is currently selecting a node for movement.
     Move,
-    // Player is currently selecting a node for attacking.
-    Attack,
+    
+    // Player is currently selecting a node for using a skill.
+    Skill,
+
     // Player isn't selecting a node for anything. (just to be safe)
     None
 }
 
 public class GameManager : MonoBehaviour
 {
-
     // Instance of the game manager.
     private static GameManager m_Instance = null;
 
@@ -36,7 +37,11 @@ public class GameManager : MonoBehaviour
 
     private GameObject m_RayHitObject = null;
 
+    // The action the player is targeting for.
     private TargetingState m_TargetingState = TargetingState.Move;
+
+    // The skill the player is targeting for.
+    private BaseSkill m_SelectedSkill = null;
 
     private void Awake()
     {
@@ -49,32 +54,10 @@ public class GameManager : MonoBehaviour
     {
         // Could be doing this with multiple casts and layer masks.
         // Implementation in commented out function below - James L
+        Casting();
 
-        //Casting();
-
-        // Get the position of where the player's mouse is pointing.
-        m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit))
-        {
-            // Mouse is over an object.
-            m_RayHitObject = m_MouseWorldRayHit.collider.gameObject;
-
-            if (m_RayHitObject.CompareTag("Tile"))
-            {
-                // Player selected a tile.
-                if (Input.GetMouseButtonDown(0))
-                {
-                    // If the player is selecting a tile to move unit to.
-                    if (m_TargetingState == TargetingState.Move)
-                    {
-                        Node target = Grid.m_Instance.GetNode(m_RayHitObject.transform.position);
-                        m_SelectedUnit.SetTargetPosition(target.worldPosition);
-                    }
-                }
-            }
-
-            Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
-        }
+        Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
+        //Debug.Log(m_MouseWorldRayHit.point);
     }
 
     public void NextTurn()
@@ -92,22 +75,14 @@ public class GameManager : MonoBehaviour
         return m_Instance;
     }
 
-    // Some of this feels like it's structured badly. Might want to discuss the architecture of this one. - James L
     public void Casting()
     {
-        if (Input.GetMouseButtonDown(0))
+        m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
+
+        // Raycast hit a character, check for what the player can do with characters.
+        if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
         {
-            Ray mousePointRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hitInfo = new RaycastHit();
-
-            if (m_TargetingState == TargetingState.Attack && Physics.Raycast(mousePointRay, out hitInfo, Mathf.Infinity, 1 << 8)) // Hit a tile and is attacking
-            {
-                // If hit tile is in affectable range,
-                // Do attack
-
-                // else return;
-            }
-            else if (Physics.Raycast(mousePointRay, out hitInfo, Mathf.Infinity, 1 << 9)) // Hit a character
+            if (Input.GetMouseButtonDown(0))
             {
                 // Reset the nodes highlights before selecting the new unit
                 if (m_SelectedUnit)
@@ -119,32 +94,57 @@ public class GameManager : MonoBehaviour
                 }
 
                 // Store the new unit
-                m_SelectedUnit = hitInfo.transform.GetComponent<Unit>();
+                m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
                 m_TargetingState = TargetingState.Move;
 
                 // Highlight the appropriate tiles
                 m_SelectedUnit.HighlightMovableNodes();
-
-            }
-            else if (m_TargetingState == TargetingState.Move && Physics.Raycast(mousePointRay, out hitInfo, Mathf.Infinity, 1 << 8)) // Hit a tile and is in the move state
-            {
-                Node target = Grid.m_Instance.GetNode(hitInfo.transform.position);
-                if (m_SelectedUnit.m_MovableNodes.Contains(target))
-                {
-                    // Clear the previously highlighted tiles
-                    foreach (Node n in m_SelectedUnit.m_MovableNodes)
-                    {
-                        n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
-                    }
-
-                    m_SelectedUnit.SetTargetPosition(target.worldPosition);
-
-                    // Should remove the required movement here
-
-                    // Should we do this after the unit has finished moving? - James L
-                    m_SelectedUnit.HighlightMovableNodes(target);
-                }
+                Debug.Log(m_SelectedUnit.name);
             }
         }
+
+        // Raycast hit a tile, check for what the player can do with tiles.
+        else if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 8))
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                // Select node to move to.
+                if (m_TargetingState == TargetingState.Move)
+                {
+                    Node target = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
+                    if (m_SelectedUnit.m_MovableNodes.Contains(target))
+                    {
+                        // Clear the previously highlighted tiles
+                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                        {
+                            n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                        }
+                    
+                        m_SelectedUnit.SetTargetPosition(target.worldPosition);
+                    
+                        // Should remove the required movement here
+                    
+                        // Should we do this after the unit has finished moving? - James L
+                        m_SelectedUnit.HighlightMovableNodes(target);
+                    }
+                }
+    
+                // Select character to use a skill on.
+                else if (m_TargetingState == TargetingState.Skill)
+                {
+                    // If hit tile is in affectable range,
+                    // Do attack
+    
+                    // else return;
+                }
+            }
+        }        
+    }
+
+    // Select a skill.
+    public void SkillSelection(int skillNumber)
+    {
+        m_SelectedSkill = m_SelectedUnit.GetSkill(skillNumber);
+        Debug.Log(m_SelectedSkill.m_Description);
     }
 }
