@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using static Ghost.BFS;
+
 // VARIABLES AND FUNCTIONS THAT ARE COMMENTED ARE FOR SYSTEMS THAT HAVE YET TO BE CREATED, JUST TEMPORARY FOR GETTING IDEAS OUT.
 
 public enum Allegiance
@@ -53,6 +55,9 @@ public class Unit : MonoBehaviour
 
     private Vector3 m_TargetPosition = Vector3.zero;
 
+    // Blame James L for this
+    public List<Node> m_MovableNodes = new List<Node>();
+
     // On startup.
     void Awake()
     {
@@ -67,11 +72,12 @@ public class Unit : MonoBehaviour
         // Would be refactored to move along path rather than towards a target position.
         if (m_Moving)
         {
-            transform.position = Vector3.MoveTowards(transform.position, m_TargetPosition, m_MoveSpeed);
-            // If have arrived at positoin (0.01 units close to target is close enough).
+            transform.position = Vector3.MoveTowards(transform.position, m_TargetPosition, m_MoveSpeed * Time.deltaTime);
+            // If have arrived at position (0.01 units close to target is close enough).
             if ((transform.position - m_TargetPosition).magnitude < 0.01f)
             {
                 m_Moving = false;
+                transform.position = m_TargetPosition; // Just putting this here so it sets the position exactly. - James L
             }
         }
     }
@@ -87,10 +93,10 @@ public class Unit : MonoBehaviour
     public int GetCurrentHealth() { return m_CurrentHealth; }
 
     // Increase the character's current health.
-    public void IncreaseCurrentHealth(int increase) 
+    public void IncreaseCurrentHealth(int increase)
     {
         m_CurrentHealth += increase;
-        
+
         // Don't go over that max starting health.
         if (m_CurrentHealth > m_StartingHealth)
             m_CurrentHealth = m_StartingHealth;
@@ -101,7 +107,7 @@ public class Unit : MonoBehaviour
     {
         m_CurrentHealth -= decrease;
         CheckAlive();
-    }    
+    }
 
     // Reset the character's current health.
     public void ResetCurrentHealth() { m_CurrentHealth = m_StartingHealth; }
@@ -136,5 +142,12 @@ public class Unit : MonoBehaviour
     {
         m_TargetPosition = target;
         m_Moving = true;
+    }
+
+    // Gets the nodes the unit can move to, stores them and highlights them
+    public void HighlightMovableNodes(Node startingNode = null)
+    {
+        m_MovableNodes = GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
+        Grid.m_Instance.HighlightNodes(m_MovableNodes);
     }
 }
