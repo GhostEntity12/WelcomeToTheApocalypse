@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Grid : MonoBehaviour
@@ -32,6 +33,9 @@ public class Grid : MonoBehaviour
 
 	//Will be deleted being used for testing
 	public List<GameObject> unit;
+
+	// DEBUG
+	List<Node> nodething = new List<Node>();
 
 	void Awake()
 	{
@@ -226,25 +230,25 @@ public class Grid : MonoBehaviour
 				//
 				if (z > 0)
 				{
-					print("set 0");
+					//print("set 0");
 					m_grid[x, 0, z].adjacentNodes.Add(m_grid[x, 0, z - 1]);
 				}
 				//1 West
 				if (x > 0)
 				{
-					print("set 1");
+					//print("set 1");
 					m_grid[x, 0, z].adjacentNodes.Add(m_grid[x - 1, 0, z]);
 				}
 				//2 North
 				if (z < 60 - 1)
 				{
-					print("set 2");
+					//print("set 2");
 					m_grid[x, 0, z].adjacentNodes.Add(m_grid[x, 0, z + 1]);
 				}
 				//3 East
 				if (x < 60 - 1)
 				{
-					print("set 3");
+					//print("set 3");
 					m_grid[x, 0, z].adjacentNodes.Add(m_grid[x + 1, 0, z]);
 				}
 				////4 South West
@@ -317,12 +321,27 @@ public class Grid : MonoBehaviour
 
 	public void GetArea(int radius, GameObject gameObject)
 	{
-
 		foreach (Node node in Ghost.BFS.GetNodesWithinRadius(radius, GetNode(gameObject.transform.position)))
 		{
 			node.tile.SetActive(true);
 		}
-		GetNode(gameObject.transform.position).tile.SetActive(false);
+	}
+
+	public void HighlightNodes(List<Node> nodesToHighlight)
+	{
+		// Some ugly LINQ here, replace it if you want - James L
+		foreach (GameObject tile in nodesToHighlight.Select(n => n.tile))
+		{
+			tile.SetActive(true);
+		}
+	}
+
+	public void ClearNode()
+	{
+		foreach (Node node in nodething)
+		{
+			node.tile.SetActive(false);
+		}
 	}
 	private void OnDrawGizmos()
 	{
@@ -335,14 +354,14 @@ public class Grid : MonoBehaviour
 
 	void Update()
 	{
-		if (!searched)
-		{
-			foreach (GameObject go in unit)
-			{
-				GetArea(4, go);
-			}
-			searched = true;
-		}
+		//if (!searched)
+		//{
+		//	foreach (GameObject go in unit)
+		//	{
+		//		GetArea(4, go);
+		//	}
+		//	searched = true;
+		//}
 	}
 
 	//Will be Deleted
