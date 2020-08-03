@@ -52,4 +52,6 @@ public class BaseSkill : ScriptableObject
     public int m_CastableDistance;
     // How large of an area around the cast location will be affected
     public int m_AffectedRange;
+
+    public virtual void CastSkill() { }
 }
