@@ -33,7 +33,7 @@ public class Unit : MonoBehaviour
     public float m_MoveSpeed = 3.0f;
 
     // The skills avaliable to the character.
-    //public List<Skill> m_Skills = new List<Skill>();
+    public List<BaseSkill> m_Skills = new List<BaseSkill>();
 
     // The passive effect of the character.
     public StatusEffect m_PassiveEffect = null;
@@ -129,7 +129,10 @@ public class Unit : MonoBehaviour
     public void DecrementCurrentMovement() { --m_CurrentMovement; }
 
     // Get the list of skills of the character.
-    //public List<Skill> GetSkills() { return m_Skills; }
+    public List<BaseSkill> GetSkills() { return m_Skills; }
+
+    // Get a specific skill.
+    public BaseSkill GetSkill(int skillIndex) { return m_Skills[skillIndex]; }
 
     // Set the movement path of the character.
     public void SetMovementPath(Queue<Node> path)
@@ -149,5 +152,10 @@ public class Unit : MonoBehaviour
     {
         m_MovableNodes = GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
         Grid.m_Instance.HighlightNodes(m_MovableNodes);
+    }
+
+    public void ActivateSkill(int skillInput)
+    {
+        m_Skills[skillInput - 1].CastSkill();
     }
 }
