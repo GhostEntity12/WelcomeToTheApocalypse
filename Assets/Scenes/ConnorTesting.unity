@@ -676,9 +676,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xzScale: 1
-  yScale: 1
-  tileActive: 0
-  extends: {x: 1, y: 1, z: 1}
+  tileActive: 1
+  extends: {x: 0.9, y: 0.9, z: 0.9}
+  width: 60
+  length: 60
   node: {fileID: 283833212}
   nodeArray: {fileID: 915587350}
   unit:
