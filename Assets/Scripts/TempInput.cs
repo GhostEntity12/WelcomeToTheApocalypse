@@ -45,7 +45,7 @@ public class TemInput : MonoBehaviour
             {
                 item.m_tile.SetActive(false);
             }
-            u.SetTargetPosition(hit2.transform.position);
+            //u.SetTargetPosition(hit2.transform.position);
         }
     }
 }

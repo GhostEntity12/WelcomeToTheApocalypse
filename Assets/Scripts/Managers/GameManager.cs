@@ -93,6 +93,7 @@ public class GameManager : MonoBehaviour
                         {
                             n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
                         }
+                        m_SelectedUnit.HighlightMovableNodes(Grid.m_Instance.GetNode(m_MouseWorldRayHit.point));
                     }
                 }
 
@@ -123,8 +124,10 @@ public class GameManager : MonoBehaviour
                             n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
                         }
                     
-                        if (Grid.m_Instance.FindPath(transform.position, m_MouseWorldRayHit.transform.position, m_SelectedUnit.GetMovementPath()))
+                        Stack<Node> path = new Stack<Node>();
+                        if (Grid.m_Instance.FindPath(transform.position, m_MouseWorldRayHit.transform.position, ref path))
                         {
+                            m_SelectedUnit.SetMovementPath(path);
                             m_SelectedUnit.DecreaseCurrentMovement(m_SelectedUnit.GetMovementPath().Count);
                         }
                     
