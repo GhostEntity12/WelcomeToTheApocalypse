@@ -151,8 +151,8 @@ public class Grid : MonoBehaviour
 				if (n.isWalkable)
 				{
 					node.transform.position = new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z);
-					n.tile = Instantiate(node, node.transform.position, node.transform.rotation, nodeArray.transform);
-					n.tile.SetActive(tileActive);
+					n.m_tile = Instantiate(node, node.transform.position, node.transform.rotation, nodeArray.transform);
+					n.m_tile.SetActive(tileActive);
 				}
 				if (n.obstacle != null)
 				{
@@ -273,14 +273,14 @@ public class Grid : MonoBehaviour
 	{
 		foreach (Node node in Ghost.BFS.GetNodesWithinRadius(radius, GetNode(gameObject.transform.position)))
 		{
-			node.tile.SetActive(true);
+			node.m_tile.SetActive(true);
 		}
 	}
 
 	public void HighlightNodes(List<Node> nodesToHighlight)
 	{
 		// Some ugly LINQ here, replace it if you want - James L
-		foreach (GameObject tile in nodesToHighlight.Select(n => n.tile))
+		foreach (GameObject tile in nodesToHighlight.Select(n => n.m_tile))
 		{
 			tile.SetActive(true);
 		}
@@ -290,7 +290,7 @@ public class Grid : MonoBehaviour
 	{
 		foreach (Node node in nodething)
 		{
-			node.tile.SetActive(false);
+			node.m_tile.SetActive(false);
 		}
 	}
 
@@ -303,24 +303,119 @@ public class Grid : MonoBehaviour
 		}
 	}
 
-	public void FindPath(int radius, Node startNode)
+	public bool FindPath(Vector3 startPos, Vector3 endPos, Stack<Node> path)
 	{
 
+		Node m_startNode = GetNode(startPos);
+		Node m_endNode = GetNode(endPos);
+
+		if (m_startNode == null || m_endNode == null)
+		{
+			return false;
+		}
+
+		if (m_startNode == m_endNode)
+		{
+			return false;
+		}
+
+		if(m_startNode.isWalkable == false || m_endNode.isWalkable == false)
+		{
+			return false;
+		}
+
+		path.Clear();
 		Queue<Node> m_openList = new Queue<Node>();
 		List<Node> m_closedList = new List<Node>();
 
-		m_openList.Enqueue(startNode);
+		bool m_foundPath = false;
+
+		m_startNode.m_previousNode = null;
+		m_startNode.gScore = 0;
+		m_startNode.hScore = CalculateHeristic(m_startNode, m_endNode);
+		m_startNode.CalculateFScore();
+
+		m_openList.Enqueue(m_startNode);
+
 		while (m_openList.Count > 0)
 		{
-			Node currentNode;
-			currentNode = m_openList.Dequeue();
+			Node currentNode = m_openList.Dequeue();
+
 			m_closedList.Add(currentNode);
+
+			if(currentNode == m_endNode)
+			{
+				m_foundPath = true;
+				break;
+			}
 
 			for (int i = 0; i < currentNode.adjacentNodes.Count; ++i)
 			{
-				currentNode.adjacentNodes[i].gScore = currentNode.m_costs[i] + currentNode.gScore;
+				Node neighbourNode = currentNode.adjacentNodes[i];
+
+				if (neighbourNode == null)
+				{
+					continue;
+				}
+
+				if(neighbourNode.isWalkable == false)
+				{
+					continue;
+				}
+
+				if(m_closedList.Contains(neighbourNode) == true)
+				{
+					continue;
+				}
+
+				if(m_openList.Contains(neighbourNode) == false)
+				{
+					neighbourNode.m_previousNode = currentNode;
+					neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+					neighbourNode.hScore = CalculateHeristic(neighbourNode, m_endNode);
+					neighbourNode.CalculateFScore();
+					m_openList.Enqueue(neighbourNode);
+				}
+				else
+				{
+					int cost = currentNode.fScore + currentNode.m_costs[i];
+					if(cost < neighbourNode.fScore)
+					{
+						neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+						neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
+						neighbourNode.m_previousNode = currentNode;
+					}
+				}
+				//currentNode.adjacentNodes[i].gScore = currentNode.m_costs[i] + currentNode.gScore;
 			}
 			Node previousNode = currentNode;
+		}
+
+		if(m_foundPath == true)
+		{
+			Node current = m_endNode;
+			while(current != null)
+			{
+				path.Push(current);
+				current = current.m_previousNode;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	int CalculateHeristic(Node node, Node endNode)
+	{
+		int dx = Mathf.Abs(node.x - endNode.x);
+		int dz = Mathf.Abs(node.z - endNode.z);
+
+		if (dx < dz)
+		{
+			return ((14 * dz) + 10 * (dx - dz));
+		}
+		else
+		{
+			return ((14 * dx) + 10 * (dz - dx));
 		}
 	}
 

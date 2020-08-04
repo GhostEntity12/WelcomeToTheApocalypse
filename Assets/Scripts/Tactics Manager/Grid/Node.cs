@@ -7,13 +7,8 @@ public class Node
 
 	public int[] m_neighbours = new int[8];
 	public int[] m_costs = new int[8];
-	public int x;
-	public int y;
-	public int z;
-	public float fScore;
-	public float gScore;
-	public float hScore;
-
+	public int x, z;
+	public int fScore, gScore, hScore;
 
 	public bool isWalkable;
 
@@ -23,8 +18,9 @@ public class Node
 
 	public GameObject unit;
 
-	public GameObject tile;
+	public GameObject m_tile;
 
+	public Node m_previousNode;
 
 	[Header("Breadth First Search")]
 	public bool visited = false;
@@ -35,13 +31,13 @@ public class Node
 
 	public void Reset()
 	{
-		tile.SetActive(false);
+		m_tile.SetActive(false);
 		visited = false;
 		parentNode = null;
 		distance = 0;
 	}
 
-	public void CalculateFCost()
+	public void CalculateFScore()
 	{
 		fScore = gScore + hScore;
 	}
