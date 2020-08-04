@@ -54,6 +54,8 @@ public class Unit : MonoBehaviour
 
     private Node m_TargetNode = null;
 
+    private float m_YPos = 0.0f;
+
     // Blame James L for this
     public List<Node> m_MovableNodes = new List<Node>();
 
@@ -63,6 +65,8 @@ public class Unit : MonoBehaviour
         m_CurrentHealth = m_StartingHealth;
 
         m_CurrentMovement = m_StartingMovement;
+
+        m_YPos = transform.position.y;
     }
 
     void Update()
@@ -147,6 +151,7 @@ public class Unit : MonoBehaviour
         m_MovementPath = path;
         m_Moving = true;
         m_TargetNode = m_MovementPath.Pop();
+        m_TargetNode.worldPosition.y = m_YPos;
     }
 
     // Get the unit's path.
