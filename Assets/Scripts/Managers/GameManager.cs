@@ -43,6 +43,8 @@ public class GameManager : MonoBehaviour
     // The skill the player is targeting for.
     private BaseSkill m_SelectedSkill = null;
 
+    public KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
+
     private void Awake()
     {
         m_MainCamera = Camera.main;
@@ -84,22 +86,26 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                // Reset the nodes highlights before selecting the new unit
-                if (m_SelectedUnit)
+                if(m_TargetingState != TargetingState.Skill)
                 {
-                    foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                    // Reset the nodes highlights before selecting the new unit
+                    if (m_SelectedUnit)
                     {
-                        n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                        {
+                            //n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                        }
                     }
+
+                    // Store the new unit
+                    m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
+                    m_TargetingState = TargetingState.Move;
+
+                    // Highlight the appropriate tiles
+                    m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+                    m_SelectedUnit.HighlightMovableNodes();
+                    Debug.Log(m_SelectedUnit.name);
                 }
-
-                // Store the new unit
-                m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
-                m_TargetingState = TargetingState.Move;
-
-                // Highlight the appropriate tiles
-                m_SelectedUnit.HighlightMovableNodes();
-                Debug.Log(m_SelectedUnit.name);
             }
         }
 
@@ -112,39 +118,80 @@ public class GameManager : MonoBehaviour
                 if (m_TargetingState == TargetingState.Move)
                 {
                     Node target = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
-                    if (m_SelectedUnit.m_MovableNodes.Contains(target))
-                    {
+                    //if (m_SelectedUnit.m_MovableNodes.Contains(target))
+                    //{
                         // Clear the previously highlighted tiles
                         foreach (Node n in m_SelectedUnit.m_MovableNodes)
                         {
-                            n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                            //n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
                         }
                     
-                        m_SelectedUnit.SetTargetPosition(target.worldPosition);
-                    
-                        // Should remove the required movement here
+                        Stack<Node> path = new Stack<Node>();
+                        if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path))
+                        {
+                            m_SelectedUnit.SetMovementPath(path);
+                            m_SelectedUnit.DecreaseCurrentMovement(m_SelectedUnit.GetMovementPath().Count);
+                        }
                     
                         // Should we do this after the unit has finished moving? - James L
                         m_SelectedUnit.HighlightMovableNodes(target);
-                    }
+                    //}
                 }
     
                 // Select character to use a skill on.
                 else if (m_TargetingState == TargetingState.Skill)
                 {
                     // If hit tile is in affectable range,
-                    // Do attack
+                    m_SelectedUnit.ActivateSkill(m_SelectedSkill);
     
                     // else return;
                 }
             }
-        }        
+        }
+
+
+        // Selecting a skill with the number keys.
+        for (int i = 0; i < m_AbilityHotkeys.Length; i++)
+        {
+            if (Input.GetKeyDown(m_AbilityHotkeys[i]))
+            {
+                SkillSelection(i);
+                m_TargetingState = TargetingState.Skill;
+                break;
+            }
+        }
+
+        //if (Input.GetKeyDown(KeyCode.Alpha1))
+        //{
+        //    SkillSelection(0);
+        //    m_TargetingState = TargetingState.Skill;
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Alpha2))
+        //{
+        //    SkillSelection(1);
+        //    m_TargetingState = TargetingState.Skill;
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Alpha3))
+        //{
+        //    SkillSelection(2);
+        //    m_TargetingState = TargetingState.Skill;
+        //} 
+
+        // Cancelling skill targeting.
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (m_TargetingState == TargetingState.Skill)
+            {
+                m_TargetingState = TargetingState.None;
+            }
+        }
     }
 
     // Select a skill.
     public void SkillSelection(int skillNumber)
     {
         m_SelectedSkill = m_SelectedUnit.GetSkill(skillNumber);
+        m_TargetingState = TargetingState.Skill;
         Debug.Log(m_SelectedSkill.m_Description);
     }
 }

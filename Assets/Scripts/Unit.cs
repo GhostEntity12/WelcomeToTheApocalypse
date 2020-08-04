@@ -4,8 +4,6 @@ using UnityEngine;
 
 using static Ghost.BFS;
 
-// VARIABLES AND FUNCTIONS THAT ARE COMMENTED ARE FOR SYSTEMS THAT HAVE YET TO BE CREATED, JUST TEMPORARY FOR GETTING IDEAS OUT.
-
 public enum Allegiance
 {
     // Character is on the player's side.
@@ -52,9 +50,11 @@ public class Unit : MonoBehaviour
     private bool m_Moving = false;
 
     // The path for the character to take to get to their destination.
-    private Queue<Node> m_MovementPath = new Queue<Node>();
+    private Stack<Node> m_MovementPath = new Stack<Node>();
 
-    private Vector3 m_TargetPosition = Vector3.zero;
+    private Node m_TargetNode = null;
+
+    private float m_YPos = 0.0f;
 
     // Blame James L for this
     public List<Node> m_MovableNodes = new List<Node>();
@@ -65,6 +65,8 @@ public class Unit : MonoBehaviour
         m_CurrentHealth = m_StartingHealth;
 
         m_CurrentMovement = m_StartingMovement;
+
+        m_YPos = transform.position.y;
     }
 
     void Update()
@@ -73,12 +75,22 @@ public class Unit : MonoBehaviour
         // Would be refactored to move along path rather than towards a target position.
         if (m_Moving)
         {
-            transform.position = Vector3.MoveTowards(transform.position, m_TargetPosition, m_MoveSpeed * Time.deltaTime);
+            Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
+            transform.position = Vector3.MoveTowards(transform.position, m_TargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.01 units close to target is close enough).
-            if ((transform.position - m_TargetPosition).magnitude < 0.01f)
+            if ((transform.position - m_TargetNode.worldPosition).magnitude < 0.1f)
             {
-                m_Moving = false;
-                transform.position = m_TargetPosition; // Just putting this here so it sets the position exactly. - James L
+                // Target the next node.
+                if (m_MovementPath.Count > 0)
+                {
+                    SetTargetNodePosition(m_MovementPath.Pop());
+                }
+                // Have arrived at the final node in the path, stop moving.
+                else
+                    m_Moving = false;
+                
+                //transform.position = m_TargetNode.worldPosition;
+                //transform.position = m_TargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
             }
         }
     }
@@ -126,8 +138,8 @@ public class Unit : MonoBehaviour
     // Get the current amount of movement of the character.
     public int GetCurrentMovement() { return m_CurrentMovement; }
 
-    // Decrement the character's current amount of movement.
-    public void DecrementCurrentMovement() { --m_CurrentMovement; }
+    // Decrease the character's current amount of movement.
+    public void DecreaseCurrentMovement(int decrease) { m_CurrentMovement -= decrease; }
 
     // Get the list of skills of the character.
     public List<BaseSkill> GetSkills() { return m_Skills; }
@@ -136,17 +148,21 @@ public class Unit : MonoBehaviour
     public BaseSkill GetSkill(int skillIndex) { return m_Skills[skillIndex]; }
 
     // Set the movement path of the character.
-    public void SetMovementPath(Queue<Node> path)
+    public void SetMovementPath(Stack<Node> path)
     {
         m_MovementPath = path;
         m_Moving = true;
+        SetTargetNodePosition(m_MovementPath.Pop());
     }
 
-    public void SetTargetPosition(Vector3 target)
+    public void SetTargetNodePosition(Node target)
     {
-        m_TargetPosition = target;
-        m_Moving = true;
+        m_TargetNode = target;
+        m_TargetNode.worldPosition = new Vector3(m_TargetNode.worldPosition.x, m_YPos, m_TargetNode.worldPosition.z);
     }
+
+    // Get the unit's path.
+    public Stack<Node> GetMovementPath() { return m_MovementPath; }
 
     // Gets the nodes the unit can move to, stores them and highlights them
     public void HighlightMovableNodes(Node startingNode = null)
@@ -155,8 +171,18 @@ public class Unit : MonoBehaviour
         Grid.m_Instance.HighlightNodes(m_MovableNodes);
     }
 
-    public void ActivateSkill(int skillInput)
+    public void ActivateSkill(BaseSkill skill)
     {
-        m_Skills[skillInput - 1].CastSkill();
+        // Doing my own search cause List.Find is gross.
+        for (int i = 0; i < m_Skills.Count; ++i)
+        {
+            if (m_Skills[i] == skill)
+            {
+                m_Skills[i].CastSkill();
+                return;
+            }
+        }
+
+        Debug.LogError("Skill " + skill.name + " couldn't be found in " + gameObject.name + ".");
     }
 }
