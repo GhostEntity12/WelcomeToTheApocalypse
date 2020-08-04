@@ -29,7 +29,7 @@ public class TemInput : MonoBehaviour
 
                 foreach (var item in u.m_MovableNodes)
                 {
-                    item.tile.SetActive(false);
+                    item.m_tile.SetActive(false);
                 }
 
             }
@@ -43,7 +43,7 @@ public class TemInput : MonoBehaviour
         {
             foreach (var item in u.m_MovableNodes)
             {
-                item.tile.SetActive(false);
+                item.m_tile.SetActive(false);
             }
             u.SetTargetPosition(hit2.transform.position);
         }

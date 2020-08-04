@@ -84,12 +84,15 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                // Reset the nodes highlights before selecting the new unit
-                if (m_SelectedUnit)
+                if(m_TargetingState != TargetingState.Skill)
                 {
-                    foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                    // Reset the nodes highlights before selecting the new unit
+                    if (m_SelectedUnit)
                     {
-                        n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                        {
+                            n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                        }
                     }
                 }
 
@@ -117,12 +120,13 @@ public class GameManager : MonoBehaviour
                         // Clear the previously highlighted tiles
                         foreach (Node n in m_SelectedUnit.m_MovableNodes)
                         {
-                            n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                            n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
                         }
                     
-                        m_SelectedUnit.SetTargetPosition(target.worldPosition);
-                    
-                        // Should remove the required movement here
+                        if (Grid.m_Instance.FindPath(transform.position, m_MouseWorldRayHit.transform.position, m_SelectedUnit.GetMovementPath()))
+                        {
+                            m_SelectedUnit.DecreaseCurrentMovement(m_SelectedUnit.GetMovementPath().Count);
+                        }
                     
                         // Should we do this after the unit has finished moving? - James L
                         m_SelectedUnit.HighlightMovableNodes(target);
@@ -133,7 +137,7 @@ public class GameManager : MonoBehaviour
                 else if (m_TargetingState == TargetingState.Skill)
                 {
                     // If hit tile is in affectable range,
-                    // Do attack
+                    m_SelectedUnit.ActivateSkill(m_SelectedSkill);
     
                     // else return;
                 }
@@ -154,7 +158,16 @@ public class GameManager : MonoBehaviour
         {
             SkillSelection(2);
             m_TargetingState = TargetingState.Skill;
-        }   
+        } 
+
+        // Cancelling skill targeting.
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (m_TargetingState == TargetingState.Skill)
+            {
+                m_TargetingState = TargetingState.None;
+            }
+        }
     }
 
     // Select a skill.
