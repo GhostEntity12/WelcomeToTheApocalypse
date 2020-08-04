@@ -216,15 +216,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c31fa68d8823034c8c776a07fe6583c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skills:
-  - {fileID: 11400000, guid: d1f298b3af1ed924eb9857a7b450f6a1, type: 2}
-  - {fileID: 11400000, guid: afec2ef5a0a0cd84db029abd59e1544b, type: 2}
-  dSkills:
-  - {fileID: 0}
-  - {fileID: 11400000, guid: bad2796cdaba79d4fad6ccb5883c0aea, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!4 &627242062
 Transform:
   m_ObjectHideFlags: 0
@@ -823,6 +814,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 745132585362736881, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: DEBUGStyle
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 745132585362736882, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
         type: 3}
