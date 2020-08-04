@@ -93,19 +93,19 @@ public class GameManager : MonoBehaviour
                     {
                         foreach (Node n in m_SelectedUnit.m_MovableNodes)
                         {
-                            n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                            //n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
                         }
-                        m_SelectedUnit.HighlightMovableNodes(Grid.m_Instance.GetNode(m_MouseWorldRayHit.point));
                     }
+
+                    // Store the new unit
+                    m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
+                    m_TargetingState = TargetingState.Move;
+
+                    // Highlight the appropriate tiles
+                    m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+                    m_SelectedUnit.HighlightMovableNodes();
+                    Debug.Log(m_SelectedUnit.name);
                 }
-
-                // Store the new unit
-                m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
-                m_TargetingState = TargetingState.Move;
-
-                // Highlight the appropriate tiles
-                m_SelectedUnit.HighlightMovableNodes();
-                Debug.Log(m_SelectedUnit.name);
             }
         }
 
@@ -118,16 +118,16 @@ public class GameManager : MonoBehaviour
                 if (m_TargetingState == TargetingState.Move)
                 {
                     Node target = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
-                    if (m_SelectedUnit.m_MovableNodes.Contains(target))
-                    {
+                    //if (m_SelectedUnit.m_MovableNodes.Contains(target))
+                    //{
                         // Clear the previously highlighted tiles
                         foreach (Node n in m_SelectedUnit.m_MovableNodes)
                         {
-                            n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                            //n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
                         }
                     
                         Stack<Node> path = new Stack<Node>();
-                        if (Grid.m_Instance.FindPath(transform.position, m_MouseWorldRayHit.transform.position, ref path))
+                        if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path))
                         {
                             m_SelectedUnit.SetMovementPath(path);
                             m_SelectedUnit.DecreaseCurrentMovement(m_SelectedUnit.GetMovementPath().Count);
@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
                     
                         // Should we do this after the unit has finished moving? - James L
                         m_SelectedUnit.HighlightMovableNodes(target);
-                    }
+                    //}
                 }
     
                 // Select character to use a skill on.
