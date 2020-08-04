@@ -14,7 +14,7 @@ public class NodeDataReader : MonoBehaviour
 			Node n = g.GetNode(transform.position);
 
 			Debug.Log(
-				$"Position: {n.x}/{n.y}/{n.z}\n" +
+				$"Position: {n.x}/{n.z}\n" +
 				$"Unit: {n.unit}\n" +
 				$"World Position: {n.worldPosition}");
 		}

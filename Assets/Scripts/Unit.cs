@@ -50,9 +50,9 @@ public class Unit : MonoBehaviour
     private bool m_Moving = false;
 
     // The path for the character to take to get to their destination.
-    private Queue<Node> m_MovementPath = new Queue<Node>();
+    private Stack<Node> m_MovementPath = new Stack<Node>();
 
-    private Vector3 m_TargetPosition = Vector3.zero;
+    private Node m_TargetNode = null;
 
     // Blame James L for this
     public List<Node> m_MovableNodes = new List<Node>();
@@ -71,12 +71,20 @@ public class Unit : MonoBehaviour
         // Would be refactored to move along path rather than towards a target position.
         if (m_Moving)
         {
-            transform.position = Vector3.MoveTowards(transform.position, m_TargetPosition, m_MoveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, m_TargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.01 units close to target is close enough).
-            if ((transform.position - m_TargetPosition).magnitude < 0.01f)
+            if ((transform.position - m_TargetNode.worldPosition).magnitude < 0.01f)
             {
-                m_Moving = false;
-                transform.position = m_TargetPosition; // Just putting this here so it sets the position exactly. - James L
+                // Target the next node.
+                if (m_MovementPath.Count > 0)
+                {
+                    m_TargetNode = m_MovementPath.Pop();
+                }
+                // Have arrived at the final node in the path, stop moving.
+                else
+                    m_Moving = false;
+                
+                transform.position = m_TargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
             }
         }
     }
@@ -134,17 +142,15 @@ public class Unit : MonoBehaviour
     public BaseSkill GetSkill(int skillIndex) { return m_Skills[skillIndex]; }
 
     // Set the movement path of the character.
-    public void SetMovementPath(Queue<Node> path)
+    public void SetMovementPath(Stack<Node> path)
     {
         m_MovementPath = path;
         m_Moving = true;
+        m_TargetNode = m_MovementPath.Pop();
     }
 
-    public void SetTargetPosition(Vector3 target)
-    {
-        m_TargetPosition = target;
-        m_Moving = true;
-    }
+    // Get the unit's path.
+    public Stack<Node> GetMovementPath() { return m_MovementPath; }
 
     // Gets the nodes the unit can move to, stores them and highlights them
     public void HighlightMovableNodes(Node startingNode = null)
@@ -153,8 +159,18 @@ public class Unit : MonoBehaviour
         Grid.m_Instance.HighlightNodes(m_MovableNodes);
     }
 
-    public void ActivateSkill(int skillInput)
+    public void ActivateSkill(BaseSkill skill)
     {
-        m_Skills[skillInput - 1].CastSkill();
+        // Doing my own search cause List.Find is gross.
+        for (int i = 0; i < m_Skills.Count; ++i)
+        {
+            if (m_Skills[i] == skill)
+            {
+                m_Skills[i].CastSkill();
+                return;
+            }
+        }
+
+        Debug.LogError("Skill " + skill.name + " couldn't be found in " + gameObject.name + ".");
     }
 }

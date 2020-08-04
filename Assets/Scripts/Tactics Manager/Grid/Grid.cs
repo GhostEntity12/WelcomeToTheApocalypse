@@ -303,7 +303,7 @@ public class Grid : MonoBehaviour
 		}
 	}
 
-	public bool FindPath(Vector3 startPos, Vector3 endPos, Stack<Node> path)
+	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path)
 	{
 
 		Node m_startNode = GetNode(startPos);

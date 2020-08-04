@@ -43,6 +43,8 @@ public class GameManager : MonoBehaviour
     // The skill the player is targeting for.
     private BaseSkill m_SelectedSkill = null;
 
+    public KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
+
     private void Awake()
     {
         m_MainCamera = Camera.main;
@@ -84,12 +86,16 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                // Reset the nodes highlights before selecting the new unit
-                if (m_SelectedUnit)
+                if(m_TargetingState != TargetingState.Skill)
                 {
-                    foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                    // Reset the nodes highlights before selecting the new unit
+                    if (m_SelectedUnit)
                     {
-                        n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                        {
+                            n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                        }
+                        m_SelectedUnit.HighlightMovableNodes(Grid.m_Instance.GetNode(m_MouseWorldRayHit.point));
                     }
                 }
 
@@ -117,12 +123,15 @@ public class GameManager : MonoBehaviour
                         // Clear the previously highlighted tiles
                         foreach (Node n in m_SelectedUnit.m_MovableNodes)
                         {
-                            n.tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                            n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
                         }
                     
-                        m_SelectedUnit.SetTargetPosition(target.worldPosition);
-                    
-                        // Should remove the required movement here
+                        Stack<Node> path = new Stack<Node>();
+                        if (Grid.m_Instance.FindPath(transform.position, m_MouseWorldRayHit.transform.position, ref path))
+                        {
+                            m_SelectedUnit.SetMovementPath(path);
+                            m_SelectedUnit.DecreaseCurrentMovement(m_SelectedUnit.GetMovementPath().Count);
+                        }
                     
                         // Should we do this after the unit has finished moving? - James L
                         m_SelectedUnit.HighlightMovableNodes(target);
@@ -133,28 +142,49 @@ public class GameManager : MonoBehaviour
                 else if (m_TargetingState == TargetingState.Skill)
                 {
                     // If hit tile is in affectable range,
-                    // Do attack
+                    m_SelectedUnit.ActivateSkill(m_SelectedSkill);
     
                     // else return;
                 }
             }
-        } 
+        }
+
+
         // Selecting a skill with the number keys.
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        for (int i = 0; i < m_AbilityHotkeys.Length; i++)
         {
-            SkillSelection(0);
-            m_TargetingState = TargetingState.Skill;
+            if (Input.GetKeyDown(m_AbilityHotkeys[i]))
+            {
+                SkillSelection(i);
+                m_TargetingState = TargetingState.Skill;
+                break;
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+
+        //if (Input.GetKeyDown(KeyCode.Alpha1))
+        //{
+        //    SkillSelection(0);
+        //    m_TargetingState = TargetingState.Skill;
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Alpha2))
+        //{
+        //    SkillSelection(1);
+        //    m_TargetingState = TargetingState.Skill;
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Alpha3))
+        //{
+        //    SkillSelection(2);
+        //    m_TargetingState = TargetingState.Skill;
+        //} 
+
+        // Cancelling skill targeting.
+        if (Input.GetMouseButtonDown(1))
         {
-            SkillSelection(1);
-            m_TargetingState = TargetingState.Skill;
+            if (m_TargetingState == TargetingState.Skill)
+            {
+                m_TargetingState = TargetingState.None;
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            SkillSelection(2);
-            m_TargetingState = TargetingState.Skill;
-        }   
     }
 
     // Select a skill.
