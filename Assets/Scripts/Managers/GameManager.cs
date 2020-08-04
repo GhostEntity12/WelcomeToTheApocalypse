@@ -138,13 +138,30 @@ public class GameManager : MonoBehaviour
                     // else return;
                 }
             }
-        }        
+        } 
+        // Selecting a skill with the number keys.
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SkillSelection(0);
+            m_TargetingState = TargetingState.Skill;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SkillSelection(1);
+            m_TargetingState = TargetingState.Skill;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SkillSelection(2);
+            m_TargetingState = TargetingState.Skill;
+        }   
     }
 
     // Select a skill.
     public void SkillSelection(int skillNumber)
     {
         m_SelectedSkill = m_SelectedUnit.GetSkill(skillNumber);
+        m_TargetingState = TargetingState.Skill;
         Debug.Log(m_SelectedSkill.m_Description);
     }
 }

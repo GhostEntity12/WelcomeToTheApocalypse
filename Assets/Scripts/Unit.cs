@@ -4,8 +4,6 @@ using UnityEngine;
 
 using static Ghost.BFS;
 
-// VARIABLES AND FUNCTIONS THAT ARE COMMENTED ARE FOR SYSTEMS THAT HAVE YET TO BE CREATED, JUST TEMPORARY FOR GETTING IDEAS OUT.
-
 public enum Allegiance
 {
     // Character is on the player's side.
@@ -126,8 +124,8 @@ public class Unit : MonoBehaviour
     // Get the current amount of movement of the character.
     public int GetCurrentMovement() { return m_CurrentMovement; }
 
-    // Decrement the character's current amount of movement.
-    public void DecrementCurrentMovement() { --m_CurrentMovement; }
+    // Decrease the character's current amount of movement.
+    public void DecreaseCurrentMovement(int decrease) { m_CurrentMovement -= decrease; }
 
     // Get the list of skills of the character.
     public List<BaseSkill> GetSkills() { return m_Skills; }
