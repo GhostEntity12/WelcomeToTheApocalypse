@@ -43,6 +43,8 @@ public class GameManager : MonoBehaviour
     // The skill the player is targeting for.
     private BaseSkill m_SelectedSkill = null;
 
+    public KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
+
     private void Awake()
     {
         m_MainCamera = Camera.main;
@@ -145,23 +147,35 @@ public class GameManager : MonoBehaviour
                     // else return;
                 }
             }
-        } 
+        }
+
+
         // Selecting a skill with the number keys.
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        for (int i = 0; i < m_AbilityHotkeys.Length; i++)
         {
-            SkillSelection(0);
-            m_TargetingState = TargetingState.Skill;
+            if (Input.GetKeyDown(m_AbilityHotkeys[i]))
+            {
+                SkillSelection(i);
+                m_TargetingState = TargetingState.Skill;
+                break;
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SkillSelection(1);
-            m_TargetingState = TargetingState.Skill;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            SkillSelection(2);
-            m_TargetingState = TargetingState.Skill;
-        } 
+
+        //if (Input.GetKeyDown(KeyCode.Alpha1))
+        //{
+        //    SkillSelection(0);
+        //    m_TargetingState = TargetingState.Skill;
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Alpha2))
+        //{
+        //    SkillSelection(1);
+        //    m_TargetingState = TargetingState.Skill;
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Alpha3))
+        //{
+        //    SkillSelection(2);
+        //    m_TargetingState = TargetingState.Skill;
+        //} 
 
         // Cancelling skill targeting.
         if (Input.GetMouseButtonDown(1))
