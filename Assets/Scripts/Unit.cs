@@ -50,7 +50,7 @@ public class Unit : MonoBehaviour
     private bool m_Moving = false;
 
     // The path for the character to take to get to their destination.
-    private Queue<Node> m_MovementPath = new Queue<Node>();
+    private Stack<Node> m_MovementPath = new Stack<Node>();
 
     private Vector3 m_TargetPosition = Vector3.zero;
 
@@ -134,7 +134,7 @@ public class Unit : MonoBehaviour
     public BaseSkill GetSkill(int skillIndex) { return m_Skills[skillIndex]; }
 
     // Set the movement path of the character.
-    public void SetMovementPath(Queue<Node> path)
+    public void SetMovementPath(Stack<Node> path)
     {
         m_MovementPath = path;
         m_Moving = true;
@@ -153,8 +153,18 @@ public class Unit : MonoBehaviour
         Grid.m_Instance.HighlightNodes(m_MovableNodes);
     }
 
-    public void ActivateSkill(int skillInput)
+    public void ActivateSkill(BaseSkill skill)
     {
-        m_Skills[skillInput - 1].CastSkill();
+        // Doing my own search cause List.Find is gross.
+        for (int i = 0; i < m_Skills.Count; ++i)
+        {
+            if (m_Skills[i] == skill)
+            {
+                m_Skills[i].CastSkill();
+                return;
+            }
+        }
+
+        Debug.LogError("Skill " + skill.name + " couldn't be found in " + gameObject.name + ".");
     }
 }
