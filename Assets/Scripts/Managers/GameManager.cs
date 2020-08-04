@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
                 else if (m_TargetingState == TargetingState.Skill)
                 {
                     // If hit tile is in affectable range,
-                    // Do attack
+                    m_SelectedUnit.ActivateSkill(m_SelectedSkill);
     
                     // else return;
                 }
@@ -154,7 +154,16 @@ public class GameManager : MonoBehaviour
         {
             SkillSelection(2);
             m_TargetingState = TargetingState.Skill;
-        }   
+        } 
+
+        // Cancelling skill targeting.
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (m_TargetingState == TargetingState.Skill)
+            {
+                m_TargetingState = TargetingState.None;
+            }
+        }
     }
 
     // Select a skill.
