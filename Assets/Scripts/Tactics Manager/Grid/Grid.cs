@@ -386,9 +386,7 @@ public class Grid : MonoBehaviour
 						neighbourNode.m_previousNode = currentNode;
 					}
 				}
-				//currentNode.adjacentNodes[i].gScore = currentNode.m_costs[i] + currentNode.gScore;
 			}
-			Node previousNode = currentNode;
 		}
 
 		if(m_foundPath == true)
