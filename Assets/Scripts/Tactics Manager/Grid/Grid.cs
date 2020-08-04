@@ -19,10 +19,6 @@ public class Grid : MonoBehaviour
 
 	public Vector3 extends = new Vector3(1f, 1f, 1f);
 
-	//Temp
-	[Tooltip("Width is the X in units, Length is the Z in units \n this is also temp")]
-	[SerializeField]
-	int width, length;
 	int maxX, maxZ;
 	int posX, posZ;
 
@@ -173,9 +169,9 @@ public class Grid : MonoBehaviour
 
 	void SetNodeNeighbours()
 	{
-		for (int x = 0; x < width; ++x)
+		for (int x = 0; x < posX; ++x)
 		{
-			for (int z = 0; z < length; ++z)
+			for (int z = 0; z < posZ; ++z)
 			{
 				//0 South
 				if (z > 0)
@@ -190,13 +186,13 @@ public class Grid : MonoBehaviour
 					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z]);
 				}
 				//2 North
-				if (z < length - 1)
+				if (z < posZ - 1)
 				{
 					//print("set 2");
 					m_grid[x, z].adjacentNodes.Add(m_grid[x, z + 1]);
 				}
 				//3 East
-				if (x < width - 1)
+				if (x < posX - 1)
 				{
 					//print("set 3");
 					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z]);
@@ -207,17 +203,17 @@ public class Grid : MonoBehaviour
 					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z - 1]);
 				}
 				//5 North West
-				if (x > 0 && z < length - 1)
+				if (x > 0 && z < posZ - 1)
 				{
 					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z + 1]);
 				}
 				//6 North East
-				if (z < length - 1 && x < width - 1)
+				if (z < posZ - 1 && x < posX - 1)
 				{
 					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z + 1]);
 				}
 				//7 South East
-				if (z > 0 && x < width - 1)
+				if (z > 0 && x < posX - 1)
 				{
 					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z - 1]);
 				}
