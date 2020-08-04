@@ -75,20 +75,22 @@ public class Unit : MonoBehaviour
         // Would be refactored to move along path rather than towards a target position.
         if (m_Moving)
         {
+            Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
             transform.position = Vector3.MoveTowards(transform.position, m_TargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.01 units close to target is close enough).
-            if ((transform.position - m_TargetNode.worldPosition).magnitude < 0.01f)
+            if ((transform.position - m_TargetNode.worldPosition).magnitude < 0.1f)
             {
                 // Target the next node.
                 if (m_MovementPath.Count > 0)
                 {
-                    m_TargetNode = m_MovementPath.Pop();
+                    SetTargetNodePosition(m_MovementPath.Pop());
                 }
                 // Have arrived at the final node in the path, stop moving.
                 else
                     m_Moving = false;
                 
-                transform.position = m_TargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
+                //transform.position = m_TargetNode.worldPosition;
+                //transform.position = m_TargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
             }
         }
     }
@@ -150,8 +152,13 @@ public class Unit : MonoBehaviour
     {
         m_MovementPath = path;
         m_Moving = true;
-        m_TargetNode = m_MovementPath.Pop();
-        m_TargetNode.worldPosition.y = m_YPos;
+        SetTargetNodePosition(m_MovementPath.Pop());
+    }
+
+    public void SetTargetNodePosition(Node target)
+    {
+        m_TargetNode = target;
+        m_TargetNode.worldPosition = new Vector3(m_TargetNode.worldPosition.x, m_YPos, m_TargetNode.worldPosition.z);
     }
 
     // Get the unit's path.
