@@ -16,47 +16,74 @@ public enum Allegiance
 
 public class Unit : MonoBehaviour
 {
-    // The starting health of the character.
+    /// <summary>
+    /// The starting health of the character.
+    /// </summary>
     public int m_StartingHealth = 6;
 
-    // The current health of the character.
+    /// <summary>
+    /// The current health of the character.
+    /// </summary>
     private int m_CurrentHealth = 0;
 
-    // The starting movement of the character.
+    /// <summary>
+    /// The starting movement of the character.
+    /// </summary>
     public int m_StartingMovement = 5;
 
-    // The current movement of the character.
+    /// <summary>
+    /// The current movement of the character.
+    /// </summary>
     private int m_CurrentMovement = 0;
 
-    // How fast the unit moves.
+    /// <summary>
+    /// How fast the unit moves.
+    /// </summary>
     public float m_MoveSpeed = 3.0f;
 
-    // The skills avaliable to the character.
+    /// <summary>
+    /// The skills avaliable to the unit.
+    /// </summary>
     public List<BaseSkill> m_Skills = new List<BaseSkill>();
 
-    // The passive effect of the character.
+    /// <summary>
+    /// The passive effect of the character.
+    /// </summary>
     public StatusEffect m_PassiveEffect = null;
 
-    // The status debuffs on the character.
+    /// <summary>
+    /// The status debuffs on the character.
+    /// </summary>
     private List<InflictableStatus> m_StatusDebuffs = new List<InflictableStatus>();
 
-    // What "team" the character is on.
+    /// <summary>
+    /// The allegiance of the character.
+    /// </summary>
     public Allegiance m_Allegiance = Allegiance.None;
 
-    // Is the character alive?
+    /// <summary>
+    /// Is the character alive?
+    /// </summary>
     private bool m_Alive = true;
 
-    // Is the character moving?
+    /// <summary>
+    /// Is the character moving?
+    /// </summary>
     private bool m_Moving = false;
 
-    // The path for the character to take to get to their destination.
+    /// <summary>
+    /// The path for the character to take to get to their destination.
+    /// </summary>
     private Stack<Node> m_MovementPath = new Stack<Node>();
 
+    /// <summary>
+    /// The node the unit is targeting for their movement.
+    /// </summary>
     private Node m_TargetNode = null;
 
-    private float m_YPos = 0.0f;
-
-    // Blame James L for this
+    /// <summary>
+    /// The node's the unit can move to.
+    /// </summary>
     public List<Node> m_MovableNodes = new List<Node>();
 
     // On startup.
@@ -65,8 +92,6 @@ public class Unit : MonoBehaviour
         m_CurrentHealth = m_StartingHealth;
 
         m_CurrentMovement = m_StartingMovement;
-
-        m_YPos = transform.position.y;
     }
 
     void Update()
@@ -93,17 +118,26 @@ public class Unit : MonoBehaviour
         }
     }
 
-    // Set the character's health to something.
+    /// <summary>
+    /// Set the health of the unit.
+    /// </summary>
+    /// <param name="health"> What to set the unit's health to. </param>
     public void SetCurrentHealth(int health)
     {
         m_CurrentHealth = health;
         CheckAlive();
     }
 
-    // Get the character's currnet health.
+    /// <summary>
+    /// Get the current health of the unit.
+    /// </summary>
+    /// <returns> The current health of the unit. </returns>
     public int GetCurrentHealth() { return m_CurrentHealth; }
 
-    // Increase the character's current health.
+    /// <summary>
+    /// Increase the unit's current health.
+    /// </summary>
+    /// <param name="increase"> The amount to increase the unit's health by. </param>
     public void IncreaseCurrentHealth(int increase)
     {
         m_CurrentHealth += increase;
@@ -113,18 +147,25 @@ public class Unit : MonoBehaviour
             m_CurrentHealth = m_StartingHealth;
     }
 
-    // Decrease the character's current health.
+    /// <summary>
+    /// Decrease the unit's current health.
+    /// </summary>
+    /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
         m_CurrentHealth -= decrease;
         CheckAlive();
     }
 
-    // Reset the character's current health.
+    /// <summary>
+    /// Reset the unit's current health.
+    /// </summary>
     public void ResetCurrentHealth() { m_CurrentHealth = m_StartingHealth; }
 
-    // Check if the character's health is above 0.
-    // If equal to or below, the character is not alive.
+    /// <summary>
+    /// Check if the character's health is above 0.
+    /// If equal to or below, the character is not alive.
+    /// </summary>
     private void CheckAlive()
     {
         if (m_CurrentHealth <= 0)
@@ -133,19 +174,33 @@ public class Unit : MonoBehaviour
         }
     }
 
-    // Get the current amount of movement of the character.
+    /// <summary>
+    /// Get the current amount of movement of the character.
+    /// </summary>
+    /// <returns> The unit's current movement. </summary>
     public int GetCurrentMovement() { return m_CurrentMovement; }
 
-    // Decrease the character's current amount of movement.
+    /// <summary>
+    /// Decrease the character's current amount of movement.
+    /// </summary>
+    /// <param name="decrease"> The amount to decrease the unit's movement pool by. </param>
     public void DecreaseCurrentMovement(int decrease) { m_CurrentMovement -= decrease; }
 
-    // Reset the unit's current movement.
+    /// <summary>
+    /// Reset the unit's current movement.
+    /// </summary>
     public void ResetCurrentMovement() { m_CurrentMovement = m_StartingMovement; }
 
-    // Get the list of skills of the character.
+    /// <summary>
+    /// Get the list of skills of the unit.
+    /// </summary>
+    /// <returns> List of skills the unit has. </returns>
     public List<BaseSkill> GetSkills() { return m_Skills; }
 
-    // Get a specific skill.
+    /// <summary>
+    /// Get a specific skill.
+    /// </summary>
+    /// <param name="skillIndex"> The index of the skill to get. </param>
     public BaseSkill GetSkill(int skillIndex) { return m_Skills[skillIndex]; }
 
     // Set the movement path of the character.
@@ -156,25 +211,42 @@ public class Unit : MonoBehaviour
         SetTargetNodePosition(m_MovementPath.Pop());
     }
 
+    /// <summary>
+    /// Set the target node of the unit.
+    /// </summary>
+    /// <param name="target"> The node to set as the target. </param>
     public void SetTargetNodePosition(Node target)
     {
         m_TargetNode = target;
-        m_TargetNode.worldPosition = new Vector3(m_TargetNode.worldPosition.x, m_YPos, m_TargetNode.worldPosition.z);
+        //m_TargetNode.worldPosition = new Vector3(m_TargetNode.worldPosition.x, m_YPos, m_TargetNode.worldPosition.z);
     }
 
-    // Get the unit's path.
+    /// <summary>
+    /// Get the unit's path.
+    /// </summary>
+    /// <returns> Stack of the unit's movement path. </returns>
     public Stack<Node> GetMovementPath() { return m_MovementPath; }
 
-    // Get the unit's allegiance.
+    /// <summary>
+    /// Get the unit's allegiance.
+    /// </summary>
+    /// <returns> The allegiance of the unit. </returns>
     public Allegiance GetAllegiance() { return m_Allegiance; }
 
-    // Gets the nodes the unit can move to, stores them and highlights them
+    /// <summary>
+    /// Gets the nodes the unit can move to, stores them and highlights them.
+    /// </summary>
+    /// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
     public void HighlightMovableNodes(Node startingNode = null)
     {
         m_MovableNodes = GetNodesWithinRadius(m_CurrentMovement, startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
         Grid.m_Instance.HighlightNodes(m_MovableNodes);
     }
 
+    /// <summary>
+    /// Activate one of the unit's skills.
+    /// </summary>
+    /// <param name="skill"> The skill to activate. </param>
     public void ActivateSkill(BaseSkill skill)
     {
         // Doing my own search cause List.Find is gross.
