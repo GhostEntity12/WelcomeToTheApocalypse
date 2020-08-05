@@ -139,6 +139,9 @@ public class Unit : MonoBehaviour
     // Decrease the character's current amount of movement.
     public void DecreaseCurrentMovement(int decrease) { m_CurrentMovement -= decrease; }
 
+    // Reset the unit's current movement.
+    public void ResetCurrentMovement() { m_CurrentMovement = m_StartingMovement; }
+
     // Get the list of skills of the character.
     public List<BaseSkill> GetSkills() { return m_Skills; }
 
@@ -161,6 +164,9 @@ public class Unit : MonoBehaviour
 
     // Get the unit's path.
     public Stack<Node> GetMovementPath() { return m_MovementPath; }
+
+    // Get the unit's allegiance.
+    public Allegiance GetAllegiance() { return m_Allegiance; }
 
     // Gets the nodes the unit can move to, stores them and highlights them
     public void HighlightMovableNodes(Node startingNode = null)

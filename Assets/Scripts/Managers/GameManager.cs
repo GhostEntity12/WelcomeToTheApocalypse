@@ -23,9 +23,6 @@ public class GameManager : MonoBehaviour
     // Unit the player has selected.
     private Unit m_SelectedUnit = null;
 
-    // The turn order.
-    private Queue<Unit> m_TurnOrder = new Queue<Unit>();
-
     // Raycast for translating the mouse's screen position to world position.
     private RaycastHit m_MouseWorldRayHit = new RaycastHit();
 
@@ -35,8 +32,6 @@ public class GameManager : MonoBehaviour
     // Reference to the main camera.
     private Camera m_MainCamera = null;
 
-    private GameObject m_RayHitObject = null;
-
     // The action the player is targeting for.
     private TargetingState m_TargetingState = TargetingState.Move;
 
@@ -44,6 +39,10 @@ public class GameManager : MonoBehaviour
     private BaseSkill m_SelectedSkill = null;
 
     public KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
+
+    private Allegiance m_TeamCurrentTurn = Allegiance.Player;
+
+    public List<Unit> m_UnitsInCombat = new List<Unit>();
 
     private void Awake()
     {
@@ -54,18 +53,13 @@ public class GameManager : MonoBehaviour
     // Was FixedUpdate, but it was missing inputs - James L
     private void Update()
     {
-        // Could be doing this with multiple casts and layer masks.
-        // Implementation in commented out function below - James L
-        Casting();
+        // If it's currently the player's turn, check their inputs.
+        // Commented out for debugging.
+        //if (m_CurrentTurn == Allegiance.Player)
+            Casting();
 
         Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
         //Debug.Log(m_MouseWorldRayHit.point);
-    }
-
-    public void NextTurn()
-    {
-        // Move the unit to the back of the turn order queue.
-        m_TurnOrder.Enqueue(m_TurnOrder.Dequeue());
     }
 
     // Get instance of the game manager.
@@ -75,6 +69,45 @@ public class GameManager : MonoBehaviour
             m_Instance = new GameManager();
 
         return m_Instance;
+    }
+
+    // End the current turn.
+    public void EndCurrentTurn()
+    {
+        // Player ends turn.
+        if (m_TeamCurrentTurn == Allegiance.Player)
+        {
+            m_TeamCurrentTurn = Allegiance.Enemy;
+
+            // Stop highlighting node's the player can move to.
+            foreach (Node n in m_SelectedUnit.m_MovableNodes)
+            {
+                n.m_tile.SetActive(false);
+            }
+            // Deselect unit.
+            m_SelectedUnit = null;
+        }
+        // Enemy ends turn.
+        else
+            m_TeamCurrentTurn = Allegiance.Player;
+
+        // Reset the movement of the units whos turn it now is.
+        foreach(Unit u in m_UnitsInCombat)
+        {
+            if (u.GetAllegiance() == m_TeamCurrentTurn)
+                u.ResetCurrentMovement();
+        }
+
+        Debug.Log(m_TeamCurrentTurn);
+    }
+
+    // Add a list of enemies to the turn order.
+    public void AddToTurnOrder(List<Unit> add)
+    {
+        foreach (Unit u in add)
+        {
+            m_UnitsInCombat.Add(u);
+        }
     }
 
     public void Casting()
@@ -149,7 +182,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-
         // Selecting a skill with the number keys.
         for (int i = 0; i < m_AbilityHotkeys.Length; i++)
         {
@@ -161,29 +193,18 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //if (Input.GetKeyDown(KeyCode.Alpha1))
-        //{
-        //    SkillSelection(0);
-        //    m_TargetingState = TargetingState.Skill;
-        //}
-        //else if (Input.GetKeyDown(KeyCode.Alpha2))
-        //{
-        //    SkillSelection(1);
-        //    m_TargetingState = TargetingState.Skill;
-        //}
-        //else if (Input.GetKeyDown(KeyCode.Alpha3))
-        //{
-        //    SkillSelection(2);
-        //    m_TargetingState = TargetingState.Skill;
-        //} 
-
         // Cancelling skill targeting.
         if (Input.GetMouseButtonDown(1))
         {
             if (m_TargetingState == TargetingState.Skill)
             {
-                m_TargetingState = TargetingState.None;
+                m_TargetingState = TargetingState.Move;
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            EndCurrentTurn();
         }
     }
 
