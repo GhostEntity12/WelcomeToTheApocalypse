@@ -179,43 +179,82 @@ public class Grid : MonoBehaviour
 					//print("set 0");
 					m_grid[x, z].adjacentNodes.Add(m_grid[x, z - 1]);
 				}
+				else
+				{
+					m_grid[x, z].adjacentNodes.Add(null);
+				}
+
 				//1 West
 				if (x > 0)
 				{
 					//print("set 1");
 					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z]);
 				}
+				else
+				{
+					m_grid[x, z].adjacentNodes.Add(null);
+				}
+
 				//2 North
 				if (z < posZ - 1)
 				{
 					//print("set 2");
 					m_grid[x, z].adjacentNodes.Add(m_grid[x, z + 1]);
 				}
+				else
+				{
+					m_grid[x, z].adjacentNodes.Add(null);
+				}
+
 				//3 East
 				if (x < posX - 1)
 				{
 					//print("set 3");
 					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z]);
 				}
+				else
+				{
+					m_grid[x, z].adjacentNodes.Add(null);
+				}
+
 				//4 South West
 				if (z > 0 && x > 0)
 				{
 					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z - 1]);
 				}
+				else
+				{
+					m_grid[x, z].adjacentNodes.Add(null);
+				}
+
 				//5 North West
 				if (x > 0 && z < posZ - 1)
 				{
 					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z + 1]);
 				}
+				else
+				{
+					m_grid[x, z].adjacentNodes.Add(null);
+				}
+
 				//6 North East
 				if (z < posZ - 1 && x < posX - 1)
 				{
 					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z + 1]);
 				}
+				else
+				{
+					m_grid[x, z].adjacentNodes.Add(null);
+				}
+
 				//7 South East
 				if (z > 0 && x < posX - 1)
 				{
 					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z - 1]);
+				}
+				else
+				{
+					m_grid[x, z].adjacentNodes.Add(null);
 				}
 
 				m_grid[x, z].m_costs[0] = 10;
@@ -388,7 +427,7 @@ public class Grid : MonoBehaviour
 
 		if(m_foundPath == true)
 		{
-			Node current = m_endNode;
+			Node current = m_endNode.m_previousNode;
 			while(current != null)
 			{
 				path.Push(current);
