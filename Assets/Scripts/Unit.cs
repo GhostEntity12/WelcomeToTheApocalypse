@@ -88,7 +88,6 @@ public class Unit : MonoBehaviour
                 }
                 // Have arrived at the final node in the path, stop moving.
                 else
-                {
                     m_Moving = false;
             }
         }
