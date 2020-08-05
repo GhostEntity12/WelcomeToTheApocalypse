@@ -154,7 +154,7 @@ public class GameManager : MonoBehaviour
                     {
                         foreach (Node n in m_SelectedUnit.m_MovableNodes)
                         {
-                            //n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                            n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
                         }
                     }
 
