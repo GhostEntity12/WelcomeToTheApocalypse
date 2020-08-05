@@ -79,18 +79,18 @@ public class Pathfinding
     }
 
     //Calculate the distance cost betweent two nodes.
-    private int CalculateDistanceCost(Node a, Node b)
-    {
-        //Grab the bounds of x and y axis of nodes.
-        int xDistance = Mathf.Abs(a.x - b.x);
-        int yDistance = Mathf.Abs(a.y - b.y);
+    //private int CalculateDistanceCost(Node a, Node b)
+    //{
+    //    //Grab the bounds of x and y axis of nodes.
+    //    int xDistance = Mathf.Abs(a.x - b.x);
+    //    int yDistance = Mathf.Abs(a.y - b.y);
 
-        //Distance of padding between nodes.
-        int remaining = Mathf.Abs(xDistance - yDistance);
+    //    //Distance of padding between nodes.
+    //    int remaining = Mathf.Abs(xDistance - yDistance);
 
-        //Return cost.
-        return moveDiagonalCost * Mathf.Min(xDistance, yDistance) + moveStraightCost * remaining;
-    }
+    //    //Return cost.
+    //    return moveDiagonalCost * Mathf.Min(xDistance, yDistance) + moveStraightCost * remaining;
+    //}
 
     //Returns the lowest possible path of nodes.
     private Node GetLowestFCostNode(List<Node> pathNodeList)
