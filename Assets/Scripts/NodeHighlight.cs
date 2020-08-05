@@ -38,6 +38,11 @@ public class NodeHighlight : MonoBehaviour
 
 	private void Update()
 	{
+		// Need to tell what states it's in
+		//if (GameManager.m_Instance.)
+		//{
+
+		//}
 		if (m_isAffected)
 		{
 			ChangeHighlight(TileState.EffectRange);
