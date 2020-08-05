@@ -17,61 +17,84 @@ public enum TargetingState
 
 public class GameManager : MonoBehaviour
 {
-    // Instance of the game manager.
-    private static GameManager m_Instance = null;
+    /// <summary>
+    /// Instance of the game manager.
+    ///</summary>
+    public static GameManager m_Instance = null;
 
-    // Unit the player has selected.
+    /// <summary>
+    /// Unit the player has selected.
+    /// </summary>
     private Unit m_SelectedUnit = null;
 
-    // Raycast for translating the mouse's screen position to world position.
+    /// <summary>
+    /// Raycast for translating the mouse's screen position to world position.
+    /// </summary>
     private RaycastHit m_MouseWorldRayHit = new RaycastHit();
 
-    // Ray for raycasting the mouse's position.
+    /// <summary>
+    /// Ray for raycasting the mouse's position.
+    /// </summary>
     private Ray m_MouseRay = new Ray();
 
-    // Reference to the main camera.
+    /// <summary>
+    /// Reference to the main camera.
+    /// </summary>
     private Camera m_MainCamera = null;
 
-    // The action the player is targeting for.
+    /// <summary>
+    /// The action the player is targeting for.
+    /// </summary>
     private TargetingState m_TargetingState = TargetingState.Move;
 
-    // The skill the player is targeting for.
+    /// <summary>
+    /// The skill the player is targeting for.
+    /// </summary>
     private BaseSkill m_SelectedSkill = null;
 
-    public KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
+    /// <summary>
+    /// Hotkeys for the abilities the player can activate.
+    /// </summary>
+    private KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
 
+    /// <summary>
+    /// Which team's turn is it currently.
+    /// </summary>
     private Allegiance m_TeamCurrentTurn = Allegiance.Player;
 
+    /// <summary>
+    /// List of the units in currently "in combat".
+    /// </summary>
     public List<Unit> m_UnitsInCombat = new List<Unit>();
 
+    // On startup.
     private void Awake()
     {
         m_MainCamera = Camera.main;
         m_MouseRay.origin = m_MainCamera.transform.position;
     }
 
-    // Was FixedUpdate, but it was missing inputs - James L
+    // Update.
     private void Update()
     {
         // If it's currently the player's turn, check their inputs.
         // Commented out for debugging.
         //if (m_CurrentTurn == Allegiance.Player)
-            Casting();
+            PlayerInputs();
 
         Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
         //Debug.Log(m_MouseWorldRayHit.point);
     }
 
-    // Get instance of the game manager.
-    public GameManager GetInstance()
-    {
-        if (m_Instance == null)
-            m_Instance = new GameManager();
+    /// <summary>
+    /// Get the unit currently selected by the player.
+    /// </summary>
+    /// <returns> The unit the player has selected. </returns>
+    public Unit GetSelectedUnit() { return m_SelectedUnit; }
 
-        return m_Instance;
-    }
-
-    // End the current turn.
+    /// <summary>
+    /// End the current turn.
+    /// </summary>
     public void EndCurrentTurn()
     {
         // Player ends turn.
@@ -101,7 +124,9 @@ public class GameManager : MonoBehaviour
         Debug.Log(m_TeamCurrentTurn);
     }
 
-    // Add a list of enemies to the turn order.
+    /// <summary>
+    /// Add a list of enemies to the turn order.
+    /// </summary>
     public void AddToTurnOrder(List<Unit> add)
     {
         foreach (Unit u in add)
@@ -110,7 +135,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void Casting()
+    /// <summary>
+    /// Get's the player's inputs.
+    /// </summary>
+    public void PlayerInputs()
     {
         m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -208,7 +236,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Select a skill.
+    /// <summary>
+    /// Select a skill.
+    /// </summary>
+    /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
         m_SelectedSkill = m_SelectedUnit.GetSkill(skillNumber);
