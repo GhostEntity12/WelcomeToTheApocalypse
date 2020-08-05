@@ -79,6 +79,8 @@ public class Unit : MonoBehaviour
             // If have arrived at position (0.01 units close to target is close enough).
             if ((transform.position - m_TargetNode.worldPosition).magnitude < 0.1f)
             {
+                transform.position = m_TargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
+
                 // Target the next node.
                 if (m_MovementPath.Count > 0)
                 {
@@ -88,9 +90,6 @@ public class Unit : MonoBehaviour
                 else
                 {
                     m_Moving = false;
-                
-                //transform.position = m_TargetNode.worldPosition;
-                //transform.position = m_TargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
             }
         }
     }

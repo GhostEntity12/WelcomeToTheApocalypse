@@ -32,14 +32,17 @@ namespace Ghost
 
                 if (n.distance < radius)
                 {
-                    foreach (Node node in n.adjacentNodes)
+                    for (int i = 0; i < 4; i++)
                     {
-                        if (!node.visited)
+                        Node adjacentNode = n.adjacentNodes[i];
+                        if (adjacentNode == null) continue;
+
+                        if (!adjacentNode.visited)
                         {
-                            node.parentNode = n;
-                            node.visited = true;
-                            node.distance = 1 + n.distance;
-                            process.Enqueue(node);
+                            adjacentNode.parentNode = n;
+                            adjacentNode.visited = true;
+                            adjacentNode.distance = 1 + n.distance;
+                            process.Enqueue(adjacentNode);
                         }
                     }
                 }

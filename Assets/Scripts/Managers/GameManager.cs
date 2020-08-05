@@ -7,7 +7,7 @@ public enum TargetingState
 {
     // Player is currently selecting a node for movement.
     Move,
-    
+
     // Player is currently selecting a node for using a skill.
     Skill,
 
@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if(m_TargetingState != TargetingState.Skill)
+                if (m_TargetingState != TargetingState.Skill)
                 {
                     // Reset the nodes highlights before selecting the new unit
                     if (m_SelectedUnit)
@@ -118,32 +118,32 @@ public class GameManager : MonoBehaviour
                 if (m_TargetingState == TargetingState.Move)
                 {
                     Node target = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
-                    //if (m_SelectedUnit.m_MovableNodes.Contains(target))
-                    //{
+                    if (m_SelectedUnit.m_MovableNodes.Contains(target))
+                    {
                         // Clear the previously highlighted tiles
                         foreach (Node n in m_SelectedUnit.m_MovableNodes)
                         {
-                            //n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                            n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
                         }
-                    
+
                         Stack<Node> path = new Stack<Node>();
                         if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path))
                         {
                             m_SelectedUnit.SetMovementPath(path);
                             m_SelectedUnit.DecreaseCurrentMovement(m_SelectedUnit.GetMovementPath().Count);
                         }
-                    
+
                         // Should we do this after the unit has finished moving? - James L
                         m_SelectedUnit.HighlightMovableNodes(target);
-                    //}
+                    }
                 }
-    
+
                 // Select character to use a skill on.
                 else if (m_TargetingState == TargetingState.Skill)
                 {
                     // If hit tile is in affectable range,
                     m_SelectedUnit.ActivateSkill(m_SelectedSkill);
-    
+
                     // else return;
                 }
             }
