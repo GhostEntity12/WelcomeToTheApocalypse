@@ -148,7 +148,8 @@ public class Grid : MonoBehaviour
 				{
 					node.transform.position = new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z);
 					n.m_tile = Instantiate(node, node.transform.position, node.transform.rotation, nodeArray.transform);
-					n.m_tile.SetActive(tileActive);
+					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
+					n.m_NodeHighlight.ChangeHighlight(TileState.None);
 				}
 				if (n.obstacle != null)
 				{
@@ -159,7 +160,6 @@ public class Grid : MonoBehaviour
 			}
 
 		}
-		node.SetActive(false);
 		SetNodeNeighbours();
 	}
 	/* |5|2|6|
@@ -273,9 +273,9 @@ public class Grid : MonoBehaviour
 	{
 		Vector3 p = wp - minPosition;
 		int x = Mathf.FloorToInt(p.x / xzScale);
-		print("X: " + x);
+		//print("X: " + x);
 		int z = Mathf.FloorToInt(p.z / xzScale);
-		print("Z: " + z);
+		//print("Z: " + z);
 
 		return GetNode(x, z);
 	}
@@ -289,7 +289,7 @@ public class Grid : MonoBehaviour
 			return null;
 		}
 
-		print("Unit Node Pos: " + m_grid[a_x - 1, a_z].worldPosition);
+		//print("Unit Node Pos: " + m_grid[a_x - 1, a_z].worldPosition);
 		return m_grid[a_x, a_z];
 	}
 	
@@ -304,29 +304,11 @@ public class Grid : MonoBehaviour
 		return GetNode(mousePos).unit;
 	}
 
-	public void GetArea(int radius, GameObject gameObject)
-	{
-		foreach (Node node in Ghost.BFS.GetNodesWithinRadius(radius, GetNode(gameObject.transform.position)))
-		{
-			node.m_tile.SetActive(true);
-		}
-	}
-
-	public void HighlightNodes(List<Node> nodesToHighlight)
-	{
-		print("highlighting");
-		// Some ugly LINQ here, replace it if you want - James L
-		foreach (GameObject tile in nodesToHighlight.Select(n => n.m_tile))
-		{
-			tile.SetActive(true);
-		}
-	}
-
 	public void ClearNode()
 	{
 		foreach (Node node in nodething)
 		{
-			node.m_tile.SetActive(false);
+			node.m_NodeHighlight.ChangeHighlight(TileState.None);
 		}
 	}
 
