@@ -50,7 +50,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Delegates: []
+  m_Delegates:
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_MethodName: SkillSelection
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 2
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!222 &293062643591801914
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -100,7 +115,7 @@ GameObject:
   - component: {fileID: 745132583469640485}
   - component: {fileID: 745132583469640484}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Statuses
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -174,7 +189,7 @@ GameObject:
   - component: {fileID: 745132583597306412}
   - component: {fileID: 745132583597306415}
   m_Layer: 5
-  m_Name: Image
+  m_Name: BackBG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -249,7 +264,7 @@ GameObject:
   - component: {fileID: 745132583702841738}
   - component: {fileID: 745132583702841741}
   m_Layer: 5
-  m_Name: Character
+  m_Name: CharacterUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -487,7 +502,7 @@ GameObject:
   - component: {fileID: 745132583786311148}
   - component: {fileID: 745132583786311151}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -935,7 +950,7 @@ GameObject:
   - component: {fileID: 745132584222272377}
   - component: {fileID: 745132584222272374}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Skills
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1000,7 +1015,7 @@ GameObject:
   - component: {fileID: 745132584223505675}
   - component: {fileID: 745132584223505674}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Portrait
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1074,7 +1089,7 @@ GameObject:
   - component: {fileID: 745132584556783746}
   - component: {fileID: 745132584556783749}
   m_Layer: 5
-  m_Name: Skills
+  m_Name: SkillsUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1588,7 +1603,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Delegates: []
+  m_Delegates:
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_MethodName: SkillSelection
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 1
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!222 &5790464662928511561
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1681,9 +1711,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1470194776}
-          m_MethodName: set_enabled
-          m_Mode: 6
+        - m_Target: {fileID: 0}
+          m_MethodName: SkillSelection
+          m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

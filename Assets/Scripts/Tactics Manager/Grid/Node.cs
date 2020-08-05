@@ -29,9 +29,11 @@ public class Node
 
 	public List<Node> adjacentNodes = new List<Node>();
 
+	public NodeHighlight m_NodeHighlight;
+
 	public void Reset()
 	{
-		m_tile.SetActive(false);
+		m_NodeHighlight.ChangeHighlight(TileState.None);
 		visited = false;
 		parentNode = null;
 		distance = 0;
