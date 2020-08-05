@@ -427,7 +427,7 @@ public class Grid : MonoBehaviour
 
 		if(m_foundPath == true)
 		{
-			Node current = m_endNode.m_previousNode;
+			Node current = m_endNode;
 			while(current != null)
 			{
 				path.Push(current);
