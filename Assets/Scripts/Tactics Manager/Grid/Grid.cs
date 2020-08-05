@@ -314,6 +314,7 @@ public class Grid : MonoBehaviour
 
 	public void HighlightNodes(List<Node> nodesToHighlight)
 	{
+		print("highlighting");
 		// Some ugly LINQ here, replace it if you want - James L
 		foreach (GameObject tile in nodesToHighlight.Select(n => n.m_tile))
 		{
@@ -454,14 +455,14 @@ public class Grid : MonoBehaviour
 
 	void Update()
 	{
-		if (!searched)
-		{
-			foreach (GameObject go in unit)
-			{
-				GetArea(4, go);
-			}
-			searched = true;
-		}
+		//if (!searched)
+		//{
+		//	foreach (GameObject go in unit)
+		//	{
+		//		GetArea(4, go);
+		//	}
+		//	searched = true;
+		//}
 	}
 
 	//Will be Deleted
