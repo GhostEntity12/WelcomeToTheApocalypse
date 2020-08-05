@@ -72,10 +72,9 @@ public class Unit : MonoBehaviour
     void Update()
     {
         // If have a target that the unit hasn't arrived at yet, move towards the target position.
-        // Would be refactored to move along path rather than towards a target position.
         if (m_Moving)
         {
-            Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
+            //Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
             transform.position = Vector3.MoveTowards(transform.position, m_TargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.01 units close to target is close enough).
             if ((transform.position - m_TargetNode.worldPosition).magnitude < 0.1f)
@@ -140,6 +139,9 @@ public class Unit : MonoBehaviour
     // Decrease the character's current amount of movement.
     public void DecreaseCurrentMovement(int decrease) { m_CurrentMovement -= decrease; }
 
+    // Reset the unit's current movement.
+    public void ResetCurrentMovement() { m_CurrentMovement = m_StartingMovement; }
+
     // Get the list of skills of the character.
     public List<BaseSkill> GetSkills() { return m_Skills; }
 
@@ -163,10 +165,13 @@ public class Unit : MonoBehaviour
     // Get the unit's path.
     public Stack<Node> GetMovementPath() { return m_MovementPath; }
 
+    // Get the unit's allegiance.
+    public Allegiance GetAllegiance() { return m_Allegiance; }
+
     // Gets the nodes the unit can move to, stores them and highlights them
     public void HighlightMovableNodes(Node startingNode = null)
     {
-        m_MovableNodes = GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
+        m_MovableNodes = GetNodesWithinRadius(m_CurrentMovement, startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
         Grid.m_Instance.HighlightNodes(m_MovableNodes);
     }
 
