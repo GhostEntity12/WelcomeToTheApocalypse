@@ -72,10 +72,9 @@ public class Unit : MonoBehaviour
     void Update()
     {
         // If have a target that the unit hasn't arrived at yet, move towards the target position.
-        // Would be refactored to move along path rather than towards a target position.
         if (m_Moving)
         {
-            Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
+            //Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
             transform.position = Vector3.MoveTowards(transform.position, m_TargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.01 units close to target is close enough).
             if ((transform.position - m_TargetNode.worldPosition).magnitude < 0.1f)
@@ -87,6 +86,7 @@ public class Unit : MonoBehaviour
                 }
                 // Have arrived at the final node in the path, stop moving.
                 else
+                {
                     m_Moving = false;
                 
                 //transform.position = m_TargetNode.worldPosition;
@@ -167,7 +167,7 @@ public class Unit : MonoBehaviour
     // Gets the nodes the unit can move to, stores them and highlights them
     public void HighlightMovableNodes(Node startingNode = null)
     {
-        m_MovableNodes = GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
+        m_MovableNodes = GetNodesWithinRadius(m_CurrentMovement, startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
         Grid.m_Instance.HighlightNodes(m_MovableNodes);
     }
 
