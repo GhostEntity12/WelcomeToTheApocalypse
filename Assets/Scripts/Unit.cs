@@ -167,7 +167,10 @@ public class Unit : MonoBehaviour
     public void HighlightMovableNodes(Node startingNode = null)
     {
         m_MovableNodes = GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
-        Grid.m_Instance.HighlightNodes(m_MovableNodes);
+        foreach (Node node in m_MovableNodes)
+        {
+            node.m_NodeHighlight.ChangeHighlight(TileState.MovementRange);
+        }
     }
 
     public void ActivateSkill(BaseSkill skill)

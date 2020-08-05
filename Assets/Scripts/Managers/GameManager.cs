@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Ghost;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 using static Ghost.BFS;
@@ -45,7 +47,15 @@ public class GameManager : MonoBehaviour
 
     public KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
 
-    private void Awake()
+	#region refactor me. PLEASE
+
+	private Node m_CachedNode;
+
+    List<Node> maxRange = new List<Node>();
+
+	#endregion
+
+	private void Awake()
     {
         m_MainCamera = Camera.main;
         m_MouseRay.origin = m_MainCamera.transform.position;
@@ -81,8 +91,31 @@ public class GameManager : MonoBehaviour
     {
         m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
 
-        // Raycast hit a character, check for what the player can do with characters.
-        if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
+        #region refactor me. PLEASE
+
+        if (m_TargetingState == TargetingState.Skill)
+        {
+            if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 8))
+            {
+                if (Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position) != m_CachedNode )
+                {
+                    m_CachedNode = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
+                    if (m_CachedNode.m_NodeHighlight.m_isTargetable)
+                    {
+                        List<Node> targetableRange = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode);
+                        foreach (Node node in maxRange)
+                        {
+                            node.m_NodeHighlight.m_isAffected = targetableRange.Contains(node);
+                        }
+                    }
+                }
+            }
+        }
+
+		#endregion
+
+		// Raycast hit a character, check for what the player can do with characters.
+		if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -91,14 +124,19 @@ public class GameManager : MonoBehaviour
                     // Reset the nodes highlights before selecting the new unit
                     if (m_SelectedUnit)
                     {
-                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                        foreach (Node n in maxRange)
                         {
-                            //n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                            n.m_NodeHighlight.ChangeHighlight(TileState.None);
                         }
                     }
 
                     // Store the new unit
                     m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
+                    int highestMoveRange = m_SelectedUnit.GetSkills().Select(s => s.m_CastableDistance).Max() + m_SelectedUnit.GetSkills().Select(s => s.m_AffectedRange).Max();
+
+                    print(highestMoveRange + m_SelectedUnit.m_StartingMovement);
+
+                    maxRange = GetNodesWithinRadius(highestMoveRange + m_SelectedUnit.m_StartingMovement, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
                     m_TargetingState = TargetingState.Move;
 
                     // Highlight the appropriate tiles
@@ -123,7 +161,7 @@ public class GameManager : MonoBehaviour
                         // Clear the previously highlighted tiles
                         foreach (Node n in m_SelectedUnit.m_MovableNodes)
                         {
-                            n.m_tile.SetActive(false); // Only SetActive() for now. Will need to be changed to handle different types of highlights
+                            n.m_NodeHighlight.ChangeHighlight(TileState.None);
                         }
 
                         Stack<Node> path = new Stack<Node>();
@@ -161,22 +199,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //if (Input.GetKeyDown(KeyCode.Alpha1))
-        //{
-        //    SkillSelection(0);
-        //    m_TargetingState = TargetingState.Skill;
-        //}
-        //else if (Input.GetKeyDown(KeyCode.Alpha2))
-        //{
-        //    SkillSelection(1);
-        //    m_TargetingState = TargetingState.Skill;
-        //}
-        //else if (Input.GetKeyDown(KeyCode.Alpha3))
-        //{
-        //    SkillSelection(2);
-        //    m_TargetingState = TargetingState.Skill;
-        //} 
-
         // Cancelling skill targeting.
         if (Input.GetMouseButtonDown(1))
         {
@@ -192,6 +214,11 @@ public class GameManager : MonoBehaviour
     {
         m_SelectedSkill = m_SelectedUnit.GetSkill(skillNumber);
         m_TargetingState = TargetingState.Skill;
+        print(m_SelectedSkill.m_CastableDistance);
+        foreach (NodeHighlight highlight in GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position)).Select(n => n.m_NodeHighlight)) 
+        {
+            highlight.m_isTargetable = true;
+        }
         Debug.Log(m_SelectedSkill.m_Description);
     }
 }
