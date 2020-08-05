@@ -261,10 +261,10 @@ public class Grid : MonoBehaviour
 				m_grid[x, z].m_costs[1] = 10;
 				m_grid[x, z].m_costs[2] = 10;
 				m_grid[x, z].m_costs[3] = 10;
-				m_grid[x, z].m_costs[4] = 14;
-				m_grid[x, z].m_costs[5] = 14;
-				m_grid[x, z].m_costs[6] = 14;
-				m_grid[x, z].m_costs[7] = 14;
+				m_grid[x, z].m_costs[4] = 19;
+				m_grid[x, z].m_costs[5] = 19;
+				m_grid[x, z].m_costs[6] = 19;
+				m_grid[x, z].m_costs[7] = 19;
 			}
 		}
 	}
@@ -445,11 +445,11 @@ public class Grid : MonoBehaviour
 
 		if (dx < dz)
 		{
-			return ((14 * dz) + 10 * (dx - dz));
+			return ((19 * dz) + 10 * (dx - dz));
 		}
 		else
 		{
-			return ((14 * dx) + 10 * (dz - dx));
+			return ((19 * dx) + 10 * (dz - dx));
 		}
 	}
 
