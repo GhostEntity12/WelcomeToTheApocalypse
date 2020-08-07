@@ -6,11 +6,17 @@ using static Ghost.BFS;
 
 public enum Allegiance
 {
-    // Character is on the player's side.
+    /// <summary>
+    /// Character is on the player's side.
+    /// </summary>
     Player,
-    // Character is an enemy to the player.
+    /// <summary>
+    /// Character is an enemy to the player.
+    /// </summary>
     Enemy,
-    // Character doesn't have an allegiance (just to be safe).
+    /// <summary>
+    /// Character doesn't have an allegiance (just to be safe).
+    /// </summary>
     None
 }
 

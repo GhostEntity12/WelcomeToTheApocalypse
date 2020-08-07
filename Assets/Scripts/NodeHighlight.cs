@@ -12,14 +12,29 @@ public enum TileState
 
 public class NodeHighlight : MonoBehaviour
 {
+	/// <summary>
+	/// The renderer of the highlight mesh
+	/// </summary>
 	private Renderer m_Renderer;
 
+	/// <summary>
+	/// The materials that represent movement, targeting and affected area
+	/// </summary>
 	public Material[] m_Highlights;
 
+	/// <summary>
+	/// Whether the node is targetable
+	/// </summary>
 	public bool m_IsTargetable;
-	
+
+	/// <summary>
+	/// Whether the node is in the selected skill's area of effect
+	/// </summary>
 	public bool m_IsAffected;
 
+	/// <summary>
+	/// Whether the node is in the possible targeting space
+	/// </summary>
 	public bool m_IsInTargetArea;
 
 	private void Awake()
