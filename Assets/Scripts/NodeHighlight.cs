@@ -27,6 +27,10 @@ public class NodeHighlight : MonoBehaviour
 		m_Renderer = GetComponent<Renderer>();
 	}
 
+	/// <summary>
+	/// Changes the material of the highlight
+	/// </summary>
+	/// <param name="state">What state the highlight should be set to</param>
 	public void ChangeHighlight(TileState state)
 	{
 		if (state == TileState.None)

@@ -39,7 +39,11 @@ public class UIManager : MonoBehaviour
 
 	void OnValidate() => LoadUI(DEBUGStyle);
 
-	void LoadUI(UIData uiData)
+	/// <summary>
+	/// Loads UI data
+	/// </summary>
+	/// <param name="uiData"></param>
+	private void LoadUI(UIData uiData)
 	{
 		foreach (Image slot in m_SkillSlots)
 		{
@@ -52,10 +56,13 @@ public class UIManager : MonoBehaviour
 		m_TurnBackground.color = uiData.m_Dark;
 	}
 
-	// Loads a UI Style
-	public void LoadUI(UIStyle style)
+	/// <summary>
+	/// Loads a UI skin
+	/// </summary>
+	/// <param name="skin">The skin to load</param>
+	public void LoadUI(UIStyle skin)
 	{
-		switch (style)
+		switch (skin)
 		{
 			case UIStyle.Death:
 				LoadUI(m_DeathUIData);

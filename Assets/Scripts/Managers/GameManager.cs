@@ -74,7 +74,6 @@ public class GameManager : MonoBehaviour
     private Node m_CachedNode;
 
     private List<Node> m_maxSkillRange = new List<Node>();
-    private List<Node> m_MaxMoveRange = new List<Node>();
 
     #endregion
 
