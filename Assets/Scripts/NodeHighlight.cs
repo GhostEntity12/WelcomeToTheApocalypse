@@ -14,11 +14,13 @@ public class NodeHighlight : MonoBehaviour
 {
 	private Renderer m_Renderer;
 
-	public Material[] materials;
+	public Material[] m_Highlights;
 
-	public bool m_isTargetable;
+	public bool m_IsTargetable;
 	
-	public bool m_isAffected;
+	public bool m_IsAffected;
+
+	public bool m_IsInTargetArea;
 
 	private void Awake()
 	{
@@ -33,23 +35,30 @@ public class NodeHighlight : MonoBehaviour
 			return;
 		}
 		m_Renderer.enabled = true;
-		m_Renderer.material = materials[(int)state];
+		m_Renderer.material = m_Highlights[(int)state];
 	}
 
 	private void Update()
 	{
-		// Need to tell what states it's in
-		//if (GameManager.m_Instance.)
-		//{
-
-		//}
-		if (m_isAffected)
+		if (m_IsInTargetArea)
 		{
-			ChangeHighlight(TileState.EffectRange);
+			if (m_IsAffected)
+			{
+				ChangeHighlight(TileState.EffectRange);
+			}
+			else if (m_IsTargetable)
+			{
+				ChangeHighlight(TileState.TargetRange);
+			}
+			else
+			{
+				ChangeHighlight(TileState.None);
+			}
 		}
-		else if (m_isTargetable)
+		else if (m_IsAffected || m_IsTargetable)
 		{
-			ChangeHighlight(TileState.TargetRange);
+			m_IsAffected = false;
+			m_IsTargetable = false;
 		}
 	}
 }

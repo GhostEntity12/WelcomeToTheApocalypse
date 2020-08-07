@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum SkillType
 {
@@ -53,5 +51,8 @@ public class BaseSkill : ScriptableObject
     // How large of an area around the cast location will be affected
     public int m_AffectedRange;
 
-    public virtual void CastSkill() { }
+    public virtual void CastSkill()
+    {
+        Debug.Log(m_SkillName);
+    }
 }

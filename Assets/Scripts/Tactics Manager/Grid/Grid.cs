@@ -296,10 +296,10 @@ public class Grid : MonoBehaviour
 	public void SetUnit(GameObject unit)
 	{
 		Node n = GetNode(unit.transform.position);
-		n.unit = unit;
+		n.unit = unit.GetComponent<Unit>();
 	}
 
-	public GameObject GetUnit(Vector3 mousePos)
+	public Unit GetUnit(Vector3 mousePos)
 	{
 		return GetNode(mousePos).unit;
 	}
