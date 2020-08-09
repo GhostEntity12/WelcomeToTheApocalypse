@@ -16,7 +16,7 @@ public class Node
 
 	public GridObject obstacle;
 
-	public GameObject unit;
+	public Unit unit;
 
 	public GameObject m_tile;
 

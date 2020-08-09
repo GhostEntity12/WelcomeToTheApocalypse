@@ -1,10 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class NodeDataReader : MonoBehaviour
 {
-	[ContextMenu("Read")]
+	/// <summary>
+	/// Reads the data of the node at the transform
+	/// </summary>
+	[ContextMenu("Read from position")]
 	void ReadData()
 	{
 		Grid g = FindObjectOfType<Grid>();

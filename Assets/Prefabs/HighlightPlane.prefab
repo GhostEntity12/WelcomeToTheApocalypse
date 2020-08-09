@@ -93,10 +93,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d6a6408f211bb247872b43f428e39b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  materials:
+  m_Highlights:
   - {fileID: 2100000, guid: 55d37b315ccf5e349878c16891227535, type: 2}
   - {fileID: 2100000, guid: 593a0b2e34386ee4287de67ff6067f6d, type: 2}
   - {fileID: 2100000, guid: 8b651dd915577f044b9ade0de9b3b5bf, type: 2}
+  m_IsTargetable: 0
+  m_IsAffected: 0
+  m_IsInTargetArea: 0
 --- !u!64 &8757343874777504132
 MeshCollider:
   m_ObjectHideFlags: 0

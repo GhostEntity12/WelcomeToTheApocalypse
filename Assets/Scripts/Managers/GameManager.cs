@@ -1,8 +1,8 @@
-﻿using Ghost;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using TMPro;
 using UnityEngine;
-
+using UnityEngine.UI;
 using static Ghost.BFS;
 
 public enum TargetingState
@@ -69,11 +69,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public List<Unit> m_UnitsInCombat = new List<Unit>();
 
-	#region refactor me. PLEASE
+    #region refactor me. PLEASE
 
-	private Node m_CachedNode;
+    private Node m_CachedNode;
 
-    List<Node> maxRange = new List<Node>();
+    private List<Node> m_maxSkillRange = new List<Node>();
 
     #endregion
 
@@ -82,6 +82,8 @@ public class GameManager : MonoBehaviour
     {
         m_MainCamera = Camera.main;
         m_MouseRay.origin = m_MainCamera.transform.position;
+
+        CreateVersionText();
     }
 
     // Update.
@@ -125,7 +127,7 @@ public class GameManager : MonoBehaviour
             m_TeamCurrentTurn = Allegiance.Player;
 
         // Reset the movement of the units whos turn it now is.
-        foreach(Unit u in m_UnitsInCombat)
+        foreach (Unit u in m_UnitsInCombat)
         {
             if (u.GetAllegiance() == m_TeamCurrentTurn)
                 u.ResetCurrentMovement();
@@ -152,31 +154,38 @@ public class GameManager : MonoBehaviour
     {
         m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
 
-        #region refactor me. PLEASE
+        #region SKILL TARGETING STUFF, please refactor me. 
 
         if (m_TargetingState == TargetingState.Skill)
         {
+            // Raycast to the tile
             if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 8))
             {
-                if (Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position) != m_CachedNode )
+                // If the tile is different to last frame (just to save a few cycles)
+                if (Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position) != m_CachedNode)
                 {
+                    // Update the cache
                     m_CachedNode = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
-                    if (m_CachedNode.m_NodeHighlight.m_isTargetable)
+                    // If it's targetable
+                    if (m_CachedNode.m_NodeHighlight.m_IsTargetable)
                     {
+                        // Display pink area
                         List<Node> targetableRange = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode);
-                        foreach (Node node in maxRange)
-                        {
-                            node.m_NodeHighlight.m_isAffected = targetableRange.Contains(node);
-                        }
+                        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = targetableRange.Contains(n));
+                    }
+                    // Otherwise clear the pink area
+                    else
+                    {
+                        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = false);
                     }
                 }
             }
         }
 
-		#endregion
+        #endregion
 
-		// Raycast hit a character, check for what the player can do with characters.
-		if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
+        // Raycast hit a character, check for what the player can do with characters.
+        if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -185,7 +194,7 @@ public class GameManager : MonoBehaviour
                     // Reset the nodes highlights before selecting the new unit
                     if (m_SelectedUnit)
                     {
-                        foreach (Node n in maxRange)
+                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
                         {
                             n.m_NodeHighlight.ChangeHighlight(TileState.None);
                         }
@@ -193,11 +202,6 @@ public class GameManager : MonoBehaviour
 
                     // Store the new unit
                     m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
-                    int highestMoveRange = m_SelectedUnit.GetSkills().Select(s => s.m_CastableDistance).Max() + m_SelectedUnit.GetSkills().Select(s => s.m_AffectedRange).Max();
-
-                    print(highestMoveRange + m_SelectedUnit.m_StartingMovement);
-
-                    maxRange = GetNodesWithinRadius(highestMoveRange + m_SelectedUnit.m_StartingMovement, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
                     m_TargetingState = TargetingState.Move;
 
                     // Highlight the appropriate tiles
@@ -213,11 +217,11 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
+                Node hitNode = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
                 // Select node to move to.
                 if (m_TargetingState == TargetingState.Move)
                 {
-                    Node target = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
-                    if (m_SelectedUnit.m_MovableNodes.Contains(target))
+                    if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
                     {
                         // Clear the previously highlighted tiles
                         foreach (Node n in m_SelectedUnit.m_MovableNodes)
@@ -233,7 +237,7 @@ public class GameManager : MonoBehaviour
                         }
 
                         // Should we do this after the unit has finished moving? - James L
-                        m_SelectedUnit.HighlightMovableNodes(target);
+                        m_SelectedUnit.HighlightMovableNodes(hitNode);
                     }
                 }
 
@@ -241,8 +245,10 @@ public class GameManager : MonoBehaviour
                 else if (m_TargetingState == TargetingState.Skill)
                 {
                     // If hit tile is in affectable range,
-                    m_SelectedUnit.ActivateSkill(m_SelectedSkill);
-
+                    if (hitNode.m_NodeHighlight.m_IsTargetable)
+                    {
+                        m_SelectedUnit.ActivateSkill(m_SelectedSkill);
+                    }
                     // else return;
                 }
             }
@@ -280,13 +286,87 @@ public class GameManager : MonoBehaviour
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
+        // Reset the nodes in the old target range
+        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
+
+        // Update the GameManager's fields
         m_SelectedSkill = m_SelectedUnit.GetSkill(skillNumber);
         m_TargetingState = TargetingState.Skill;
-        print(m_SelectedSkill.m_CastableDistance);
-        foreach (NodeHighlight highlight in GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position)).Select(n => n.m_NodeHighlight)) 
+
+        // Get the new affectable area
+        m_maxSkillRange = GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+
+        // Reset the highlight of movement nodes
+        m_SelectedUnit.m_MovableNodes.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.None));
+
+        // Tell the new nodes they're in range
+        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = true);
+
+        // Tell the appropriate nodes in distance (red) that they're in distance
+        foreach (Node node in GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position)))
         {
-            highlight.m_isTargetable = true;
+            switch (m_SelectedSkill.targetType)
+            {
+                case TargetType.SingleTarget:
+                    node.m_NodeHighlight.m_IsTargetable = IsTargetable(m_SelectedUnit, node.unit, m_SelectedSkill);
+                    break;
+                case TargetType.Line:
+                    throw new NotImplementedException("Line target type not supported");
+                case TargetType.Terrain:
+                    node.m_NodeHighlight.m_IsTargetable = true;
+                    break;
+                default:
+                    break;
+            }
         }
+
         Debug.Log(m_SelectedSkill.m_Description);
+    }
+
+    /// <summary>
+    /// Determines whether a given skill can hit a given target
+    /// </summary>
+    /// <param name="source">The casting character</param>
+    /// <param name="target">The targeted character</param>
+    /// <param name="skill">The skill the casting character is using</param>
+    /// <returns></returns>
+    public static bool IsTargetable(Unit source, Unit target, BaseSkill skill)
+    {
+        if (!target) return false;
+
+        if (source == target && skill.excludeCaster) return false;
+
+        if ((source.m_Allegiance == target.m_Allegiance && skill.targets == SkillTargets.Allies) ||
+            (source.m_Allegiance != target.m_Allegiance && skill.targets == SkillTargets.Foes) ||
+            (skill.targets == SkillTargets.All))
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    public static void CreateVersionText()
+    {
+        if (GameObject.Find("VersionCanvas")) return;
+
+        GameObject cgo = new GameObject("VersionCanvas", typeof(Canvas), typeof(CanvasScaler));
+        DontDestroyOnLoad(cgo);
+        CanvasScaler cs = cgo.gameObject.GetComponent<CanvasScaler>();
+        Canvas c = cgo.GetComponent<Canvas>();
+        c.renderMode = RenderMode.ScreenSpaceOverlay;
+        cs.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        cs.referenceResolution = new Vector2(1920, 1080);
+
+        GameObject g = new GameObject("Version", typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        RectTransform rt = g.GetComponent<RectTransform>();
+        TextMeshProUGUI versionText = g.GetComponent<TextMeshProUGUI>();
+        g.transform.SetParent(c.transform);
+        g.transform.localScale = Vector3.one;
+        rt.pivot = Vector2.zero;
+        rt.anchorMax = Vector2.zero;
+        rt.anchorMin = Vector2.zero;
+        rt.position = Vector3.zero;
+        versionText.autoSizeTextContainer = true;
+        versionText.text = Application.version;
     }
 }
