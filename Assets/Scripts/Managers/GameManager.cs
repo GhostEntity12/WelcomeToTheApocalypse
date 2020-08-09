@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using TMPro;
 using UnityEngine;
-
+using UnityEngine.UI;
 using static Ghost.BFS;
 
 public enum TargetingState
@@ -82,6 +82,8 @@ public class GameManager : MonoBehaviour
     {
         m_MainCamera = Camera.main;
         m_MouseRay.origin = m_MainCamera.transform.position;
+
+        CreateVersionText();
     }
 
     // Update.
@@ -341,5 +343,30 @@ public class GameManager : MonoBehaviour
             return true;
         }
         else return false;
+    }
+
+    public static void CreateVersionText()
+    {
+        if (GameObject.Find("VersionCanvas")) return;
+
+        GameObject cgo = new GameObject("VersionCanvas", typeof(Canvas), typeof(CanvasScaler));
+        DontDestroyOnLoad(cgo);
+        CanvasScaler cs = cgo.gameObject.GetComponent<CanvasScaler>();
+        Canvas c = cgo.GetComponent<Canvas>();
+        c.renderMode = RenderMode.ScreenSpaceOverlay;
+        cs.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        cs.referenceResolution = new Vector2(1920, 1080);
+
+        GameObject g = new GameObject("Version", typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        RectTransform rt = g.GetComponent<RectTransform>();
+        TextMeshProUGUI versionText = g.GetComponent<TextMeshProUGUI>();
+        g.transform.SetParent(c.transform);
+        g.transform.localScale = Vector3.one;
+        rt.pivot = Vector2.zero;
+        rt.anchorMax = Vector2.zero;
+        rt.anchorMin = Vector2.zero;
+        rt.position = Vector3.zero;
+        versionText.autoSizeTextContainer = true;
+        versionText.text = Application.version;
     }
 }
