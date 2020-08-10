@@ -119,7 +119,10 @@ public class Unit : MonoBehaviour
                 }
                 // Have arrived at the final node in the path, stop moving.
                 else
+                {
                     m_Moving = false;
+                    Grid.m_Instance.SetUnit(gameObject);
+                }
             }
         }
     }
@@ -223,8 +226,10 @@ public class Unit : MonoBehaviour
     /// <param name="target"> The node to set as the target. </param>
     public void SetTargetNodePosition(Node target)
     {
+        // Unassign the unit on the current node.
+        // Before setting the new target node.
+        Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
         m_CurrentTargetNode = target;
-        //m_TargetNode.worldPosition = new Vector3(m_TargetNode.worldPosition.x, m_YPos, m_TargetNode.worldPosition.z);
     }
 
     /// <summary>
