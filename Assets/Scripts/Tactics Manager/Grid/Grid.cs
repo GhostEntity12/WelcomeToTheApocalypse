@@ -304,6 +304,11 @@ public class Grid : MonoBehaviour
 		return GetNode(mousePos).unit;
 	}
 
+	public void RemoveUnit(Node unitNode)
+	{
+		unitNode.unit = null;
+	}
+
 	public void ClearNode()
 	{
 		foreach (Node node in nodething)
