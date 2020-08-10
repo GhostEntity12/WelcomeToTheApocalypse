@@ -83,6 +83,8 @@ public class GameManager : MonoBehaviour
         m_MainCamera = Camera.main;
         m_MouseRay.origin = m_MainCamera.transform.position;
 
+        m_Instance = this;
+
         CreateVersionText();
     }
 
@@ -218,6 +220,7 @@ public class GameManager : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 Node hitNode = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
+
                 // Select node to move to.
                 if (m_TargetingState == TargetingState.Move)
                 {
@@ -272,6 +275,15 @@ public class GameManager : MonoBehaviour
             if (m_TargetingState == TargetingState.Skill)
             {
                 m_TargetingState = TargetingState.Move;
+
+                foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                {
+                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                }
+
+                m_SelectedUnit.HighlightMovableNodes();
+
+                m_SelectedSkill = null;
             }
         }
 
