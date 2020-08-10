@@ -16,7 +16,7 @@ public class Node
 
 	public GridObject obstacle;
 
-	public GameObject unit;
+	public Unit unit;
 
 	public GameObject m_tile;
 
@@ -29,9 +29,11 @@ public class Node
 
 	public List<Node> adjacentNodes = new List<Node>();
 
+	public NodeHighlight m_NodeHighlight;
+
 	public void Reset()
 	{
-		m_tile.SetActive(false);
+		m_NodeHighlight.ChangeHighlight(TileState.None);
 		visited = false;
 		parentNode = null;
 		distance = 0;
