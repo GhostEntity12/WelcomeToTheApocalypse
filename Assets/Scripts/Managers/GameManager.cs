@@ -213,7 +213,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Raycast hit a tile, check for what the player can do with tiles.
-        else if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 8))
+        else if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 8) && m_SelectedUnit)
         {
             if (Input.GetMouseButtonDown(0))
             {
