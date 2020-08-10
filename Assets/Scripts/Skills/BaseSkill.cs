@@ -58,6 +58,7 @@ public class BaseSkill : ScriptableObject
 
     public virtual void CastSkill()
     {
+        Debug.Log("Skill cast");
         affectedUnits = affectedNodes.Select(t => t.unit)
             .Where(c => GameManager.IsTargetable(GameManager.m_Instance.GetSelectedUnit(), c, this))
             .ToArray();
