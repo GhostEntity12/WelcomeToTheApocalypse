@@ -85,7 +85,7 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The node the unit is targeting for their movement.
     /// </summary>
-    private Node m_TargetNode = null;
+    private Node m_CurrentTargetNode = null;
 
     /// <summary>
     /// The node's the unit can move to.
@@ -106,11 +106,11 @@ public class Unit : MonoBehaviour
         if (m_Moving)
         {
             //Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
-            transform.position = Vector3.MoveTowards(transform.position, m_TargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.01 units close to target is close enough).
-            if ((transform.position - m_TargetNode.worldPosition).magnitude < 0.1f)
+            if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
             {
-                transform.position = m_TargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
+                transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
 
                 // Target the next node.
                 if (m_MovementPath.Count > 0)
@@ -119,7 +119,10 @@ public class Unit : MonoBehaviour
                 }
                 // Have arrived at the final node in the path, stop moving.
                 else
+                {
                     m_Moving = false;
+                    Grid.m_Instance.SetUnit(gameObject);
+                }
             }
         }
     }
@@ -223,8 +226,10 @@ public class Unit : MonoBehaviour
     /// <param name="target"> The node to set as the target. </param>
     public void SetTargetNodePosition(Node target)
     {
-        m_TargetNode = target;
-        //m_TargetNode.worldPosition = new Vector3(m_TargetNode.worldPosition.x, m_YPos, m_TargetNode.worldPosition.z);
+        // Unassign the unit on the current node.
+        // Before setting the new target node.
+        Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
+        m_CurrentTargetNode = target;
     }
 
     /// <summary>
