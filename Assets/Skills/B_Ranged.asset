@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1fe8379d33f858c4ab079cb799ac579f, type: 3}
-  m_Name: BasicMeleeAttack
+  m_Name: B_Ranged
   m_EditorClassIdentifier: 
-  m_SkillName: Basic Melee Attack
+  m_SkillName: Basic Ranged Attack
   m_Icon: {fileID: 0}
-  m_Description: Targets a single adjacent character within X tiles. Deals 4 damage.
+  m_Description: Targets a single character within X tiles, deals 3 damage
   targets: 2
   targetType: 0
   excludeCaster: 0
   m_SkillType: 1
   m_CooldownLength: 0
   m_CooldownRemaining: 0
-  m_CastableDistance: 1
-  m_AffectedRange: 1
-  m_DamageAmount: 4
+  m_CastableDistance: 2
+  m_AffectedRange: 3
+  m_DamageAmount: 3
