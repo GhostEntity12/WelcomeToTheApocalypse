@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(GridObject))]
 public class Grid : MonoBehaviour
 {
 	public static Grid m_Instance = null;
@@ -47,46 +48,54 @@ public class Grid : MonoBehaviour
 
 	void ReadLevel()
 	{
-		//Finds GridPosition script on objects
-		GridPosition[] gp = FindObjectsOfType<GridPosition>();
+		////Finds GridPosition script on objects
+		//GridPosition[] gp = FindObjectsOfType<GridPosition>();
 
-		//Defaults the 
-		float minX = float.MaxValue;
-		float maxX = float.MinValue;
+		////Defaults the 
+		//float minX = float.MaxValue;
+		//float maxX = float.MinValue;
 
-		float minZ = minX;
-		float maxZ = maxX;
+		//float minZ = minX;
+		//float maxZ = maxX;
 
-		for (int i = 0; i < gp.Length; i++)
-		{
-			Transform t = gp[i].transform;
-			//Sets the min position if the position of the gridPosition is less than the MinX which is set to the highest value
-			if(t.position.x < minX)
-			{
-				minX = t.position.x;
-			}
-			//Sets the max position if the position of the gridPosition is less than the MaxX which is set to the lowest value
-			if (t.position.x > maxX)
-			{
-				maxX = t.position.x;
-			}
-			if (t.position.z < minZ)
-			{
-				minZ = t.position.z;
-			}
-			if (t.position.z > maxZ)
-			{
-				maxZ = t.position.z;
-			}
-		}
+		//for (int i = 0; i < gp.Length; i++)
+		//{
+		//	Transform t = gp[i].transform;
+		//	//Sets the min position if the position of the gridPosition is less than the MinX which is set to the highest value
+		//	if (t.position.x < minX)
+		//	{
+		//		minX = t.position.x;
+		//	}
+		//	//Sets the max position if the position of the gridPosition is less than the MaxX which is set to the lowest value
+		//	if (t.position.x > maxX)
+		//	{
+		//		maxX = t.position.x;
+		//	}
+		//	if (t.position.z < minZ)
+		//	{
+		//		minZ = t.position.z;
+		//	}
+		//	if (t.position.z > maxZ)
+		//	{
+		//		maxZ = t.position.z;
+		//	}
+		//}
 
-		posX = Mathf.FloorToInt((maxX - minX) / xzScale);
-		posZ = Mathf.FloorToInt((maxZ - minZ) / xzScale);
+		//posX = Mathf.FloorToInt((maxX - minX) / xzScale);
+		//posZ = Mathf.FloorToInt((maxZ - minZ) / xzScale);
 
-		minPosition = Vector3.zero;
-		minPosition.x = minX;
-		minPosition.z = minZ;
+		//minPosition = Vector3.zero;
+		//minPosition.x = minX;
+		//minPosition.z = minZ;
 
+		//CreateGrid(posX, posZ);
+
+		Bounds bounds = GetComponent<Collider>().bounds;
+
+		posX = Mathf.FloorToInt(bounds.size.x / xzScale);
+		posZ = Mathf.FloorToInt(bounds.size.z / xzScale);
+
+		minPosition = new Vector3(bounds.min.x, 0, bounds.min.z);
 		CreateGrid(posX, posZ);
 	}
 
@@ -146,8 +155,7 @@ public class Grid : MonoBehaviour
 
 				if (n.isWalkable)
 				{
-					node.transform.position = new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z);
-					n.m_tile = Instantiate(node, node.transform.position, node.transform.rotation, nodeArray.transform);
+					n.m_tile = Instantiate(node, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, nodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
 					n.m_NodeHighlight.ChangeHighlight(TileState.None);
 				}
