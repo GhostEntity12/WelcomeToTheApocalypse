@@ -9,18 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fe8379d33f858c4ab079cb799ac579f, type: 3}
-  m_Name: BasicRangedAttack
+  m_Script: {fileID: 11500000, guid: baf34f0cebfdc1940bce58b28d8b3c42, type: 3}
+  m_Name: B_Heal
   m_EditorClassIdentifier: 
-  m_SkillName: Basic Ranged Attack
+  m_SkillName: Basic Heal
   m_Icon: {fileID: 0}
-  m_Description: Targets a single character within X tiles, deals 3 damage
-  targets: 2
+  m_Description: Targets a single character within 2 tiles, heals X damage,  X turn
+    cooldown
+  targets: 1
   targetType: 0
   excludeCaster: 0
   m_SkillType: 1
-  m_CooldownLength: 0
+  m_CooldownLength: 1
   m_CooldownRemaining: 0
-  m_CastableDistance: 2
-  m_AffectedRange: 3
-  m_DamageAmount: 3
+  m_CastableDistance: 0
+  m_AffectedRange: 0
+  m_HealAmount: 1
+  chosenTarget: {fileID: 0}
