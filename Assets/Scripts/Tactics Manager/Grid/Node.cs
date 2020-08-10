@@ -6,11 +6,9 @@ public class Node
 {
 
 	public int[] m_neighbours = new int[8];
-	public int x;
-	public int y;
-	public int z;
-	public float fCost;
-	public float gCost;
+	public int[] m_costs = new int[8];
+	public int x, z;
+	public int fScore, gScore, hScore;
 
 	public bool isWalkable;
 
@@ -18,10 +16,11 @@ public class Node
 
 	public GridObject obstacle;
 
-	public GameObject unit;
+	public Unit unit;
 
-	public GameObject tile;
+	public GameObject m_tile;
 
+	public Node m_previousNode;
 
 	[Header("Breadth First Search")]
 	public bool visited = false;
@@ -30,11 +29,18 @@ public class Node
 
 	public List<Node> adjacentNodes = new List<Node>();
 
+	public NodeHighlight m_NodeHighlight;
+
 	public void Reset()
 	{
-		tile.SetActive(false);
+		m_NodeHighlight.ChangeHighlight(TileState.None);
 		visited = false;
 		parentNode = null;
 		distance = 0;
+	}
+
+	public void CalculateFScore()
+	{
+		fScore = gScore + hScore;
 	}
 }

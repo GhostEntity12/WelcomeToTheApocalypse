@@ -1,7 +1,6 @@
 ﻿/// <summary>
 /// Class for callbacks
 /// </summary>
-
 namespace Ghost
 {
     public static class Callbacks
