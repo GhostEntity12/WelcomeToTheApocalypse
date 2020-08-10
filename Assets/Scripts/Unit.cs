@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -243,6 +243,12 @@ public class Unit : MonoBehaviour
     /// </summary>
     /// <returns> The allegiance of the unit. </returns>
     public Allegiance GetAllegiance() { return m_Allegiance; }
+
+    /// <summary>
+    /// Add a status effect to the unit.
+    /// </summary>
+    /// <param name="effect"> The status effect to add to the unit. </param>
+    public void AddStatusEffect(InflictableStatus effect) { m_StatusEffects.Add(effect); }
 
     /// <summary>
     /// Gets the nodes the unit can move to, stores them and highlights them.
