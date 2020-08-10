@@ -58,9 +58,25 @@ public class BaseSkill : ScriptableObject
 
     public virtual void CastSkill()
     {
-        Debug.Log(m_SkillName);
         affectedUnits = affectedNodes.Select(t => t.unit)
-         .Where(c => GameManager.IsTargetable(GameManager.m_Instance.GetSelectedUnit(), c, this))
-         .ToArray();
+            .Where(c => GameManager.IsTargetable(GameManager.m_Instance.GetSelectedUnit(), c, this))
+            .ToArray();
+
+        // Equivalent (mostly) non-LINQ version
+
+        //foreach (var item in affectedNodes.Select(n => n.unit)) 
+        //{
+        //    if (!item) continue;
+
+        //    if (GameManager.m_Instance.GetSelectedUnit() == item && this.excludeCaster) continue;
+
+        //    if ((GameManager.m_Instance.GetSelectedUnit().m_Allegiance == item.m_Allegiance && this.targets == SkillTargets.Allies) ||
+        //        (GameManager.m_Instance.GetSelectedUnit().m_Allegiance != item.m_Allegiance && this.targets == SkillTargets.Foes) ||
+        //        (this.targets == SkillTargets.All))
+        //    {
+        //        affectedUnits.Append(item);
+        //    }
+        //    else continue;
+        //}
     }
 }

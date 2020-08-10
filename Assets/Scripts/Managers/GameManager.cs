@@ -247,6 +247,7 @@ public class GameManager : MonoBehaviour
                     // If hit tile is in affectable range,
                     if (hitNode.m_NodeHighlight.m_IsTargetable)
                     {
+                        m_SelectedSkill.affectedNodes = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, hitNode);
                         m_SelectedUnit.ActivateSkill(m_SelectedSkill);
                     }
                     // else return;
