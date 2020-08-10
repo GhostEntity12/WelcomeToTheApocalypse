@@ -193,23 +193,20 @@ public class GameManager : MonoBehaviour
             {
                 if (m_TargetingState != TargetingState.Skill)
                 {
-                    // Reset the nodes highlights before selecting the new unit
-                    if (m_SelectedUnit)
+                    if (m_MouseWorldRayHit.transform.GetComponent<Unit>() != m_SelectedUnit)
                     {
-                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
-                        {
-                            n.m_NodeHighlight.ChangeHighlight(TileState.None);
-                        }
+                        // Reset the nodes highlights before selecting the new unit
+                        m_SelectedUnit?.m_MovableNodes.ForEach(u => u.m_NodeHighlight.ChangeHighlight(TileState.None));
+
+                        // Store the new unit
+                        m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
+                        m_TargetingState = TargetingState.Move;
+                        UIManager.m_Instance.SwapUI(UIManager.m_Instance.GetUIStyle(m_SelectedUnit));
+
+                        // Highlight the appropriate tiles
+                        m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+                        m_SelectedUnit.HighlightMovableNodes();
                     }
-
-                    // Store the new unit
-                    m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
-                    m_TargetingState = TargetingState.Move;
-
-                    // Highlight the appropriate tiles
-                    m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-                    m_SelectedUnit.HighlightMovableNodes();
-                    Debug.Log(m_SelectedUnit.name);
                 }
             }
         }

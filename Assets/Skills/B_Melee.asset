@@ -9,19 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: baf34f0cebfdc1940bce58b28d8b3c42, type: 3}
-  m_Name: BasicHeal
+  m_Script: {fileID: 11500000, guid: 1fe8379d33f858c4ab079cb799ac579f, type: 3}
+  m_Name: B_Melee
   m_EditorClassIdentifier: 
-  m_SkillName: Basic Heal
+  m_SkillName: Basic Melee Attack
   m_Icon: {fileID: 0}
-  m_Description: Targets a single character within 2 tiles, heals X damage,  X turn
-    cooldown
-  targets: 1
+  m_Description: Targets a single adjacent character within X tiles. Deals 4 damage.
+  targets: 2
   targetType: 0
   excludeCaster: 0
   m_SkillType: 1
-  m_CooldownLength: 1
+  m_CooldownLength: 0
   m_CooldownRemaining: 0
-  m_CastableDistance: 0
-  m_AffectedRange: 0
-  m_HealAmount: 1
+  m_CastableDistance: 1
+  m_AffectedRange: 1
+  m_DamageAmount: 4
