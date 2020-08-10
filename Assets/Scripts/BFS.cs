@@ -10,7 +10,7 @@ namespace Ghost
         /// <param name="radius">How large the area to return is</param>
         /// <param name="startNode">The center node</param>
         /// <returns>The list of nodes to return</returns>
-        public static List<Node> GetNodesWithinRadius(int radius, Node startNode, bool canSelectObstacles = false)
+        public static List<Node> GetNodesWithinRadius(int radius, Node startNode)
         {
             List<Node> nodesInRadius = new List<Node>();
 
@@ -24,20 +24,25 @@ namespace Ghost
             {
                 Node n = process.Dequeue();
 
-                if (!n.isWalkable && !canSelectObstacles) continue;
+                if (!n.isWalkable) continue;
+
+                //if (n.unit) continue;
 
                 nodesInRadius.Add(n);
 
                 if (n.distance < radius)
                 {
-                    foreach (Node node in n.adjacentNodes)
+                    for (int i = 0; i < 4; i++)
                     {
-                        if (!node.visited)
+                        Node adjacentNode = n.adjacentNodes[i];
+                        if (adjacentNode == null) continue;
+
+                        if (!adjacentNode.visited)
                         {
-                            node.parentNode = n;
-                            node.visited = true;
-                            node.distance = 1 + n.distance;
-                            process.Enqueue(node);
+                            adjacentNode.parentNode = n;
+                            adjacentNode.visited = true;
+                            adjacentNode.distance = 1 + n.distance;
+                            process.Enqueue(adjacentNode);
                         }
                     }
                 }
