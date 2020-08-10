@@ -38,11 +38,12 @@ public class Grid : MonoBehaviour
 	void Awake()
 	{
 		m_Instance = this;
+		ReadLevel();
 	}
 
 	void Start()
 	{
-		ReadLevel();
+		
 	}
 
 	void ReadLevel()

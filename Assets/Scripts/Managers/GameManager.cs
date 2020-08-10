@@ -233,7 +233,7 @@ public class GameManager : MonoBehaviour
                         if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path))
                         {
                             m_SelectedUnit.SetMovementPath(path);
-                            m_SelectedUnit.DecreaseCurrentMovement(m_SelectedUnit.GetMovementPath().Count);
+                            //m_SelectedUnit.DecreaseCurrentMovement(m_SelectedUnit.GetMovementPath().Count);
                         }
 
                         // Should we do this after the unit has finished moving? - James L

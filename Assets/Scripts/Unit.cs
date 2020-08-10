@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -60,7 +60,7 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The status debuffs on the character.
     /// </summary>
-    private List<InflictableStatus> m_StatusDebuffs = new List<InflictableStatus>();
+    private List<InflictableStatus> m_StatusEffects = new List<InflictableStatus>();
 
     /// <summary>
     /// The allegiance of the character.
@@ -92,12 +92,20 @@ public class Unit : MonoBehaviour
     /// </summary>
     public List<Node> m_MovableNodes = new List<Node>();
 
+    
+
     // On startup.
     void Awake()
     {
         m_CurrentHealth = m_StartingHealth;
 
         m_CurrentMovement = m_StartingMovement;
+    }
+
+    void Start()
+    {
+        Grid.m_Instance.SetUnit(gameObject);
+        m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
     }
 
     void Update()
@@ -107,7 +115,7 @@ public class Unit : MonoBehaviour
         {
             //Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
             transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
-            // If have arrived at position (0.01 units close to target is close enough).
+            // If have arrived at position (0.1 units close to target is close enough).
             if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
             {
                 transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
@@ -116,6 +124,7 @@ public class Unit : MonoBehaviour
                 if (m_MovementPath.Count > 0)
                 {
                     SetTargetNodePosition(m_MovementPath.Pop());
+                    DecreaseCurrentMovement(m_CurrentTargetNode.gScore);
                 }
                 // Have arrived at the final node in the path, stop moving.
                 else
