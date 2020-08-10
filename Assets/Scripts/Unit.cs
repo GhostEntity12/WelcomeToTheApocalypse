@@ -60,7 +60,7 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The status debuffs on the character.
     /// </summary>
-    private List<InflictableStatus> m_StatusDebuffs = new List<InflictableStatus>();
+    private List<InflictableStatus> m_StatusEffects = new List<InflictableStatus>();
 
     /// <summary>
     /// The allegiance of the character.
@@ -85,12 +85,14 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The node the unit is targeting for their movement.
     /// </summary>
-    private Node m_TargetNode = null;
+    private Node m_CurrentTargetNode = null;
 
     /// <summary>
     /// The node's the unit can move to.
     /// </summary>
     public List<Node> m_MovableNodes = new List<Node>();
+
+    
 
     // On startup.
     void Awake()
@@ -100,26 +102,36 @@ public class Unit : MonoBehaviour
         m_CurrentMovement = m_StartingMovement;
     }
 
+    void Start()
+    {
+        Grid.m_Instance.SetUnit(gameObject);
+        m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
+    }
+
     void Update()
     {
         // If have a target that the unit hasn't arrived at yet, move towards the target position.
         if (m_Moving)
         {
             //Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
-            transform.position = Vector3.MoveTowards(transform.position, m_TargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
-            // If have arrived at position (0.01 units close to target is close enough).
-            if ((transform.position - m_TargetNode.worldPosition).magnitude < 0.1f)
+            transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
+            // If have arrived at position (0.1 units close to target is close enough).
+            if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
             {
-                transform.position = m_TargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
+                transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
 
                 // Target the next node.
                 if (m_MovementPath.Count > 0)
                 {
                     SetTargetNodePosition(m_MovementPath.Pop());
+                    DecreaseCurrentMovement(m_CurrentTargetNode.gScore);
                 }
                 // Have arrived at the final node in the path, stop moving.
                 else
+                {
                     m_Moving = false;
+                    Grid.m_Instance.SetUnit(gameObject);
+                }
             }
         }
     }
@@ -223,8 +235,10 @@ public class Unit : MonoBehaviour
     /// <param name="target"> The node to set as the target. </param>
     public void SetTargetNodePosition(Node target)
     {
-        m_TargetNode = target;
-        //m_TargetNode.worldPosition = new Vector3(m_TargetNode.worldPosition.x, m_YPos, m_TargetNode.worldPosition.z);
+        // Unassign the unit on the current node.
+        // Before setting the new target node.
+        Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
+        m_CurrentTargetNode = target;
     }
 
     /// <summary>
@@ -238,6 +252,12 @@ public class Unit : MonoBehaviour
     /// </summary>
     /// <returns> The allegiance of the unit. </returns>
     public Allegiance GetAllegiance() { return m_Allegiance; }
+
+    /// <summary>
+    /// Add a status effect to the unit.
+    /// </summary>
+    /// <param name="effect"> The status effect to add to the unit. </param>
+    public void AddStatusEffect(InflictableStatus effect) { m_StatusEffects.Add(effect); }
 
     /// <summary>
     /// Gets the nodes the unit can move to, stores them and highlights them.

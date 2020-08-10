@@ -9,6 +9,9 @@ public class StatusSkill : DamageSkill
 	{
 		base.CastSkill();
 
-		// Apply status/refresh if it already exists
+		foreach(Unit u in affectedUnits)
+		{
+			u.AddStatusEffect(m_Effect);
+		}
 	}
 }

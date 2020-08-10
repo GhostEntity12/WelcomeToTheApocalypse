@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -540,6 +540,7 @@ GameObject:
   - component: {fileID: 777700989}
   - component: {fileID: 777700988}
   - component: {fileID: 777700987}
+  - component: {fileID: 777700991}
   m_Layer: 8
   m_Name: path node
   m_TagString: Untagged
@@ -621,6 +622,25 @@ Transform:
   m_Father: {fileID: 788192587}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &777700991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777700986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d6a6408f211bb247872b43f428e39b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Highlights:
+  - {fileID: 2100000, guid: 55d37b315ccf5e349878c16891227535, type: 2}
+  - {fileID: 2100000, guid: 8b651dd915577f044b9ade0de9b3b5bf, type: 2}
+  - {fileID: 2100000, guid: 593a0b2e34386ee4287de67ff6067f6d, type: 2}
+  m_IsTargetable: 1
+  m_IsAffected: 0
+  m_IsInTargetArea: 0
 --- !u!1 &788192586
 GameObject:
   m_ObjectHideFlags: 0
@@ -1859,3 +1879,4 @@ MonoBehaviour:
   nodeArray: {fileID: 1299179}
   unit:
   - {fileID: 768579075}
+  - {fileID: 1675469446}
