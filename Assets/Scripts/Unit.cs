@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -124,7 +124,6 @@ public class Unit : MonoBehaviour
                 if (m_MovementPath.Count > 0)
                 {
                     SetTargetNodePosition(m_MovementPath.Pop());
-                    DecreaseCurrentMovement(m_CurrentTargetNode.gScore);
                 }
                 // Have arrived at the final node in the path, stop moving.
                 else
@@ -227,6 +226,7 @@ public class Unit : MonoBehaviour
         m_MovementPath = path;
         m_Moving = true;
         SetTargetNodePosition(m_MovementPath.Pop());
+        DecreaseCurrentMovement(path.Count);
     }
 
     /// <summary>
