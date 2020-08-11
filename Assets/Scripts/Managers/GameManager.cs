@@ -129,7 +129,7 @@ public class GameManager : MonoBehaviour
             // Stop highlighting node's the player can move to.
             foreach (Node n in m_SelectedUnit.m_MovableNodes)
             {
-                n.m_tile.SetActive(false);
+                n.m_NodeHighlight.ChangeHighlight(TileState.None);
             }
             // Deselect unit.
             m_SelectedUnit = null;
@@ -146,6 +146,7 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log(m_TeamCurrentTurn);
+        UIManager.m_Instance.SlideSkillsOut();
     }
 
     /// <summary>
@@ -206,6 +207,7 @@ public class GameManager : MonoBehaviour
                     if (m_MouseWorldRayHit.transform.GetComponent<Unit>() != m_SelectedUnit)
                     {
                         // Reset the nodes highlights before selecting the new unit
+                        m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
                         m_SelectedUnit?.m_MovableNodes.ForEach(u => u.m_NodeHighlight.ChangeHighlight(TileState.None));
 
                         // Store the new unit

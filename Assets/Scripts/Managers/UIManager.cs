@@ -135,23 +135,23 @@ public class UIManager : MonoBehaviour
 		{
 			if (Input.GetKeyDown(KeyCode.Alpha6))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.Death, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.Death, () => SlideSkillsIn()));
 			}
 			if (Input.GetKeyDown(KeyCode.Alpha7))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.Pestilence, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.Pestilence, () => SlideSkillsIn()));
 			}
 			if (Input.GetKeyDown(KeyCode.Alpha8))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.Famine, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.Famine, () => SlideSkillsIn()));
 			}
 			if (Input.GetKeyDown(KeyCode.Alpha9))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.War, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.War, () => SlideSkillsIn()));
 			}
 			if (Input.GetKeyDown(KeyCode.Alpha0))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.Enemy, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.Enemy, () => SlideSkillsIn()));
 			}
 			if (Input.GetKeyDown(KeyCode.Minus))
 			{
@@ -183,13 +183,13 @@ public class UIManager : MonoBehaviour
 		}
 	}
 
-	void SlideUIOut(Action actionOnFinish = null)
+	public void SlideSkillsOut(Action actionOnFinish = null)
 	{
 		LeanTween.move(m_PortraitUI, m_OutCachePortrait, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
 		LeanTween.move(m_SkillsUI, m_OutCacheSkills, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic);
 	}
 
-	void SlideUIIn(Action actionOnFinish = null)
+	void SlideSkillsIn(Action actionOnFinish = null)
 	{
 		LeanTween.move(m_PortraitUI, m_InCachePortrait, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
 		LeanTween.move(m_SkillsUI, m_InCacheSkills, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic);
@@ -207,16 +207,16 @@ public class UIManager : MonoBehaviour
 
 	public void SwapUI(UIStyle uiStyle)
 	{
-		SlideUIOut(() => LoadUI(uiStyle, () => SlideUIIn()));
+		SlideSkillsOut(() => LoadUI(uiStyle, () => SlideSkillsIn()));
 	}
 
 	public void SwapToDialogue(TextAsset sourceFile = null)
 	{
-		SlideUIOut(() => SlideDialogueIn(() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue)));
+		SlideSkillsOut(() => SlideDialogueIn(() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue)));
 	}
 
 	public void SwapFromDialogue()
 	{
-		SlideDialogueOut(() => SlideUIIn());
+		SlideDialogueOut(() => SlideSkillsIn());
 	}
 }
