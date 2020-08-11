@@ -51,7 +51,7 @@ public class HealthChangeIndicator : MonoBehaviour
     /// </summary>
     private Color m_CurrentColour = new Color();
 
-    private void Awake()
+    private void Start()
     {
         m_FloatStartPosition = transform.position;
         m_FloatEndPosition = new Vector3(m_FloatStartPosition.x, m_FloatStartPosition.y + m_FloatEndHeight, m_FloatStartPosition.z);
@@ -60,15 +60,16 @@ public class HealthChangeIndicator : MonoBehaviour
 
     private void Update()
     {
-        transform.position = Vector3.Lerp(m_FloatStartPosition, m_FloatEndPosition, m_Timer);
+        //transform.position = Vector3.Lerp(m_FloatStartPosition, m_FloatEndPosition, m_Timer);
         m_TMPro.color = Color.Lerp(m_CurrentColour, m_NoAlpha, m_Timer);
-        
+
         m_Timer += Time.deltaTime;
     }
 
     /// <summary>
     /// Reset the text box.
     /// </summary>
+    [ContextMenu("Reset")]
     public void Reset()
     {
         transform.position = m_FloatStartPosition;
@@ -80,6 +81,8 @@ public class HealthChangeIndicator : MonoBehaviour
     /// </summary>
     public void HealthIncreased()
     {
+        LeanTween.moveY(gameObject, m_FloatStartPosition.y + m_FloatEndHeight, 1);
+
         m_NoAlpha = new Color(m_IncreaseHealthColour.r, m_IncreaseHealthColour.g, m_IncreaseHealthColour.b, 0.0f);
         m_CurrentColour = m_IncreaseHealthColour;
         m_TMPro.color = m_CurrentColour;
@@ -90,6 +93,8 @@ public class HealthChangeIndicator : MonoBehaviour
     /// </summary>
     public void HealthDecrease()
     {
+        LeanTween.moveY(gameObject, m_FloatStartPosition.y + m_FloatEndHeight, 1);
+
         m_NoAlpha = new Color(m_DecreaseHealthColour.r, m_DecreaseHealthColour.g, m_DecreaseHealthColour.b, 0.0f);
         m_CurrentColour = m_DecreaseHealthColour;
         m_TMPro.color = m_CurrentColour;
