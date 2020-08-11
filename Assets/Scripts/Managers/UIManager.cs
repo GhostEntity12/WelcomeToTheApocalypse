@@ -21,7 +21,8 @@ public class UIManager : MonoBehaviour
 		public Sprite m_SkillBg;
 	}
 
-	bool m_Debug = true; 
+	public bool m_Debug = true;
+	public TextAsset m_TestDialogue;
 
 	[Header("Data")]
 	public UIData m_DeathUIData;
@@ -39,15 +40,19 @@ public class UIManager : MonoBehaviour
 
 
 	[Header("Tweening")]
+	public float m_TweenSpeed = 0.2f;
+	[Space(10)]
 	public GameObject m_PortraitUI;
 	public GameObject m_SkillsUI;
+	public GameObject m_DialogueUI;
 
-	public float m_TweenSpeed = 0.2f;
 
-	Vector3 m_InCachePortrait;
-	Vector3 m_InCacheSkills;
-	Vector3 m_OutCachePortrait;
-	Vector3 m_OutCacheSkills;
+	private Vector3 m_InCachePortrait;
+	private Vector3 m_InCacheSkills;
+	private Vector3 m_InCacheDialogue;
+	private Vector3 m_OutCachePortrait;
+	private Vector3 m_OutCacheSkills;
+	private Vector3 m_OutCacheDialogue;
 
 	private void Awake()
 	{
@@ -59,9 +64,16 @@ public class UIManager : MonoBehaviour
 	{
 		m_InCachePortrait = m_PortraitUI.transform.position;
 		m_OutCachePortrait = m_InCachePortrait + new Vector3(-150, -150);
+		m_PortraitUI.transform.position = m_OutCachePortrait;
 
 		m_InCacheSkills = m_SkillsUI.transform.position;
 		m_OutCacheSkills = m_InCacheSkills + new Vector3(150, -150);
+		m_SkillsUI.transform.position = m_OutCacheSkills;
+
+		m_InCacheDialogue = m_DialogueUI.transform.position;
+		m_OutCacheDialogue = m_InCacheDialogue + new Vector3(0, -400);
+		m_DialogueUI.transform.position = m_OutCacheDialogue;
+
 	}
 
 	/// <summary>
@@ -141,6 +153,33 @@ public class UIManager : MonoBehaviour
 			{
 				SlideUIOut(() => LoadUI(UIStyle.Enemy, () => SlideUIIn()));
 			}
+			if (Input.GetKeyDown(KeyCode.Minus))
+			{
+				SwapToDialogue();
+			}
+			if (Input.GetKeyDown(KeyCode.Equals))
+			{
+				SwapFromDialogue();
+			}
+		}
+	}
+
+	public UIStyle GetUIStyle(Unit unit)
+	{
+		if (unit.GetAllegiance() == Allegiance.Enemy) return UIStyle.Enemy;
+
+		switch (unit.name)
+		{
+			case "Death":
+				return UIStyle.Death;
+			case "Pestilence":
+				return UIStyle.Pestilence;
+			case "Famine":
+				return UIStyle.Famine;
+			case "War":
+				return UIStyle.War;
+			default:
+				return UIStyle.Enemy;
 		}
 	}
 
@@ -156,27 +195,28 @@ public class UIManager : MonoBehaviour
 		LeanTween.move(m_SkillsUI, m_InCacheSkills, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic);
 	}
 
+	void SlideDialogueIn(Action actionOnFinish = null)
+	{
+		LeanTween.move(m_DialogueUI, m_InCacheDialogue, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
+	}
+
+	void SlideDialogueOut(Action actionOnFinish = null)
+	{
+		LeanTween.move(m_DialogueUI, m_OutCacheDialogue, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
+	}
+
 	public void SwapUI(UIStyle uiStyle)
 	{
 		SlideUIOut(() => LoadUI(uiStyle, () => SlideUIIn()));
 	}
 
-	public UIStyle GetUIStyle (Unit unit)
+	public void SwapToDialogue(TextAsset sourceFile = null)
 	{
-		if (unit.GetAllegiance() == Allegiance.Enemy) return UIStyle.Enemy;
-		
-		switch (unit.name)
-		{
-			case "Death":
-				return UIStyle.Death;
-			case "Pestilence":
-				return UIStyle.Pestilence;
-			case "Famine":
-				return UIStyle.Famine;
-			case "War":
-				return UIStyle.War;
-			default:
-				return UIStyle.Enemy;	
-		}
+		SlideUIOut(() => SlideDialogueIn(() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue)));
+	}
+
+	public void SwapFromDialogue()
+	{
+		SlideDialogueOut(() => SlideUIIn());
 	}
 }
