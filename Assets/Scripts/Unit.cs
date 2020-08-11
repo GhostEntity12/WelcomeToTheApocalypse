@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using static Ghost.BFS;
 
@@ -92,7 +93,10 @@ public class Unit : MonoBehaviour
     /// </summary>
     public List<Node> m_MovableNodes = new List<Node>();
 
-    
+    /// <summary>
+    /// The image representing the unit's health.
+    /// </summary>
+    public Image m_HealthBar = null;
 
     // On startup.
     void Awake()
@@ -143,6 +147,12 @@ public class Unit : MonoBehaviour
     {
         m_CurrentHealth = health;
         CheckAlive();
+
+        // Don't go over that max starting health.
+        if (m_CurrentHealth > m_StartingHealth)
+            m_CurrentHealth = m_StartingHealth;
+
+        m_HealthBar.fillAmount = m_CurrentHealth / m_StartingHealth;
     }
 
     /// <summary>
@@ -157,11 +167,7 @@ public class Unit : MonoBehaviour
     /// <param name="increase"> The amount to increase the unit's health by. </param>
     public void IncreaseCurrentHealth(int increase)
     {
-        m_CurrentHealth += increase;
-
-        // Don't go over that max starting health.
-        if (m_CurrentHealth > m_StartingHealth)
-            m_CurrentHealth = m_StartingHealth;
+        SetCurrentHealth(m_CurrentHealth + increase);
     }
 
     /// <summary>
@@ -170,8 +176,7 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
-        m_CurrentHealth -= decrease;
-        CheckAlive();
+        SetCurrentHealth(m_CurrentHealth - decrease);
     }
 
     /// <summary>
