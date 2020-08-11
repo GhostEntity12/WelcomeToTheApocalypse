@@ -87,9 +87,12 @@ public class GameManager : MonoBehaviour
 
         m_Instance = this;
 
-        dm = DialogueManager.instance;
-
         CreateVersionText();
+    }
+
+    private void Start()
+    {
+        dm = DialogueManager.instance;
     }
 
     // Update.
@@ -303,6 +306,8 @@ public class GameManager : MonoBehaviour
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
+        // TODO: relpace so the buttons just can't be clicked.
+        // if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
         // Reset the nodes in the old target range
         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
 

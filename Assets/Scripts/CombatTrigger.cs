@@ -9,14 +9,16 @@ public class CombatTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Unit>().GetAllegiance() == Allegiance.Player)
+        if (other?.GetComponent<Unit>()?.GetAllegiance() == Allegiance.Player)
         {
             // Give enemies in m_TriggerEnemyEncounter to the game manager for them to take turns.
 
             if (scene)
             {
-                UIManager.m_Instance.SwapToDialogue();
+                UIManager.m_Instance.SwapToDialogue(scene);
             }
+
+            gameObject.SetActive(false);
         }
     }
 }

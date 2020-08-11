@@ -64,14 +64,16 @@ public class UIManager : MonoBehaviour
 	{
 		m_InCachePortrait = m_PortraitUI.transform.position;
 		m_OutCachePortrait = m_InCachePortrait + new Vector3(-150, -150);
+		m_PortraitUI.transform.position = m_OutCachePortrait;
 
 		m_InCacheSkills = m_SkillsUI.transform.position;
 		m_OutCacheSkills = m_InCacheSkills + new Vector3(150, -150);
+		m_SkillsUI.transform.position = m_OutCacheSkills;
 
 		m_InCacheDialogue = m_DialogueUI.transform.position;
 		m_OutCacheDialogue = m_InCacheDialogue + new Vector3(0, -400);
-
 		m_DialogueUI.transform.position = m_OutCacheDialogue;
+
 	}
 
 	/// <summary>
@@ -208,9 +210,9 @@ public class UIManager : MonoBehaviour
 		SlideUIOut(() => LoadUI(uiStyle, () => SlideUIIn()));
 	}
 
-	public void SwapToDialogue()
+	public void SwapToDialogue(TextAsset sourceFile = null)
 	{
-		SlideUIOut(() => SlideDialogueIn(() => DialogueManager.instance.TriggerDialogue(m_TestDialogue)));
+		SlideUIOut(() => SlideDialogueIn(() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue)));
 	}
 
 	public void SwapFromDialogue()

@@ -113,6 +113,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccf6ef2d4fa9e364faff636505f4b3ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Debug: 1
+  m_TestDialogue: {fileID: 0}
   m_DeathUIData:
     m_Portrait: {fileID: 21300000, guid: 453b48b2b8567a04282a551756790fc3, type: 3}
     m_Dark: {r: 0.28235295, g: 0.20392159, b: 0.37254903, a: 1}
@@ -151,10 +153,10 @@ MonoBehaviour:
   - {fileID: 1272313686276301934}
   - {fileID: 1272313688136067734}
   - {fileID: 1272313687523610075}
+  m_TweenSpeed: 0.1
   m_PortraitUI: {fileID: 1272313687278367283}
   m_SkillsUI: {fileID: 1272313688034251579}
   m_DialogueUI: {fileID: 1015963582161534581}
-  m_TweenSpeed: 0.2
 --- !u!1001 &1272313687481389209
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -271,6 +273,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2283685582343941871, guid: 0bb2a4489e3e8934d88cfa5758a1f172,
+        type: 3}
+      propertyPath: m_Alpha
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0bb2a4489e3e8934d88cfa5758a1f172, type: 3}
