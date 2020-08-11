@@ -75,6 +75,8 @@ public class GameManager : MonoBehaviour
 
     private List<Node> m_maxSkillRange = new List<Node>();
 
+    private DialogueManager dm;
+
     #endregion
 
     // On startup.
@@ -85,6 +87,8 @@ public class GameManager : MonoBehaviour
 
         m_Instance = this;
 
+        dm = DialogueManager.instance;
+
         CreateVersionText();
     }
 
@@ -94,7 +98,10 @@ public class GameManager : MonoBehaviour
         // If it's currently the player's turn, check their inputs.
         // Commented out for debugging.
         //if (m_CurrentTurn == Allegiance.Player)
+        if (!dm.dialogueActive)
+        {
             PlayerInputs();
+        }
 
         Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
         //Debug.Log(m_MouseWorldRayHit.point);

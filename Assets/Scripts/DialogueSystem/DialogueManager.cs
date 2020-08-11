@@ -11,7 +11,7 @@ public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager instance;
 
-    bool isFading;
+    public bool dialogueActive;
     bool isDisplayingText;
     IEnumerator displayDialogueCoroutine;
 
@@ -152,7 +152,13 @@ public class DialogueManager : MonoBehaviour
                     sceneName = null;
                 }
 
-                StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 0, PostFade)); // Fades out the UI
+                //StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 0, PostFade)); // Fades out the UI
+
+
+                UIManager.m_Instance.SwapFromDialogue();
+                dialogueActive = false;
+                ClearDialogueBox();
+                sceneName = null;
                 return;
             }
             else
@@ -168,6 +174,7 @@ public class DialogueManager : MonoBehaviour
     void TriggerDialogue() => TriggerDialogue(sceneName);
     public void TriggerDialogue(TextAsset _sceneName)
     {
+        dialogueActive = true;
         ClearDialogueBox();
         sceneName = _sceneName;
 
@@ -194,16 +201,18 @@ public class DialogueManager : MonoBehaviour
             );
         currentLine = 0;
 
+        canvasGroup.interactable = canvasGroup.blocksRaycasts = canvasGroup.alpha == 1;
+
         LoadNewLine();
         // Fade the canvas in
-        StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 1, PostFade));
+        //StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 1, PostFade));
     }
 
-    /// <summary>
-    /// Run via callback. Cleans up after fading.
-    /// </summary>
-    void PostFade()
-    {
-        canvasGroup.interactable = canvasGroup.blocksRaycasts = canvasGroup.alpha == 1;
-    }
+    ///// <summary>
+    ///// Run via callback. Cleans up after fading.
+    ///// </summary>
+    //void PostFade()
+    //{
+    //    canvasGroup.interactable = canvasGroup.blocksRaycasts = canvasGroup.alpha == 1;
+    //}
 }
