@@ -104,8 +104,14 @@ public class Unit : MonoBehaviour
     /// </summary>
     public GameObject m_HealthChangeIndicator = null;
 
+    /// <summary>
+    /// The text of the health change indicator.
+    /// </summary>
     private TextMeshProUGUI m_HealthChangeIndicatorText = null;
 
+    /// <summary>
+    /// The script for the health change indicator.
+    /// </summary>
     private HealthChangeIndicator m_HealthChangeIndicatorScript = null;
 
     // On startup.
