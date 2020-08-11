@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 using static Ghost.BFS;
 
@@ -98,12 +99,27 @@ public class Unit : MonoBehaviour
     /// </summary>
     public Image m_HealthBar = null;
 
+    /// <summary>
+    /// The text indicating a change to a unit's health.
+    /// </summary>
+    public GameObject m_HealthChangeIndicator = null;
+
+    private TextMeshProUGUI m_HealthChangeIndicatorText = null;
+
+    private HealthChangeIndicator m_HealthChangeIndicatorScript = null;
+
     // On startup.
     void Awake()
     {
         m_CurrentHealth = m_StartingHealth;
 
         m_CurrentMovement = m_StartingMovement;
+
+        if (m_HealthChangeIndicator != null)
+        {
+        m_HealthChangeIndicatorText = m_HealthChangeIndicator.GetComponent<TextMeshProUGUI>();
+        m_HealthChangeIndicatorScript = m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
+        }
     }
 
     void Start()
@@ -153,6 +169,7 @@ public class Unit : MonoBehaviour
             m_CurrentHealth = m_StartingHealth;
 
         m_HealthBar.fillAmount = m_CurrentHealth / m_StartingHealth;
+        m_HealthChangeIndicatorScript.Reset();
     }
 
     /// <summary>
@@ -167,7 +184,9 @@ public class Unit : MonoBehaviour
     /// <param name="increase"> The amount to increase the unit's health by. </param>
     public void IncreaseCurrentHealth(int increase)
     {
+        m_HealthChangeIndicatorText.text = "+" + increase;
         SetCurrentHealth(m_CurrentHealth + increase);
+        m_HealthChangeIndicatorScript.HealthIncreased();
     }
 
     /// <summary>
@@ -176,7 +195,9 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
+        m_HealthChangeIndicatorText.text = "-" + decrease;
         SetCurrentHealth(m_CurrentHealth - decrease);
+        m_HealthChangeIndicatorScript.HealthDecrease();
     }
 
     /// <summary>
