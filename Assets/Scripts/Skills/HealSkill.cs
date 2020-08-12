@@ -44,10 +44,10 @@ public class HealSkill : BaseSkill
 		// Heal each affected unit
 
 		//If the selected target isnt dead or null
-		if (chosenTarget.GetCurrentHealth() != 0 || chosenTarget != null)
+		foreach (Unit unit in affectedUnits)
 		{
 			//Increase the targets health by 3.
-			chosenTarget.IncreaseCurrentHealth(m_HealAmount);
+			unit.IncreaseCurrentHealth(m_HealAmount);
 		}
 	}
 }
