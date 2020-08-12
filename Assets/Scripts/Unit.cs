@@ -1,6 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 using static Ghost.BFS;
 
@@ -92,7 +94,19 @@ public class Unit : MonoBehaviour
     /// </summary>
     public List<Node> m_MovableNodes = new List<Node>();
 
-    
+    /// <summary>
+    /// The image representing the unit's health.
+    /// </summary>
+    public Image m_HealthBar = null;
+
+    /// <summary>
+    /// The text indicating a change to a unit's health.
+    /// </summary>
+    public GameObject m_HealthChangeIndicator = null;
+
+    private TextMeshProUGUI m_HealthChangeIndicatorText = null;
+
+    private HealthChangeIndicator m_HealthChangeIndicatorScript = null;
 
     // On startup.
     void Awake()
@@ -100,6 +114,12 @@ public class Unit : MonoBehaviour
         m_CurrentHealth = m_StartingHealth;
 
         m_CurrentMovement = m_StartingMovement;
+
+        if (m_HealthChangeIndicator != null)
+        {
+        m_HealthChangeIndicatorText = m_HealthChangeIndicator.GetComponent<TextMeshProUGUI>();
+        m_HealthChangeIndicatorScript = m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
+        }
     }
 
     void Start()
@@ -124,7 +144,6 @@ public class Unit : MonoBehaviour
                 if (m_MovementPath.Count > 0)
                 {
                     SetTargetNodePosition(m_MovementPath.Pop());
-                    DecreaseCurrentMovement(m_CurrentTargetNode.gScore);
                 }
                 // Have arrived at the final node in the path, stop moving.
                 else
@@ -144,6 +163,13 @@ public class Unit : MonoBehaviour
     {
         m_CurrentHealth = health;
         CheckAlive();
+
+        // Don't go over that max starting health.
+        if (m_CurrentHealth > m_StartingHealth)
+            m_CurrentHealth = m_StartingHealth;
+
+        m_HealthBar.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
+        m_HealthChangeIndicatorScript.Reset();
     }
 
     /// <summary>
@@ -158,11 +184,9 @@ public class Unit : MonoBehaviour
     /// <param name="increase"> The amount to increase the unit's health by. </param>
     public void IncreaseCurrentHealth(int increase)
     {
-        m_CurrentHealth += increase;
-
-        // Don't go over that max starting health.
-        if (m_CurrentHealth > m_StartingHealth)
-            m_CurrentHealth = m_StartingHealth;
+        m_HealthChangeIndicatorText.text = "+" + increase;
+        SetCurrentHealth(m_CurrentHealth + increase);
+        m_HealthChangeIndicatorScript.HealthIncreased();
     }
 
     /// <summary>
@@ -171,8 +195,9 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
-        m_CurrentHealth -= decrease;
-        CheckAlive();
+        m_HealthChangeIndicatorText.text = "-" + decrease;
+        SetCurrentHealth(m_CurrentHealth - decrease);
+        m_HealthChangeIndicatorScript.HealthDecrease();
     }
 
     /// <summary>
@@ -189,6 +214,8 @@ public class Unit : MonoBehaviour
         if (m_CurrentHealth <= 0)
         {
             m_Alive = false;
+            // TODO: replace
+            gameObject.SetActive(false);
         }
     }
 
@@ -227,6 +254,7 @@ public class Unit : MonoBehaviour
         m_MovementPath = path;
         m_Moving = true;
         SetTargetNodePosition(m_MovementPath.Pop());
+        DecreaseCurrentMovement(path.Count);
     }
 
     /// <summary>

@@ -75,6 +75,8 @@ public class GameManager : MonoBehaviour
 
     private List<Node> m_maxSkillRange = new List<Node>();
 
+    private DialogueManager dm;
+
     #endregion
 
     // On startup.
@@ -83,7 +85,14 @@ public class GameManager : MonoBehaviour
         m_MainCamera = Camera.main;
         m_MouseRay.origin = m_MainCamera.transform.position;
 
+        m_Instance = this;
+
         CreateVersionText();
+    }
+
+    private void Start()
+    {
+        dm = DialogueManager.instance;
     }
 
     // Update.
@@ -92,7 +101,10 @@ public class GameManager : MonoBehaviour
         // If it's currently the player's turn, check their inputs.
         // Commented out for debugging.
         //if (m_CurrentTurn == Allegiance.Player)
+        if (!dm.dialogueActive)
+        {
             PlayerInputs();
+        }
 
         Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
         //Debug.Log(m_MouseWorldRayHit.point);
@@ -117,7 +129,7 @@ public class GameManager : MonoBehaviour
             // Stop highlighting node's the player can move to.
             foreach (Node n in m_SelectedUnit.m_MovableNodes)
             {
-                n.m_tile.SetActive(false);
+                n.m_NodeHighlight.ChangeHighlight(TileState.None);
             }
             // Deselect unit.
             m_SelectedUnit = null;
@@ -134,6 +146,7 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log(m_TeamCurrentTurn);
+        UIManager.m_Instance.SlideSkillsOut();
     }
 
     /// <summary>
@@ -191,33 +204,32 @@ public class GameManager : MonoBehaviour
             {
                 if (m_TargetingState != TargetingState.Skill)
                 {
-                    // Reset the nodes highlights before selecting the new unit
-                    if (m_SelectedUnit)
+                    if (m_MouseWorldRayHit.transform.GetComponent<Unit>() != m_SelectedUnit)
                     {
-                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
-                        {
-                            n.m_NodeHighlight.ChangeHighlight(TileState.None);
-                        }
+                        // Reset the nodes highlights before selecting the new unit
+                        m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
+                        m_SelectedUnit?.m_MovableNodes.ForEach(u => u.m_NodeHighlight.ChangeHighlight(TileState.None));
+
+                        // Store the new unit
+                        m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
+                        m_TargetingState = TargetingState.Move;
+                        UIManager.m_Instance.SwapUI(UIManager.m_Instance.GetUIStyle(m_SelectedUnit));
+
+                        // Highlight the appropriate tiles
+                        m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+                        m_SelectedUnit.HighlightMovableNodes();
                     }
-
-                    // Store the new unit
-                    m_SelectedUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
-                    m_TargetingState = TargetingState.Move;
-
-                    // Highlight the appropriate tiles
-                    m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-                    m_SelectedUnit.HighlightMovableNodes();
-                    Debug.Log(m_SelectedUnit.name);
                 }
             }
         }
 
         // Raycast hit a tile, check for what the player can do with tiles.
-        else if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 8))
+        else if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 8) && m_SelectedUnit)
         {
             if (Input.GetMouseButtonDown(0))
             {
                 Node hitNode = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
+
                 // Select node to move to.
                 if (m_TargetingState == TargetingState.Move)
                 {
@@ -272,6 +284,15 @@ public class GameManager : MonoBehaviour
             if (m_TargetingState == TargetingState.Skill)
             {
                 m_TargetingState = TargetingState.Move;
+
+                foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                {
+                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                }
+
+                m_SelectedUnit.HighlightMovableNodes();
+
+                m_SelectedSkill = null;
             }
         }
 
@@ -287,6 +308,8 @@ public class GameManager : MonoBehaviour
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
+        // TODO: relpace so the buttons just can't be clicked.
+        // if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
         // Reset the nodes in the old target range
         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
 

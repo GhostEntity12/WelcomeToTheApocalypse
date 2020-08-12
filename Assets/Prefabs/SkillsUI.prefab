@@ -287,7 +287,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45.000004}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.000061035156, y: 0.000061035156}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &745132583702841738
@@ -1113,7 +1113,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 30}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -100.70007, y: -100.69995}
+  m_AnchoredPosition: {x: -100, y: -100}
   m_SizeDelta: {x: 550, y: 550}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &745132584556783746
@@ -1387,7 +1387,6 @@ GameObject:
   m_Component:
   - component: {fileID: 745132585362736883}
   - component: {fileID: 745132585362736880}
-  - component: {fileID: 745132585362736881}
   m_Layer: 5
   m_Name: SkillsUI
   m_TagString: Untagged
@@ -1428,57 +1427,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &745132585362736881
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 745132585362736882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ccf6ef2d4fa9e364faff636505f4b3ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DEBUGStyle: 0
-  m_DeathUIData:
-    m_Portrait: {fileID: 21300000, guid: 453b48b2b8567a04282a551756790fc3, type: 3}
-    m_Dark: {r: 0.28235295, g: 0.20392159, b: 0.37254903, a: 1}
-    m_Medium: {r: 0.49341697, g: 0.2761659, b: 0.5471698, a: 1}
-    m_Light: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 1}
-    m_SkillBg: {fileID: 21300000, guid: b5de5d1e3e60f1643923c82ce159f788, type: 3}
-  m_PestilenceUIData:
-    m_Portrait: {fileID: 21300000, guid: 99e9b90edc6b8c343946a544f943af16, type: 3}
-    m_Dark: {r: 0.10588236, g: 0.2901961, b: 0.10588236, a: 1}
-    m_Medium: {r: 0.21982911, g: 0.49056602, b: 0.24370155, a: 1}
-    m_Light: {r: 0.8503471, g: 0.9150943, b: 0.8575412, a: 1}
-    m_SkillBg: {fileID: 21300000, guid: cf5dc985bc299264b88cd8a0d065b992, type: 3}
-  m_FamineUIData:
-    m_Portrait: {fileID: 21300000, guid: c26b3f8d5bd0d3140906754ba6ac3a95, type: 3}
-    m_Dark: {r: 0.14901961, g: 0.15686275, b: 0.11764707, a: 1}
-    m_Medium: {r: 0.2924528, g: 0.2924528, b: 0.2924528, a: 1}
-    m_Light: {r: 0.8301887, g: 0.82835054, b: 0.55998576, a: 1}
-    m_SkillBg: {fileID: 21300000, guid: be91c889c02003645ab127ce72567346, type: 3}
-  m_WarUIData:
-    m_Portrait: {fileID: 21300000, guid: ae770023ccab11f41a4766a437214a20, type: 3}
-    m_Dark: {r: 0.30980393, g: 0.08235294, b: 0.07450981, a: 1}
-    m_Medium: {r: 0.6037736, g: 0.21155846, b: 0.13385546, a: 1}
-    m_Light: {r: 0.9150943, g: 0.71061504, b: 0.375534, a: 1}
-    m_SkillBg: {fileID: 21300000, guid: b1b479101fc11d04b9d1d7ccaeafb99b, type: 3}
-  m_EnemyUIData:
-    m_Portrait: {fileID: 21300000, guid: dd03e9e95014d9944bb40a70b2721c8f, type: 3}
-    m_Dark: {r: 0.23584908, g: 0.099012114, b: 0.099012114, a: 1}
-    m_Medium: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 1}
-    m_Light: {r: 0.6603774, g: 0.6603774, b: 0.6603774, a: 1}
-    m_SkillBg: {fileID: 21300000, guid: 17cd68a1739d76e4e88f1d87bc98e943, type: 3}
-  m_FaceBackground: {fileID: 745132583702841741}
-  m_SkillsBackground: {fileID: 745132584556783749}
-  m_TurnBackground: {fileID: 745132583597306415}
-  m_Portrait: {fileID: 745132584223505674}
-  m_SkillSlots:
-  - {fileID: 745132584176492498}
-  - {fileID: 745132584991904042}
-  - {fileID: 745132585084204647}
 --- !u!1 &745132585518943063
 GameObject:
   m_ObjectHideFlags: 0
