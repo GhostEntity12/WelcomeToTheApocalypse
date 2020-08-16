@@ -335,7 +335,7 @@ public class Grid : MonoBehaviour
 		}
 	}
 
-	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path)
+	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost)
 	{
 
 		Node m_startNode = GetNode(startPos);
@@ -421,16 +421,99 @@ public class Grid : MonoBehaviour
 			}
 		}
 
-		if(m_foundPath == true)
+
+		if (m_foundPath == true)
 		{
 			Node current = m_endNode;
-			while(current != null)
+			while (current != null)
 			{
 				path.Push(current);
 				current = current.m_previousNode;
 			}
+		}
+
+		m_foundPath = false;
+
+		//Costs
+		m_startNode = GetNode(startPos);
+		m_endNode = GetNode(endPos);
+
+		m_openList.Clear();
+		m_closedList.Clear();
+
+		m_startNode.m_previousNode = null;
+		m_startNode.gScore = 0;
+		m_startNode.hScore = CalculateHeristic(m_startNode, m_endNode);
+		m_startNode.CalculateFScore();
+
+		m_openList.Enqueue(m_startNode);
+
+		//Get Costs
+		while (m_openList.Count > 0)
+		{
+			Node currentNode = m_openList.Dequeue();
+
+			m_closedList.Add(currentNode);
+
+			if (currentNode == m_endNode)
+			{
+				m_foundPath = true;
+				break;
+			}
+
+			for (int i = 0; i < 4; ++i)
+			{
+				Node neighbourNode = currentNode.adjacentNodes[i];
+
+				if (neighbourNode == null)
+				{
+					continue;
+				}
+
+				if (neighbourNode.isWalkable == false)
+				{
+					continue;
+				}
+
+				if (m_closedList.Contains(neighbourNode) == true)
+				{
+					continue;
+				}
+
+				if (m_openList.Contains(neighbourNode) == false)
+				{
+					neighbourNode.m_previousNode = currentNode;
+					neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+					neighbourNode.hScore = CalculateHeristic(neighbourNode, m_endNode);
+					neighbourNode.CalculateFScore();
+					m_openList.Enqueue(neighbourNode);
+				}
+				else
+				{
+					int cost = currentNode.fScore + currentNode.m_costs[i];
+					if (cost < neighbourNode.fScore)
+					{
+						neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+						neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
+						neighbourNode.m_previousNode = currentNode;
+					}
+				}
+			}
+		}
+
+		if (m_foundPath == true)
+		{
+			Node current = m_endNode;
+			int pathLength = 0;
+			while (current != null)
+			{
+				current = current.m_previousNode;
+				++costs;
+			}
+			cost = costs;
 			return true;
 		}
+
 		return false;
 	}
 
