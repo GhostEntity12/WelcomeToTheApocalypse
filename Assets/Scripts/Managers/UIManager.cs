@@ -21,7 +21,8 @@ public class UIManager : MonoBehaviour
 		public Sprite m_SkillBg;
 	}
 
-	bool m_Debug = true; 
+	public bool m_Debug = true;
+	public TextAsset m_TestDialogue;
 
 	[Header("Data")]
 	public UIData m_DeathUIData;
@@ -39,15 +40,19 @@ public class UIManager : MonoBehaviour
 
 
 	[Header("Tweening")]
+	public float m_TweenSpeed = 0.2f;
+	[Space(10)]
 	public GameObject m_PortraitUI;
 	public GameObject m_SkillsUI;
+	public GameObject m_DialogueUI;
 
-	public float m_TweenSpeed = 0.2f;
 
-	Vector3 m_InCachePortrait;
-	Vector3 m_InCacheSkills;
-	Vector3 m_OutCachePortrait;
-	Vector3 m_OutCacheSkills;
+	private Vector3 m_InCachePortrait;
+	private Vector3 m_InCacheSkills;
+	private Vector3 m_InCacheDialogue;
+	private Vector3 m_OutCachePortrait;
+	private Vector3 m_OutCacheSkills;
+	private Vector3 m_OutCacheDialogue;
 
 	private void Awake()
 	{
@@ -58,10 +63,17 @@ public class UIManager : MonoBehaviour
 	void Start()
 	{
 		m_InCachePortrait = m_PortraitUI.transform.position;
-		m_OutCachePortrait = m_InCachePortrait + new Vector3(-150, -150);
+		m_OutCachePortrait = m_InCachePortrait + new Vector3(-300, -300);
+		m_PortraitUI.transform.position = m_OutCachePortrait;
 
 		m_InCacheSkills = m_SkillsUI.transform.position;
-		m_OutCacheSkills = m_InCacheSkills + new Vector3(150, -150);
+		m_OutCacheSkills = m_InCacheSkills + new Vector3(300, -300);
+		m_SkillsUI.transform.position = m_OutCacheSkills;
+
+		m_InCacheDialogue = m_DialogueUI.transform.position;
+		m_OutCacheDialogue = m_InCacheDialogue + new Vector3(0, -600);
+		m_DialogueUI.transform.position = m_OutCacheDialogue;
+
 	}
 
 	/// <summary>
@@ -123,48 +135,39 @@ public class UIManager : MonoBehaviour
 		{
 			if (Input.GetKeyDown(KeyCode.Alpha6))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.Death, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.Death, () => SlideSkillsIn()));
 			}
 			if (Input.GetKeyDown(KeyCode.Alpha7))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.Pestilence, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.Pestilence, () => SlideSkillsIn()));
 			}
 			if (Input.GetKeyDown(KeyCode.Alpha8))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.Famine, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.Famine, () => SlideSkillsIn()));
 			}
 			if (Input.GetKeyDown(KeyCode.Alpha9))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.War, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.War, () => SlideSkillsIn()));
 			}
 			if (Input.GetKeyDown(KeyCode.Alpha0))
 			{
-				SlideUIOut(() => LoadUI(UIStyle.Enemy, () => SlideUIIn()));
+				SlideSkillsOut(() => LoadUI(UIStyle.Enemy, () => SlideSkillsIn()));
+			}
+			if (Input.GetKeyDown(KeyCode.Minus))
+			{
+				SwapToDialogue();
+			}
+			if (Input.GetKeyDown(KeyCode.Equals))
+			{
+				SwapFromDialogue();
 			}
 		}
 	}
 
-	void SlideUIOut(Action actionOnFinish = null)
-	{
-		LeanTween.move(m_PortraitUI, m_OutCachePortrait, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
-		LeanTween.move(m_SkillsUI, m_OutCacheSkills, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic);
-	}
-
-	void SlideUIIn(Action actionOnFinish = null)
-	{
-		LeanTween.move(m_PortraitUI, m_InCachePortrait, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
-		LeanTween.move(m_SkillsUI, m_InCacheSkills, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic);
-	}
-
-	public void SwapUI(UIStyle uiStyle)
-	{
-		SlideUIOut(() => LoadUI(uiStyle, () => SlideUIIn()));
-	}
-
-	public UIStyle GetUIStyle (Unit unit)
+	public UIStyle GetUIStyle(Unit unit)
 	{
 		if (unit.GetAllegiance() == Allegiance.Enemy) return UIStyle.Enemy;
-		
+
 		switch (unit.name)
 		{
 			case "Death":
@@ -176,7 +179,44 @@ public class UIManager : MonoBehaviour
 			case "War":
 				return UIStyle.War;
 			default:
-				return UIStyle.Enemy;	
+				return UIStyle.Enemy;
 		}
+	}
+
+	public void SlideSkillsOut(Action actionOnFinish = null)
+	{
+		LeanTween.move(m_PortraitUI, m_OutCachePortrait, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
+		LeanTween.move(m_SkillsUI, m_OutCacheSkills, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic);
+	}
+
+	void SlideSkillsIn(Action actionOnFinish = null)
+	{
+		LeanTween.move(m_PortraitUI, m_InCachePortrait, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
+		LeanTween.move(m_SkillsUI, m_InCacheSkills, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic);
+	}
+
+	void SlideDialogueIn(Action actionOnFinish = null)
+	{
+		LeanTween.move(m_DialogueUI, m_InCacheDialogue, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
+	}
+
+	void SlideDialogueOut(Action actionOnFinish = null)
+	{
+		LeanTween.move(m_DialogueUI, m_OutCacheDialogue, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
+	}
+
+	public void SwapUI(UIStyle uiStyle)
+	{
+		SlideSkillsOut(() => LoadUI(uiStyle, () => SlideSkillsIn()));
+	}
+
+	public void SwapToDialogue(TextAsset sourceFile = null)
+	{
+		SlideSkillsOut(() => SlideDialogueIn(() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue)));
+	}
+
+	public void SwapFromDialogue()
+	{
+		SlideDialogueOut(() => SlideSkillsIn());
 	}
 }

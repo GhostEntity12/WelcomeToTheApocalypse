@@ -75,6 +75,8 @@ public class GameManager : MonoBehaviour
 
     private List<Node> m_maxSkillRange = new List<Node>();
 
+    private DialogueManager dm;
+
     #endregion
 
     // On startup.
@@ -88,13 +90,21 @@ public class GameManager : MonoBehaviour
         CreateVersionText();
     }
 
+    private void Start()
+    {
+        dm = DialogueManager.instance;
+    }
+
     // Update.
     private void Update()
     {
         // If it's currently the player's turn, check their inputs.
         // Commented out for debugging.
         //if (m_CurrentTurn == Allegiance.Player)
+        if (!dm.dialogueActive)
+        {
             PlayerInputs();
+        }
 
         Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
         //Debug.Log(m_MouseWorldRayHit.point);
@@ -119,7 +129,7 @@ public class GameManager : MonoBehaviour
             // Stop highlighting node's the player can move to.
             foreach (Node n in m_SelectedUnit.m_MovableNodes)
             {
-                n.m_tile.SetActive(false);
+                n.m_NodeHighlight.ChangeHighlight(TileState.None);
             }
             // Deselect unit.
             m_SelectedUnit = null;
@@ -136,6 +146,7 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log(m_TeamCurrentTurn);
+        UIManager.m_Instance.SlideSkillsOut();
     }
 
     /// <summary>
@@ -196,6 +207,7 @@ public class GameManager : MonoBehaviour
                     if (m_MouseWorldRayHit.transform.GetComponent<Unit>() != m_SelectedUnit)
                     {
                         // Reset the nodes highlights before selecting the new unit
+                        m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
                         m_SelectedUnit?.m_MovableNodes.ForEach(u => u.m_NodeHighlight.ChangeHighlight(TileState.None));
 
                         // Store the new unit
@@ -296,6 +308,8 @@ public class GameManager : MonoBehaviour
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
+        // TODO: relpace so the buttons just can't be clicked.
+        // if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
         // Reset the nodes in the old target range
         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
 

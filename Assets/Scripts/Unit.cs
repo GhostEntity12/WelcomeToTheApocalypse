@@ -168,7 +168,7 @@ public class Unit : MonoBehaviour
         if (m_CurrentHealth > m_StartingHealth)
             m_CurrentHealth = m_StartingHealth;
 
-        m_HealthBar.fillAmount = m_CurrentHealth / m_StartingHealth;
+        m_HealthBar.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
         m_HealthChangeIndicatorScript.Reset();
     }
 
@@ -214,6 +214,8 @@ public class Unit : MonoBehaviour
         if (m_CurrentHealth <= 0)
         {
             m_Alive = false;
+            // TODO: replace
+            gameObject.SetActive(false);
         }
     }
 
