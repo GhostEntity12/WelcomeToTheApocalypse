@@ -337,7 +337,8 @@ public class Grid : MonoBehaviour
 
 	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost)
 	{
-
+		//int moveCost = costs;
+		cost = 0;
 		Node m_startNode = GetNode(startPos);
 		Node m_endNode = GetNode(endPos);
 
@@ -410,8 +411,8 @@ public class Grid : MonoBehaviour
 				}
 				else
 				{
-					int cost = currentNode.fScore + currentNode.m_costs[i];
-					if(cost < neighbourNode.fScore)
+					int costs = currentNode.fScore + currentNode.m_costs[i];
+					if(costs < neighbourNode.fScore)
 					{
 						neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
 						neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
@@ -490,8 +491,8 @@ public class Grid : MonoBehaviour
 				}
 				else
 				{
-					int cost = currentNode.fScore + currentNode.m_costs[i];
-					if (cost < neighbourNode.fScore)
+					int costs = currentNode.fScore + currentNode.m_costs[i];
+					if (costs < neighbourNode.fScore)
 					{
 						neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
 						neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
@@ -508,9 +509,9 @@ public class Grid : MonoBehaviour
 			while (current != null)
 			{
 				current = current.m_previousNode;
-				++costs;
+				++pathLength;
 			}
-			cost = costs;
+			cost = pathLength;
 			return true;
 		}
 
