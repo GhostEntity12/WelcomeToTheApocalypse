@@ -247,6 +247,9 @@ public class GameManager : MonoBehaviour
                         if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path, out m_MovementCost))
                         {
                             m_SelectedUnit.SetMovementPath(path);
+                            
+                            // Decrease the unit's movement by the cost.
+                            //- 1 because the number it gets is the number of nodes in the path, which includes the node the unit starts on.
                             m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost - 1);
                         }
 
@@ -287,9 +290,12 @@ public class GameManager : MonoBehaviour
             {
                 m_TargetingState = TargetingState.Move;
 
-                foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                // Clear the skill targeting highlights.
+                foreach (Node n in m_maxSkillRange)
                 {
+                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
                     m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                    n.m_NodeHighlight.ChangeHighlight(TileState.None);
                 }
 
                 m_SelectedUnit.HighlightMovableNodes();
