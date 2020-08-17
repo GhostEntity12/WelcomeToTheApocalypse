@@ -69,10 +69,19 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public List<Unit> m_UnitsInCombat = new List<Unit>();
 
+    /// <summary>
+    /// The cost of the player's unit moving to their target location.
+    /// </summary>
     private int m_MovementCost = 0;
 
+    /// <summary>
+    /// List of the unit's the player controls.
+    /// </summary>
     private List<Unit> m_PlayerUnits = new List<Unit>();
 
+    /// <summary>
+    /// The screen for when the player loses.
+    /// </summary>
     public Canvas m_LoseScreen = null;
 
     #region refactor me. PLEASE
