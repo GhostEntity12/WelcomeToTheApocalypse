@@ -71,6 +71,8 @@ public class GameManager : MonoBehaviour
 
     private int m_MovementCost = 0;
 
+    private List<Unit> m_PlayerUnits = new List<Unit>();
+
     #region refactor me. PLEASE
 
     private Node m_CachedNode;
@@ -95,6 +97,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         dm = DialogueManager.instance;
+
+        // Get all the unit's the player controls.
+        foreach(Unit u in GameObject.FindObjectsOfType<Unit>())
+        {
+            if (u.GetAllegiance() == Allegiance.Player)
+                m_PlayerUnits.Add(u);
+        }
     }
 
     // Update.
@@ -103,10 +112,10 @@ public class GameManager : MonoBehaviour
         // If it's currently the player's turn, check their inputs.
         // Commented out for debugging.
         //if (m_CurrentTurn == Allegiance.Player)
-        if (!dm.dialogueActive)
-        {
+        //if (!dm.dialogueActive)
+        //{
             PlayerInputs();
-        }
+        //}
 
         Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
         //Debug.Log(m_MouseWorldRayHit.point);
@@ -247,9 +256,9 @@ public class GameManager : MonoBehaviour
                         if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path, out m_MovementCost))
                         {
                             m_SelectedUnit.SetMovementPath(path);
-                            
+
                             // Decrease the unit's movement by the cost.
-                            //- 1 because the number it gets is the number of nodes in the path, which includes the node the unit starts on.
+                            //- 1 because the cost it gets is the number of nodes in the path, which includes the node the unit starts on.
                             m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost - 1);
                         }
 
@@ -375,6 +384,31 @@ public class GameManager : MonoBehaviour
             return true;
         }
         else return false;
+    }
+
+    /// <summary>
+    /// Check the player's units to see if they're alive.
+    /// </summary>
+    public void CheckPlayerUnitsAlive()
+    {
+        // The number of people alive.
+        int alive = 0;
+
+        // Go through all the player's units, and check how many are alive.
+        foreach(Unit u in m_PlayerUnits)
+        {
+            if (u.GetAlive())
+            {
+                alive++;
+            }
+        }
+
+        // If true, all player units are dead.
+        if (alive == 0)
+        {
+            // Everybody's dead.
+            Debug.Log("Everybody's dead, everybody's dead Dave!");
+        }
     }
 
     public static void CreateVersionText()
