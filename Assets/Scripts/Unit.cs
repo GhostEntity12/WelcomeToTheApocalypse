@@ -104,8 +104,14 @@ public class Unit : MonoBehaviour
     /// </summary>
     public GameObject m_HealthChangeIndicator = null;
 
+    /// <summary>
+    /// The text of the health change indicator.
+    /// </summary>
     private TextMeshProUGUI m_HealthChangeIndicatorText = null;
 
+    /// <summary>
+    /// The script for the health change indicator.
+    /// </summary>
     private HealthChangeIndicator m_HealthChangeIndicatorScript = null;
 
     // On startup.
@@ -206,15 +212,21 @@ public class Unit : MonoBehaviour
     public void ResetCurrentHealth() { m_CurrentHealth = m_StartingHealth; }
 
     /// <summary>
-    /// Check if the character's health is above 0.
-    /// If equal to or below, the character is not alive.
+    /// Check if the unit's health is above 0.
+    /// If equal to or below, the unit is not alive.
     /// </summary>
     private void CheckAlive()
     {
         if (m_CurrentHealth <= 0)
         {
+            Debug.Log("Dead");
             m_Alive = false;
+
             // TODO: replace
+            // If this is a player unit, check if the player has any units remaining.
+            if (m_Allegiance == Allegiance.Player)
+                GameManager.m_Instance.CheckPlayerUnitsAlive();
+
             gameObject.SetActive(false);
         }
     }
@@ -254,7 +266,6 @@ public class Unit : MonoBehaviour
         m_MovementPath = path;
         m_Moving = true;
         SetTargetNodePosition(m_MovementPath.Pop());
-        DecreaseCurrentMovement(path.Count);
     }
 
     /// <summary>
@@ -280,6 +291,12 @@ public class Unit : MonoBehaviour
     /// </summary>
     /// <returns> The allegiance of the unit. </returns>
     public Allegiance GetAllegiance() { return m_Allegiance; }
+
+    /// <summary>
+    /// Get if the unit is alive.
+    /// </summary>
+    /// <returns>If the unit is alive.</returns>
+    public bool GetAlive() { return m_Alive; }
 
     /// <summary>
     /// Add a status effect to the unit.
