@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
 	public class UIData
 	{
 		public Sprite m_Portrait;
+		public RenderTexture m_PortraitRenderTexture;
 		public Color m_Dark;
 		public Color m_Medium;
 		public Color m_Light;
@@ -37,6 +38,7 @@ public class UIManager : MonoBehaviour
 	public Image m_TurnBackground;
 	public Image m_Portrait;
 	public Image[] m_SkillSlots;
+	public RawImage m_PortraitRenderTexture;
 
 
 	[Header("Tweening")]
@@ -87,7 +89,18 @@ public class UIManager : MonoBehaviour
 			slot.sprite = uiData.m_SkillBg;
 		}
 
-		m_Portrait.sprite = uiData.m_Portrait;
+		if (uiData.m_PortraitRenderTexture)
+		{
+			m_PortraitRenderTexture.color = new Color(1, 1, 1, 1);
+			m_Portrait.sprite = null;
+			m_PortraitRenderTexture.texture = uiData.m_PortraitRenderTexture;
+		}
+		else
+		{
+			m_PortraitRenderTexture.texture = null;
+			m_PortraitRenderTexture.color = new Color(1, 1, 1, 0);
+			m_Portrait.sprite = uiData.m_Portrait;
+		}
 		m_FaceBackground.color = uiData.m_Medium;
 		m_SkillsBackground.color = uiData.m_Light;
 		m_TurnBackground.color = uiData.m_Dark;
