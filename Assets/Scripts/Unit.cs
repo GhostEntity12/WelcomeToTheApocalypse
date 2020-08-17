@@ -222,6 +222,15 @@ public class Unit : MonoBehaviour
             Debug.Log("Dead");
             m_Alive = false;
 
+            // Check if the unit has the "DefeatEnemyWinCondition" script on it.
+            // If it does, the player has won the level by defeating the boss.
+            try
+            {
+                DefeatEnemyWinCondition defeat = GetComponent<DefeatEnemyWinCondition>();
+                defeat.EnemyDefeated();
+            }
+            catch{}
+
             // TODO: replace
             // If this is a player unit, check if the player has any units remaining.
             if (m_Allegiance == Allegiance.Player)
