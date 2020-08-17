@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -68,6 +68,8 @@ public class GameManager : MonoBehaviour
     /// List of the units in currently "in combat".
     /// </summary>
     public List<Unit> m_UnitsInCombat = new List<Unit>();
+
+    private int m_MovementCost = 0;
 
     #region refactor me. PLEASE
 
@@ -242,10 +244,10 @@ public class GameManager : MonoBehaviour
                         }
 
                         Stack<Node> path = new Stack<Node>();
-                        if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path))
+                        if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path, out m_MovementCost))
                         {
                             m_SelectedUnit.SetMovementPath(path);
-                            //m_SelectedUnit.DecreaseCurrentMovement(m_SelectedUnit.GetMovementPath().Count);
+                            m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost - 1);
                         }
 
                         // Should we do this after the unit has finished moving? - James L

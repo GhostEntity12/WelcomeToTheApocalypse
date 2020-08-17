@@ -260,7 +260,6 @@ public class Unit : MonoBehaviour
         m_MovementPath = path;
         m_Moving = true;
         SetTargetNodePosition(m_MovementPath.Pop());
-        DecreaseCurrentMovement(path.Count);
     }
 
     /// <summary>
