@@ -73,6 +73,8 @@ public class GameManager : MonoBehaviour
 
     private List<Unit> m_PlayerUnits = new List<Unit>();
 
+    public Canvas m_LoseScreen = null;
+
     #region refactor me. PLEASE
 
     private Node m_CachedNode;
@@ -406,8 +408,12 @@ public class GameManager : MonoBehaviour
         // If true, all player units are dead.
         if (alive == 0)
         {
-            // Everybody's dead.
+            // All the player's units are dead, the player lost.
+            // Pause the game and display the lose screen for the player.
             Debug.Log("Everybody's dead, everybody's dead Dave!");
+
+            Time.timeScale = 0.0f;
+            m_LoseScreen.gameObject.SetActive(true);
         }
     }
 

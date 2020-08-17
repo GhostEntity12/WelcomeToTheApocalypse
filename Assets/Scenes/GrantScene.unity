@@ -1805,6 +1805,7 @@ MonoBehaviour:
   m_UnitsInCombat:
   - {fileID: 768579076}
   - {fileID: 1675469447}
+  m_LoseScreen: {fileID: 0}
 --- !u!4 &1589347035
 Transform:
   m_ObjectHideFlags: 0
@@ -2037,6 +2038,18 @@ CapsuleCollider:
   m_Height: 1.9999996
   m_Direction: 1
   m_Center: {x: 0, y: 0.9999998, z: 0}
+--- !u!114 &1675469449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1675469446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21d658ca3d9b9b34fb2f2a7c2877198d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1795210187
 GameObject:
   m_ObjectHideFlags: 0
