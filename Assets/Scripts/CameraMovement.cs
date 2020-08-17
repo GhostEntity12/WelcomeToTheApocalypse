@@ -1,16 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    [Header("Movement")]
     public float m_MoveSpeed = 3.0f;
-
     private Vector3 m_MovementInput = Vector3.zero;
-
     public Collider m_CameraLimits;
-
     private Bounds m_CameraBounds;
+
+    [Header("Rotation")]
+    public float m_RotationAmount = 90f;
+    public float m_RotationSpeed = 0.5f;
+    public LeanTweenType rotationType;
+    public KeyCode m_RotateLeftKey = KeyCode.Q;
+    public KeyCode m_RotateRightKey = KeyCode.E;
+    private bool m_IsRotating;
+    FacingDirection m_LookDirection = FacingDirection.North;
+
+    enum FacingDirection
+    {
+        North, East, South, West
+    }
 
     private void Awake()
     {
@@ -47,5 +57,21 @@ public class CameraMovement : MonoBehaviour
 
         // Move the camera.
         transform.position = clampedPosition;
+
+        if (!m_IsRotating)
+        {
+            if (Input.GetKeyDown(m_RotateLeftKey))
+            {
+                m_IsRotating = true;
+                m_LookDirection = (FacingDirection)(((int)m_LookDirection + 5) % 4);
+                LeanTween.rotate(gameObject, new Vector3(0, (int)m_LookDirection * 90f, 0), 0.4f).setEase(rotationType).setOnComplete(() => m_IsRotating = false);
+            }
+            else if (Input.GetKeyDown(m_RotateRightKey))
+            {
+                m_IsRotating = true;
+                m_LookDirection = (FacingDirection)(((int)m_LookDirection + 3) % 4);
+                LeanTween.rotate(gameObject, new Vector3(0, (int)m_LookDirection * 90f, 0), 0.4f).setEase(rotationType).setOnComplete(() => m_IsRotating = false);
+            }
+        }
     }
 }
