@@ -114,6 +114,16 @@ public class Unit : MonoBehaviour
     /// </summary>
     private HealthChangeIndicator m_HealthChangeIndicatorScript = null;
 
+    /// <summary>
+    /// The starting action points of the unit.
+    /// </summary>
+    public int m_StartingActionPoints = 1;
+
+    /// <summary>
+    /// The currect action points of the unit.
+    /// </summary>
+    private int m_CurrentActionPoints = 0;
+
     // On startup.
     void Awake()
     {
@@ -121,11 +131,10 @@ public class Unit : MonoBehaviour
 
         m_CurrentMovement = m_StartingMovement;
 
-        if (m_HealthChangeIndicator != null)
-        {
+        m_CurrentActionPoints = m_StartingActionPoints;
+
         m_HealthChangeIndicatorText = m_HealthChangeIndicator.GetComponent<TextMeshProUGUI>();
         m_HealthChangeIndicatorScript = m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
-        }
     }
 
     void Start()
@@ -306,6 +315,29 @@ public class Unit : MonoBehaviour
     /// </summary>
     /// <returns>If the unit is alive.</returns>
     public bool GetAlive() { return m_Alive; }
+
+    /// <summary>
+    /// Get the unit's action points.
+    /// </summary>
+    /// <returns>The current amount of action points the unit has.</returns>
+    public int GetActionPoints() { return m_CurrentActionPoints; }
+
+    /// <summary>
+    /// Decrease the amount of action points the unit has.
+    /// </summary>
+    /// <param name="decrease">The amount to decrease the unit's action points by.</param>
+    public void DecreaseActionPoints(int decrease)
+    {
+        m_CurrentActionPoints -= decrease;
+    }
+
+    /// <summary>
+    /// Reset the unit's action points.
+    /// </summary>
+    public void ResetActionPoints()
+    {
+        m_CurrentActionPoints = m_StartingActionPoints;
+    }
 
     /// <summary>
     /// Add a status effect to the unit.

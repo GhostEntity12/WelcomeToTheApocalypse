@@ -52,6 +52,8 @@ public class BaseSkill : ScriptableObject
     public int m_CastableDistance;
     // How large of an area around the cast location will be affected
     public int m_AffectedRange;
+    // The cost of using the skill
+    public int m_Cost;
 
     protected Unit[] affectedUnits;
     public List<Node> affectedNodes;
