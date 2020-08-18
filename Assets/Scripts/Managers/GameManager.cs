@@ -148,7 +148,7 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log(m_TeamCurrentTurn);
-        UIManager.m_Instance.SlideSkillsOut();
+        UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
     }
 
     /// <summary>
