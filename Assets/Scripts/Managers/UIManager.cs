@@ -131,7 +131,6 @@ public class UIManager : MonoBehaviour
 	/// <param name="offset">The offset for when the element is offscreen</param>
 	private void SetCachesAndPosition(TweenedElement tweenedElement, Vector2 offset)
 	{
-		print(tweenedElement.m_RectTransform.anchoredPosition);
 		tweenedElement.m_Cache[0] = tweenedElement.m_RectTransform.anchoredPosition;
 		tweenedElement.m_Cache[1] = tweenedElement.m_Cache[0] + offset;
 		tweenedElement.m_RectTransform.anchoredPosition = tweenedElement.m_Cache[1];
