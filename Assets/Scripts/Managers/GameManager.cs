@@ -465,6 +465,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Get the allegiance of which team's turn it currently is.
+    /// </summary>
+    /// <returns>The allegiance of the team whose turn it currently is.</returns>
+    public Allegiance GetCurrentTurn() { return m_TeamCurrentTurn; }
+
     public static void CreateVersionText()
     {
         if (GameObject.Find("VersionCanvas")) return;
