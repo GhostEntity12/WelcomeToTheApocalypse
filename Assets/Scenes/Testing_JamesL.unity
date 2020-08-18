@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -193,6 +193,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 198cb5f86de279e4caac4b838f0f25ce,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 198cb5f86de279e4caac4b838f0f25ce, type: 3}
 --- !u!1 &181584446 stripped
@@ -222,6 +227,7 @@ MonoBehaviour:
   m_PassiveEffect: {fileID: 0}
   m_Allegiance: 0
   m_HealthBar: {fileID: 0}
+  m_HealthChangeIndicator: {fileID: 0}
 --- !u!64 &181584448
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -322,7 +328,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 198cb5f86de279e4caac4b838f0f25ce,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 198cb5f86de279e4caac4b838f0f25ce,
         type: 3}
@@ -374,6 +380,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 198cb5f86de279e4caac4b838f0f25ce,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 198cb5f86de279e4caac4b838f0f25ce, type: 3}
 --- !u!1 &284546523 stripped
@@ -402,6 +413,7 @@ MonoBehaviour:
   m_PassiveEffect: {fileID: 0}
   m_Allegiance: 0
   m_HealthBar: {fileID: 0}
+  m_HealthChangeIndicator: {fileID: 0}
 --- !u!64 &284546528
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -487,6 +499,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 198cb5f86de279e4caac4b838f0f25ce,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 198cb5f86de279e4caac4b838f0f25ce, type: 3}
@@ -686,7 +703,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1314433147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -821,6 +838,7 @@ MonoBehaviour:
   m_PassiveEffect: {fileID: 0}
   m_Allegiance: 1
   m_HealthBar: {fileID: 0}
+  m_HealthChangeIndicator: {fileID: 0}
 --- !u!64 &1691250959
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -907,6 +925,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 198cb5f86de279e4caac4b838f0f25ce,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 198cb5f86de279e4caac4b838f0f25ce, type: 3}
 --- !u!1 &1917527550
@@ -981,6 +1004,7 @@ MonoBehaviour:
   m_PassiveEffect: {fileID: 0}
   m_Allegiance: 0
   m_HealthBar: {fileID: 0}
+  m_HealthChangeIndicator: {fileID: 0}
 --- !u!64 &1981813688
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -24,8 +24,10 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI nameBox;
     [Tooltip("The object which holds characters' dialogue")]
     public TextMeshProUGUI dialogueBox;
-    [Tooltip("The object which holds characters' image")]
-    public Image bust;
+    [Tooltip("The left-side object which holds characters' image")]
+    public Image bustL;
+    [Tooltip("The right-side object which holds characters' image")]
+    public Image bustR;
 
     [Header("Text Display Options")]
     [Tooltip("The length of time to wait between displaying characters")]
@@ -41,6 +43,8 @@ public class DialogueManager : MonoBehaviour
     public Sprite defaultCharacterSprite;
     readonly Dictionary<string, CharacterPortraitContainer> characterDictionary = new Dictionary<string, CharacterPortraitContainer>();
 
+    CharacterPortraitContainer leftCharacter;
+    CharacterPortraitContainer rightCharacter;
 
     string[] fileLines;
     int currentLine;
@@ -62,7 +66,8 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     void ClearDialogueBox()
     {
-        bust.sprite = null;
+        bustL.sprite = null;
+        bustR.sprite = null;
         nameBox.text = string.Empty;
         dialogueBox.text = string.Empty;
     }
@@ -79,6 +84,35 @@ public class DialogueManager : MonoBehaviour
         characterName = parsedText[0];
         characterExpression = parsedText[1].ToLower();
         characterDialogue = parsedText[2];
+        try
+        {
+            switch (parsedText[3].ToLower()[1])
+            {
+                case 'l':
+                    leftCharacter = characterDictionary[characterName];
+                    bustL.sprite = GetCharacterPortrait();
+                    break;
+                case 'r':
+                    rightCharacter = characterDictionary[characterName];
+                    bustR.sprite = GetCharacterPortrait();
+                    break;
+                default:
+                    throw new IndexOutOfRangeException();
+            }
+        }
+        catch (IndexOutOfRangeException)
+        {
+            if (leftCharacter == characterDictionary[characterName] || leftCharacter == null)
+            {
+                leftCharacter = characterDictionary[characterName];
+                bustL.sprite = GetCharacterPortrait();
+            }
+            else
+            {
+                rightCharacter = characterDictionary[characterName];
+                bustR.sprite = GetCharacterPortrait();
+            }
+        }
 
         // Clears the dialogue box
         dialogueBox.text = string.Empty;
@@ -86,20 +120,20 @@ public class DialogueManager : MonoBehaviour
         // Sets the name box
         nameBox.text = characterName;
 
-        // Converts the expression string into the associated Sprite variable in the given character
-        // Returns the unknown character sprite if no associated character is found
-        try
-        {
-            bust.sprite = (Sprite)characterDictionary[characterName].GetType().GetField(characterExpression).GetValue(characterDictionary[characterName]);
-        }
-        catch (KeyNotFoundException)
-        {
-            bust.sprite = defaultCharacterSprite;
-        }
-
         // Declare and then start the coroutine/IEnumerator so it can be stopped later
         displayDialogueCoroutine = DisplayDialogue(characterDialogue);
         StartCoroutine(displayDialogueCoroutine);
+    }
+
+    /// <summary>
+    /// Converts the expression string into the associated Sprite variable in the given character. 
+    /// Returns the unknown character sprite if no associated character is found
+    /// </summary>
+    /// <returns></returns>
+    Sprite GetCharacterPortrait()
+    {
+        try { return (Sprite)characterDictionary[characterName].GetType().GetField(characterExpression).GetValue(characterDictionary[characterName]); }
+        catch (KeyNotFoundException) { return defaultCharacterSprite; }
     }
 
     /// <summary>
@@ -157,6 +191,8 @@ public class DialogueManager : MonoBehaviour
 
                 UIManager.m_Instance.SwapFromDialogue();
                 dialogueActive = false;
+                leftCharacter = null;
+                rightCharacter = null;
                 ClearDialogueBox();
                 sceneName = null;
                 return;

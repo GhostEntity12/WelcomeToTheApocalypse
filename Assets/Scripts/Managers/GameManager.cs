@@ -149,7 +149,7 @@ public class GameManager : MonoBehaviour
             m_TeamCurrentTurn = Allegiance.Enemy;
 
             // Stop highlighting node's the player can move to.
-            foreach (Node n in m_SelectedUnit.m_MovableNodes)
+            foreach (Node n in m_SelectedUnit?.m_MovableNodes)
             {
                 n.m_NodeHighlight.ChangeHighlight(TileState.None);
             }
