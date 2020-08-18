@@ -333,26 +333,30 @@ public class GameManager : MonoBehaviour
             // The player is choosing a tile to move a unit to.
             else if (m_TargetingState == TargetingState.Move)
             {
-                // Check input.
-                if (m_LeftMouseDown)
+                // Make sure a unit is selected.
+                if (m_SelectedUnit != null)
                 {
-                    if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
+                    // Check input.
+                    if (m_LeftMouseDown)
                     {
-                        // Clear the previously highlighted tiles
-                        foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                        if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
                         {
-                            n.m_NodeHighlight.ChangeHighlight(TileState.None);
+                            // Clear the previously highlighted tiles
+                            foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                            {
+                                n.m_NodeHighlight.ChangeHighlight(TileState.None);
+                            }
+                            Stack<Node> path = new Stack<Node>();
+                            if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path, out m_MovementCost))
+                            {
+                                m_SelectedUnit.SetMovementPath(path);
+                                // Decrease the unit's movement by the cost.
+                                //- 1 because the cost it gets is the number of nodes in the path, which includes the node the unit starts on.
+                                m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost - 1);
+                            }
+                            // Should we do this after the unit has finished moving? - James L
+                            m_SelectedUnit.HighlightMovableNodes(hitNode);
                         }
-                        Stack<Node> path = new Stack<Node>();
-                        if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path, out m_MovementCost))
-                        {
-                            m_SelectedUnit.SetMovementPath(path);
-                            // Decrease the unit's movement by the cost.
-                            //- 1 because the cost it gets is the number of nodes in the path, which includes the node the unit starts on.
-                            m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost - 1);
-                        }
-                        // Should we do this after the unit has finished moving? - James L
-                        m_SelectedUnit.HighlightMovableNodes(hitNode);
                     }
                 }
             }
