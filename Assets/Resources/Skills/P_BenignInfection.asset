@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baf34f0cebfdc1940bce58b28d8b3c42, type: 3}
+  m_Name: P_BenignInfection
+  m_EditorClassIdentifier: 
+  m_SkillName: Benign Infection
+  m_Icon: {fileID: 0}
+  m_Description: The user does something to heal an ally, idk?
+  targets: 1
+  targetType: 0
+  excludeCaster: 0
+  m_SkillType: 1
+  m_CooldownLength: 2
+  m_CooldownRemaining: 0
+  m_CastableDistance: 2
+  m_AffectedRange: 1
+  m_Cost: 2
+  m_HealAmount: 3
+  chosenTarget: {fileID: 0}

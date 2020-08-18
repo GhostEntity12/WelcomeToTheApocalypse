@@ -149,7 +149,7 @@ public class GameManager : MonoBehaviour
             m_TeamCurrentTurn = Allegiance.Enemy;
 
             // Stop highlighting node's the player can move to.
-            foreach (Node n in m_SelectedUnit.m_MovableNodes)
+            foreach (Node n in m_SelectedUnit?.m_MovableNodes)
             {
                 n.m_NodeHighlight.ChangeHighlight(TileState.None);
             }
@@ -158,7 +158,15 @@ public class GameManager : MonoBehaviour
         }
         // Enemy ends turn.
         else
+        {
             m_TeamCurrentTurn = Allegiance.Player;
+
+            // Reset the action points of the player's units.
+            foreach(Unit u in m_PlayerUnits)
+            {
+                u.ResetActionPoints();
+            }
+        }
 
         // Reset the movement of the units whos turn it now is.
         foreach (Unit u in m_UnitsInCombat)
@@ -278,14 +286,37 @@ public class GameManager : MonoBehaviour
                     }
                 }
 
-                // Select character to use a skill on.
+                // Select tile to use a skill on.
                 else if (m_TargetingState == TargetingState.Skill)
                 {
                     // If hit tile is in affectable range,
                     if (hitNode.m_NodeHighlight.m_IsTargetable)
                     {
-                        m_SelectedSkill.affectedNodes = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, hitNode);
-                        m_SelectedUnit.ActivateSkill(m_SelectedSkill);
+                        if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
+                        {
+                            m_SelectedSkill.affectedNodes = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, hitNode);
+                            m_SelectedUnit.ActivateSkill(m_SelectedSkill);
+                            m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
+                            Debug.Log(m_SelectedUnit.GetActionPoints());
+
+                            // Now deselect the skill and clear the targeting highlights.
+                            m_TargetingState = TargetingState.Move;
+
+                            foreach (Node n in m_maxSkillRange)
+                            {
+                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                                n.m_NodeHighlight.ChangeHighlight(TileState.None);
+                            }
+            
+                            m_SelectedUnit.HighlightMovableNodes();
+            
+                            m_SelectedSkill = null;
+                        }
+                        else
+                        {
+                            Debug.Log("Not enough action points!");
+                        }
                     }
                     // else return;
                 }
@@ -297,9 +328,17 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetKeyDown(m_AbilityHotkeys[i]))
             {
-                SkillSelection(i);
-                m_TargetingState = TargetingState.Skill;
-                break;
+                // Make sure the unit can afford to cast the skill before selecting it.
+                if (m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.GetSkill(i).m_Cost)
+                {
+                    SkillSelection(i);
+                    m_TargetingState = TargetingState.Skill;
+                    break;
+                }
+                else
+                {
+                    Debug.Log("You don't have enough action points to select this skill!");
+                }
             }
         }
 
@@ -425,6 +464,12 @@ public class GameManager : MonoBehaviour
             m_LoseScreen.gameObject.SetActive(true);
         }
     }
+
+    /// <summary>
+    /// Get the allegiance of which team's turn it currently is.
+    /// </summary>
+    /// <returns>The allegiance of the team whose turn it currently is.</returns>
+    public Allegiance GetCurrentTurn() { return m_TeamCurrentTurn; }
 
     public static void CreateVersionText()
     {
