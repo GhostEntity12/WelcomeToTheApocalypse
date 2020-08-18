@@ -23,6 +23,8 @@ public class Grid : MonoBehaviour
 	int maxX, maxZ;
 	int posX, posZ;
 
+	List<Vector3> nodeViz = new List<Vector3>();
+
 	[Tooltip("Used to show the node position with something like a really small plane or something")]
 	public GameObject node;
 	[Tooltip("Used to store the objects for the nodes")]
@@ -157,6 +159,10 @@ public class Grid : MonoBehaviour
 					n.m_tile = Instantiate(node, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, nodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
 					n.m_NodeHighlight.ChangeHighlight(TileState.None);
+				}
+				if (n.obstacle != null)
+				{
+					nodeViz.Add(n.worldPosition);
 				}
 				m_grid[x, z] = n;
 
@@ -300,7 +306,6 @@ public class Grid : MonoBehaviour
 	{
 		Node n = GetNode(unit.transform.position);
 		n.unit = unit.GetComponent<Unit>();
-		n.isWalkable = false;
 	}
 
 	public Unit GetUnit(Vector3 mousePos)
@@ -311,7 +316,6 @@ public class Grid : MonoBehaviour
 	public void RemoveUnit(Node unitNode)
 	{
 		unitNode.unit = null;
-		unitNode.isWalkable = true;
 	}
 
 	public void ClearNode()
@@ -319,6 +323,15 @@ public class Grid : MonoBehaviour
 		foreach (Node node in nodething)
 		{
 			node.m_NodeHighlight.ChangeHighlight(TileState.None);
+		}
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Color.black;
+		for(int i = 0; i < nodeViz.Count; ++i)
+		{
+			Gizmos.DrawWireCube(nodeViz[i], extends);
 		}
 	}
 
@@ -541,4 +554,28 @@ public class Grid : MonoBehaviour
 			return ((19 * dx) + 10 * (dz - dx));
 		}
 	}
+
+	void Update()
+	{
+		//if (!searched)
+		//{
+		//	foreach (GameObject go in unit)
+		//	{
+		//		GetArea(4, go);
+		//	}
+		//	searched = true;
+		//}
+	}
+
+	//Will be Deleted
+	[ContextMenu("Test")]
+	void Test()
+	{
+		foreach (GameObject go in unit)
+		{
+			print(go.name + " Node Pos: " + GetNode(go.transform.position).worldPosition);
+			print(go.name + " Pos: " + go.transform.position);
+		}
+	}
+	/*Multple Floor stuff will be deleted at a later date*/
 }
