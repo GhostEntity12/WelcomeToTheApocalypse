@@ -25,8 +25,8 @@ public class UIManager : MonoBehaviour
 	[Serializable]
 	public class TweenedElement
 	{
-		public Transform m_Transform;
-		internal Vector3[] m_Cache = new Vector3[2];
+		public RectTransform m_RectTransform;
+		internal Vector2[] m_Cache = new Vector2[2];
 	}
 
 	public bool m_Debug = true;
@@ -72,11 +72,11 @@ public class UIManager : MonoBehaviour
 	private void Start()
 	{
 		// Cache the positions
-		SetCachesAndPosition(m_PortraitUI, new Vector3(-300, -300));
-		SetCachesAndPosition(m_SkillsUI, new Vector3(300, -300));
-		SetCachesAndPosition(m_LeftSpeaker, new Vector3(-600, 0));
-		SetCachesAndPosition(m_RightSpeaker, new Vector3(600, 0));
-		SetCachesAndPosition(m_DialogueUI, new Vector3(0, -600));
+		SetCachesAndPosition(m_PortraitUI, new Vector2(-400, -400));
+		SetCachesAndPosition(m_SkillsUI, new Vector2(400, -400));
+		SetCachesAndPosition(m_LeftSpeaker, new Vector2(-800, 0));
+		SetCachesAndPosition(m_RightSpeaker, new Vector2(800, 0));
+		SetCachesAndPosition(m_DialogueUI, new Vector2(0, -400));
 	}
 
 	private void Update()
@@ -129,11 +129,12 @@ public class UIManager : MonoBehaviour
 	/// </summary>
 	/// <param name="tweenedElement">The element whose positions are to be cached</param>
 	/// <param name="offset">The offset for when the element is offscreen</param>
-	private void SetCachesAndPosition(TweenedElement tweenedElement, Vector3 offset)
+	private void SetCachesAndPosition(TweenedElement tweenedElement, Vector2 offset)
 	{
-		tweenedElement.m_Cache[0] = tweenedElement.m_Transform.position;
+		print(tweenedElement.m_RectTransform.anchoredPosition);
+		tweenedElement.m_Cache[0] = tweenedElement.m_RectTransform.anchoredPosition;
 		tweenedElement.m_Cache[1] = tweenedElement.m_Cache[0] + offset;
-		tweenedElement.m_Transform.position = tweenedElement.m_Cache[1];
+		tweenedElement.m_RectTransform.anchoredPosition = tweenedElement.m_Cache[1];
 	}
 
 	/// <summary>
@@ -255,7 +256,7 @@ public class UIManager : MonoBehaviour
 	/// <param name="tweenType">Overides the twwn type</param>
 	public void SlideElement(TweenedElement element, ScreenState screenState, Action actionOnFinish = null, LeanTweenType tweenType = LeanTweenType.easeInOutCubic)
 	{
-		LeanTween.move(element.m_Transform.gameObject, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(tweenType).setOnComplete(actionOnFinish);
+		LeanTween.move(element.m_RectTransform, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(tweenType).setOnComplete(actionOnFinish);
 	}
 
 	/// <summary>
