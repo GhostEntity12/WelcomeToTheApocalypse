@@ -402,6 +402,7 @@ public class GameManager : MonoBehaviour
         {
             EndCurrentTurn();
         }
+        #region Old Player Input Code, kept just in case something is wrong with the new code.
         /*
         #region SKILL TARGETING STUFF, please refactor me. 
 
@@ -529,6 +530,7 @@ public class GameManager : MonoBehaviour
             }
         }
         */
+        #endregion
     }
 
     /// <summary>
