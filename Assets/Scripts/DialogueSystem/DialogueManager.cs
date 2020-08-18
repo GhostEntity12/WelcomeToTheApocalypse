@@ -5,8 +5,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-using static Ghost.Fade;
-
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager instance;
@@ -24,6 +22,9 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI nameBox;
     [Tooltip("The object which holds characters' dialogue")]
     public TextMeshProUGUI dialogueBox;
+    [Tooltip("The container for the object which holds a character's name")]
+    public RectTransform nameHolder;
+    private Vector2 namePos;
     [Tooltip("The left-side object which holds characters' image")]
     public Image bustL;
     [Tooltip("The right-side object which holds characters' image")]
@@ -52,6 +53,8 @@ public class DialogueManager : MonoBehaviour
     string characterName, characterDialogue, characterExpression;
     CharacterPortraitContainer currentCharacter;
 
+    private enum Side { Left, Right }
+
     private void Awake()
     {
         instance = this;
@@ -61,6 +64,7 @@ public class DialogueManager : MonoBehaviour
             characterDictionary.Add(characterPortraits.name, characterPortraits);
         }
         ClearDialogueBox(); // Clears the dialogue box, just in case
+        namePos = nameHolder.anchoredPosition;
     }
 
     /// <summary>
@@ -96,7 +100,6 @@ public class DialogueManager : MonoBehaviour
         characterExpression = parsedText[1].ToLower();
         characterDialogue = parsedText[2];
 
-
         if (sameChar)
         {
             StartDisplaying();
@@ -107,19 +110,18 @@ public class DialogueManager : MonoBehaviour
         }
 
     }
-    public void StartDisplaying() { 
+    public void StartDisplaying()
+    {
         // Set the portrait
         try
         {
             switch (parsedText[3].ToLower()[1])
             {
                 case 'l':
-                    leftCharacter = currentCharacter;
-                    bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                    ManageDialoguePortrait(Side.Left);
                     break;
                 case 'r':
-                    rightCharacter = currentCharacter;
-                    bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                    ManageDialoguePortrait(Side.Right);
                     break;
                 default:
                     throw new IndexOutOfRangeException();
@@ -129,13 +131,11 @@ public class DialogueManager : MonoBehaviour
         {
             if (leftCharacter == currentCharacter || leftCharacter == null)
             {
-                leftCharacter = currentCharacter;
-                bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                ManageDialoguePortrait(Side.Left);
             }
             else
             {
-                rightCharacter = currentCharacter;
-                bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                ManageDialoguePortrait(Side.Right);
             }
         }
 
@@ -153,6 +153,60 @@ public class DialogueManager : MonoBehaviour
         // Declare and then start the coroutine/IEnumerator so it can be stopped later
         displayDialogueCoroutine = DisplayDialogue(characterDialogue);
         StartCoroutine(displayDialogueCoroutine);
+    }
+
+    private void ManageDialoguePortrait(Side side)
+    {
+        // Set references
+        CharacterPortraitContainer character;
+        Image bust;
+        UIManager.TweenedElement speaker;
+        CharacterPortraitContainer otherCharacter;
+        Image otherBust;
+        UIManager.TweenedElement otherSpeaker;
+
+        if (side == Side.Left)
+        {
+            character = leftCharacter;
+            bust = bustL;
+            speaker = UIManager.m_Instance.m_LeftSpeaker;
+            leftCharacter = currentCharacter;
+            otherCharacter = rightCharacter;
+            otherBust = bustR;
+            otherSpeaker = UIManager.m_Instance.m_RightSpeaker;
+            nameHolder.anchoredPosition = namePos;
+        }
+        else
+        {
+            character = rightCharacter;
+            bust = bustR;
+            speaker = UIManager.m_Instance.m_RightSpeaker;
+            rightCharacter = currentCharacter;
+            otherCharacter = leftCharacter;
+            otherBust = bustL;
+            otherSpeaker = UIManager.m_Instance.m_LeftSpeaker;
+            nameHolder.anchoredPosition = new Vector2(-namePos.x, namePos.y);
+        }
+
+
+        LeanTween.color(otherBust.rectTransform, Color.gray, 0.1f);
+        LeanTween.color(bust.rectTransform, Color.white, 0.1f);
+
+        if (character == currentCharacter)
+        {
+            bust.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+        }
+        else
+        {
+            LeanTween.color(otherBust.rectTransform, Color.gray, 0.1f);
+            LeanTween.color(bust.rectTransform, Color.white, 0.1f);
+            character = currentCharacter;
+            UIManager.m_Instance.SlideElement(speaker, UIManager.ScreenState.Offscreen, () =>
+            {
+                bust.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                UIManager.m_Instance.SlideElement(speaker, UIManager.ScreenState.Onscreen);
+            });
+        }
     }
 
     /// <summary>
@@ -216,14 +270,12 @@ public class DialogueManager : MonoBehaviour
                     sceneName = null;
                 }
 
-                //StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 0, PostFade)); // Fades out the UI
-
-
                 UIManager.m_Instance.SwapFromDialogue();
                 dialogueActive = false;
+                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, ClearDialogueBox);
+                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen);
                 leftCharacter = null;
                 rightCharacter = null;
-                ClearDialogueBox();
                 sceneName = null;
                 return;
             }
@@ -231,7 +283,6 @@ public class DialogueManager : MonoBehaviour
             {
                 LoadNewLine(); // Loads the next line
             }
-
         }
     }
 
