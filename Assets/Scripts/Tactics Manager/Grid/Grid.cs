@@ -337,11 +337,13 @@ public class Grid : MonoBehaviour
 
 	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost)
 	{
-		//int moveCost = costs;
+		// Assigned just for the leaving before looking for a path.
 		cost = 0;
+
 		Node m_startNode = GetNode(startPos);
 		Node m_endNode = GetNode(endPos);
 
+		// Make sure the start and end nodes are valid.
 		if (m_startNode == null || m_endNode == null)
 		{
 			return false;
@@ -357,35 +359,49 @@ public class Grid : MonoBehaviour
 			return false;
 		}
 
+		// Empty the path stack.
 		path.Clear();
+
+		// Nodes not finished being used.
 		Queue<Node> m_openList = new Queue<Node>();
+
+		// Nodes to no longer be used.
 		List<Node> m_closedList = new List<Node>();
 
+		// If a path has been found.
 		bool m_foundPath = false;
 
 		m_startNode.m_previousNode = null;
+		
+		// Calculate the variables for the starting node.
 		m_startNode.gScore = 0;
 		m_startNode.hScore = CalculateHeristic(m_startNode, m_endNode);
 		m_startNode.CalculateFScore();
 
 		m_openList.Enqueue(m_startNode);
 
+		// While there is a node in the open list, look for a path.
 		while (m_openList.Count > 0)
 		{
+			// Start searching from the most recent node in the open list.
 			Node currentNode = m_openList.Dequeue();
 
+			// Don't search from this node anymore.
 			m_closedList.Add(currentNode);
 
+			// If the node being checked is the end node, the path is complete, and we can stop searching.
 			if(currentNode == m_endNode)
 			{
 				m_foundPath = true;
 				break;
 			}
 
+			// Look through all the node's neighbours for the node leading to the end node.
 			for (int i = 0; i < currentNode.adjacentNodes.Count; ++i)
 			{
 				Node neighbourNode = currentNode.adjacentNodes[i];
 
+				// Make sure the neghbour node is valid.
 				if (neighbourNode == null)
 				{
 					continue;
@@ -401,6 +417,7 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
+				// If the neighbour node isn't in the open list, calculate it's variables and add it.
 				if(m_openList.Contains(neighbourNode) == false)
 				{
 					neighbourNode.m_previousNode = currentNode;
@@ -409,6 +426,7 @@ public class Grid : MonoBehaviour
 					neighbourNode.CalculateFScore();
 					m_openList.Enqueue(neighbourNode);
 				}
+				// Neighbour node is in the open list, check if it's valid for the path.
 				else
 				{
 					int costs = currentNode.fScore + currentNode.m_costs[i];
@@ -422,7 +440,7 @@ public class Grid : MonoBehaviour
 			}
 		}
 
-
+		// If a path has been found, assign it to the path argument that was passed in.
 		if (m_foundPath == true)
 		{
 			Node current = m_endNode;
@@ -433,9 +451,13 @@ public class Grid : MonoBehaviour
 			}
 		}
 
+		// Find a path again, without using diagonals, for getting the cost of using the path.
+		// This is done so the cost of using a path is the amount of tiles traversed, with adjacent costing 1, and diagonals costing 2,
+		// but not messing with the pathfinding by making diagonals as cheap as moving two adjacent, so the pathfinding for the unit's will prefer diagonals,
+		// but will cost the same as if it was moving 2 adjacents rather than 1 diagonal.
+
 		m_foundPath = false;
 
-		//Costs
 		m_startNode = GetNode(startPos);
 		m_endNode = GetNode(endPos);
 
@@ -449,7 +471,6 @@ public class Grid : MonoBehaviour
 
 		m_openList.Enqueue(m_startNode);
 
-		//Get Costs
 		while (m_openList.Count > 0)
 		{
 			Node currentNode = m_openList.Dequeue();
@@ -462,6 +483,7 @@ public class Grid : MonoBehaviour
 				break;
 			}
 
+			// Only searching the first 4 neighbours of the node, which are the adjacents.
 			for (int i = 0; i < 4; ++i)
 			{
 				Node neighbourNode = currentNode.adjacentNodes[i];

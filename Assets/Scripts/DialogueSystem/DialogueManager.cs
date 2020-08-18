@@ -5,8 +5,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-using static Ghost.Fade;
-
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager instance;
@@ -24,6 +22,9 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI nameBox;
     [Tooltip("The object which holds characters' dialogue")]
     public TextMeshProUGUI dialogueBox;
+    [Tooltip("The container for the object which holds a character's name")]
+    public RectTransform nameHolder;
+    private Vector2 namePos;
     [Tooltip("The left-side object which holds characters' image")]
     public Image bustL;
     [Tooltip("The right-side object which holds characters' image")]
@@ -38,6 +39,7 @@ public class DialogueManager : MonoBehaviour
     public TextAsset sceneName;
     [Tooltip("Whether to clear the scene after it has run")]
     public bool clearAfterScene;
+    private string[] parsedText;
 
     [Header("Characters")]
     public Sprite defaultCharacterSprite;
@@ -49,6 +51,9 @@ public class DialogueManager : MonoBehaviour
     string[] fileLines;
     int currentLine;
     string characterName, characterDialogue, characterExpression;
+    CharacterPortraitContainer currentCharacter;
+
+    private enum Side { Left, Right }
 
     private void Awake()
     {
@@ -59,6 +64,7 @@ public class DialogueManager : MonoBehaviour
             characterDictionary.Add(characterPortraits.name, characterPortraits);
         }
         ClearDialogueBox(); // Clears the dialogue box, just in case
+        namePos = nameHolder.anchoredPosition;
     }
 
     /// <summary>
@@ -78,23 +84,44 @@ public class DialogueManager : MonoBehaviour
     void LoadNewLine()
     {
         // Split the line into its components and store them
-        string[] parsedText = fileLines[currentLine].Split('|');
+        parsedText = fileLines[currentLine].Split('|');
         currentLine++;
 
-        characterName = parsedText[0];
+        bool sameChar = false;
+        // Check if it's the same character
+        if (currentCharacter)
+        {
+            sameChar = currentCharacter.name == parsedText[0];
+        }
+
+        // Set the variables
+        currentCharacter = characterDictionary[parsedText[0]];
+        characterName = currentCharacter.name;
         characterExpression = parsedText[1].ToLower();
         characterDialogue = parsedText[2];
+
+        if (sameChar)
+        {
+            StartDisplaying();
+        }
+        else
+        {
+            UIManager.m_Instance.SwapDialogue(UIManager.m_Instance.GetUIStyle(currentCharacter.name));
+        }
+
+    }
+    public void StartDisplaying()
+    {
+        // Set the portrait
         try
         {
             switch (parsedText[3].ToLower()[1])
             {
                 case 'l':
-                    leftCharacter = characterDictionary[characterName];
-                    bustL.sprite = GetCharacterPortrait();
+                    ManageDialoguePortrait(Side.Left);
                     break;
                 case 'r':
-                    rightCharacter = characterDictionary[characterName];
-                    bustR.sprite = GetCharacterPortrait();
+                    ManageDialoguePortrait(Side.Right);
                     break;
                 default:
                     throw new IndexOutOfRangeException();
@@ -102,16 +129,19 @@ public class DialogueManager : MonoBehaviour
         }
         catch (IndexOutOfRangeException)
         {
-            if (leftCharacter == characterDictionary[characterName] || leftCharacter == null)
+            if (leftCharacter == currentCharacter || leftCharacter == null)
             {
-                leftCharacter = characterDictionary[characterName];
-                bustL.sprite = GetCharacterPortrait();
+                ManageDialoguePortrait(Side.Left);
             }
             else
             {
-                rightCharacter = characterDictionary[characterName];
-                bustR.sprite = GetCharacterPortrait();
+                ManageDialoguePortrait(Side.Right);
             }
+        }
+
+        if (leftCharacter == rightCharacter)
+        {
+            Debug.LogError($"{characterName} is taking up both sides!");
         }
 
         // Clears the dialogue box
@@ -125,14 +155,68 @@ public class DialogueManager : MonoBehaviour
         StartCoroutine(displayDialogueCoroutine);
     }
 
+    private void ManageDialoguePortrait(Side side)
+    {
+        // Set references
+        CharacterPortraitContainer character;
+        Image bust;
+        UIManager.TweenedElement speaker;
+        CharacterPortraitContainer otherCharacter;
+        Image otherBust;
+        UIManager.TweenedElement otherSpeaker;
+
+        if (side == Side.Left)
+        {
+            character = leftCharacter;
+            bust = bustL;
+            speaker = UIManager.m_Instance.m_LeftSpeaker;
+            leftCharacter = currentCharacter;
+            otherCharacter = rightCharacter;
+            otherBust = bustR;
+            otherSpeaker = UIManager.m_Instance.m_RightSpeaker;
+            nameHolder.anchoredPosition = namePos;
+        }
+        else
+        {
+            character = rightCharacter;
+            bust = bustR;
+            speaker = UIManager.m_Instance.m_RightSpeaker;
+            rightCharacter = currentCharacter;
+            otherCharacter = leftCharacter;
+            otherBust = bustL;
+            otherSpeaker = UIManager.m_Instance.m_LeftSpeaker;
+            nameHolder.anchoredPosition = new Vector2(-namePos.x, namePos.y);
+        }
+
+
+        LeanTween.color(otherBust.rectTransform, Color.gray, 0.1f);
+        LeanTween.color(bust.rectTransform, Color.white, 0.1f);
+
+        if (character == currentCharacter)
+        {
+            bust.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+        }
+        else
+        {
+            LeanTween.color(otherBust.rectTransform, Color.gray, 0.1f);
+            LeanTween.color(bust.rectTransform, Color.white, 0.1f);
+            character = currentCharacter;
+            UIManager.m_Instance.SlideElement(speaker, UIManager.ScreenState.Offscreen, () =>
+            {
+                bust.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                UIManager.m_Instance.SlideElement(speaker, UIManager.ScreenState.Onscreen);
+            });
+        }
+    }
+
     /// <summary>
     /// Converts the expression string into the associated Sprite variable in the given character. 
     /// Returns the unknown character sprite if no associated character is found
     /// </summary>
     /// <returns></returns>
-    Sprite GetCharacterPortrait()
+    Sprite GetCharacterPortrait(CharacterPortraitContainer character, string expression)
     {
-        try { return (Sprite)characterDictionary[characterName].GetType().GetField(characterExpression).GetValue(characterDictionary[characterName]); }
+        try { return (Sprite)character.GetType().GetField(expression).GetValue(character); }
         catch (KeyNotFoundException) { return defaultCharacterSprite; }
     }
 
@@ -186,14 +270,12 @@ public class DialogueManager : MonoBehaviour
                     sceneName = null;
                 }
 
-                //StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 0, PostFade)); // Fades out the UI
-
-
                 UIManager.m_Instance.SwapFromDialogue();
                 dialogueActive = false;
+                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, ClearDialogueBox);
+                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen);
                 leftCharacter = null;
                 rightCharacter = null;
-                ClearDialogueBox();
                 sceneName = null;
                 return;
             }
@@ -201,7 +283,6 @@ public class DialogueManager : MonoBehaviour
             {
                 LoadNewLine(); // Loads the next line
             }
-
         }
     }
 
