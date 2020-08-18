@@ -114,12 +114,34 @@ public class DialogueManager : MonoBehaviour
             switch (parsedText[3].ToLower()[1])
             {
                 case 'l':
-                    leftCharacter = currentCharacter;
-                    bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                    if (leftCharacter == currentCharacter)
+                    {
+                        bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                    }
+                    else
+                    {
+                        leftCharacter = currentCharacter;
+                        UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, () =>
+                        {
+                            bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                            UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Onscreen);
+                        });
+                    }
                     break;
                 case 'r':
-                    rightCharacter = currentCharacter;
-                    bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                    if (rightCharacter == currentCharacter)
+                    {
+                        bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                    }
+                    else
+                    {
+                        rightCharacter = currentCharacter;
+                        UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen, () =>
+                        {
+                            bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                            UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Onscreen);
+                        });
+                    }
                     break;
                 default:
                     throw new IndexOutOfRangeException();
@@ -129,13 +151,35 @@ public class DialogueManager : MonoBehaviour
         {
             if (leftCharacter == currentCharacter || leftCharacter == null)
             {
-                leftCharacter = currentCharacter;
-                bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                if (leftCharacter == currentCharacter)
+                {
+                    bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                }
+                else
+                {
+                    leftCharacter = currentCharacter;
+                    UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, () =>
+                    {
+                        bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                        UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Onscreen);
+                    });
+                }
             }
             else
             {
-                rightCharacter = currentCharacter;
-                bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                if (rightCharacter == currentCharacter)
+                {
+                    bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                }
+                else
+                {
+                    rightCharacter = currentCharacter;
+                    UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen, () =>
+                    {
+                        bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+                        UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Onscreen);
+                    });
+                }
             }
         }
 
@@ -221,9 +265,10 @@ public class DialogueManager : MonoBehaviour
 
                 UIManager.m_Instance.SwapFromDialogue();
                 dialogueActive = false;
+                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, ClearDialogueBox);
+                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen);
                 leftCharacter = null;
                 rightCharacter = null;
-                ClearDialogueBox();
                 sceneName = null;
                 return;
             }
