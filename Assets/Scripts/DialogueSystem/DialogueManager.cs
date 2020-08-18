@@ -38,6 +38,7 @@ public class DialogueManager : MonoBehaviour
     public TextAsset sceneName;
     [Tooltip("Whether to clear the scene after it has run")]
     public bool clearAfterScene;
+    private string[] parsedText;
 
     [Header("Characters")]
     public Sprite defaultCharacterSprite;
@@ -79,11 +80,15 @@ public class DialogueManager : MonoBehaviour
     void LoadNewLine()
     {
         // Split the line into its components and store them
-        string[] parsedText = fileLines[currentLine].Split('|');
+        parsedText = fileLines[currentLine].Split('|');
         currentLine++;
 
+        bool sameChar = false;
         // Check if it's the same character
-        bool sameChar = currentCharacter.name == parsedText[0];
+        if (currentCharacter)
+        {
+            sameChar = currentCharacter.name == parsedText[0];
+        }
 
         // Set the variables
         currentCharacter = characterDictionary[parsedText[0]];
@@ -91,6 +96,18 @@ public class DialogueManager : MonoBehaviour
         characterExpression = parsedText[1].ToLower();
         characterDialogue = parsedText[2];
 
+
+        if (sameChar)
+        {
+            StartDisplaying();
+        }
+        else
+        {
+            UIManager.m_Instance.SwapDialogue(UIManager.m_Instance.GetUIStyle(currentCharacter.name));
+        }
+
+    }
+    public void StartDisplaying() { 
         // Set the portrait
         try
         {

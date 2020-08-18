@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
 	public class UIData
 	{
 		public Sprite m_SkillsPortrait;
-		public RenderTexture m_PortraitRenderTexture;
+		//public RenderTexture m_PortraitRenderTexture;
 		public Color m_Dark;
 		public Color m_Medium;
 		public Color m_Light;
@@ -147,18 +147,18 @@ public class UIManager : MonoBehaviour
 			slot.sprite = uiData.m_SkillBg;
 		}
 
-		if (uiData.m_PortraitRenderTexture)
-		{
-			m_PortraitRenderTexture.color = new Color(1, 1, 1, 1);
-			m_PortraitImage.sprite = null;
-			m_PortraitRenderTexture.texture = uiData.m_PortraitRenderTexture;
-		}
-		else
-		{
-			m_PortraitRenderTexture.texture = null;
-			m_PortraitRenderTexture.color = new Color(1, 1, 1, 0);
+		//if (uiData.m_PortraitRenderTexture)
+		//{
+		//	m_PortraitRenderTexture.color = new Color(1, 1, 1, 1);
+		//	m_PortraitImage.sprite = null;
+		//	m_PortraitRenderTexture.texture = uiData.m_PortraitRenderTexture;
+		//}
+		//else
+		//{
+			//m_PortraitRenderTexture.texture = null;
+			//m_PortraitRenderTexture.color = new Color(1, 1, 1, 0);
 			m_PortraitImage.sprite = uiData.m_SkillsPortrait;
-		}
+		//}
 		m_FaceBackground.color = uiData.m_Medium;
 		m_SkillsBackground.color = uiData.m_Light;
 		m_TurnBackground.color = uiData.m_Dark;
@@ -178,6 +178,7 @@ public class UIManager : MonoBehaviour
 	private void LoadDialogueSkin(UIStyle uiStyle, Action actionOnFinish)
 	{
 		// TODO: implement skin change once UI is decided
+		DialogueManager.instance.StartDisplaying();
 		actionOnFinish();
 	}
 
@@ -220,15 +221,25 @@ public class UIManager : MonoBehaviour
 	{
 		if (unit.GetAllegiance() == Allegiance.Enemy) return UIStyle.Enemy;
 
-		switch (unit.name)
+		return GetUIStyle(unit.name);
+	}
+
+	/// <summary>
+	/// Gets the appropriate UI style by a name
+	/// </summary>
+	/// <param name="unit"></param>
+	/// <returns></returns>
+	public UIStyle GetUIStyle(string unitName)
+	{
+		switch (unitName.ToLower())
 		{
-			case "Death":
+			case "death":
 				return UIStyle.Death;
-			case "Pestilence":
+			case "pestilence":
 				return UIStyle.Pestilence;
-			case "Famine":
+			case "famine":
 				return UIStyle.Famine;
-			case "War":
+			case "war":
 				return UIStyle.War;
 			default:
 				return UIStyle.Enemy;
@@ -242,7 +253,7 @@ public class UIManager : MonoBehaviour
 	/// <param name="screenState">Whether the object should be on or off screen at the end of the tween</param>
 	/// <param name="actionOnFinish">Function on callback</param>
 	/// <param name="tweenType">Overides the twwn type</param>
-	void SlideElement(TweenedElement element, ScreenState screenState, Action actionOnFinish = null, LeanTweenType tweenType = LeanTweenType.easeInOutCubic)
+	public void SlideElement(TweenedElement element, ScreenState screenState, Action actionOnFinish = null, LeanTweenType tweenType = LeanTweenType.easeInOutCubic)
 	{
 		LeanTween.move(element.m_Transform.gameObject, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(tweenType).setOnComplete(actionOnFinish);
 	}
@@ -275,8 +286,7 @@ public class UIManager : MonoBehaviour
 	public void SwapToDialogue(TextAsset sourceFile = null)
 	{
 		SlideSkills(ScreenState.Offscreen,
-			() => SlideElement(m_DialogueUI, ScreenState.Onscreen,
-				() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue)));
+			() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue));
 	}
 
 	public void SwapFromDialogue()
