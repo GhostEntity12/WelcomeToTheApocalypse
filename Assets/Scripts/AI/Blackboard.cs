@@ -21,16 +21,6 @@ public class Blackboard : MonoBehaviour
     
     //Eventually more stuff.
 
-    private State state;
-
-    private enum State
-    { 
-        PlayerTurn,
-        EndingPlayerTurn,
-        EnemyTurn
-    }
-
-
     //On Awake
     //If there is no instance of a blackboard, create one. If there already was one, destroy it.
     private void Awake()
@@ -46,52 +36,44 @@ public class Blackboard : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        state = State.PlayerTurn;
-    }
-
-    private void Update()
-    {
-        //If it is not the player's turn.
-        if (state != State.PlayerTurn)
-        {
-            //Calculate which enemy unit is closest to a player unit.
-            foreach (Unit enemy in enemies)
-            {
-                if (enemy.m_Allegiance == Allegiance.Enemy)
-                {
-                    enemySelectedUnit = enemy;
-                }
-
-                foreach (Unit playerUnit in playerUnits)
-                {
-                    if (playerUnit.m_Allegiance == Allegiance.Player)
-                    {
-                        playerSelectedUnit = playerUnit;
-                    }
-
-                    grid.FindPath(enemySelectedUnit.transform.position, playerSelectedUnit.transform.position, ref path, out pathCost);
-                }
-            }
-        }
-    }
-
     //Returns the current blackboard instance.
-    Blackboard GetInstance()
+    public static Blackboard GetInstance()
     {
         return instance;
     }
 
-    /*THESE FOLLOWING FUNCTIONS ARE EXAMPLES OF FUTURE ADDITIONS TO WHAT THE AI SHOULD BE IN CONTROL OF*/
-
-    Unit GetUnit(Unit unit)
+    public List<Unit> GetEnemyUnits()
     {
-        return unit;
+        return enemies;
     }
 
-    Grid GetGrid(Grid grid)
+    public List<Unit> GetPlayerUnits()
+    {
+        return playerUnits;
+    }
+
+    public Unit GetEnemySelectedUnit()
+    {
+        return enemySelectedUnit;
+    }
+
+    public Unit GetPlayerSelectedUnit()
+    {
+        return playerSelectedUnit;
+    }
+
+    public Grid GetGrid()
     {
         return grid;
+    }
+
+    public Stack<Node> GetPath()
+    {
+        return path;
+    }
+
+    public Allegiance GetTurn()
+    {
+        return GameManager.m_Instance.GetCurrentTurn();
     }
 }
