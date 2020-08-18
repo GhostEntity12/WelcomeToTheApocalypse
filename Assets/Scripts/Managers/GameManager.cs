@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// List of the unit's the player controls.
     /// </summary>
-    private List<Unit> m_PlayerUnits = new List<Unit>();
+    public List<Unit> m_PlayerUnits = new List<Unit>();
 
     /// <summary>
     /// The screen for when the player loses.
