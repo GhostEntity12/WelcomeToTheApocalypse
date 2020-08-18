@@ -9,7 +9,6 @@ public class CameraMovement : MonoBehaviour
     private Bounds m_CameraBounds;
 
     [Header("Rotation")]
-    public float m_RotationAmount = 90f;
     public float m_RotationSpeed = 0.5f;
     public LeanTweenType rotationType;
     public KeyCode m_RotateLeftKey = KeyCode.Q;
