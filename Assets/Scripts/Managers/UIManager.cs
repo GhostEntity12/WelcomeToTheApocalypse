@@ -11,15 +11,22 @@ public class UIManager : MonoBehaviour
 {
 	public static UIManager m_Instance;
 
-	[System.Serializable]
+	[Serializable]
 	public class UIData
 	{
-		public Sprite m_Portrait;
+		public Sprite m_SkillsPortrait;
 		public RenderTexture m_PortraitRenderTexture;
 		public Color m_Dark;
 		public Color m_Medium;
 		public Color m_Light;
 		public Sprite m_SkillBg;
+	}
+
+	[Serializable]
+	public class TweenedElement
+	{
+		public Transform m_Transform;
+		internal Vector3[] m_Cache = new Vector3[2];
 	}
 
 	public bool m_Debug = true;
@@ -36,53 +43,104 @@ public class UIManager : MonoBehaviour
 	public Image m_FaceBackground;
 	public Image m_SkillsBackground;
 	public Image m_TurnBackground;
-	public Image m_Portrait;
+	public Image m_PortraitImage;
 	public Image[] m_SkillSlots;
 	public RawImage m_PortraitRenderTexture;
+	public Image m_LeftSpeakerImage;
+	public Image m_RightSpeakerImage;
 
 
 	[Header("Tweening")]
 	public float m_TweenSpeed = 0.2f;
 	[Space(10)]
-	public GameObject m_PortraitUI;
-	public GameObject m_SkillsUI;
-	public GameObject m_DialogueUI;
+	public TweenedElement m_PortraitUI;
+	public TweenedElement m_SkillsUI;
+	public TweenedElement m_DialogueUI;
+	public TweenedElement m_LeftSpeaker;
+	public TweenedElement m_RightSpeaker;
 
-
-	private Vector3 m_InCachePortrait;
-	private Vector3 m_InCacheSkills;
-	private Vector3 m_InCacheDialogue;
-	private Vector3 m_OutCachePortrait;
-	private Vector3 m_OutCacheSkills;
-	private Vector3 m_OutCacheDialogue;
+	public enum ScreenState { Onscreen, Offscreen }
 
 	private void Awake()
 	{
 		m_Instance = this;
 	}
 
-	// Start is called before the first frame update
-	void Start()
+	/// <summary>
+	/// Start is called before the first frame update
+	/// </summary>
+	private void Start()
 	{
-		m_InCachePortrait = m_PortraitUI.transform.position;
-		m_OutCachePortrait = m_InCachePortrait + new Vector3(-300, -300);
-		m_PortraitUI.transform.position = m_OutCachePortrait;
+		// Cache the positions
+		SetCachesAndPosition(m_PortraitUI, new Vector3(-300, -300));
+		SetCachesAndPosition(m_SkillsUI, new Vector3(300, -300));
+		SetCachesAndPosition(m_DialogueUI, new Vector3(0, -600));
+		SetCachesAndPosition(m_LeftSpeaker, new Vector3(-1400, 0));
+		SetCachesAndPosition(m_RightSpeaker, new Vector3(1400, 0));
+	}
 
-		m_InCacheSkills = m_SkillsUI.transform.position;
-		m_OutCacheSkills = m_InCacheSkills + new Vector3(300, -300);
-		m_SkillsUI.transform.position = m_OutCacheSkills;
-
-		m_InCacheDialogue = m_DialogueUI.transform.position;
-		m_OutCacheDialogue = m_InCacheDialogue + new Vector3(0, -600);
-		m_DialogueUI.transform.position = m_OutCacheDialogue;
-
+	private void Update()
+	{
+		if (m_Debug)
+		{
+			if (Input.GetKeyDown(KeyCode.Alpha6))
+			{
+				SlideSkills(ScreenState.Offscreen,
+					() => LoadUI(UIStyle.Death,
+						() => SlideSkills(ScreenState.Onscreen)));
+			}
+			if (Input.GetKeyDown(KeyCode.Alpha7))
+			{
+				SlideSkills(ScreenState.Offscreen,
+					() => LoadUI(UIStyle.Pestilence,
+						() => SlideSkills(ScreenState.Onscreen)));
+			}
+			if (Input.GetKeyDown(KeyCode.Alpha8))
+			{
+				SlideSkills(ScreenState.Offscreen,
+					() => LoadUI(UIStyle.Famine,
+						() => SlideSkills(ScreenState.Onscreen)));
+			}
+			if (Input.GetKeyDown(KeyCode.Alpha9))
+			{
+				SlideSkills(ScreenState.Offscreen,
+					() => LoadUI(UIStyle.War,
+						() => SlideSkills(ScreenState.Onscreen)));
+			}
+			if (Input.GetKeyDown(KeyCode.Alpha0))
+			{
+				SlideSkills(ScreenState.Offscreen,
+					() => LoadUI(UIStyle.Enemy,
+						() => SlideSkills(ScreenState.Onscreen)));
+			}
+			if (Input.GetKeyDown(KeyCode.Minus))
+			{
+				SwapToDialogue();
+			}
+			if (Input.GetKeyDown(KeyCode.Equals))
+			{
+				SwapFromDialogue();
+			}
+		}
 	}
 
 	/// <summary>
-	/// Loads UI data
+	/// Caches the positions of an object for tweening
+	/// </summary>
+	/// <param name="tweenedElement">The element whose positions are to be cached</param>
+	/// <param name="offset">The offset for when the element is offscreen</param>
+	private void SetCachesAndPosition(TweenedElement tweenedElement, Vector3 offset)
+	{
+		tweenedElement.m_Cache[0] = tweenedElement.m_Transform.position;
+		tweenedElement.m_Cache[1] = tweenedElement.m_Cache[0] + offset;
+		tweenedElement.m_Transform.position = tweenedElement.m_Cache[1];
+	}
+
+	/// <summary>
+	/// Loads a skin for the skills UI
 	/// </summary>
 	/// <param name="uiData"></param>
-	private void LoadUI(UIData uiData)
+	private void LoadSkillsSkin(UIData uiData)
 	{
 		foreach (Image slot in m_SkillSlots)
 		{
@@ -92,14 +150,14 @@ public class UIManager : MonoBehaviour
 		if (uiData.m_PortraitRenderTexture)
 		{
 			m_PortraitRenderTexture.color = new Color(1, 1, 1, 1);
-			m_Portrait.sprite = null;
+			m_PortraitImage.sprite = null;
 			m_PortraitRenderTexture.texture = uiData.m_PortraitRenderTexture;
 		}
 		else
 		{
 			m_PortraitRenderTexture.texture = null;
 			m_PortraitRenderTexture.color = new Color(1, 1, 1, 0);
-			m_Portrait.sprite = uiData.m_Portrait;
+			m_PortraitImage.sprite = uiData.m_SkillsPortrait;
 		}
 		m_FaceBackground.color = uiData.m_Medium;
 		m_SkillsBackground.color = uiData.m_Light;
@@ -113,6 +171,17 @@ public class UIManager : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Loads a skin for the dialogue UI
+	/// </summary>
+	/// <param name="uiStyle"></param>
+	/// <param name="actionOnFinish"></param>
+	private void LoadDialogueSkin(UIStyle uiStyle, Action actionOnFinish)
+	{
+		// TODO: implement skin change once UI is decided
+		actionOnFinish();
+	}
+
+	/// <summary>
 	/// Loads a UI skin
 	/// </summary>
 	/// <param name="skin">The skin to load</param>
@@ -121,19 +190,19 @@ public class UIManager : MonoBehaviour
 		switch (skin)
 		{
 			case UIStyle.Death:
-				LoadUI(m_DeathUIData);
+				LoadSkillsSkin(m_DeathUIData);
 				break;
 			case UIStyle.Pestilence:
-				LoadUI(m_PestilenceUIData);
+				LoadSkillsSkin(m_PestilenceUIData);
 				break;
 			case UIStyle.Famine:
-				LoadUI(m_FamineUIData);
+				LoadSkillsSkin(m_FamineUIData);
 				break;
 			case UIStyle.War:
-				LoadUI(m_WarUIData);
+				LoadSkillsSkin(m_WarUIData);
 				break;
 			case UIStyle.Enemy:
-				LoadUI(m_EnemyUIData);
+				LoadSkillsSkin(m_EnemyUIData);
 				break;
 			default:
 				break;
@@ -142,41 +211,11 @@ public class UIManager : MonoBehaviour
 		onComplete?.Invoke();
 	}
 
-	private void Update()
-	{
-		if (m_Debug)
-		{
-			if (Input.GetKeyDown(KeyCode.Alpha6))
-			{
-				SlideSkillsOut(() => LoadUI(UIStyle.Death, () => SlideSkillsIn()));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha7))
-			{
-				SlideSkillsOut(() => LoadUI(UIStyle.Pestilence, () => SlideSkillsIn()));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha8))
-			{
-				SlideSkillsOut(() => LoadUI(UIStyle.Famine, () => SlideSkillsIn()));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha9))
-			{
-				SlideSkillsOut(() => LoadUI(UIStyle.War, () => SlideSkillsIn()));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha0))
-			{
-				SlideSkillsOut(() => LoadUI(UIStyle.Enemy, () => SlideSkillsIn()));
-			}
-			if (Input.GetKeyDown(KeyCode.Minus))
-			{
-				SwapToDialogue();
-			}
-			if (Input.GetKeyDown(KeyCode.Equals))
-			{
-				SwapFromDialogue();
-			}
-		}
-	}
-
+	/// <summary>
+	/// Gets the appropriate UI style of a unit
+	/// </summary>
+	/// <param name="unit"></param>
+	/// <returns></returns>
 	public UIStyle GetUIStyle(Unit unit)
 	{
 		if (unit.GetAllegiance() == Allegiance.Enemy) return UIStyle.Enemy;
@@ -196,40 +235,58 @@ public class UIManager : MonoBehaviour
 		}
 	}
 
-	public void SlideSkillsOut(Action actionOnFinish = null)
+	/// <summary>
+	/// Abstracted function which allows sliding UI elements on or offscreen if they are defined as TweenedElements
+	/// </summary>
+	/// <param name="element">The element to be tweened</param>
+	/// <param name="screenState">Whether the object should be on or off screen at the end of the tween</param>
+	/// <param name="actionOnFinish">Function on callback</param>
+	/// <param name="tweenType">Overides the twwn type</param>
+	void SlideElement(TweenedElement element, ScreenState screenState, Action actionOnFinish = null, LeanTweenType tweenType = LeanTweenType.easeInOutCubic)
 	{
-		LeanTween.move(m_PortraitUI, m_OutCachePortrait, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
-		LeanTween.move(m_SkillsUI, m_OutCacheSkills, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic);
+		LeanTween.move(element.m_Transform.gameObject, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(tweenType).setOnComplete(actionOnFinish);
 	}
 
-	void SlideSkillsIn(Action actionOnFinish = null)
+	/// <summary>
+	/// Shorthand way of sliding both parts of the skills UI
+	/// </summary>
+	/// <param name="screenState"></param>
+	/// <param name="actionOnFinish"></param>
+	public void SlideSkills(ScreenState screenState, Action actionOnFinish = null)
 	{
-		LeanTween.move(m_PortraitUI, m_InCachePortrait, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
-		LeanTween.move(m_SkillsUI, m_InCacheSkills, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic);
-	}
-
-	void SlideDialogueIn(Action actionOnFinish = null)
-	{
-		LeanTween.move(m_DialogueUI, m_InCacheDialogue, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
-	}
-
-	void SlideDialogueOut(Action actionOnFinish = null)
-	{
-		LeanTween.move(m_DialogueUI, m_OutCacheDialogue, m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
+		SlideElement(m_PortraitUI, screenState, actionOnFinish);
+		SlideElement(m_SkillsUI, screenState);
 	}
 
 	public void SwapUI(UIStyle uiStyle)
 	{
-		SlideSkillsOut(() => LoadUI(uiStyle, () => SlideSkillsIn()));
+		SlideSkills(ScreenState.Offscreen,
+			() => LoadUI(uiStyle,
+				() => SlideSkills(ScreenState.Onscreen)));
+	}
+
+	public void SwapDialogue(UIStyle uiStyle)
+	{
+		SlideElement(m_DialogueUI, ScreenState.Offscreen,
+			() => LoadDialogueSkin(uiStyle,
+				() => SlideElement(m_DialogueUI, ScreenState.Onscreen)));
 	}
 
 	public void SwapToDialogue(TextAsset sourceFile = null)
 	{
-		SlideSkillsOut(() => SlideDialogueIn(() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue)));
+		SlideSkills(ScreenState.Offscreen,
+			() => SlideElement(m_DialogueUI, ScreenState.Onscreen,
+				() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue)));
 	}
 
 	public void SwapFromDialogue()
 	{
-		SlideDialogueOut(() => SlideSkillsIn());
+		SlideElement(m_DialogueUI, ScreenState.Offscreen, () =>
+		{
+			if (GameManager.m_Instance.GetSelectedUnit())
+			{
+				SlideSkills(ScreenState.Onscreen);
+			}
+		});
 	}
 }
