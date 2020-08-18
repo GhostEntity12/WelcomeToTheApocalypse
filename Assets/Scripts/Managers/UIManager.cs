@@ -56,8 +56,8 @@ public class UIManager : MonoBehaviour
 	public TweenedElement m_PortraitUI;
 	public TweenedElement m_SkillsUI;
 	public TweenedElement m_DialogueUI;
-	public TweenedElement m_RightSpeaker;
 	public TweenedElement m_LeftSpeaker;
+	public TweenedElement m_RightSpeaker;
 
 	public enum ScreenState { Onscreen, Offscreen }
 
@@ -66,8 +66,10 @@ public class UIManager : MonoBehaviour
 		m_Instance = this;
 	}
 
-	// Start is called before the first frame update
-	void Start()
+	/// <summary>
+	/// Start is called before the first frame update
+	/// </summary>
+	private void Start()
 	{
 		// Cache the positions
 		SetCachesAndPosition(m_PortraitUI, new Vector3(-300, -300));
@@ -75,82 +77,6 @@ public class UIManager : MonoBehaviour
 		SetCachesAndPosition(m_DialogueUI, new Vector3(0, -600));
 		SetCachesAndPosition(m_LeftSpeaker, new Vector3(-1400, 0));
 		SetCachesAndPosition(m_RightSpeaker, new Vector3(1400, 0));
-	}
-
-	/// <summary>
-	/// Caches the positions of an object for tweening
-	/// </summary>
-	/// <param name="tweenedElement">The element whose positions are to be cached</param>
-	/// <param name="offset">The offset for when the element is offscreen</param>
-	void SetCachesAndPosition(TweenedElement tweenedElement, Vector3 offset)
-	{
-		tweenedElement.m_Cache[0] = tweenedElement.m_Transform.position;
-		tweenedElement.m_Cache[1] = tweenedElement.m_Cache[0] + offset;
-		tweenedElement.m_Transform.position = tweenedElement.m_Cache[1];
-	}
-
-	/// <summary>
-	/// Loads UI data
-	/// </summary>
-	/// <param name="uiData"></param>
-	private void LoadUI(UIData uiData)
-	{
-		foreach (Image slot in m_SkillSlots)
-		{
-			slot.sprite = uiData.m_SkillBg;
-		}
-
-		if (uiData.m_PortraitRenderTexture)
-		{
-			m_PortraitRenderTexture.color = new Color(1, 1, 1, 1);
-			m_PortraitImage.sprite = null;
-			m_PortraitRenderTexture.texture = uiData.m_PortraitRenderTexture;
-		}
-		else
-		{
-			m_PortraitRenderTexture.texture = null;
-			m_PortraitRenderTexture.color = new Color(1, 1, 1, 0);
-			m_PortraitImage.sprite = uiData.m_SkillsPortrait;
-		}
-		m_FaceBackground.color = uiData.m_Medium;
-		m_SkillsBackground.color = uiData.m_Light;
-		m_TurnBackground.color = uiData.m_Dark;
-
-		for (int i = 0; i < m_SkillSlots.Length; i++)
-		{
-			// TODO: Refactor
-			m_SkillSlots[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
-		}
-	}
-
-	/// <summary>
-	/// Loads a UI skin
-	/// </summary>
-	/// <param name="skin">The skin to load</param>
-	public void LoadUI(UIStyle skin, Action onComplete = null)
-	{
-		switch (skin)
-		{
-			case UIStyle.Death:
-				LoadUI(m_DeathUIData);
-				break;
-			case UIStyle.Pestilence:
-				LoadUI(m_PestilenceUIData);
-				break;
-			case UIStyle.Famine:
-				LoadUI(m_FamineUIData);
-				break;
-			case UIStyle.War:
-				LoadUI(m_WarUIData);
-				break;
-			case UIStyle.Enemy:
-				LoadUI(m_EnemyUIData);
-				break;
-			default:
-				break;
-		}
-
-		onComplete?.Invoke();
 	}
 
 	private void Update()
@@ -198,6 +124,98 @@ public class UIManager : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Caches the positions of an object for tweening
+	/// </summary>
+	/// <param name="tweenedElement">The element whose positions are to be cached</param>
+	/// <param name="offset">The offset for when the element is offscreen</param>
+	private void SetCachesAndPosition(TweenedElement tweenedElement, Vector3 offset)
+	{
+		tweenedElement.m_Cache[0] = tweenedElement.m_Transform.position;
+		tweenedElement.m_Cache[1] = tweenedElement.m_Cache[0] + offset;
+		tweenedElement.m_Transform.position = tweenedElement.m_Cache[1];
+	}
+
+	/// <summary>
+	/// Loads a skin for the skills UI
+	/// </summary>
+	/// <param name="uiData"></param>
+	private void LoadSkillsSkin(UIData uiData)
+	{
+		foreach (Image slot in m_SkillSlots)
+		{
+			slot.sprite = uiData.m_SkillBg;
+		}
+
+		if (uiData.m_PortraitRenderTexture)
+		{
+			m_PortraitRenderTexture.color = new Color(1, 1, 1, 1);
+			m_PortraitImage.sprite = null;
+			m_PortraitRenderTexture.texture = uiData.m_PortraitRenderTexture;
+		}
+		else
+		{
+			m_PortraitRenderTexture.texture = null;
+			m_PortraitRenderTexture.color = new Color(1, 1, 1, 0);
+			m_PortraitImage.sprite = uiData.m_SkillsPortrait;
+		}
+		m_FaceBackground.color = uiData.m_Medium;
+		m_SkillsBackground.color = uiData.m_Light;
+		m_TurnBackground.color = uiData.m_Dark;
+
+		for (int i = 0; i < m_SkillSlots.Length; i++)
+		{
+			// TODO: Refactor
+			m_SkillSlots[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
+		}
+	}
+
+	/// <summary>
+	/// Loads a skin for the dialogue UI
+	/// </summary>
+	/// <param name="uiStyle"></param>
+	/// <param name="actionOnFinish"></param>
+	private void LoadDialogueSkin(UIStyle uiStyle, Action actionOnFinish)
+	{
+		// TODO: implement skin change once UI is decided
+		actionOnFinish();
+	}
+
+	/// <summary>
+	/// Loads a UI skin
+	/// </summary>
+	/// <param name="skin">The skin to load</param>
+	public void LoadUI(UIStyle skin, Action onComplete = null)
+	{
+		switch (skin)
+		{
+			case UIStyle.Death:
+				LoadSkillsSkin(m_DeathUIData);
+				break;
+			case UIStyle.Pestilence:
+				LoadSkillsSkin(m_PestilenceUIData);
+				break;
+			case UIStyle.Famine:
+				LoadSkillsSkin(m_FamineUIData);
+				break;
+			case UIStyle.War:
+				LoadSkillsSkin(m_WarUIData);
+				break;
+			case UIStyle.Enemy:
+				LoadSkillsSkin(m_EnemyUIData);
+				break;
+			default:
+				break;
+		}
+
+		onComplete?.Invoke();
+	}
+
+	/// <summary>
+	/// Gets the appropriate UI style of a unit
+	/// </summary>
+	/// <param name="unit"></param>
+	/// <returns></returns>
 	public UIStyle GetUIStyle(Unit unit)
 	{
 		if (unit.GetAllegiance() == Allegiance.Enemy) return UIStyle.Enemy;
@@ -217,11 +235,23 @@ public class UIManager : MonoBehaviour
 		}
 	}
 
-	void SlideElement(TweenedElement element, ScreenState screenState, Action actionOnFinish = null)
+	/// <summary>
+	/// Abstracted function which allows sliding UI elements on or offscreen if they are defined as TweenedElements
+	/// </summary>
+	/// <param name="element">The element to be tweened</param>
+	/// <param name="screenState">Whether the object should be on or off screen at the end of the tween</param>
+	/// <param name="actionOnFinish">Function on callback</param>
+	/// <param name="tweenType">Overides the twwn type</param>
+	void SlideElement(TweenedElement element, ScreenState screenState, Action actionOnFinish = null, LeanTweenType tweenType = LeanTweenType.easeInOutCubic)
 	{
-		LeanTween.move(element.m_Transform.gameObject, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(LeanTweenType.easeInOutCubic).setOnComplete(actionOnFinish);
+		LeanTween.move(element.m_Transform.gameObject, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(tweenType).setOnComplete(actionOnFinish);
 	}
 
+	/// <summary>
+	/// Shorthand way of sliding both parts of the skills UI
+	/// </summary>
+	/// <param name="screenState"></param>
+	/// <param name="actionOnFinish"></param>
 	public void SlideSkills(ScreenState screenState, Action actionOnFinish = null)
 	{
 		SlideElement(m_PortraitUI, screenState, actionOnFinish);
@@ -233,6 +263,13 @@ public class UIManager : MonoBehaviour
 		SlideSkills(ScreenState.Offscreen,
 			() => LoadUI(uiStyle,
 				() => SlideSkills(ScreenState.Onscreen)));
+	}
+
+	public void SwapDialogue(UIStyle uiStyle)
+	{
+		SlideElement(m_DialogueUI, ScreenState.Offscreen,
+			() => LoadDialogueSkin(uiStyle,
+				() => SlideElement(m_DialogueUI, ScreenState.Onscreen)));
 	}
 
 	public void SwapToDialogue(TextAsset sourceFile = null)
@@ -251,18 +288,5 @@ public class UIManager : MonoBehaviour
 				SlideSkills(ScreenState.Onscreen);
 			}
 		});
-	}
-
-	public void SwapDialogueSkin(UIStyle uiStyle)
-	{
-		SlideElement(m_DialogueUI, ScreenState.Offscreen,
-			() => ChangeDialogueSkin(uiStyle,
-				() => SlideElement(m_DialogueUI, ScreenState.Onscreen)));
-	}
-
-	void ChangeDialogueSkin(UIStyle uiStyle, Action actionOnFinish)
-	{
-		// TODO: implement skin change once UI is decided
-		actionOnFinish();
 	}
 }
