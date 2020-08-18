@@ -49,6 +49,7 @@ public class DialogueManager : MonoBehaviour
     string[] fileLines;
     int currentLine;
     string characterName, characterDialogue, characterExpression;
+    CharacterPortraitContainer currentCharacter;
 
     private void Awake()
     {
@@ -81,20 +82,27 @@ public class DialogueManager : MonoBehaviour
         string[] parsedText = fileLines[currentLine].Split('|');
         currentLine++;
 
-        characterName = parsedText[0];
+        // Check if it's the same character
+        bool sameChar = currentCharacter.name == parsedText[0];
+
+        // Set the variables
+        currentCharacter = characterDictionary[parsedText[0]];
+        characterName = currentCharacter.name;
         characterExpression = parsedText[1].ToLower();
         characterDialogue = parsedText[2];
+
+        // Set the portrait
         try
         {
             switch (parsedText[3].ToLower()[1])
             {
                 case 'l':
-                    leftCharacter = characterDictionary[characterName];
-                    bustL.sprite = GetCharacterPortrait();
+                    leftCharacter = currentCharacter;
+                    bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
                     break;
                 case 'r':
-                    rightCharacter = characterDictionary[characterName];
-                    bustR.sprite = GetCharacterPortrait();
+                    rightCharacter = currentCharacter;
+                    bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
                     break;
                 default:
                     throw new IndexOutOfRangeException();
@@ -102,16 +110,21 @@ public class DialogueManager : MonoBehaviour
         }
         catch (IndexOutOfRangeException)
         {
-            if (leftCharacter == characterDictionary[characterName] || leftCharacter == null)
+            if (leftCharacter == currentCharacter || leftCharacter == null)
             {
-                leftCharacter = characterDictionary[characterName];
-                bustL.sprite = GetCharacterPortrait();
+                leftCharacter = currentCharacter;
+                bustL.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
             }
             else
             {
-                rightCharacter = characterDictionary[characterName];
-                bustR.sprite = GetCharacterPortrait();
+                rightCharacter = currentCharacter;
+                bustR.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
             }
+        }
+
+        if (leftCharacter == rightCharacter)
+        {
+            Debug.LogError($"{characterName} is taking up both sides!");
         }
 
         // Clears the dialogue box
@@ -130,9 +143,9 @@ public class DialogueManager : MonoBehaviour
     /// Returns the unknown character sprite if no associated character is found
     /// </summary>
     /// <returns></returns>
-    Sprite GetCharacterPortrait()
+    Sprite GetCharacterPortrait(CharacterPortraitContainer character, string expression)
     {
-        try { return (Sprite)characterDictionary[characterName].GetType().GetField(characterExpression).GetValue(characterDictionary[characterName]); }
+        try { return (Sprite)character.GetType().GetField(expression).GetValue(character); }
         catch (KeyNotFoundException) { return defaultCharacterSprite; }
     }
 
