@@ -55,9 +55,9 @@ public class UIManager : MonoBehaviour
 	[Space(10)]
 	public TweenedElement m_PortraitUI;
 	public TweenedElement m_SkillsUI;
-	public TweenedElement m_DialogueUI;
 	public TweenedElement m_LeftSpeaker;
 	public TweenedElement m_RightSpeaker;
+	public TweenedElement m_DialogueUI;
 
 	public enum ScreenState { Onscreen, Offscreen }
 
@@ -74,9 +74,9 @@ public class UIManager : MonoBehaviour
 		// Cache the positions
 		SetCachesAndPosition(m_PortraitUI, new Vector3(-300, -300));
 		SetCachesAndPosition(m_SkillsUI, new Vector3(300, -300));
+		SetCachesAndPosition(m_LeftSpeaker, new Vector3(-600, 0));
+		SetCachesAndPosition(m_RightSpeaker, new Vector3(600, 0));
 		SetCachesAndPosition(m_DialogueUI, new Vector3(0, -600));
-		SetCachesAndPosition(m_LeftSpeaker, new Vector3(-1400, 0));
-		SetCachesAndPosition(m_RightSpeaker, new Vector3(1400, 0));
 	}
 
 	private void Update()
