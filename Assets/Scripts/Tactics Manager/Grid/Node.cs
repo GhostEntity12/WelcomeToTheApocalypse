@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class Node
@@ -33,6 +34,7 @@ public class Node
 
 	public void Reset()
 	{
+		Debug.Log(m_NodeHighlight.name);
 		m_NodeHighlight.ChangeHighlight(TileState.None);
 		visited = false;
 		parentNode = null;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 public class NodeDataReader : MonoBehaviour
 {
@@ -17,7 +18,10 @@ public class NodeDataReader : MonoBehaviour
 			Debug.Log(
 				$"Position: {n.x}/{n.z}\n" +
 				$"Unit: {n.unit}\n" +
-				$"World Position: {n.worldPosition}");
+				$"Is Walkable: {n.isWalkable}\n" +
+				$"World Position: {n.worldPosition}\n" +
+				$"Node Highlight: {n.m_NodeHighlight.name}\n" +
+				$"Neighbors: {string.Join(", ", n.adjacentNodes.Select(a => a.m_NodeHighlight))}");
 		}
 	}
 }

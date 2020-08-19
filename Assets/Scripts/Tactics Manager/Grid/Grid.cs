@@ -78,28 +78,30 @@ public class Grid : MonoBehaviour
 
 				if (overlapNode.Length > 0)
 				{
+					bool isWalkable = overlapNode.Select(o => o.GetComponent<GridArea>()).Where(g => g != null).Count() > 0;
 
-					bool isWalkable = false;
-
-					for (int i = 0; i < overlapNode.Length; ++i)
+					if (isWalkable)
 					{
-
-						GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
-
-						if (obj != null)
+						for (int i = 0; i < overlapNode.Length; ++i)
 						{
-							if (obj.isWalkable && n.obstacle == null)
+
+							GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
+
+							if (obj != null)
 							{
-								isWalkable = true;
-							}
-							else
-							{
-								isWalkable = false;
-								n.obstacle = obj;
+								if (obj.isWalkable && n.obstacle == null)
+								{
+									isWalkable = true;
+								}
+								else
+								{
+									isWalkable = false;
+									n.obstacle = obj;
+								}
+
 							}
 
 						}
-
 					}
 
 					n.isWalkable = isWalkable;
@@ -109,6 +111,7 @@ public class Grid : MonoBehaviour
 				{
 					n.m_tile = Instantiate(node, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, nodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
+					n.m_NodeHighlight.name = $"Node {n.x}/{n.z}";
 					n.m_NodeHighlight.ChangeHighlight(TileState.None);
 				}
 				m_grid[x, z] = n;
@@ -294,7 +297,7 @@ public class Grid : MonoBehaviour
 			return false;
 		}
 
-		if(m_startNode.isWalkable == false || m_endNode.isWalkable == false)
+		if(m_endNode.isWalkable == false)
 		{
 			return false;
 		}

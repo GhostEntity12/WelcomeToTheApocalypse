@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Ghost
 {
@@ -24,7 +25,7 @@ namespace Ghost
             {
                 Node n = process.Dequeue();
 
-                if (!n.isWalkable) continue;
+                if (!n.isWalkable && n != startNode) continue;
 
                 //if (n.unit) continue;
 
