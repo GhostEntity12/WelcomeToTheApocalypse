@@ -42,48 +42,6 @@ public class Grid : MonoBehaviour
 
 	void ReadLevel()
 	{
-		////Finds GridPosition script on objects
-		//GridPosition[] gp = FindObjectsOfType<GridPosition>();
-
-		////Defaults the 
-		//float minX = float.MaxValue;
-		//float maxX = float.MinValue;
-
-		//float minZ = minX;
-		//float maxZ = maxX;
-
-		//for (int i = 0; i < gp.Length; i++)
-		//{
-		//	Transform t = gp[i].transform;
-		//	//Sets the min position if the position of the gridPosition is less than the MinX which is set to the highest value
-		//	if (t.position.x < minX)
-		//	{
-		//		minX = t.position.x;
-		//	}
-		//	//Sets the max position if the position of the gridPosition is less than the MaxX which is set to the lowest value
-		//	if (t.position.x > maxX)
-		//	{
-		//		maxX = t.position.x;
-		//	}
-		//	if (t.position.z < minZ)
-		//	{
-		//		minZ = t.position.z;
-		//	}
-		//	if (t.position.z > maxZ)
-		//	{
-		//		maxZ = t.position.z;
-		//	}
-		//}
-
-		//posX = Mathf.FloorToInt((maxX - minX) / xzScale);
-		//posZ = Mathf.FloorToInt((maxZ - minZ) / xzScale);
-
-		//minPosition = Vector3.zero;
-		//minPosition.x = minX;
-		//minPosition.z = minZ;
-
-		//CreateGrid(posX, posZ);
-
 		Bounds bounds = GetComponent<Collider>().bounds;
 
 		posX = Mathf.FloorToInt(bounds.size.x / xzScale);
@@ -120,37 +78,40 @@ public class Grid : MonoBehaviour
 
 				if (overlapNode.Length > 0)
 				{
+					bool isWalkable = overlapNode.Select(o => o.GetComponent<GridArea>()).Where(g => g != null).Count() > 0;
 
-					bool isWalkable = false;
-
-					for (int i = 0; i < overlapNode.Length; ++i)
+					if (isWalkable)
 					{
-
-						GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
-
-						if (obj != null)
+						for (int i = 0; i < overlapNode.Length; ++i)
 						{
-							if (obj.isWalkable && n.obstacle == null)
+
+							GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
+
+							if (obj != null)
 							{
-								isWalkable = true;
-							}
-							else
-							{
-								isWalkable = false;
-								n.obstacle = obj;
+								if (obj.isWalkable && n.obstacle == null)
+								{
+									isWalkable = true;
+								}
+								else
+								{
+									isWalkable = false;
+									n.obstacle = obj;
+								}
+
 							}
 
 						}
-
 					}
 
-					n.isWalkable = isWalkable;
+					n.m_isOnMap = isWalkable;
 				}
 
-				if (n.isWalkable)
+				if (n.m_isOnMap)
 				{
 					n.m_tile = Instantiate(node, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, nodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
+					n.m_NodeHighlight.name = $"Node {n.x}/{n.z}";
 					n.m_NodeHighlight.ChangeHighlight(TileState.None);
 				}
 				m_grid[x, z] = n;
@@ -295,7 +256,7 @@ public class Grid : MonoBehaviour
 	{
 		Node n = GetNode(unit.transform.position);
 		n.unit = unit.GetComponent<Unit>();
-		n.isWalkable = false;
+		n.m_isBlocked = true;
 	}
 
 	public Unit GetUnit(Vector3 mousePos)
@@ -306,7 +267,7 @@ public class Grid : MonoBehaviour
 	public void RemoveUnit(Node unitNode)
 	{
 		unitNode.unit = null;
-		unitNode.isWalkable = true;
+		unitNode.m_isBlocked = false;
 	}
 
 	public void ClearNode()
@@ -336,7 +297,7 @@ public class Grid : MonoBehaviour
 			return false;
 		}
 
-		if(m_startNode.isWalkable == false || m_endNode.isWalkable == false)
+		if(m_endNode.m_isOnMap == false)
 		{
 			return false;
 		}
@@ -389,7 +350,7 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
-				if(neighbourNode.isWalkable == false)
+				if(neighbourNode.m_isOnMap == false)
 				{
 					continue;
 				}
@@ -475,7 +436,7 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
-				if (neighbourNode.isWalkable == false)
+				if (neighbourNode.m_isOnMap == false)
 				{
 					continue;
 				}
