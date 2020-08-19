@@ -104,10 +104,10 @@ public class Grid : MonoBehaviour
 						}
 					}
 
-					n.isWalkable = isWalkable;
+					n.m_isOnMap = isWalkable;
 				}
 
-				if (n.isWalkable)
+				if (n.m_isOnMap)
 				{
 					n.m_tile = Instantiate(node, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, nodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
@@ -256,7 +256,7 @@ public class Grid : MonoBehaviour
 	{
 		Node n = GetNode(unit.transform.position);
 		n.unit = unit.GetComponent<Unit>();
-		n.isWalkable = false;
+		n.m_isBlocked = true;
 	}
 
 	public Unit GetUnit(Vector3 mousePos)
@@ -267,7 +267,7 @@ public class Grid : MonoBehaviour
 	public void RemoveUnit(Node unitNode)
 	{
 		unitNode.unit = null;
-		unitNode.isWalkable = true;
+		unitNode.m_isBlocked = false;
 	}
 
 	public void ClearNode()
@@ -297,7 +297,7 @@ public class Grid : MonoBehaviour
 			return false;
 		}
 
-		if(m_endNode.isWalkable == false)
+		if(m_endNode.m_isOnMap == false)
 		{
 			return false;
 		}
@@ -350,7 +350,7 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
-				if(neighbourNode.isWalkable == false)
+				if(neighbourNode.m_isOnMap == false)
 				{
 					continue;
 				}
@@ -436,7 +436,7 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
-				if (neighbourNode.isWalkable == false)
+				if (neighbourNode.m_isOnMap == false)
 				{
 					continue;
 				}

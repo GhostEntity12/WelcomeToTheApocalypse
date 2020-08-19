@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -177,7 +178,7 @@ public class GameManager : MonoBehaviour
                 u.ResetCurrentMovement();
         }
 
-        Debug.Log(m_TeamCurrentTurn);
+        //Debug.Log(m_TeamCurrentTurn);
         UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
     }
 
@@ -213,7 +214,7 @@ public class GameManager : MonoBehaviour
                 {
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
-                    if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAllegiance() == Allegiance.Player)
+                    if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAllegiance() == m_TeamCurrentTurn) // TODO: revert to only player select
                     {                        
                         // Reset the nodes highlights before selecting the new unit
                         m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
@@ -225,7 +226,7 @@ public class GameManager : MonoBehaviour
 
                         // Highlight the appropriate tiles
                         m_SelectedUnit.m_MovableNodes = GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-                        print(m_SelectedUnit.m_MovableNodes.Count);
+                        //print(m_SelectedUnit.m_MovableNodes.Count);
                         m_SelectedUnit.HighlightMovableNodes();
                     }
                 }
@@ -243,7 +244,7 @@ public class GameManager : MonoBehaviour
                     {
                         if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
                         {
-                            m_SelectedSkill.affectedNodes = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, unitNode);
+                            m_SelectedSkill.affectedNodes = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, unitNode, true);
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
                             Debug.Log(m_SelectedUnit.GetActionPoints());
@@ -286,7 +287,7 @@ public class GameManager : MonoBehaviour
                     if (m_CachedNode.m_NodeHighlight.m_IsTargetable)
                     {
                         // Display pink area
-                        List<Node> targetableRange = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode);
+                        List<Node> targetableRange = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode, true);
                         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = targetableRange.Contains(n));
                     }
                     // Otherwise clear the pink area
@@ -305,7 +306,7 @@ public class GameManager : MonoBehaviour
                     {
                         if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
                         {
-                            m_SelectedSkill.affectedNodes = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, hitNode);
+                            m_SelectedSkill.affectedNodes = GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, hitNode, true);
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
                             Debug.Log(m_SelectedUnit.GetActionPoints());
@@ -544,7 +545,7 @@ public class GameManager : MonoBehaviour
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
-        // TODO: relpace so the buttons just can't be clicked.
+        // TODO: replace so the buttons just can't be clicked.
         // if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
         // Reset the nodes in the old target range
         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
@@ -554,7 +555,7 @@ public class GameManager : MonoBehaviour
         m_TargetingState = TargetingState.Skill;
 
         // Get the new affectable area
-        m_maxSkillRange = GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+        m_maxSkillRange = GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
 
         // Reset the highlight of movement nodes
         m_SelectedUnit.m_MovableNodes.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.None));
@@ -563,7 +564,7 @@ public class GameManager : MonoBehaviour
         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = true);
 
         // Tell the appropriate nodes in distance (red) that they're in distance
-        foreach (Node node in GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position)))
+        foreach (Node node in GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true))
         {
             switch (m_SelectedSkill.targetType)
             {
@@ -580,7 +581,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log(m_SelectedSkill.m_Description);
+        //Debug.Log(m_SelectedSkill.m_Description);
     }
 
     /// <summary>

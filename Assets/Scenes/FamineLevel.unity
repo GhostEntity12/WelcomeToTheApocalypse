@@ -1675,6 +1675,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PB_Cobble Fence (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 3257982363330065674, guid: dd8e158a6dfec5440ad7fa250292445a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd8e158a6dfec5440ad7fa250292445a, type: 3}
 --- !u!1001 &399905432
@@ -3897,7 +3902,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &820402351
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4021,6 +4026,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PB_Cobble Fence (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3257982363330065674, guid: dd8e158a6dfec5440ad7fa250292445a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd8e158a6dfec5440ad7fa250292445a, type: 3}
@@ -4914,7 +4924,7 @@ MonoBehaviour:
   m_Allegiance: 0
   m_HealthBar: {fileID: 1015872905}
   m_HealthChangeIndicator: {fileID: 1105873733}
-  m_StartingActionPoints: 1
+  m_StartingActionPoints: 2
 --- !u!64 &1072165976
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4984,7 +4994,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1072165974}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 24.5, y: 0, z: 1.5}
+  m_LocalPosition: {x: 24.5, y: 0, z: 2.5}
   m_LocalScale: {x: 0.75, y: 0.9, z: 0.75}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5102,7 +5112,7 @@ MonoBehaviour:
   m_Allegiance: 0
   m_HealthBar: {fileID: 50104537}
   m_HealthChangeIndicator: {fileID: 1970065934}
-  m_StartingActionPoints: 1
+  m_StartingActionPoints: 2
 --- !u!64 &1097803960
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5944,6 +5954,49 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 814e2fa5d2397444189f32fcb5926f61, type: 3}
+--- !u!1 &1225546141
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1225546143}
+  - component: {fileID: 1225546142}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1225546142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1225546141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 902f0b84a1cec44419b948c6e9228809, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1225546143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1225546141}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 18, y: 0, z: 4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 25
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1234958772
 GameObject:
   m_ObjectHideFlags: 0
@@ -7160,6 +7213,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PB_Cobble Fence (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3257982363330065674, guid: dd8e158a6dfec5440ad7fa250292445a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd8e158a6dfec5440ad7fa250292445a, type: 3}
@@ -8651,6 +8709,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PB_Cobble Fence (13)
       objectReference: {fileID: 0}
+    - target: {fileID: 3257982363330065674, guid: dd8e158a6dfec5440ad7fa250292445a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd8e158a6dfec5440ad7fa250292445a, type: 3}
 --- !u!1001 &1953583876
@@ -9038,6 +9101,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PB_Cobble Fence (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 3257982363330065674, guid: dd8e158a6dfec5440ad7fa250292445a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd8e158a6dfec5440ad7fa250292445a, type: 3}
 --- !u!1 &2008333775
@@ -9327,6 +9395,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PB_Cobble Fence (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3257982363330065674, guid: dd8e158a6dfec5440ad7fa250292445a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dd8e158a6dfec5440ad7fa250292445a, type: 3}

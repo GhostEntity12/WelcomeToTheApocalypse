@@ -11,7 +11,9 @@ public class Node
 	public int x, z;
 	public int fScore, gScore, hScore;
 
-	public bool isWalkable;
+	public bool m_isOnMap;
+
+	public bool m_isBlocked;
 
 	public Vector3 worldPosition;
 
@@ -34,7 +36,6 @@ public class Node
 
 	public void Reset()
 	{
-		Debug.Log(m_NodeHighlight.name);
 		m_NodeHighlight.ChangeHighlight(TileState.None);
 		visited = false;
 		parentNode = null;
