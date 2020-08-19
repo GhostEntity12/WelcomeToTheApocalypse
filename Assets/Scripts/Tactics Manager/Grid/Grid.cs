@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -38,11 +38,6 @@ public class Grid : MonoBehaviour
 	{
 		m_Instance = this;
 		ReadLevel();
-	}
-
-	void Start()
-	{
-		
 	}
 
 	void ReadLevel()
