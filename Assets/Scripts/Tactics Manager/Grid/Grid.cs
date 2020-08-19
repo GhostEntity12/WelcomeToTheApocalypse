@@ -40,55 +40,8 @@ public class Grid : MonoBehaviour
 		ReadLevel();
 	}
 
-	void Start()
-	{
-		
-	}
-
 	void ReadLevel()
 	{
-		////Finds GridPosition script on objects
-		//GridPosition[] gp = FindObjectsOfType<GridPosition>();
-
-		////Defaults the 
-		//float minX = float.MaxValue;
-		//float maxX = float.MinValue;
-
-		//float minZ = minX;
-		//float maxZ = maxX;
-
-		//for (int i = 0; i < gp.Length; i++)
-		//{
-		//	Transform t = gp[i].transform;
-		//	//Sets the min position if the position of the gridPosition is less than the MinX which is set to the highest value
-		//	if (t.position.x < minX)
-		//	{
-		//		minX = t.position.x;
-		//	}
-		//	//Sets the max position if the position of the gridPosition is less than the MaxX which is set to the lowest value
-		//	if (t.position.x > maxX)
-		//	{
-		//		maxX = t.position.x;
-		//	}
-		//	if (t.position.z < minZ)
-		//	{
-		//		minZ = t.position.z;
-		//	}
-		//	if (t.position.z > maxZ)
-		//	{
-		//		maxZ = t.position.z;
-		//	}
-		//}
-
-		//posX = Mathf.FloorToInt((maxX - minX) / xzScale);
-		//posZ = Mathf.FloorToInt((maxZ - minZ) / xzScale);
-
-		//minPosition = Vector3.zero;
-		//minPosition.x = minX;
-		//minPosition.z = minZ;
-
-		//CreateGrid(posX, posZ);
-
 		Bounds bounds = GetComponent<Collider>().bounds;
 
 		posX = Mathf.FloorToInt(bounds.size.x / xzScale);
