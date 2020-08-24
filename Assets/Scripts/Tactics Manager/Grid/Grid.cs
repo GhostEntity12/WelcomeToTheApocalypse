@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,8 +23,6 @@ public class Grid : MonoBehaviour
 	int maxX, maxZ;
 	int posX, posZ;
 
-	List<Vector3> nodeViz = new List<Vector3>();
-
 	[Tooltip("Used to show the node position with something like a really small plane or something")]
 	public GameObject node;
 	[Tooltip("Used to store the objects for the nodes")]
@@ -42,55 +40,8 @@ public class Grid : MonoBehaviour
 		ReadLevel();
 	}
 
-	void Start()
-	{
-		
-	}
-
 	void ReadLevel()
 	{
-		////Finds GridPosition script on objects
-		//GridPosition[] gp = FindObjectsOfType<GridPosition>();
-
-		////Defaults the 
-		//float minX = float.MaxValue;
-		//float maxX = float.MinValue;
-
-		//float minZ = minX;
-		//float maxZ = maxX;
-
-		//for (int i = 0; i < gp.Length; i++)
-		//{
-		//	Transform t = gp[i].transform;
-		//	//Sets the min position if the position of the gridPosition is less than the MinX which is set to the highest value
-		//	if (t.position.x < minX)
-		//	{
-		//		minX = t.position.x;
-		//	}
-		//	//Sets the max position if the position of the gridPosition is less than the MaxX which is set to the lowest value
-		//	if (t.position.x > maxX)
-		//	{
-		//		maxX = t.position.x;
-		//	}
-		//	if (t.position.z < minZ)
-		//	{
-		//		minZ = t.position.z;
-		//	}
-		//	if (t.position.z > maxZ)
-		//	{
-		//		maxZ = t.position.z;
-		//	}
-		//}
-
-		//posX = Mathf.FloorToInt((maxX - minX) / xzScale);
-		//posZ = Mathf.FloorToInt((maxZ - minZ) / xzScale);
-
-		//minPosition = Vector3.zero;
-		//minPosition.x = minX;
-		//minPosition.z = minZ;
-
-		//CreateGrid(posX, posZ);
-
 		Bounds bounds = GetComponent<Collider>().bounds;
 
 		posX = Mathf.FloorToInt(bounds.size.x / xzScale);
@@ -127,42 +78,41 @@ public class Grid : MonoBehaviour
 
 				if (overlapNode.Length > 0)
 				{
+					bool isWalkable = overlapNode.Select(o => o.GetComponent<GridArea>()).Where(g => g != null).Count() > 0;
 
-					bool isWalkable = false;
-
-					for (int i = 0; i < overlapNode.Length; ++i)
+					if (isWalkable)
 					{
-
-						GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
-
-						if (obj != null)
+						for (int i = 0; i < overlapNode.Length; ++i)
 						{
-							if (obj.isWalkable && n.obstacle == null)
+
+							GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
+
+							if (obj != null)
 							{
-								isWalkable = true;
-							}
-							else
-							{
-								isWalkable = false;
-								n.obstacle = obj;
+								if (obj.isWalkable && n.obstacle == null)
+								{
+									isWalkable = true;
+								}
+								else
+								{
+									isWalkable = false;
+									n.obstacle = obj;
+								}
+
 							}
 
 						}
-
 					}
 
-					n.isWalkable = isWalkable;
+					n.m_isOnMap = isWalkable;
 				}
 
-				if (n.isWalkable)
+				if (n.m_isOnMap)
 				{
 					n.m_tile = Instantiate(node, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, nodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
+					n.m_NodeHighlight.name = $"Node {n.x}/{n.z}";
 					n.m_NodeHighlight.ChangeHighlight(TileState.None);
-				}
-				if (n.obstacle != null)
-				{
-					nodeViz.Add(n.worldPosition);
 				}
 				m_grid[x, z] = n;
 
@@ -306,6 +256,7 @@ public class Grid : MonoBehaviour
 	{
 		Node n = GetNode(unit.transform.position);
 		n.unit = unit.GetComponent<Unit>();
+		n.m_isBlocked = true;
 	}
 
 	public Unit GetUnit(Vector3 mousePos)
@@ -316,6 +267,7 @@ public class Grid : MonoBehaviour
 	public void RemoveUnit(Node unitNode)
 	{
 		unitNode.unit = null;
+		unitNode.m_isBlocked = false;
 	}
 
 	public void ClearNode()
@@ -323,15 +275,6 @@ public class Grid : MonoBehaviour
 		foreach (Node node in nodething)
 		{
 			node.m_NodeHighlight.ChangeHighlight(TileState.None);
-		}
-	}
-
-	private void OnDrawGizmos()
-	{
-		Gizmos.color = Color.black;
-		for(int i = 0; i < nodeViz.Count; ++i)
-		{
-			Gizmos.DrawWireCube(nodeViz[i], extends);
 		}
 	}
 
@@ -354,7 +297,7 @@ public class Grid : MonoBehaviour
 			return false;
 		}
 
-		if(m_startNode.isWalkable == false || m_endNode.isWalkable == false)
+		if(m_endNode.m_isOnMap == false)
 		{
 			return false;
 		}
@@ -407,7 +350,7 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
-				if(neighbourNode.isWalkable == false)
+				if(neighbourNode.m_isOnMap == false)
 				{
 					continue;
 				}
@@ -493,7 +436,7 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
-				if (neighbourNode.isWalkable == false)
+				if (neighbourNode.m_isOnMap == false)
 				{
 					continue;
 				}
@@ -540,6 +483,61 @@ public class Grid : MonoBehaviour
 		return false;
 	}
 
+	/// <summary>
+	/// Get nodes within a given radius.
+	/// </summary>
+	/// <param name="radius">The radius to get nodes within.</param>
+	/// <param name="startNode">The node in the centre of the radius.</param>
+	/// <param name="allowBlockedNodes">If blocked nodes can be selected in the radius.</param>
+	/// <returns>List of nodes within the given radius.</returns>
+	public List<Node> GetNodesWithinRadius(int radius, Node startNode, bool allowBlockedNodes = false)
+	{
+		List<Node> nodesInRadius = new List<Node>();
+
+		Queue<Node> openList = new Queue<Node>();
+		List<Node> closedList = new List<Node>();
+
+		startNode.gScore = 0;
+
+		openList.Enqueue(startNode);
+
+		// While there are nodes to search.
+		while (openList.Count() > 0)
+		{
+			// Get the next node to search.
+			Node currentNode = openList.Dequeue();
+
+			if (currentNode.m_isOnMap == false)
+				continue;
+			if (allowBlockedNodes == false && currentNode.m_isBlocked == true)
+				continue;
+
+			nodesInRadius.Add(currentNode);
+
+			if (currentNode.gScore < radius)
+			{
+				// Go through and add the neighbours.
+				for (int i = 0; i < 4; ++i)
+				{
+					Node neighbourNode = currentNode.adjacentNodes[i];
+	
+					if (neighbourNode == null)
+						continue;
+					if (closedList.Contains(neighbourNode) == true)
+						continue;
+					if (neighbourNode.m_isOnMap == false)
+						continue;
+	
+					neighbourNode.gScore = currentNode.gScore + 1;
+					openList.Enqueue(neighbourNode);
+				}
+				closedList.Add(currentNode);
+			}
+		}
+
+		return nodesInRadius;
+	}
+
 	int CalculateHeristic(Node node, Node endNode)
 	{
 		int dx = Mathf.Abs(node.x - endNode.x);
@@ -554,28 +552,4 @@ public class Grid : MonoBehaviour
 			return ((19 * dx) + 10 * (dz - dx));
 		}
 	}
-
-	void Update()
-	{
-		//if (!searched)
-		//{
-		//	foreach (GameObject go in unit)
-		//	{
-		//		GetArea(4, go);
-		//	}
-		//	searched = true;
-		//}
-	}
-
-	//Will be Deleted
-	[ContextMenu("Test")]
-	void Test()
-	{
-		foreach (GameObject go in unit)
-		{
-			print(go.name + " Node Pos: " + GetNode(go.transform.position).worldPosition);
-			print(go.name + " Pos: " + go.transform.position);
-		}
-	}
-	/*Multple Floor stuff will be deleted at a later date*/
 }
