@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 using static Ghost.BFS;
 
@@ -92,7 +94,35 @@ public class Unit : MonoBehaviour
     /// </summary>
     public List<Node> m_MovableNodes = new List<Node>();
 
-    
+    /// <summary>
+    /// The image representing the unit's health.
+    /// </summary>
+    public Image m_HealthBar = null;
+
+    /// <summary>
+    /// The text indicating a change to a unit's health.
+    /// </summary>
+    public GameObject m_HealthChangeIndicator = null;
+
+    /// <summary>
+    /// The text of the health change indicator.
+    /// </summary>
+    private TextMeshProUGUI m_HealthChangeIndicatorText = null;
+
+    /// <summary>
+    /// The script for the health change indicator.
+    /// </summary>
+    private HealthChangeIndicator m_HealthChangeIndicatorScript = null;
+
+    /// <summary>
+    /// The starting action points of the unit.
+    /// </summary>
+    public int m_StartingActionPoints = 1;
+
+    /// <summary>
+    /// The currect action points of the unit.
+    /// </summary>
+    private int m_CurrentActionPoints = 0;
 
     // On startup.
     void Awake()
@@ -100,6 +130,11 @@ public class Unit : MonoBehaviour
         m_CurrentHealth = m_StartingHealth;
 
         m_CurrentMovement = m_StartingMovement;
+
+        m_CurrentActionPoints = m_StartingActionPoints;
+
+        m_HealthChangeIndicatorText = m_HealthChangeIndicator.GetComponent<TextMeshProUGUI>();
+        m_HealthChangeIndicatorScript = m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
 
     void Start()
@@ -143,6 +178,13 @@ public class Unit : MonoBehaviour
     {
         m_CurrentHealth = health;
         CheckAlive();
+
+        // Don't go over that max starting health.
+        if (m_CurrentHealth > m_StartingHealth)
+            m_CurrentHealth = m_StartingHealth;
+
+        m_HealthBar.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
+        m_HealthChangeIndicatorScript.Reset();
     }
 
     /// <summary>
@@ -157,11 +199,9 @@ public class Unit : MonoBehaviour
     /// <param name="increase"> The amount to increase the unit's health by. </param>
     public void IncreaseCurrentHealth(int increase)
     {
-        m_CurrentHealth += increase;
-
-        // Don't go over that max starting health.
-        if (m_CurrentHealth > m_StartingHealth)
-            m_CurrentHealth = m_StartingHealth;
+        m_HealthChangeIndicatorText.text = "+" + increase;
+        SetCurrentHealth(m_CurrentHealth + increase);
+        m_HealthChangeIndicatorScript.HealthIncreased();
     }
 
     /// <summary>
@@ -170,8 +210,9 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
-        m_CurrentHealth -= decrease;
-        CheckAlive();
+        m_HealthChangeIndicatorText.text = "-" + decrease;
+        SetCurrentHealth(m_CurrentHealth - decrease);
+        m_HealthChangeIndicatorScript.HealthDecrease();
     }
 
     /// <summary>
@@ -180,14 +221,31 @@ public class Unit : MonoBehaviour
     public void ResetCurrentHealth() { m_CurrentHealth = m_StartingHealth; }
 
     /// <summary>
-    /// Check if the character's health is above 0.
-    /// If equal to or below, the character is not alive.
+    /// Check if the unit's health is above 0.
+    /// If equal to or below, the unit is not alive.
     /// </summary>
     private void CheckAlive()
     {
         if (m_CurrentHealth <= 0)
         {
+            Debug.Log("Dead");
             m_Alive = false;
+
+            // Check if the unit has the "DefeatEnemyWinCondition" script on it.
+            // If it does, the player has won the level by defeating the boss.
+            try
+            {
+                DefeatEnemyWinCondition defeat = GetComponent<DefeatEnemyWinCondition>();
+                defeat.EnemyDefeated();
+            }
+            catch{}
+
+            // TODO: replace
+            // If this is a player unit, check if the player has any units remaining.
+            if (m_Allegiance == Allegiance.Player)
+                GameManager.m_Instance.CheckPlayerUnitsAlive();
+
+            gameObject.SetActive(false);
         }
     }
 
@@ -226,7 +284,6 @@ public class Unit : MonoBehaviour
         m_MovementPath = path;
         m_Moving = true;
         SetTargetNodePosition(m_MovementPath.Pop());
-        DecreaseCurrentMovement(path.Count);
     }
 
     /// <summary>
@@ -252,6 +309,35 @@ public class Unit : MonoBehaviour
     /// </summary>
     /// <returns> The allegiance of the unit. </returns>
     public Allegiance GetAllegiance() { return m_Allegiance; }
+
+    /// <summary>
+    /// Get if the unit is alive.
+    /// </summary>
+    /// <returns>If the unit is alive.</returns>
+    public bool GetAlive() { return m_Alive; }
+
+    /// <summary>
+    /// Get the unit's action points.
+    /// </summary>
+    /// <returns>The current amount of action points the unit has.</returns>
+    public int GetActionPoints() { return m_CurrentActionPoints; }
+
+    /// <summary>
+    /// Decrease the amount of action points the unit has.
+    /// </summary>
+    /// <param name="decrease">The amount to decrease the unit's action points by.</param>
+    public void DecreaseActionPoints(int decrease)
+    {
+        m_CurrentActionPoints -= decrease;
+    }
+
+    /// <summary>
+    /// Reset the unit's action points.
+    /// </summary>
+    public void ResetActionPoints()
+    {
+        m_CurrentActionPoints = m_StartingActionPoints;
+    }
 
     /// <summary>
     /// Add a status effect to the unit.

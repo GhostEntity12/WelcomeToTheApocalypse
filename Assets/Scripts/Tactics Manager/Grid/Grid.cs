@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,8 +23,6 @@ public class Grid : MonoBehaviour
 	int maxX, maxZ;
 	int posX, posZ;
 
-	List<Vector3> nodeViz = new List<Vector3>();
-
 	[Tooltip("Used to show the node position with something like a really small plane or something")]
 	public GameObject node;
 	[Tooltip("Used to store the objects for the nodes")]
@@ -42,55 +40,8 @@ public class Grid : MonoBehaviour
 		ReadLevel();
 	}
 
-	void Start()
-	{
-		
-	}
-
 	void ReadLevel()
 	{
-		////Finds GridPosition script on objects
-		//GridPosition[] gp = FindObjectsOfType<GridPosition>();
-
-		////Defaults the 
-		//float minX = float.MaxValue;
-		//float maxX = float.MinValue;
-
-		//float minZ = minX;
-		//float maxZ = maxX;
-
-		//for (int i = 0; i < gp.Length; i++)
-		//{
-		//	Transform t = gp[i].transform;
-		//	//Sets the min position if the position of the gridPosition is less than the MinX which is set to the highest value
-		//	if (t.position.x < minX)
-		//	{
-		//		minX = t.position.x;
-		//	}
-		//	//Sets the max position if the position of the gridPosition is less than the MaxX which is set to the lowest value
-		//	if (t.position.x > maxX)
-		//	{
-		//		maxX = t.position.x;
-		//	}
-		//	if (t.position.z < minZ)
-		//	{
-		//		minZ = t.position.z;
-		//	}
-		//	if (t.position.z > maxZ)
-		//	{
-		//		maxZ = t.position.z;
-		//	}
-		//}
-
-		//posX = Mathf.FloorToInt((maxX - minX) / xzScale);
-		//posZ = Mathf.FloorToInt((maxZ - minZ) / xzScale);
-
-		//minPosition = Vector3.zero;
-		//minPosition.x = minX;
-		//minPosition.z = minZ;
-
-		//CreateGrid(posX, posZ);
-
 		Bounds bounds = GetComponent<Collider>().bounds;
 
 		posX = Mathf.FloorToInt(bounds.size.x / xzScale);
@@ -127,42 +78,41 @@ public class Grid : MonoBehaviour
 
 				if (overlapNode.Length > 0)
 				{
+					bool isWalkable = overlapNode.Select(o => o.GetComponent<GridArea>()).Where(g => g != null).Count() > 0;
 
-					bool isWalkable = false;
-
-					for (int i = 0; i < overlapNode.Length; ++i)
+					if (isWalkable)
 					{
-
-						GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
-
-						if (obj != null)
+						for (int i = 0; i < overlapNode.Length; ++i)
 						{
-							if (obj.isWalkable && n.obstacle == null)
+
+							GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
+
+							if (obj != null)
 							{
-								isWalkable = true;
-							}
-							else
-							{
-								isWalkable = false;
-								n.obstacle = obj;
+								if (obj.isWalkable && n.obstacle == null)
+								{
+									isWalkable = true;
+								}
+								else
+								{
+									isWalkable = false;
+									n.obstacle = obj;
+								}
+
 							}
 
 						}
-
 					}
 
-					n.isWalkable = isWalkable;
+					n.m_isOnMap = isWalkable;
 				}
 
-				if (n.isWalkable)
+				if (n.m_isOnMap)
 				{
 					n.m_tile = Instantiate(node, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, nodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
+					n.m_NodeHighlight.name = $"Node {n.x}/{n.z}";
 					n.m_NodeHighlight.ChangeHighlight(TileState.None);
-				}
-				if (n.obstacle != null)
-				{
-					nodeViz.Add(n.worldPosition);
 				}
 				m_grid[x, z] = n;
 
@@ -306,6 +256,7 @@ public class Grid : MonoBehaviour
 	{
 		Node n = GetNode(unit.transform.position);
 		n.unit = unit.GetComponent<Unit>();
+		n.m_isBlocked = true;
 	}
 
 	public Unit GetUnit(Vector3 mousePos)
@@ -316,6 +267,7 @@ public class Grid : MonoBehaviour
 	public void RemoveUnit(Node unitNode)
 	{
 		unitNode.unit = null;
+		unitNode.m_isBlocked = false;
 	}
 
 	public void ClearNode()
@@ -326,21 +278,15 @@ public class Grid : MonoBehaviour
 		}
 	}
 
-	private void OnDrawGizmos()
+	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost)
 	{
-		Gizmos.color = Color.black;
-		for(int i = 0; i < nodeViz.Count; ++i)
-		{
-			Gizmos.DrawWireCube(nodeViz[i], extends);
-		}
-	}
-
-	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path)
-	{
+		// Assigned just for the leaving before looking for a path.
+		cost = 0;
 
 		Node m_startNode = GetNode(startPos);
 		Node m_endNode = GetNode(endPos);
 
+		// Make sure the start and end nodes are valid.
 		if (m_startNode == null || m_endNode == null)
 		{
 			return false;
@@ -351,16 +297,115 @@ public class Grid : MonoBehaviour
 			return false;
 		}
 
-		if(m_startNode.isWalkable == false || m_endNode.isWalkable == false)
+		if(m_endNode.m_isOnMap == false)
 		{
 			return false;
 		}
 
+		// Empty the path stack.
 		path.Clear();
+
+		// Nodes not finished being used.
 		Queue<Node> m_openList = new Queue<Node>();
+
+		// Nodes to no longer be used.
 		List<Node> m_closedList = new List<Node>();
 
+		// If a path has been found.
 		bool m_foundPath = false;
+
+		m_startNode.m_previousNode = null;
+		
+		// Calculate the variables for the starting node.
+		m_startNode.gScore = 0;
+		m_startNode.hScore = CalculateHeristic(m_startNode, m_endNode);
+		m_startNode.CalculateFScore();
+
+		m_openList.Enqueue(m_startNode);
+
+		// While there is a node in the open list, look for a path.
+		while (m_openList.Count > 0)
+		{
+			// Start searching from the most recent node in the open list.
+			Node currentNode = m_openList.Dequeue();
+
+			// Don't search from this node anymore.
+			m_closedList.Add(currentNode);
+
+			// If the node being checked is the end node, the path is complete, and we can stop searching.
+			if(currentNode == m_endNode)
+			{
+				m_foundPath = true;
+				break;
+			}
+
+			// Look through all the node's neighbours for the node leading to the end node.
+			for (int i = 0; i < currentNode.adjacentNodes.Count; ++i)
+			{
+				Node neighbourNode = currentNode.adjacentNodes[i];
+
+				// Make sure the neghbour node is valid.
+				if (neighbourNode == null)
+				{
+					continue;
+				}
+
+				if(neighbourNode.m_isOnMap == false)
+				{
+					continue;
+				}
+
+				if(m_closedList.Contains(neighbourNode) == true)
+				{
+					continue;
+				}
+
+				// If the neighbour node isn't in the open list, calculate it's variables and add it.
+				if(m_openList.Contains(neighbourNode) == false)
+				{
+					neighbourNode.m_previousNode = currentNode;
+					neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+					neighbourNode.hScore = CalculateHeristic(neighbourNode, m_endNode);
+					neighbourNode.CalculateFScore();
+					m_openList.Enqueue(neighbourNode);
+				}
+				// Neighbour node is in the open list, check if it's valid for the path.
+				else
+				{
+					int costs = currentNode.fScore + currentNode.m_costs[i];
+					if(costs < neighbourNode.fScore)
+					{
+						neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+						neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
+						neighbourNode.m_previousNode = currentNode;
+					}
+				}
+			}
+		}
+
+		// If a path has been found, assign it to the path argument that was passed in.
+		if (m_foundPath == true)
+		{
+			Node current = m_endNode;
+			while (current != null)
+			{
+				path.Push(current);
+				current = current.m_previousNode;
+			}
+		}
+
+		// Find a path again, without using diagonals, for getting the cost of using the path.
+		// This is done so the cost of using a path is the amount of tiles traversed, with adjacent costing 1, and diagonals costing 2,
+		// but not messing with the pathfinding by making diagonals as cheap as moving two adjacent, so the pathfinding for the unit's will prefer diagonals,
+		// but will cost the same as if it was moving 2 adjacents rather than 1 diagonal.
+
+		m_foundPath = false;
+
+		m_startNode = GetNode(startPos);
+		m_endNode = GetNode(endPos);
+
+		m_openList.Clear();
+		m_closedList.Clear();
 
 		m_startNode.m_previousNode = null;
 		m_startNode.gScore = 0;
@@ -375,13 +420,14 @@ public class Grid : MonoBehaviour
 
 			m_closedList.Add(currentNode);
 
-			if(currentNode == m_endNode)
+			if (currentNode == m_endNode)
 			{
 				m_foundPath = true;
 				break;
 			}
 
-			for (int i = 0; i < currentNode.adjacentNodes.Count; ++i)
+			// Only searching the first 4 neighbours of the node, which are the adjacents.
+			for (int i = 0; i < 4; ++i)
 			{
 				Node neighbourNode = currentNode.adjacentNodes[i];
 
@@ -390,17 +436,17 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
-				if(neighbourNode.isWalkable == false)
+				if (neighbourNode.m_isOnMap == false)
 				{
 					continue;
 				}
 
-				if(m_closedList.Contains(neighbourNode) == true)
+				if (m_closedList.Contains(neighbourNode) == true)
 				{
 					continue;
 				}
 
-				if(m_openList.Contains(neighbourNode) == false)
+				if (m_openList.Contains(neighbourNode) == false)
 				{
 					neighbourNode.m_previousNode = currentNode;
 					neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
@@ -410,8 +456,8 @@ public class Grid : MonoBehaviour
 				}
 				else
 				{
-					int cost = currentNode.fScore + currentNode.m_costs[i];
-					if(cost < neighbourNode.fScore)
+					int costs = currentNode.fScore + currentNode.m_costs[i];
+					if (costs < neighbourNode.fScore)
 					{
 						neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
 						neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
@@ -421,16 +467,19 @@ public class Grid : MonoBehaviour
 			}
 		}
 
-		if(m_foundPath == true)
+		if (m_foundPath == true)
 		{
 			Node current = m_endNode;
-			while(current != null)
+			int pathLength = 0;
+			while (current != null)
 			{
-				path.Push(current);
 				current = current.m_previousNode;
+				++pathLength;
 			}
+			cost = pathLength;
 			return true;
 		}
+
 		return false;
 	}
 
@@ -448,28 +497,4 @@ public class Grid : MonoBehaviour
 			return ((19 * dx) + 10 * (dz - dx));
 		}
 	}
-
-	void Update()
-	{
-		//if (!searched)
-		//{
-		//	foreach (GameObject go in unit)
-		//	{
-		//		GetArea(4, go);
-		//	}
-		//	searched = true;
-		//}
-	}
-
-	//Will be Deleted
-	[ContextMenu("Test")]
-	void Test()
-	{
-		foreach (GameObject go in unit)
-		{
-			print(go.name + " Node Pos: " + GetNode(go.transform.position).worldPosition);
-			print(go.name + " Pos: " + go.transform.position);
-		}
-	}
-	/*Multple Floor stuff will be deleted at a later date*/
 }
