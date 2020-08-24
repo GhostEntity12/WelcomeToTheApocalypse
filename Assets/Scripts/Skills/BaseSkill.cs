@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum SkillType
@@ -30,7 +30,7 @@ public class BaseSkill : ScriptableObject
     // The icon which represents the skill
     public Sprite m_Icon;
     //The skill's description
-    [TextArea(1, 3)]
+    [TextArea(1, 5)]
     public string m_Description;
 
     [Header("Targeting")]
@@ -52,6 +52,34 @@ public class BaseSkill : ScriptableObject
     public int m_CastableDistance;
     // How large of an area around the cast location will be affected
     public int m_AffectedRange;
+    // The cost of using the skill
+    public int m_Cost;
 
-    public virtual void CastSkill() { }
+    protected Unit[] affectedUnits;
+    public List<Node> affectedNodes;
+
+    public virtual void CastSkill()
+    {
+        Debug.Log("Skill cast");
+        affectedUnits = affectedNodes.Select(t => t.unit)
+            .Where(c => GameManager.IsTargetable(GameManager.m_Instance.GetSelectedUnit(), c, this))
+            .ToArray();
+
+        // Equivalent (mostly) non-LINQ version
+
+        //foreach (var item in affectedNodes.Select(n => n.unit)) 
+        //{
+        //    if (!item) continue;
+
+        //    if (GameManager.m_Instance.GetSelectedUnit() == item && this.excludeCaster) continue;
+
+        //    if ((GameManager.m_Instance.GetSelectedUnit().m_Allegiance == item.m_Allegiance && this.targets == SkillTargets.Allies) ||
+        //        (GameManager.m_Instance.GetSelectedUnit().m_Allegiance != item.m_Allegiance && this.targets == SkillTargets.Foes) ||
+        //        (this.targets == SkillTargets.All))
+        //    {
+        //        affectedUnits.Append(item);
+        //    }
+        //    else continue;
+        //}
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Ghost
 {
@@ -10,9 +11,11 @@ namespace Ghost
         /// <param name="radius">How large the area to return is</param>
         /// <param name="startNode">The center node</param>
         /// <returns>The list of nodes to return</returns>
-        public static List<Node> GetNodesWithinRadius(int radius, Node startNode, bool canSelectObstacles = false)
+        public static List<Node> GetNodesWithinRadius(int radius, Node startNode, bool allowBlockedNodes = false)
         {
             List<Node> nodesInRadius = new List<Node>();
+
+            List<Node> nodesToReset = new List<Node>();
 
             //Breadth First Search
             Queue<Node> process = new Queue<Node>();
@@ -24,26 +27,35 @@ namespace Ghost
             {
                 Node n = process.Dequeue();
 
-                if (!n.isWalkable && !canSelectObstacles) continue;
+                if (!n.m_isOnMap) continue;
+
+                if (n != startNode && !allowBlockedNodes && n.m_isBlocked) continue;
+
 
                 nodesInRadius.Add(n);
 
                 if (n.distance < radius)
                 {
-                    foreach (Node node in n.adjacentNodes)
+                    for (int i = 0; i < 4; i++)
                     {
-                        if (!node.visited)
+                        Node adjacentNode = n.adjacentNodes[i];
+                        if (adjacentNode == null) continue;
+
+                        if (!adjacentNode.visited)
                         {
-                            node.parentNode = n;
-                            node.visited = true;
-                            node.distance = 1 + n.distance;
-                            process.Enqueue(node);
+                            adjacentNode.parentNode = n;
+                            adjacentNode.visited = true;
+                            adjacentNode.distance = 1 + n.distance;
+                            process.Enqueue(adjacentNode);
+                            nodesToReset.Add(adjacentNode);
                         }
                     }
                 }
             }
 
-            foreach (Node node in nodesInRadius)
+            nodesToReset.AddRange(nodesInRadius);
+
+            foreach (Node node in nodesToReset.Distinct().Where(n => n.m_isOnMap))
             {
                 node.Reset();
             }
