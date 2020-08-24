@@ -351,7 +351,7 @@ public class Unit : MonoBehaviour
     /// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
     public void HighlightMovableNodes(Node startingNode = null)
     {
-        m_MovableNodes = GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
+        m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
         foreach (Node node in m_MovableNodes)
         {
             node.m_NodeHighlight.ChangeHighlight(TileState.MovementRange);
