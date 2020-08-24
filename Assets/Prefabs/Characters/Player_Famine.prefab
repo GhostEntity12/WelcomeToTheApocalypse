@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7091387528867765079
+--- !u!1 &4691934675115247003
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7091387528867765068}
-  - component: {fileID: 7091387528867765067}
-  - component: {fileID: 7091387528867765066}
-  - component: {fileID: 7091387528867765064}
-  - component: {fileID: 7091387528867765065}
+  - component: {fileID: 8594627730883213192}
+  - component: {fileID: 728816632302718398}
+  - component: {fileID: 6422642927788831047}
+  - component: {fileID: 3620037220298808464}
+  - component: {fileID: 3620037220298808559}
   m_Layer: 9
-  m_Name: MeleeEnemy
+  m_Name: Player_Famine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7091387528867765068
+--- !u!4 &8594627730883213192
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7091387528867765079}
+  m_GameObject: {fileID: 4691934675115247003}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 0, z: 0.5}
-  m_LocalScale: {x: 0.75, y: 0.9, z: 0.75}
+  m_LocalPosition: {x: 1.5, y: 0, z: -2.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &7091387528867765067
+--- !u!33 &728816632302718398
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7091387528867765079}
+  m_GameObject: {fileID: 4691934675115247003}
   m_Mesh: {fileID: -9114703323446395147, guid: 198cb5f86de279e4caac4b838f0f25ce, type: 3}
---- !u!23 &7091387528867765066
+--- !u!23 &6422642927788831047
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7091387528867765079}
+  m_GameObject: {fileID: 4691934675115247003}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ec43a47fbb41ae5448948194307b264d, type: 2}
+  - {fileID: 2100000, guid: 35332a4bd30d9a146b3cbaa83bcb1b6e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -81,35 +81,37 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &7091387528867765064
+--- !u!114 &3620037220298808464
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7091387528867765079}
+  m_GameObject: {fileID: 4691934675115247003}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a1a46226b9ce264ab6ee8163b873071, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_StartingHealth: 6
+  m_StartingHealth: 13
   m_StartingMovement: 5
-  m_MoveSpeed: 6
+  m_MoveSpeed: 5
   m_Skills:
-  - {fileID: 11400000, guid: 24fb0ac64e5d27a4d86b838f80512fcb, type: 2}
+  - {fileID: 11400000, guid: a00bf960e6a84df4b911439c0dd4ccd3, type: 2}
+  - {fileID: 11400000, guid: 2a6d9d54dde6913448d77cf6b6ba2559, type: 2}
+  - {fileID: 11400000, guid: 7e82132bc6246e143b1fc8cc4bdd2716, type: 2}
   m_PassiveEffect: {fileID: 0}
-  m_Allegiance: 1
+  m_Allegiance: 0
   m_HealthBar: {fileID: 0}
   m_HealthChangeIndicator: {fileID: 0}
-  m_StartingActionPoints: 1
---- !u!64 &7091387528867765065
+  m_StartingActionPoints: 2
+--- !u!64 &3620037220298808559
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7091387528867765079}
+  m_GameObject: {fileID: 4691934675115247003}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
