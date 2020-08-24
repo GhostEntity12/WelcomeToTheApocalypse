@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-using static Ghost.BFS;
-
 public enum Allegiance
 {
     /// <summary>
@@ -72,12 +70,12 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// Is the character alive?
     /// </summary>
-    private bool m_Alive = true;
+    private bool m_IsAlive = true;
 
     /// <summary>
     /// Is the character moving?
     /// </summary>
-    private bool m_Moving = false;
+    private bool m_IsMoving = false;
 
     /// <summary>
     /// The path for the character to take to get to their destination.
@@ -146,13 +144,13 @@ public class Unit : MonoBehaviour
     void Update()
     {
         // If have a target that the unit hasn't arrived at yet, move towards the target position.
-        if (m_Moving)
+        if (m_IsMoving)
         {
-            //Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
             transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.1 units close to target is close enough).
             if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
             {
+                // Set the actual position to the target
                 transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
 
                 // Target the next node.
@@ -163,7 +161,7 @@ public class Unit : MonoBehaviour
                 // Have arrived at the final node in the path, stop moving.
                 else
                 {
-                    m_Moving = false;
+                    m_IsMoving = false;
                     Grid.m_Instance.SetUnit(gameObject);
                 }
             }
@@ -229,22 +227,22 @@ public class Unit : MonoBehaviour
         if (m_CurrentHealth <= 0)
         {
             Debug.Log("Dead");
-            m_Alive = false;
+            m_IsAlive = false;
 
             // Check if the unit has the "DefeatEnemyWinCondition" script on it.
             // If it does, the player has won the level by defeating the boss.
-            try
+            //try
             {
                 DefeatEnemyWinCondition defeat = GetComponent<DefeatEnemyWinCondition>();
-                defeat.EnemyDefeated();
+                defeat?.EnemyDefeated();
             }
-            catch{}
+            //catch{}
 
-            // TODO: replace
             // If this is a player unit, check if the player has any units remaining.
             if (m_Allegiance == Allegiance.Player)
                 GameManager.m_Instance.CheckPlayerUnitsAlive();
 
+            // TODO: replace with something to actually remove the unit
             gameObject.SetActive(false);
         }
     }
@@ -282,7 +280,7 @@ public class Unit : MonoBehaviour
     public void SetMovementPath(Stack<Node> path)
     {
         m_MovementPath = path;
-        m_Moving = true;
+        m_IsMoving = true;
         SetTargetNodePosition(m_MovementPath.Pop());
     }
 
@@ -314,7 +312,7 @@ public class Unit : MonoBehaviour
     /// Get if the unit is alive.
     /// </summary>
     /// <returns>If the unit is alive.</returns>
-    public bool GetAlive() { return m_Alive; }
+    public bool GetAlive() { return m_IsAlive; }
 
     /// <summary>
     /// Get the unit's action points.
@@ -351,7 +349,7 @@ public class Unit : MonoBehaviour
     /// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
     public void HighlightMovableNodes(Node startingNode = null)
     {
-        m_MovableNodes = GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
+        m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
         foreach (Node node in m_MovableNodes)
         {
             node.m_NodeHighlight.ChangeHighlight(TileState.MovementRange);
