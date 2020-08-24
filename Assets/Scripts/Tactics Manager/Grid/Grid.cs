@@ -483,6 +483,61 @@ public class Grid : MonoBehaviour
 		return false;
 	}
 
+	/// <summary>
+	/// Get nodes within a given radius.
+	/// </summary>
+	/// <param name="radius">The radius to get nodes within.</param>
+	/// <param name="startNode">The node in the centre of the radius.</param>
+	/// <param name="allowBlockedNodes">If blocked nodes can be selected in the radius.</param>
+	/// <returns>List of nodes within the given radius.</returns>
+	public List<Node> GetNodesWithinRadius(int radius, Node startNode, bool allowBlockedNodes = false)
+	{
+		List<Node> nodesInRadius = new List<Node>();
+
+		Queue<Node> openList = new Queue<Node>();
+		List<Node> closedList = new List<Node>();
+
+		startNode.gScore = 0;
+
+		openList.Enqueue(startNode);
+
+		// While there are nodes to search.
+		while (openList.Count() > 0)
+		{
+			// Get the next node to search.
+			Node currentNode = openList.Dequeue();
+
+			if (currentNode.m_isOnMap == false)
+				continue;
+			if (allowBlockedNodes == false && currentNode.m_isBlocked == true)
+				continue;
+
+			nodesInRadius.Add(currentNode);
+
+			if (currentNode.gScore < radius)
+			{
+				// Go through and add the neighbours.
+				for (int i = 0; i < 4; ++i)
+				{
+					Node neighbourNode = currentNode.adjacentNodes[i];
+	
+					if (neighbourNode == null)
+						continue;
+					if (closedList.Contains(neighbourNode) == true)
+						continue;
+					if (neighbourNode.m_isOnMap == false)
+						continue;
+	
+					neighbourNode.gScore = currentNode.gScore + 1;
+					openList.Enqueue(neighbourNode);
+				}
+				closedList.Add(currentNode);
+			}
+		}
+
+		return nodesInRadius;
+	}
+
 	int CalculateHeristic(Node node, Node endNode)
 	{
 		int dx = Mathf.Abs(node.x - endNode.x);
