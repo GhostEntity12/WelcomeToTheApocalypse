@@ -3607,6 +3607,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7929576982729011069}
+  - component: {fileID: 7554024532072564314}
+  - component: {fileID: 6343189038781855070}
   m_Layer: 0
   m_Name: PB_tree
   m_TagString: Untagged
@@ -3630,6 +3632,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7554024532072564314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6363829919003958638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 004472b9d557a9f438d2c50b3489fe9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWalkable: 0
+--- !u!65 &6343189038781855070
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6363829919003958638}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 250, y: 618.19, z: 250}
+  m_Center: {x: 0, y: 241.3, z: 0}
 --- !u!1 &6398702317126439960
 GameObject:
   m_ObjectHideFlags: 0
