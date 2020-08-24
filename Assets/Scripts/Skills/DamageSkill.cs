@@ -9,6 +9,11 @@ public class DamageSkill : BaseSkill
 	public override void CastSkill()
 	{
 		base.CastSkill();
+
+		foreach (Unit unit in affectedUnits)
+		{
+			unit.DecreaseCurrentHealth(m_DamageAmount);
+		}
 		// Damage each affected unit
 	}
 }
