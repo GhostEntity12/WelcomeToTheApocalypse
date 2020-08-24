@@ -8,40 +8,34 @@ public class Grid : MonoBehaviour
 {
 	public static Grid m_Instance = null;
 	
-	Node[,] m_grid;
+	Node[,] m_Grid;
 	[SerializeField]
 	float xzScale = 1f;
-	[SerializeField]
-	bool tileActive = false;
-
-	bool searched;
 
 	Vector3 minPosition;
 
-	public Vector3 extends = new Vector3(1f, 1f, 1f);
+	[Tooltip("The extents of the ovelapbox when searching for walkable areas")]
+	public Vector3 m_Extents = new Vector3(0.9f, 1f, 0.9f);
 
-	int maxX, maxZ;
 	int posX, posZ;
 
 	[Tooltip("Used to show the node position with something like a really small plane or something")]
-	public GameObject node;
+	public GameObject m_Tile;
 	[Tooltip("Used to store the objects for the nodes")]
-	public GameObject nodeArray;
-
-	//Will be deleted being used for testing
-	public List<GameObject> unit;
-
-	// DEBUG
-	List<Node> nodething = new List<Node>();
+	private GameObject m_NodeArray;
 
 	void Awake()
 	{
 		m_Instance = this;
+		GetComponent<GridObject>().isWalkable = true;
 		ReadLevel();
 	}
 
 	void ReadLevel()
 	{
+		m_NodeArray = new GameObject("Nodes");
+		m_NodeArray.transform.SetSiblingIndex(transform.GetSiblingIndex() + 1);
+
 		Bounds bounds = GetComponent<Collider>().bounds;
 
 		posX = Mathf.FloorToInt(bounds.size.x / xzScale);
@@ -54,27 +48,28 @@ public class Grid : MonoBehaviour
 	//Creates the grid
 	void CreateGrid(int a_posX, int a_posZ)
 	{
-
-		m_grid = new Node[a_posX, a_posZ];
+		m_Grid = new Node[a_posX, a_posZ];
 
 		for (int x = 0; x < a_posX; ++x)
 		{
 
 			for (int z = 0; z < a_posZ; ++z)
 			{
+
+				Vector3 tilePosition = minPosition;
+
+				tilePosition.x += x * xzScale + 0.5f;
+				tilePosition.z += z * xzScale + 0.5f;
+
 				//A new node and sets it's X and Z
-				Node n = new Node();
-				n.x = x;
-				n.z = z;
+				Node n = new Node
+				{
+					x = x,
+					z = z,
+					worldPosition = tilePosition
+				};
 
-				Vector3 tp = minPosition;
-
-				tp.x += x * xzScale + 0.5f;
-				tp.z += z * xzScale + 0.5f;
-
-				n.worldPosition = tp;
-
-				Collider[] overlapNode = Physics.OverlapBox(tp, extends / 2, Quaternion.identity);
+				Collider[] overlapNode = Physics.OverlapBox(tilePosition, m_Extents / 2, Quaternion.identity);
 
 				if (overlapNode.Length > 0)
 				{
@@ -109,12 +104,12 @@ public class Grid : MonoBehaviour
 
 				if (n.m_isOnMap)
 				{
-					n.m_tile = Instantiate(node, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, nodeArray.transform);
+					n.m_tile = Instantiate(m_Tile, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, m_NodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
 					n.m_NodeHighlight.name = $"Node {n.x}/{n.z}";
 					n.m_NodeHighlight.ChangeHighlight(TileState.None);
 				}
-				m_grid[x, z] = n;
+				m_Grid[x, z] = n;
 
 			}
 
@@ -135,95 +130,91 @@ public class Grid : MonoBehaviour
 				//0 South
 				if (z > 0)
 				{
-					//print("set 0");
-					m_grid[x, z].adjacentNodes.Add(m_grid[x, z - 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x, z - 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//1 West
 				if (x > 0)
 				{
-					//print("set 1");
-					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x - 1, z]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//2 North
 				if (z < posZ - 1)
 				{
-					//print("set 2");
-					m_grid[x, z].adjacentNodes.Add(m_grid[x, z + 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x, z + 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//3 East
 				if (x < posX - 1)
 				{
-					//print("set 3");
-					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x + 1, z]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//4 South West
 				if (z > 0 && x > 0)
 				{
-					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z - 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x - 1, z - 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//5 North West
 				if (x > 0 && z < posZ - 1)
 				{
-					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z + 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x - 1, z + 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//6 North East
 				if (z < posZ - 1 && x < posX - 1)
 				{
-					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z + 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x + 1, z + 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//7 South East
 				if (z > 0 && x < posX - 1)
 				{
-					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z - 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x + 1, z - 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
-				m_grid[x, z].m_costs[0] = 10;
-				m_grid[x, z].m_costs[1] = 10;
-				m_grid[x, z].m_costs[2] = 10;
-				m_grid[x, z].m_costs[3] = 10;
-				m_grid[x, z].m_costs[4] = 19;
-				m_grid[x, z].m_costs[5] = 19;
-				m_grid[x, z].m_costs[6] = 19;
-				m_grid[x, z].m_costs[7] = 19;
+				m_Grid[x, z].m_costs[0] = 10;
+				m_Grid[x, z].m_costs[1] = 10;
+				m_Grid[x, z].m_costs[2] = 10;
+				m_Grid[x, z].m_costs[3] = 10;
+				m_Grid[x, z].m_costs[4] = 19;
+				m_Grid[x, z].m_costs[5] = 19;
+				m_Grid[x, z].m_costs[6] = 19;
+				m_Grid[x, z].m_costs[7] = 19;
 			}
 		}
 	}
@@ -232,9 +223,7 @@ public class Grid : MonoBehaviour
 	{
 		Vector3 p = wp - minPosition;
 		int x = Mathf.FloorToInt(p.x / xzScale);
-		//print("X: " + x);
 		int z = Mathf.FloorToInt(p.z / xzScale);
-		//print("Z: " + z);
 
 		return GetNode(x, z);
 	}
@@ -248,8 +237,7 @@ public class Grid : MonoBehaviour
 			return null;
 		}
 
-		//print("Unit Node Pos: " + m_grid[a_x - 1, a_z].worldPosition);
-		return m_grid[a_x, a_z];
+		return m_Grid[a_x, a_z];
 	}
 	
 	public void SetUnit(GameObject unit)
@@ -268,14 +256,6 @@ public class Grid : MonoBehaviour
 	{
 		unitNode.unit = null;
 		unitNode.m_isBlocked = false;
-	}
-
-	public void ClearNode()
-	{
-		foreach (Node node in nodething)
-		{
-			node.m_NodeHighlight.ChangeHighlight(TileState.None);
-		}
 	}
 
 	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost)
@@ -509,7 +489,7 @@ public class Grid : MonoBehaviour
 
 			if (currentNode.m_isOnMap == false)
 				continue;
-			if (allowBlockedNodes == false && currentNode.m_isBlocked == true)
+			if (currentNode != startNode && allowBlockedNodes == false && currentNode.m_isBlocked == true)
 				continue;
 
 			nodesInRadius.Add(currentNode);
