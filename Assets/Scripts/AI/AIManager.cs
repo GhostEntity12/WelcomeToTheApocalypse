@@ -12,9 +12,17 @@ public class AIManager : MonoBehaviour
     private List<Unit> playerUnits;
 
     private Unit closestPlayerUnit;
+    private Unit currentAIUnit;
+
+    private Stack<Node> path;
+    private int pathCost;
+
+    private BaseSkill skill;
 
     //I guess this is needed to tell whos turn it is?
     public bool isTurn;
+
+    private bool canAttack;
 
     private float distance;
 
@@ -22,6 +30,7 @@ public class AIManager : MonoBehaviour
     private void Start()
     {
         isTurn = false;
+        canAttack = false;
     }
 
     private void Update()
@@ -36,6 +45,11 @@ public class AIManager : MonoBehaviour
             FindClosestPlayerUnit(playerUnits);
             FindPathToPlayerUnit();
             CheckAttackRange();
+
+            if (CheckAttackRange() == true)
+            {
+                Attack();
+            }
         }
 
         //End the turn.
@@ -72,14 +86,39 @@ public class AIManager : MonoBehaviour
         return closestPlayerUnit;
     }
 
+    //Finds the path from the two units and sets the AI movement path.
     public void FindPathToPlayerUnit()
     {
-        Grid.m_Instance.
+        Grid.m_Instance.FindPath(currentAIUnit.transform.position, closestPlayerUnit.transform.position, ref path, out pathCost);
+        currentAIUnit.SetMovementPath(path);
     }
 
-    public void CheckAttackRange()
+    //Checks adjacent nodes of the AI unit to see if they are able to attack and hit the player.
+    public bool CheckAttackRange()
     {
+        for (int i = 0; i < 4; i++)
+        {
+            if (Grid.m_Instance.GetNode(transform.position).adjacentNodes[i].unit.m_Allegiance != Allegiance.Enemy)
+            {
+                canAttack = true;
+                return true;
+            }
+            else
+            {
+                canAttack = false;
+                return false;
+            }
+        }
 
+        return false;
+    }
+
+    public void Attack()
+    {
+        if (canAttack)
+        {
+            currentAIUnit.ActivateSkill(skill);
+        }
     }
 
     //At the beginning of the AI turn, check who is alive, sort out any dead member who may be in the alive list. (Just in case)
