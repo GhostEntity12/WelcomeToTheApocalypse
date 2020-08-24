@@ -86,15 +86,11 @@ public class GameManager : MonoBehaviour
 
     private bool m_LeftMouseDown = false;
 
-    #region refactor me. PLEASE
-
     private Node m_CachedNode;
 
     private List<Node> m_maxSkillRange = new List<Node>();
 
     private DialogueManager dm;
-
-    #endregion
 
     // On startup.
     private void Awake()
@@ -109,10 +105,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        // Get all the unit's the player controls.
         dm = DialogueManager.instance;
 
-        // Get all the unit's the player controls.
-        foreach(Unit u in GameObject.FindObjectsOfType<Unit>())
+        foreach (Unit u in FindObjectsOfType<Unit>())
         {
             if (u.GetAllegiance() == Allegiance.Player)
                 m_PlayerUnits.Add(u);
@@ -131,7 +127,6 @@ public class GameManager : MonoBehaviour
         //}
 
         Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
-        //Debug.Log(m_MouseWorldRayHit.point);
     }
 
     /// <summary>
@@ -151,9 +146,12 @@ public class GameManager : MonoBehaviour
             m_TeamCurrentTurn = Allegiance.Enemy;
 
             // Stop highlighting node's the player can move to.
-            foreach (Node n in m_SelectedUnit?.m_MovableNodes)
+            if (m_SelectedUnit)
             {
-                n.m_NodeHighlight.ChangeHighlight(TileState.None);
+                foreach (Node n in m_SelectedUnit.m_MovableNodes)
+                {
+                    n.m_NodeHighlight.ChangeHighlight(TileState.None);
+                }
             }
             // Deselect unit.
             m_SelectedUnit = null;
@@ -177,7 +175,6 @@ public class GameManager : MonoBehaviour
                 u.ResetCurrentMovement();
         }
 
-        //Debug.Log(m_TeamCurrentTurn);
         UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
     }
 
@@ -225,7 +222,7 @@ public class GameManager : MonoBehaviour
 
                         // Highlight the appropriate tiles
                         m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-                        //print(m_SelectedUnit.m_MovableNodes.Count);
+                        print(m_SelectedUnit.m_MovableNodes.Count);
                         m_SelectedUnit.HighlightMovableNodes();
                     }
                 }
@@ -417,6 +414,7 @@ public class GameManager : MonoBehaviour
     {
         // TODO: replace so the buttons just can't be clicked.
         // if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
+
         // Reset the nodes in the old target range
         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
 
@@ -450,8 +448,6 @@ public class GameManager : MonoBehaviour
                     break;
             }
         }
-
-        //Debug.Log(m_SelectedSkill.m_Description);
     }
 
     /// <summary>
