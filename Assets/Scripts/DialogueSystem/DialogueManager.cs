@@ -188,10 +188,11 @@ public class DialogueManager : MonoBehaviour
             nameHolder.anchoredPosition = new Vector2(-namePos.x, namePos.y);
         }
 
-
+        // Grey out the other character
         LeanTween.color(otherBust.rectTransform, Color.gray, 0.1f);
         LeanTween.color(bust.rectTransform, Color.white, 0.1f);
 
+        // Swap portraits
         if (character == currentCharacter)
         {
             bust.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
