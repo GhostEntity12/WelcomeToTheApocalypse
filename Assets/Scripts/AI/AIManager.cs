@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AIManager : MonoBehaviour
 {
+    public static AIManager m_Instance = null;
+
     //Lists of units that track which AI unit is alive and which is dead.
     private List<Unit> aliveUnits;
     private List<Unit> deadUnits;
@@ -25,6 +27,11 @@ public class AIManager : MonoBehaviour
     private bool canAttack;
 
     private float distance;
+
+    private void Awake()
+    {
+        m_Instance = this;
+    }
 
     //Init the turn to not begin with the AI.
     private void Start()
