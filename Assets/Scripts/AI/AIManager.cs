@@ -8,11 +8,11 @@ public class AIManager : MonoBehaviour
     private List<Unit> aliveUnits;
     private List<Unit> deadUnits;
 
-    //A list of the player's alive units.
+    //A list of the player's units.
     private List<Unit> playerUnits;
 
     private Unit closestPlayerUnit;
-    private Unit currentAIUnit;
+    public Unit currentAIUnit;
 
     private Stack<Node> path;
     private int pathCost;
@@ -29,31 +29,35 @@ public class AIManager : MonoBehaviour
     //Init the turn to not begin with the AI.
     private void Start()
     {
+        pathCost = 0;
         isTurn = false;
         canAttack = false;
     }
 
     private void Update()
     {
-        //A quick check to see who is alive.
-        CheckWhoRemains(aliveUnits);
-
-        //For each AI unit currently alive.
-        foreach (Unit unit in aliveUnits)
+        if (isTurn)
         {
-            //Perform the actions on their turn.
-            FindClosestPlayerUnit(playerUnits);
-            FindPathToPlayerUnit();
-            CheckAttackRange();
+            //A quick check to see who is alive.
+            CheckWhoRemains(aliveUnits);
 
-            if (CheckAttackRange() == true)
+            //For each AI unit currently alive.
+            foreach (Unit unit in aliveUnits)
             {
-                Attack();
-            }
-        }
+                //Perform the actions on their turn.
+                FindClosestPlayerUnit(playerUnits);
+                FindPathToPlayerUnit();
+                CheckAttackRange();
 
-        //End the turn.
-        isTurn = false;
+                if (CheckAttackRange() == true)
+                {
+                    Attack();
+                }
+            }
+
+            //End the turn.
+            isTurn = false;
+        }
     }
 
     //When a unit dies, remove it from the list of alive units and add it to a list of dead units.
@@ -101,12 +105,10 @@ public class AIManager : MonoBehaviour
             if (Grid.m_Instance.GetNode(transform.position).adjacentNodes[i].unit.m_Allegiance != Allegiance.Enemy)
             {
                 canAttack = true;
-                return true;
             }
             else
             {
                 canAttack = false;
-                return false;
             }
         }
 
@@ -129,5 +131,10 @@ public class AIManager : MonoBehaviour
             if (unit.GetCurrentHealth() <= 0)
                 UnitDeath(unit);
         }
+    }
+
+    public void AICurrentTurn()
+    {
+        isTurn = true;
     }
 }
