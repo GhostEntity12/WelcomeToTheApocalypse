@@ -140,6 +140,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void EndCurrentTurn()
     {
+        print("Ending turn");
         // Player ends turn.
         if (m_TeamCurrentTurn == Allegiance.Player)
         {

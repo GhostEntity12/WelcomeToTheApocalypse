@@ -53,6 +53,7 @@ public class AIManager : MonoBehaviour
             {
                 //Perform the actions on their turn.
                 FindClosestPlayerUnit(playerUnits);
+                currentAIUnit = unit;
                 FindPathToPlayerUnit();
                 CheckAttackRange();
 
@@ -102,8 +103,10 @@ public class AIManager : MonoBehaviour
     //Finds the path from the two units and sets the AI movement path.
     public void FindPathToPlayerUnit()
     {
-        Grid.m_Instance.FindPath(currentAIUnit.transform.position, closestPlayerUnit.transform.position, ref path, out pathCost);
-        currentAIUnit.SetMovementPath(path);
+        if (Grid.m_Instance.FindPath(currentAIUnit.transform.position, closestPlayerUnit.transform.position, ref path, out pathCost))
+        {
+            currentAIUnit.SetMovementPath(path);
+        }
     }
 
     //Checks adjacent nodes of the AI unit to see if they are able to attack and hit the player.
@@ -111,7 +114,7 @@ public class AIManager : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            if (Grid.m_Instance.GetNode(transform.position).adjacentNodes[i].unit.m_Allegiance != Allegiance.Enemy)
+            if (Grid.m_Instance.GetNode(currentAIUnit.transform.position).adjacentNodes[i].unit?.m_Allegiance != Allegiance.Enemy)
             {
                 canAttack = true;
             }
