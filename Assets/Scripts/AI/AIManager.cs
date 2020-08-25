@@ -7,26 +7,26 @@ public class AIManager : MonoBehaviour
     public static AIManager m_Instance = null;
 
     //Lists of units that track which AI unit is alive and which is dead.
-    private List<Unit> aliveUnits;
-    private List<Unit> deadUnits;
+    public List<Unit> aliveUnits;
+    public List<Unit> deadUnits;
 
     //A list of the player's units.
-    private List<Unit> playerUnits;
+    public List<Unit> playerUnits;
 
-    private Unit closestPlayerUnit;
+    public Unit closestPlayerUnit;
     public Unit currentAIUnit;
 
-    private Stack<Node> path;
-    private int pathCost;
+    public Stack<Node> path = new Stack<Node>();
+    public int pathCost;
 
-    private BaseSkill skill;
+    public BaseSkill skill;
 
     //I guess this is needed to tell whos turn it is?
     public bool isTurn;
 
-    private bool canAttack;
+    public bool canAttack;
 
-    private float distance;
+    public float distance;
 
     private void Awake()
     {
@@ -64,6 +64,8 @@ public class AIManager : MonoBehaviour
 
             //End the turn.
             isTurn = false;
+
+            GameManager.m_Instance.EndCurrentTurn();
         }
     }
 
@@ -86,10 +88,10 @@ public class AIManager : MonoBehaviour
             closestPlayerUnit = playersUnits[i];
 
             //If the distance of the next one is less than the one just found and the next element in the list is not null. Assign this to be the closest unit.
-            if (Vector3.Distance(playersUnits[i + 1].transform.position, transform.position) < distance && playersUnits[i + 1] != null)
+            if (Vector3.Distance(playersUnits[i].transform.position, transform.position) < distance && playersUnits[i] != null)
             {
-                distance = Vector3.Distance(playersUnits[i + 1].transform.position, transform.position);
-                closestPlayerUnit = playersUnits[i + 1];
+                distance = Vector3.Distance(playersUnits[i].transform.position, transform.position);
+                closestPlayerUnit = playersUnits[i];
             }
         }
 
