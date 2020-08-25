@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace Ghost
 {
+    /// <summary>
+    /// Old BFS implementation. Shouldn't be used - call Grid.m_Instance.GetNodesWithinRadius() instead.
+    /// </summary>
     public static class BFS
     {
         /// <summary>
