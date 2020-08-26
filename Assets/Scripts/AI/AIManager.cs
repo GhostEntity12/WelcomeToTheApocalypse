@@ -125,7 +125,7 @@ public class AIManager : MonoBehaviour
         if (Grid.m_Instance.FindAIPath(currentAIUnit.transform.position, closestPlayerUnit.transform.position, ref path, out pathCost))
         {
             currentAIUnit.SetMovementPath(path);
-
+            currentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
         }
     }
 
