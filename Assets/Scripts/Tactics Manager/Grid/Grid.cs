@@ -8,81 +8,33 @@ public class Grid : MonoBehaviour
 {
 	public static Grid m_Instance = null;
 	
-	Node[,] m_grid;
+	Node[,] m_Grid;
 	[SerializeField]
 	float xzScale = 1f;
-	[SerializeField]
-	bool tileActive = false;
-
-	bool searched;
 
 	Vector3 minPosition;
 
-	public Vector3 extends = new Vector3(1f, 1f, 1f);
+	[Tooltip("The extents of the ovelapbox when searching for walkable areas")]
+	public Vector3 m_Extents = new Vector3(0.9f, 1f, 0.9f);
 
-	int maxX, maxZ;
 	int posX, posZ;
 
 	[Tooltip("Used to show the node position with something like a really small plane or something")]
-	public GameObject node;
+	public GameObject m_Tile;
 	[Tooltip("Used to store the objects for the nodes")]
-	public GameObject nodeArray;
-
-	//Will be deleted being used for testing
-	public List<GameObject> unit;
-
-	// DEBUG
-	List<Node> nodething = new List<Node>();
+	private GameObject m_NodeArray;
 
 	void Awake()
 	{
 		m_Instance = this;
+		GetComponent<GridObject>().isWalkable = true;
 		ReadLevel();
 	}
 
 	void ReadLevel()
 	{
-		////Finds GridPosition script on objects
-		//GridPosition[] gp = FindObjectsOfType<GridPosition>();
-
-		////Defaults the 
-		//float minX = float.MaxValue;
-		//float maxX = float.MinValue;
-
-		//float minZ = minX;
-		//float maxZ = maxX;
-
-		//for (int i = 0; i < gp.Length; i++)
-		//{
-		//	Transform t = gp[i].transform;
-		//	//Sets the min position if the position of the gridPosition is less than the MinX which is set to the highest value
-		//	if (t.position.x < minX)
-		//	{
-		//		minX = t.position.x;
-		//	}
-		//	//Sets the max position if the position of the gridPosition is less than the MaxX which is set to the lowest value
-		//	if (t.position.x > maxX)
-		//	{
-		//		maxX = t.position.x;
-		//	}
-		//	if (t.position.z < minZ)
-		//	{
-		//		minZ = t.position.z;
-		//	}
-		//	if (t.position.z > maxZ)
-		//	{
-		//		maxZ = t.position.z;
-		//	}
-		//}
-
-		//posX = Mathf.FloorToInt((maxX - minX) / xzScale);
-		//posZ = Mathf.FloorToInt((maxZ - minZ) / xzScale);
-
-		//minPosition = Vector3.zero;
-		//minPosition.x = minX;
-		//minPosition.z = minZ;
-
-		//CreateGrid(posX, posZ);
+		m_NodeArray = new GameObject("Nodes");
+		m_NodeArray.transform.SetSiblingIndex(transform.GetSiblingIndex() + 1);
 
 		Bounds bounds = GetComponent<Collider>().bounds;
 
@@ -96,64 +48,68 @@ public class Grid : MonoBehaviour
 	//Creates the grid
 	void CreateGrid(int a_posX, int a_posZ)
 	{
-
-		m_grid = new Node[a_posX, a_posZ];
+		m_Grid = new Node[a_posX, a_posZ];
 
 		for (int x = 0; x < a_posX; ++x)
 		{
 
 			for (int z = 0; z < a_posZ; ++z)
 			{
+
+				Vector3 tilePosition = minPosition;
+
+				tilePosition.x += x * xzScale + 0.5f;
+				tilePosition.z += z * xzScale + 0.5f;
+
 				//A new node and sets it's X and Z
-				Node n = new Node();
-				n.x = x;
-				n.z = z;
+				Node n = new Node
+				{
+					x = x,
+					z = z,
+					worldPosition = tilePosition
+				};
 
-				Vector3 tp = minPosition;
-
-				tp.x += x * xzScale + 0.5f;
-				tp.z += z * xzScale + 0.5f;
-
-				n.worldPosition = tp;
-
-				Collider[] overlapNode = Physics.OverlapBox(tp, extends / 2, Quaternion.identity);
+				Collider[] overlapNode = Physics.OverlapBox(tilePosition, m_Extents / 2, Quaternion.identity);
 
 				if (overlapNode.Length > 0)
 				{
+					bool isWalkable = overlapNode.Select(o => o.GetComponent<GridArea>()).Where(g => g != null).Count() > 0;
 
-					bool isWalkable = false;
-
-					for (int i = 0; i < overlapNode.Length; ++i)
+					if (isWalkable)
 					{
-
-						GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
-
-						if (obj != null)
+						for (int i = 0; i < overlapNode.Length; ++i)
 						{
-							if (obj.isWalkable && n.obstacle == null)
+
+							GridObject obj = overlapNode[i].transform.GetComponentInChildren<GridObject>();
+
+							if (obj != null)
 							{
-								isWalkable = true;
-							}
-							else
-							{
-								isWalkable = false;
-								n.obstacle = obj;
+								if (obj.isWalkable && n.obstacle == null)
+								{
+									isWalkable = true;
+								}
+								else
+								{
+									isWalkable = false;
+									n.obstacle = obj;
+								}
+
 							}
 
 						}
-
 					}
 
-					n.isWalkable = isWalkable;
+					n.m_isOnMap = isWalkable;
 				}
 
-				if (n.isWalkable)
+				if (n.m_isOnMap)
 				{
-					n.m_tile = Instantiate(node, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, nodeArray.transform);
+					n.m_tile = Instantiate(m_Tile, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, m_NodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
+					n.m_NodeHighlight.name = $"Node {n.x}/{n.z}";
 					n.m_NodeHighlight.ChangeHighlight(TileState.None);
 				}
-				m_grid[x, z] = n;
+				m_Grid[x, z] = n;
 
 			}
 
@@ -174,95 +130,91 @@ public class Grid : MonoBehaviour
 				//0 South
 				if (z > 0)
 				{
-					//print("set 0");
-					m_grid[x, z].adjacentNodes.Add(m_grid[x, z - 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x, z - 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//1 West
 				if (x > 0)
 				{
-					//print("set 1");
-					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x - 1, z]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//2 North
 				if (z < posZ - 1)
 				{
-					//print("set 2");
-					m_grid[x, z].adjacentNodes.Add(m_grid[x, z + 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x, z + 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//3 East
 				if (x < posX - 1)
 				{
-					//print("set 3");
-					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x + 1, z]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//4 South West
 				if (z > 0 && x > 0)
 				{
-					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z - 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x - 1, z - 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//5 North West
 				if (x > 0 && z < posZ - 1)
 				{
-					m_grid[x, z].adjacentNodes.Add(m_grid[x - 1, z + 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x - 1, z + 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//6 North East
 				if (z < posZ - 1 && x < posX - 1)
 				{
-					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z + 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x + 1, z + 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
 				//7 South East
 				if (z > 0 && x < posX - 1)
 				{
-					m_grid[x, z].adjacentNodes.Add(m_grid[x + 1, z - 1]);
+					m_Grid[x, z].adjacentNodes.Add(m_Grid[x + 1, z - 1]);
 				}
 				else
 				{
-					m_grid[x, z].adjacentNodes.Add(null);
+					m_Grid[x, z].adjacentNodes.Add(null);
 				}
 
-				m_grid[x, z].m_costs[0] = 10;
-				m_grid[x, z].m_costs[1] = 10;
-				m_grid[x, z].m_costs[2] = 10;
-				m_grid[x, z].m_costs[3] = 10;
-				m_grid[x, z].m_costs[4] = 19;
-				m_grid[x, z].m_costs[5] = 19;
-				m_grid[x, z].m_costs[6] = 19;
-				m_grid[x, z].m_costs[7] = 19;
+				m_Grid[x, z].m_costs[0] = 10;
+				m_Grid[x, z].m_costs[1] = 10;
+				m_Grid[x, z].m_costs[2] = 10;
+				m_Grid[x, z].m_costs[3] = 10;
+				m_Grid[x, z].m_costs[4] = 19;
+				m_Grid[x, z].m_costs[5] = 19;
+				m_Grid[x, z].m_costs[6] = 19;
+				m_Grid[x, z].m_costs[7] = 19;
 			}
 		}
 	}
@@ -271,9 +223,7 @@ public class Grid : MonoBehaviour
 	{
 		Vector3 p = wp - minPosition;
 		int x = Mathf.FloorToInt(p.x / xzScale);
-		//print("X: " + x);
 		int z = Mathf.FloorToInt(p.z / xzScale);
-		//print("Z: " + z);
 
 		return GetNode(x, z);
 	}
@@ -287,15 +237,14 @@ public class Grid : MonoBehaviour
 			return null;
 		}
 
-		//print("Unit Node Pos: " + m_grid[a_x - 1, a_z].worldPosition);
-		return m_grid[a_x, a_z];
+		return m_Grid[a_x, a_z];
 	}
 	
 	public void SetUnit(GameObject unit)
 	{
 		Node n = GetNode(unit.transform.position);
 		n.unit = unit.GetComponent<Unit>();
-		n.isWalkable = false;
+		n.m_isBlocked = true;
 	}
 
 	public Unit GetUnit(Vector3 mousePos)
@@ -306,15 +255,7 @@ public class Grid : MonoBehaviour
 	public void RemoveUnit(Node unitNode)
 	{
 		unitNode.unit = null;
-		unitNode.isWalkable = true;
-	}
-
-	public void ClearNode()
-	{
-		foreach (Node node in nodething)
-		{
-			node.m_NodeHighlight.ChangeHighlight(TileState.None);
-		}
+		unitNode.m_isBlocked = false;
 	}
 
 	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost)
@@ -336,7 +277,7 @@ public class Grid : MonoBehaviour
 			return false;
 		}
 
-		if(m_startNode.isWalkable == false || m_endNode.isWalkable == false)
+		if(m_endNode.m_isOnMap == false)
 		{
 			return false;
 		}
@@ -389,7 +330,7 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
-				if(neighbourNode.isWalkable == false)
+				if(neighbourNode.m_isOnMap == false)
 				{
 					continue;
 				}
@@ -475,7 +416,7 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
-				if (neighbourNode.isWalkable == false)
+				if (neighbourNode.m_isOnMap == false)
 				{
 					continue;
 				}
@@ -520,6 +461,61 @@ public class Grid : MonoBehaviour
 		}
 
 		return false;
+	}
+
+	/// <summary>
+	/// Get nodes within a given radius.
+	/// </summary>
+	/// <param name="radius">The radius to get nodes within.</param>
+	/// <param name="startNode">The node in the centre of the radius.</param>
+	/// <param name="allowBlockedNodes">If blocked nodes can be selected in the radius.</param>
+	/// <returns>List of nodes within the given radius.</returns>
+	public List<Node> GetNodesWithinRadius(int radius, Node startNode, bool allowBlockedNodes = false)
+	{
+		List<Node> nodesInRadius = new List<Node>();
+
+		Queue<Node> openList = new Queue<Node>();
+		List<Node> closedList = new List<Node>();
+
+		startNode.gScore = 0;
+
+		openList.Enqueue(startNode);
+
+		// While there are nodes to search.
+		while (openList.Count() > 0)
+		{
+			// Get the next node to search.
+			Node currentNode = openList.Dequeue();
+
+			if (currentNode.m_isOnMap == false)
+				continue;
+			if (currentNode != startNode && allowBlockedNodes == false && currentNode.m_isBlocked == true)
+				continue;
+
+			nodesInRadius.Add(currentNode);
+
+			if (currentNode.gScore < radius)
+			{
+				// Go through and add the neighbours.
+				for (int i = 0; i < 4; ++i)
+				{
+					Node neighbourNode = currentNode.adjacentNodes[i];
+	
+					if (neighbourNode == null)
+						continue;
+					if (closedList.Contains(neighbourNode) == true)
+						continue;
+					if (neighbourNode.m_isOnMap == false)
+						continue;
+	
+					neighbourNode.gScore = currentNode.gScore + 1;
+					openList.Enqueue(neighbourNode);
+				}
+				closedList.Add(currentNode);
+			}
+		}
+
+		return nodesInRadius;
 	}
 
 	int CalculateHeristic(Node node, Node endNode)
