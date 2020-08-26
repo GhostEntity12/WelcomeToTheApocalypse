@@ -4,56 +4,70 @@ using UnityEngine;
 
 public class AIManager : MonoBehaviour
 {
+    public static AIManager m_Instance = null;
+
     //Lists of units that track which AI unit is alive and which is dead.
-    private List<Unit> aliveUnits;
-    private List<Unit> deadUnits;
+    public List<Unit> aliveUnits;
+    public List<Unit> deadUnits;
 
-    //A list of the player's alive units.
-    private List<Unit> playerUnits;
+    //A list of the player's units.
+    public List<Unit> playerUnits;
 
-    private Unit closestPlayerUnit;
-    private Unit currentAIUnit;
+    public Unit closestPlayerUnit;
+    public Unit currentAIUnit;
 
-    private Stack<Node> path;
-    private int pathCost;
+    public Stack<Node> path = new Stack<Node>();
+    public int pathCost;
 
-    private BaseSkill skill;
+    public BaseSkill skill;
 
     //I guess this is needed to tell whos turn it is?
     public bool isTurn;
 
-    private bool canAttack;
+    public bool canAttack;
 
-    private float distance;
+    public float distance;
+
+    private void Awake()
+    {
+        m_Instance = this;
+    }
 
     //Init the turn to not begin with the AI.
     private void Start()
     {
+        pathCost = 0;
         isTurn = false;
         canAttack = false;
     }
 
     private void Update()
     {
-        //A quick check to see who is alive.
-        CheckWhoRemains(aliveUnits);
-
-        //For each AI unit currently alive.
-        foreach (Unit unit in aliveUnits)
+        if (isTurn)
         {
-            //Perform the actions on their turn.
-            FindClosestPlayerUnit(playerUnits);
-            FindPathToPlayerUnit();
-            CheckAttackRange();
+            //A quick check to see who is alive.
+            CheckWhoRemains(aliveUnits);
 
-            if (CheckAttackRange() == true)
+            //For each AI unit currently alive.
+            foreach (Unit unit in aliveUnits)
             {
-                Attack();
-            }
-        }
+                //Perform the actions on their turn.
+                FindClosestPlayerUnit(playerUnits);
+                currentAIUnit = unit;
+                FindPathToPlayerUnit();
+                CheckAttackRange();
 
-        //End the turn.
-        isTurn = false;
+                if (CheckAttackRange() == true)
+                {
+                    Attack();
+                }
+            }
+
+            //End the turn.
+            isTurn = false;
+
+            GameManager.m_Instance.EndCurrentTurn();
+        }
     }
 
     //When a unit dies, remove it from the list of alive units and add it to a list of dead units.
@@ -75,10 +89,10 @@ public class AIManager : MonoBehaviour
             closestPlayerUnit = playersUnits[i];
 
             //If the distance of the next one is less than the one just found and the next element in the list is not null. Assign this to be the closest unit.
-            if (Vector3.Distance(playersUnits[i + 1].transform.position, transform.position) < distance && playersUnits[i + 1] != null)
+            if (Vector3.Distance(playersUnits[i].transform.position, transform.position) < distance && playersUnits[i] != null)
             {
-                distance = Vector3.Distance(playersUnits[i + 1].transform.position, transform.position);
-                closestPlayerUnit = playersUnits[i + 1];
+                distance = Vector3.Distance(playersUnits[i].transform.position, transform.position);
+                closestPlayerUnit = playersUnits[i];
             }
         }
 
@@ -89,8 +103,10 @@ public class AIManager : MonoBehaviour
     //Finds the path from the two units and sets the AI movement path.
     public void FindPathToPlayerUnit()
     {
-        Grid.m_Instance.FindPath(currentAIUnit.transform.position, closestPlayerUnit.transform.position, ref path, out pathCost);
-        currentAIUnit.SetMovementPath(path);
+        if (Grid.m_Instance.FindPath(currentAIUnit.transform.position, closestPlayerUnit.transform.position, ref path, out pathCost))
+        {
+            currentAIUnit.SetMovementPath(path);
+        }
     }
 
     //Checks adjacent nodes of the AI unit to see if they are able to attack and hit the player.
@@ -98,15 +114,13 @@ public class AIManager : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            if (Grid.m_Instance.GetNode(transform.position).adjacentNodes[i].unit.m_Allegiance != Allegiance.Enemy)
+            if (Grid.m_Instance.GetNode(currentAIUnit.transform.position).adjacentNodes[i].unit?.m_Allegiance != Allegiance.Enemy)
             {
                 canAttack = true;
-                return true;
             }
             else
             {
                 canAttack = false;
-                return false;
             }
         }
 
@@ -129,5 +143,10 @@ public class AIManager : MonoBehaviour
             if (unit.GetCurrentHealth() <= 0)
                 UnitDeath(unit);
         }
+    }
+
+    public void AICurrentTurn()
+    {
+        isTurn = true;
     }
 }
