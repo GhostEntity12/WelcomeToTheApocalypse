@@ -66,6 +66,8 @@ public class AIManager : MonoBehaviour
                 //The current AI unit is assigned
                 currentAIUnit = unit;
 
+                GameManager.m_Instance.m_SelectedUnit = unit;
+
                 //Find a path to the player controlled unit and check if we're in attacking range.
                 FindPathToPlayerUnit();
 
@@ -124,31 +126,19 @@ public class AIManager : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            if (Grid.m_Instance.GetNode(currentAIUnit.transform.position).adjacentNodes[i].unit?.m_Allegiance == Allegiance.Player)
+            Node node = Grid.m_Instance.GetNode(currentAIUnit.transform.position).adjacentNodes[i];
+            if (node.unit?.m_Allegiance == Allegiance.Player)
             {
-                canAttack = true;
+                Attack(node);
                 break;
             }
-            else
-            {
-                canAttack = false;
-            }
-        }
-
-        //If we can attack. Attack. TEMP
-        if (canAttack)
-        {
-            Attack();
         }
     }
 
     //Function to activate the unit's attack.
-    public void Attack()
+    public void Attack(Node sourceNode)
     {
-        if (canAttack)
-        {
-            currentAIUnit.ActivateSkill(currentAIUnit.GetSkill(0));
-        }
+        currentAIUnit.ActivateSkill(currentAIUnit.GetSkill(0), sourceNode);
     }
 
     //At the beginning of the AI turn, check who is alive, sort out any dead member who may be in the alive list. (Just in case)

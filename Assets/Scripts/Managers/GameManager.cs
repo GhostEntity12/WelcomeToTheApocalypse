@@ -27,7 +27,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Unit the player has selected.
     /// </summary>
-    private Unit m_SelectedUnit = null;
+    // TODO: set back to private
+    public Unit m_SelectedUnit = null;
 
     /// <summary>
     /// Raycast for translating the mouse's screen position to world position.
@@ -244,8 +245,7 @@ public class GameManager : MonoBehaviour
                     {
                         if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
                         {
-                            m_SelectedSkill.affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, unitNode, true);
-                            m_SelectedUnit.ActivateSkill(m_SelectedSkill);
+                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
                             Debug.Log(m_SelectedUnit.GetActionPoints());
 
@@ -306,8 +306,7 @@ public class GameManager : MonoBehaviour
                     {
                         if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
                         {
-                            m_SelectedSkill.affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, hitNode, true);
-                            m_SelectedUnit.ActivateSkill(m_SelectedSkill);
+                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
                             Debug.Log(m_SelectedUnit.GetActionPoints());
 

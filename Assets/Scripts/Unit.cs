@@ -180,8 +180,9 @@ public class Unit : MonoBehaviour
 
         if (m_Healthbar != null)
         {
+            //m_HealthbarPosition.position = Camera.main.WorldToScreenPoint(transform.position); // todo - set up camera reference
             m_Healthbar.gameObject.SetActive(true);
-            m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
+            //m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
             m_Healthbar.m_HealthbarImage.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
             m_Healthbar.SetChildrenActive(true);
             m_HealthChangeIndicatorScript.SetStartPosition(m_Healthbar.transform.position);
@@ -381,13 +382,14 @@ public class Unit : MonoBehaviour
     /// Activate one of the unit's skills.
     /// </summary>
     /// <param name="skill"> The skill to activate. </param>
-    public void ActivateSkill(BaseSkill skill)
+    public void ActivateSkill(BaseSkill skill, Node castLocation)
     {
         // Doing my own search cause List.Find is gross.
         for (int i = 0; i < m_Skills.Count; ++i)
         {
             if (m_Skills[i] == skill)
             {
+                m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
                 m_Skills[i].CastSkill();
                 return;
             }
