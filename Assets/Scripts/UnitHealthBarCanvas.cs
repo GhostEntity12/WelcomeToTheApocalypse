@@ -18,18 +18,10 @@ public class UnitHealthBarCanvas : MonoBehaviour
     {
         foreach(Unit u in m_UnitsForHealthbars)
         {
-            u.SetHealthbar(Instantiate(m_HealthbarTemplate, transform));
-        }
-    }
-
-    public void ShowHealthbar(Unit unitHealth)
-    {
-        foreach(Unit u in m_UnitsForHealthbars)
-        {
-            if (u == unitHealth)
-            {
-                u.SetHealthbarActive();
-            }
+            GameObject healthbar = Instantiate(m_HealthbarTemplate, transform);
+            // This is 🦀.
+            healthbar.GetComponent<HealthbarContainer>().m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>().Create();
+            u.SetHealthbar(healthbar);
         }
     }
 }
