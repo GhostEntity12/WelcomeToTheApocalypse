@@ -69,16 +69,7 @@ public class AIManager : MonoBehaviour
                 //Find a path to the player controlled unit and check if we're in attacking range.
                 FindPathToPlayerUnit();
 
-                //HERE WE NEED TO FIND A WAY TO MAKE THE SCRIPT NOT CALL THE NEXT FUNCTION UNTIL THE AI UNIT HAS REACHED WALKED ITS PATH.
 
-                CheckAttackRange();
-
-                //If we can attack. Attack. TEMP
-                if (canAttack)
-                {
-                    print("In range");
-                    Attack();
-                }
             }
 
             //End the turn.
@@ -142,6 +133,13 @@ public class AIManager : MonoBehaviour
             {
                 canAttack = false;
             }
+        }
+
+        //If we can attack. Attack. TEMP
+        if (canAttack)
+        {
+            print("In range");
+            Attack();
         }
     }
 
