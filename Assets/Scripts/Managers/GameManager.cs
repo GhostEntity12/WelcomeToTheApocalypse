@@ -141,7 +141,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void EndCurrentTurn()
     {
-        print("Ending turn");
         // Player ends turn.
         if (m_TeamCurrentTurn == Allegiance.Player)
         {
@@ -158,8 +157,8 @@ public class GameManager : MonoBehaviour
             // Deselect unit.
             m_SelectedUnit = null;
 
-            // Tell the AI Manager that it is the AI's turn.
-            AIManager.m_Instance.AICurrentTurn();
+            // Tell the AI Manager to take its turn
+            AIManager.m_Instance.TakeAITurn();
         }
         // Enemy ends turn.
         else

@@ -48,10 +48,11 @@ public class CameraMovement : MonoBehaviour
         Vector3 targetPosition = transform.position + (m_MovementInput * m_MoveSpeed);
 
         // Clamp the position
-        Vector3 clampedPosition = new Vector3();
-
-        clampedPosition.x = Mathf.Clamp(targetPosition.x, m_CameraBounds.min.x, m_CameraBounds.max.x);
-        clampedPosition.z = Mathf.Clamp(targetPosition.z, m_CameraBounds.min.z, m_CameraBounds.max.z);
+        Vector3 clampedPosition = new Vector3
+        {
+            x = Mathf.Clamp(targetPosition.x, m_CameraBounds.min.x, m_CameraBounds.max.x),
+            z = Mathf.Clamp(targetPosition.z, m_CameraBounds.min.z, m_CameraBounds.max.z)
+        };
 
 
         // Move the camera.

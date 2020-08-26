@@ -287,9 +287,6 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    // DEBUG
-    [ContextMenu("Trigger Dialogue")]
-    void TriggerDialogue() => TriggerDialogue(sceneName);
     public void TriggerDialogue(TextAsset _sceneName)
     {
         dialogueActive = true;
