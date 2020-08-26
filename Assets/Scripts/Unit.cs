@@ -133,7 +133,10 @@ public class Unit : MonoBehaviour
         m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
         
         if (m_Healthbar != null)
+        {
             m_HealthChangeIndicatorScript = m_Healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
+            m_Healthbar.u = this;
+        }
     }
 
     void Update()

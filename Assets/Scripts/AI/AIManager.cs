@@ -90,9 +90,10 @@ public class AIManager : MonoBehaviour
     // Could probably be rewritten
     public void FindPathToPlayerUnit()
     {
-        if (Grid.m_Instance.FindAIPath(m_CurrentAIUnit.transform.position, m_ClosestPlayerUnit.transform.position, ref m_Path, out m_PathCost))
+        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, m_ClosestPlayerUnit.transform.position, ref m_Path, out m_PathCost))
         {
             m_CurrentAIUnit.SetMovementPath(new Stack<Node>(m_Path.Take(Mathf.Min(m_CurrentAIUnit.GetCurrentMovement() + 1, m_Path.Count)).Reverse()));
+            Debug.Log(string.Join(", ", m_CurrentAIUnit.GetMovementPath().Select(n => n.m_NodeHighlight.name)));
             m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
         }
     }
