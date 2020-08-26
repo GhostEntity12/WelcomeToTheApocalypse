@@ -158,7 +158,7 @@ public class Unit : MonoBehaviour
                 {
                     m_IsMoving = false;
                     Grid.m_Instance.SetUnit(gameObject);
-                    //m_ActionOnFinishPath?.Invoke();
+                    m_ActionOnFinishPath?.Invoke();
                     m_ActionOnFinishPath = null;
                 }
             }

@@ -78,8 +78,8 @@ public class AIManager : MonoBehaviour
 
         // If you want to select randomly from the closest characters.
         // The current implementation returns the first character on the list in the case of a tie.
-        //var closestUnits = unitDistances.Where(ud => ud.Value == unitDistances.Min(ud => ud.Value));
-        //return closestUnits.ElementAt(Random.Range(0, closestUnits.Count() - 1)).Key;
+        //var closestUnits = unitDistances.Where(ud1 => ud1.Value == unitDistances.Min(ud2 => ud2.Value));
+        //return closestUnits.ElementAt(Random.Range(0, closestUnits.Count())).Key;
 
         // See https://stackoverflow.com/questions/2805703/good-way-to-get-the-key-of-the-highest-value-of-a-dictionary-in-c-sharp
         // for a description of what this is
