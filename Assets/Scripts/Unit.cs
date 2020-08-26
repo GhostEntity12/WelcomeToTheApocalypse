@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public enum Allegiance
 {
@@ -114,6 +115,8 @@ public class Unit : MonoBehaviour
 
     public Transform m_HealthbarPosition = null;
 
+    public Action m_ActionOnFinishPath;
+
     // On startup.
     void Awake()
     {
@@ -155,6 +158,8 @@ public class Unit : MonoBehaviour
                 {
                     m_IsMoving = false;
                     Grid.m_Instance.SetUnit(gameObject);
+                    m_ActionOnFinishPath?.Invoke();
+                    m_ActionOnFinishPath = null;
                 }
             }
         }
