@@ -360,7 +360,7 @@ public class Unit : MonoBehaviour
     /// <param name="healthbar">The healthbar game object.</param>
     public void SetHealthbar(GameObject healthbar)
     {
-        m_HealthBar = healthbar.transform.GetChild(1).GetComponent<Image>();
+        m_HealthBar = healthbar.transform.GetComponent<Image>();
         m_HealthChangeIndicator = healthbar.GetComponentInChildren<TextMeshProUGUI>().gameObject;
     }
 
