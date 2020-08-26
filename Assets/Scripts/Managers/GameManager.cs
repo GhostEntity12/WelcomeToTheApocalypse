@@ -157,7 +157,7 @@ public class GameManager : MonoBehaviour
             // Deselect unit.
             m_SelectedUnit = null;
 
-            // Tell the AI Manager that is is the AI's turn.
+            // Tell the AI Manager that it is the AI's turn.
             AIManager.m_Instance.AICurrentTurn();
         }
         // Enemy ends turn.

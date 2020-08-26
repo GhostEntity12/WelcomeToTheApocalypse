@@ -181,8 +181,11 @@ public class Unit : MonoBehaviour
         if (m_CurrentHealth > m_StartingHealth)
             m_CurrentHealth = m_StartingHealth;
 
-        m_HealthBar.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
-        m_HealthChangeIndicatorScript.Reset();
+        if (m_HealthBar != null)
+        {
+            m_HealthBar.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
+            m_HealthChangeIndicatorScript.Reset();
+        }
     }
 
     /// <summary>
@@ -197,9 +200,13 @@ public class Unit : MonoBehaviour
     /// <param name="increase"> The amount to increase the unit's health by. </param>
     public void IncreaseCurrentHealth(int increase)
     {
-        m_HealthChangeIndicatorText.text = "+" + increase;
         SetCurrentHealth(m_CurrentHealth + increase);
-        m_HealthChangeIndicatorScript.HealthIncreased();
+
+        if (m_HealthBar != null)
+        {
+            m_HealthChangeIndicatorText.text = "+" + increase;
+            m_HealthChangeIndicatorScript.HealthIncreased();
+        }
     }
 
     /// <summary>
@@ -208,9 +215,13 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
-        m_HealthChangeIndicatorText.text = "-" + decrease;
         SetCurrentHealth(m_CurrentHealth - decrease);
-        m_HealthChangeIndicatorScript.HealthDecrease();
+
+        if (m_HealthBar != null)
+        {
+            m_HealthChangeIndicatorText.text = "-" + decrease;
+            m_HealthChangeIndicatorScript.HealthDecrease();
+        }
     }
 
     /// <summary>
@@ -342,6 +353,21 @@ public class Unit : MonoBehaviour
     /// </summary>
     /// <param name="effect"> The status effect to add to the unit. </param>
     public void AddStatusEffect(InflictableStatus effect) { m_StatusEffects.Add(effect); }
+
+    /// <summary>
+    /// Set the healthbar of the unit.
+    /// </summary>
+    /// <param name="healthbar">The healthbar game object.</param>
+    public void SetHealthbar(GameObject healthbar)
+    {
+        m_HealthBar = healthbar.transform.GetComponent<Image>();
+        m_HealthChangeIndicator = healthbar.GetComponentInChildren<TextMeshProUGUI>().gameObject;
+    }
+
+    public void SetHealthbarActive()
+    {
+        m_HealthBar.enabled = true;
+    }
 
     /// <summary>
     /// Gets the nodes the unit can move to, stores them and highlights them.
