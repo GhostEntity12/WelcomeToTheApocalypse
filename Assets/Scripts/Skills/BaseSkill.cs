@@ -63,6 +63,7 @@ public class BaseSkill : ScriptableObject
         Debug.Log("Skill cast");
         affectedUnits = affectedNodes.Select(t => t.unit)
             .Where(c => GameManager.IsTargetable(GameManager.m_Instance.GetSelectedUnit(), c, this))
+            .Distinct() // Had to add this - for some reason, it grabbed the same character multiple times somehow
             .ToArray();
 
         // Equivalent (mostly) non-LINQ version
