@@ -95,17 +95,7 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The image representing the unit's health.
     /// </summary>
-    public Image m_HealthBar = null;
-
-    /// <summary>
-    /// The text indicating a change to a unit's health.
-    /// </summary>
-    public GameObject m_HealthChangeIndicator = null;
-
-    /// <summary>
-    /// The text of the health change indicator.
-    /// </summary>
-    private TextMeshProUGUI m_HealthChangeIndicatorText = null;
+    public HealthbarContainer m_Healthbar = null;
 
     /// <summary>
     /// The script for the health change indicator.
@@ -122,6 +112,8 @@ public class Unit : MonoBehaviour
     /// </summary>
     private int m_CurrentActionPoints = 0;
 
+    public Transform m_HealthbarPosition = null;
+
     // On startup.
     void Awake()
     {
@@ -130,15 +122,15 @@ public class Unit : MonoBehaviour
         m_CurrentMovement = m_StartingMovement;
 
         m_CurrentActionPoints = m_StartingActionPoints;
-
-        m_HealthChangeIndicatorText = m_HealthChangeIndicator.GetComponent<TextMeshProUGUI>();
-        m_HealthChangeIndicatorScript = m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
 
     void Start()
     {
         Grid.m_Instance.SetUnit(gameObject);
         m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
+        
+        if (m_Healthbar != null)
+            m_HealthChangeIndicatorScript = m_Healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
 
     void Update()
@@ -181,9 +173,13 @@ public class Unit : MonoBehaviour
         if (m_CurrentHealth > m_StartingHealth)
             m_CurrentHealth = m_StartingHealth;
 
-        if (m_HealthBar != null)
+        if (m_Healthbar != null)
         {
-            m_HealthBar.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
+            m_Healthbar.gameObject.SetActive(true);
+            m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
+            m_Healthbar.m_HealthbarImage.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
+            m_Healthbar.SetChildrenActive(true);
+            m_HealthChangeIndicatorScript.SetStartPosition(m_Healthbar.transform.position);
             m_HealthChangeIndicatorScript.Reset();
         }
     }
@@ -202,9 +198,9 @@ public class Unit : MonoBehaviour
     {
         SetCurrentHealth(m_CurrentHealth + increase);
 
-        if (m_HealthBar != null)
+        if (m_Healthbar != null)
         {
-            m_HealthChangeIndicatorText.text = "+" + increase;
+            m_Healthbar.m_HealthChangeIndicator.text = "+" + increase;
             m_HealthChangeIndicatorScript.HealthIncreased();
         }
     }
@@ -217,9 +213,9 @@ public class Unit : MonoBehaviour
     {
         SetCurrentHealth(m_CurrentHealth - decrease);
 
-        if (m_HealthBar != null)
+        if (m_Healthbar != null)
         {
-            m_HealthChangeIndicatorText.text = "-" + decrease;
+            m_Healthbar.m_HealthChangeIndicator.text = "-" + decrease;
             m_HealthChangeIndicatorScript.HealthDecrease();
         }
     }
@@ -360,13 +356,7 @@ public class Unit : MonoBehaviour
     /// <param name="healthbar">The healthbar game object.</param>
     public void SetHealthbar(GameObject healthbar)
     {
-        m_HealthBar = healthbar.transform.GetComponent<Image>();
-        m_HealthChangeIndicator = healthbar.GetComponentInChildren<TextMeshProUGUI>().gameObject;
-    }
-
-    public void SetHealthbarActive()
-    {
-        m_HealthBar.enabled = true;
+        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();
     }
 
     /// <summary>
