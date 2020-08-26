@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 4041055953673445008}
   - component: {fileID: 6269278991669295498}
   - component: {fileID: 6937628247170335980}
+  - component: {fileID: 600428909372518646}
+  - component: {fileID: 6973685263682026680}
   m_Layer: 0
   m_Name: Fence_Wood_Cap
   m_TagString: Untagged
@@ -79,3 +81,29 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &600428909372518646
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116484754059932821}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.1755757, y: 1.0685819, z: 0.380485}
+  m_Center: {x: -1.0987456, y: 0.52858955, z: -0.0029466227}
+--- !u!114 &6973685263682026680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116484754059932821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 004472b9d557a9f438d2c50b3489fe9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWalkable: 0
