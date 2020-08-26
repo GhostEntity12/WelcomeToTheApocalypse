@@ -69,16 +69,6 @@ public class AIManager : MonoBehaviour
                 //Find a path to the player controlled unit and check if we're in attacking range.
                 FindPathToPlayerUnit();
 
-                //HERE WE NEED TO FIND A WAY TO MAKE THE SCRIPT NOT CALL THE NEXT FUNCTION UNTIL THE AI UNIT HAS REACHED WALKED ITS PATH.
-
-                CheckAttackRange();
-
-                //If we can attack. Attack. TEMP
-                if (canAttack)
-                {
-                    print("In range");
-                    Attack();
-                }
             }
 
             //End the turn.
@@ -137,11 +127,18 @@ public class AIManager : MonoBehaviour
             if (Grid.m_Instance.GetNode(currentAIUnit.transform.position).adjacentNodes[i].unit?.m_Allegiance == Allegiance.Player)
             {
                 canAttack = true;
+                break;
             }
             else
             {
                 canAttack = false;
             }
+        }
+
+        //If we can attack. Attack. TEMP
+        if (canAttack)
+        {
+            Attack();
         }
     }
 
@@ -150,7 +147,7 @@ public class AIManager : MonoBehaviour
     {
         if (canAttack)
         {
-            currentAIUnit.ActivateSkill(skill);
+            currentAIUnit.ActivateSkill(currentAIUnit.GetSkill(0));
         }
     }
 
