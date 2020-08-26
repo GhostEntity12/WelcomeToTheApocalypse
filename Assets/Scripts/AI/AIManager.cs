@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AIManager : MonoBehaviour
 {
+    //Instance of the AIManager.
     public static AIManager m_Instance = null;
 
     //Lists of units that track which AI unit is alive and which is dead.
@@ -13,27 +14,34 @@ public class AIManager : MonoBehaviour
     //A list of the player's units.
     public List<Unit> playerUnits;
 
+    //Unit's that track the closest Unit that is controlled by the player, and a Unit for the current AI Unit.
     public Unit closestPlayerUnit;
     public Unit currentAIUnit;
 
+    //The path for the AI to walk on.
     public Stack<Node> path = new Stack<Node>();
     public int pathCost;
 
+    //The AI's basic melee attack.
     public BaseSkill skill;
 
     //I guess this is needed to tell whos turn it is?
     public bool isTurn;
 
+    //Can the AI Attack.
     public bool canAttack;
 
+    //Float used to measure the distance between two units.
     public float distance;
 
+    //On Awake, initialise the instance of this manager.
     private void Awake()
     {
         m_Instance = this;
     }
 
     //Init the turn to not begin with the AI.
+    //It also can't attack yet.
     private void Start()
     {
         pathCost = 0;
@@ -43,6 +51,7 @@ public class AIManager : MonoBehaviour
 
     private void Update()
     {
+        //If it is the AI's turn.
         if (isTurn)
         {
             //A quick check to see who is alive.
@@ -53,11 +62,16 @@ public class AIManager : MonoBehaviour
             {
                 //Perform the actions on their turn.
                 FindClosestPlayerUnit(playerUnits);
+
+                //The current AI unit is assigned
                 currentAIUnit = unit;
+
+                //Find a path to the player controlled unit and check if we're in attacking range.
                 FindPathToPlayerUnit();
                 CheckAttackRange();
 
-                if (CheckAttackRange() == true)
+                //If we can attack. Attack. TEMP
+                if (CheckAttackRange())
                 {
                     Attack();
                 }
@@ -66,6 +80,7 @@ public class AIManager : MonoBehaviour
             //End the turn.
             isTurn = false;
 
+            //Tell the game manager it is not our turn anymore.
             GameManager.m_Instance.EndCurrentTurn();
         }
     }
@@ -81,7 +96,7 @@ public class AIManager : MonoBehaviour
     public Unit FindClosestPlayerUnit(List<Unit> playersUnits)
     {
         //Iterate through the list of player controlled units.
-        for (int i = 0; i < playersUnits.Count; i++)
+        for (int i = 0; i < playersUnits.Count - 1; i++)
         {
             //The distance is done through transform matrix for now instead of node distance.
             distance = Vector3.Distance(playersUnits[i].transform.position, transform.position);
@@ -89,10 +104,10 @@ public class AIManager : MonoBehaviour
             closestPlayerUnit = playersUnits[i];
 
             //If the distance of the next one is less than the one just found and the next element in the list is not null. Assign this to be the closest unit.
-            if (Vector3.Distance(playersUnits[i].transform.position, transform.position) < distance && playersUnits[i] != null)
+            if (Vector3.Distance(playersUnits[i + 1].transform.position, transform.position) < distance && playersUnits[i] != null)
             {
-                distance = Vector3.Distance(playersUnits[i].transform.position, transform.position);
-                closestPlayerUnit = playersUnits[i];
+                distance = Vector3.Distance(playersUnits[i + 1].transform.position, transform.position);
+                closestPlayerUnit = playersUnits[i + 1];
             }
         }
 
@@ -127,6 +142,7 @@ public class AIManager : MonoBehaviour
         return false;
     }
 
+    //Function to activate the unit's attack.
     public void Attack()
     {
         if (canAttack)
@@ -145,6 +161,7 @@ public class AIManager : MonoBehaviour
         }
     }
 
+    //Make it our turn.
     public void AICurrentTurn()
     {
         isTurn = true;
