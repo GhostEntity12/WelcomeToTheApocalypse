@@ -62,10 +62,6 @@ public class HealthChangeIndicator : MonoBehaviour
 
     private void Update()
     {
-        print(m_TMPro);
-        print(m_CurrentColour);
-        print(m_NoAlpha);
-        print(m_Timer);
         //transform.position = Vector3.Lerp(m_FloatStartPosition, m_FloatEndPosition, m_Timer);
         m_TMPro.color = Color.Lerp(m_CurrentColour, m_NoAlpha, m_Timer);
 
