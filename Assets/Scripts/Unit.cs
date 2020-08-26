@@ -180,9 +180,8 @@ public class Unit : MonoBehaviour
 
         if (m_Healthbar != null)
         {
-            //m_HealthbarPosition.position = Camera.main.WorldToScreenPoint(transform.position); // todo - set up camera reference
             m_Healthbar.gameObject.SetActive(true);
-            //m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
+            m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
             m_Healthbar.m_HealthbarImage.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
             m_Healthbar.SetChildrenActive(true);
             m_HealthChangeIndicatorScript.SetStartPosition(m_Healthbar.transform.position);
