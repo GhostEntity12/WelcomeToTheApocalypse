@@ -16,6 +16,8 @@ public class CameraMovement : MonoBehaviour
     private bool m_IsRotating;
     FacingDirection m_LookDirection = FacingDirection.North;
 
+    HealthbarContainer[] healthbarContainers;
+
     enum FacingDirection
     {
         North, East, South, West
@@ -32,6 +34,11 @@ public class CameraMovement : MonoBehaviour
             m_CameraBounds = new Bounds(transform.position, Vector3.one);
             Debug.LogError("Missing collider to limit camera movement");
         }
+    }
+
+    private void Start()
+    {
+        healthbarContainers = FindObjectsOfType<HealthbarContainer>();
     }
 
     // Update is called once per frame
@@ -72,6 +79,11 @@ public class CameraMovement : MonoBehaviour
                 m_LookDirection = (FacingDirection)(((int)m_LookDirection + 3) % 4);
                 LeanTween.rotate(gameObject, new Vector3(0, (int)m_LookDirection * 90f, 0), 0.4f).setEase(rotationType).setOnComplete(() => m_IsRotating = false);
             }
+        }
+
+        foreach (HealthbarContainer hbc in healthbarContainers)
+        {
+            hbc.m_isMagnetic = m_IsRotating;
         }
     }
 }
