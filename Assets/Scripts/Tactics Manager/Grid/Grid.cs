@@ -31,8 +31,10 @@ public class Grid : MonoBehaviour
 		ReadLevel();
 	}
 
+	[ContextMenu("Generate")]
 	void ReadLevel()
 	{
+		DestroyImmediate(GameObject.Find("Nodes"));
 		m_NodeArray = new GameObject("Nodes");
 		m_NodeArray.transform.SetSiblingIndex(transform.GetSiblingIndex() + 1);
 
