@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 3232909223067275760}
   - component: {fileID: 5874558068927065030}
   - component: {fileID: 196493839266387775}
+  - component: {fileID: 954713228}
+  - component: {fileID: 211399837083444602}
   m_Layer: 0
-  m_Name: PB_Mesh Lamp
+  m_Name: Blockout_Lamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25,7 +27,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1911426299693671395}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -75.340546, y: 0.16000003, z: 8.027405}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -80,3 +82,29 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &954713228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911426299693671395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 004472b9d557a9f438d2c50b3489fe9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWalkable: 0
+--- !u!65 &211399837083444602
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911426299693671395}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

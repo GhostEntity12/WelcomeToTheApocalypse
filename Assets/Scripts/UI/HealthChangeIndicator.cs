@@ -51,10 +51,12 @@ public class HealthChangeIndicator : MonoBehaviour
     /// </summary>
     private Color m_CurrentColour = new Color();
 
-    private void Start()
+    private UnitHealthBarCanvas m_HealthbarCanvas = null;
+
+    public void Create()
     {
-        m_FloatStartPosition = transform.position;
-        m_FloatEndPosition = new Vector3(m_FloatStartPosition.x, m_FloatStartPosition.y + m_FloatEndHeight, m_FloatStartPosition.z);
+        Debug.Log("Awake");
+        m_HealthbarCanvas = transform.parent.GetComponent<UnitHealthBarCanvas>();
         m_TMPro = GetComponent<TextMeshProUGUI>();
     }
 
@@ -98,5 +100,11 @@ public class HealthChangeIndicator : MonoBehaviour
         m_NoAlpha = new Color(m_DecreaseHealthColour.r, m_DecreaseHealthColour.g, m_DecreaseHealthColour.b, 0.0f);
         m_CurrentColour = m_DecreaseHealthColour;
         m_TMPro.color = m_CurrentColour;
+    }
+
+    public void SetStartPosition(Vector3 start)
+    {
+        m_FloatStartPosition = start;
+        m_FloatEndPosition = new Vector3(m_FloatStartPosition.x, m_FloatStartPosition.y + m_FloatEndHeight, m_FloatStartPosition.z);
     }
 }
