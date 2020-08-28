@@ -479,207 +479,218 @@ public class Grid : MonoBehaviour
 			previous = current;
 		}
 
-		// Assigned just for the leaving before looking for a path.
-		cost = 0;
+		// The below is the same as FindPath(), so why not just call it?
+		// Speak to Connor to see if this can be improved
+		// Might have f'ed something up, but it works ¯\_(._.)_/¯
+		// - James L
 
-		Node m_startNode = GetNode(startPos);
-		Node m_endNode = GetNode(endPos);
+		bool result = FindPath(startPos, endPos, ref path, out int _cost);
 
-		// Make sure the start and end nodes are valid.
-		if (m_startNode == null || m_endNode == null)
-		{
-			return false;
-		}
+		cost = _cost;
 
-		if (m_startNode == m_endNode)
-		{
-			return false;
-		}
+		return result;
 
-		if (m_endNode.m_isOnMap == false)
-		{
-			return false;
-		}
+		//// Assigned just for the leaving before looking for a path.
+		//cost = 0;
 
-		// Empty the path stack.
-		path.Clear();
+		//Node m_startNode = GetNode(startPos);
+		//Node m_endNode = GetNode(endPos);
 
-		// Nodes not finished being used.
-		Queue<Node> m_openList = new Queue<Node>();
+		//// Make sure the start and end nodes are valid.
+		//if (m_startNode == null || m_endNode == null)
+		//{
+		//	return false;
+		//}
 
-		// Nodes to no longer be used.
-		List<Node> m_closedList = new List<Node>();
+		//if (m_startNode == m_endNode)
+		//{
+		//	return false;
+		//}
 
-		// If a path has been found.
-		bool m_foundPath = false;
+		//if (m_endNode.m_isOnMap == false)
+		//{
+		//	return false;
+		//}
 
-		m_startNode.m_previousNode = null;
+		//// Empty the path stack.
+		//path.Clear();
 
-		// Calculate the variables for the starting node.
-		m_startNode.gScore = 0;
-		m_startNode.hScore = CalculateHeristic(m_startNode, m_endNode);
-		m_startNode.CalculateFScore();
+		//// Nodes not finished being used.
+		//Queue<Node> m_openList = new Queue<Node>();
 
-		m_openList.Enqueue(m_startNode);
+		//// Nodes to no longer be used.
+		//List<Node> m_closedList = new List<Node>();
 
-		// While there is a node in the open list, look for a path.
-		while (m_openList.Count > 0)
-		{
-			// Start searching from the most recent node in the open list.
-			Node currentNode = m_openList.Dequeue();
+		//// If a path has been found.
+		//bool m_foundPath = false;
 
-			// Don't search from this node anymore.
-			m_closedList.Add(currentNode);
+		//m_startNode.m_previousNode = null;
 
-			// If the node being checked is the end node, the path is complete, and we can stop searching.
-			if (currentNode == m_endNode)
-			{
-				m_foundPath = true;
-				break;
-			}
+		//// Calculate the variables for the starting node.
+		//m_startNode.gScore = 0;
+		//m_startNode.hScore = CalculateHeristic(m_startNode, m_endNode);
+		//m_startNode.CalculateFScore();
 
-			// Look through all the node's neighbours for the node leading to the end node.
-			for (int i = 0; i < currentNode.adjacentNodes.Count; ++i)
-			{
-				Node neighbourNode = currentNode.adjacentNodes[i];
+		//m_openList.Enqueue(m_startNode);
 
-				// Make sure the neghbour node is valid.
-				if (neighbourNode == null)
-				{
-					continue;
-				}
+		//// While there is a node in the open list, look for a path.
+		//while (m_openList.Count > 0)
+		//{
+		//	// Start searching from the most recent node in the open list.
+		//	Node currentNode = m_openList.Dequeue();
 
-				if (neighbourNode.m_isOnMap == false)
-				{
-					continue;
-				}
+		//	// Don't search from this node anymore.
+		//	m_closedList.Add(currentNode);
 
-				if (m_closedList.Contains(neighbourNode) == true)
-				{
-					continue;
-				}
+		//	// If the node being checked is the end node, the path is complete, and we can stop searching.
+		//	if (currentNode == m_endNode)
+		//	{
+		//		m_foundPath = true;
+		//		break;
+		//	}
 
-				// If the neighbour node isn't in the open list, calculate it's variables and add it.
-				if (m_openList.Contains(neighbourNode) == false)
-				{
-					neighbourNode.m_previousNode = currentNode;
-					neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
-					neighbourNode.hScore = CalculateHeristic(neighbourNode, m_endNode);
-					neighbourNode.CalculateFScore();
-					m_openList.Enqueue(neighbourNode);
-				}
-				// Neighbour node is in the open list, check if it's valid for the path.
-				else
-				{
-					int costs = currentNode.fScore + currentNode.m_costs[i];
-					if (costs < neighbourNode.fScore)
-					{
-						neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
-						neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
-						neighbourNode.m_previousNode = currentNode;
-					}
-				}
-			}
-		}
+		//	// Look through all the node's neighbours for the node leading to the end node.
+		//	for (int i = 0; i < currentNode.adjacentNodes.Count; ++i)
+		//	{
+		//		Node neighbourNode = currentNode.adjacentNodes[i];
 
-		// If a path has been found, assign it to the path argument that was passed in.
-		if (m_foundPath == true)
-		{
-			Node current = m_endNode;
-			while (current != null)
-			{
-				path.Push(current);
-				current = current.m_previousNode;
-			}
-		}
+		//		// Make sure the neghbour node is valid.
+		//		if (neighbourNode == null)
+		//		{
+		//			continue;
+		//		}
 
-		// Find a path again, without using diagonals, for getting the cost of using the path.
-		// This is done so the cost of using a path is the amount of tiles traversed, with adjacent costing 1, and diagonals costing 2,
-		// but not messing with the pathfinding by making diagonals as cheap as moving two adjacent, so the pathfinding for the unit's will prefer diagonals,
-		// but will cost the same as if it was moving 2 adjacents rather than 1 diagonal.
+		//		if (neighbourNode.m_isOnMap == false)
+		//		{
+		//			continue;
+		//		}
 
-		m_foundPath = false;
+		//		if (m_closedList.Contains(neighbourNode) == true)
+		//		{
+		//			continue;
+		//		}
 
-		m_startNode = GetNode(startPos);
-		m_endNode = GetNode(playerPos);
+		//		// If the neighbour node isn't in the open list, calculate it's variables and add it.
+		//		if (m_openList.Contains(neighbourNode) == false)
+		//		{
+		//			neighbourNode.m_previousNode = currentNode;
+		//			neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+		//			neighbourNode.hScore = CalculateHeristic(neighbourNode, m_endNode);
+		//			neighbourNode.CalculateFScore();
+		//			m_openList.Enqueue(neighbourNode);
+		//		}
+		//		// Neighbour node is in the open list, check if it's valid for the path.
+		//		else
+		//		{
+		//			int costs = currentNode.fScore + currentNode.m_costs[i];
+		//			if (costs < neighbourNode.fScore)
+		//			{
+		//				neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+		//				neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
+		//				neighbourNode.m_previousNode = currentNode;
+		//			}
+		//		}
+		//	}
+		//}
 
-		m_openList.Clear();
-		m_closedList.Clear();
+		//// If a path has been found, assign it to the path argument that was passed in.
+		//if (m_foundPath == true)
+		//{
+		//	Node current = m_endNode;
+		//	while (current != null)
+		//	{
+		//		path.Push(current);
+		//		current = current.m_previousNode;
+		//	}
+		//}
 
-		m_startNode.m_previousNode = null;
-		m_startNode.gScore = 0;
-		m_startNode.hScore = CalculateHeristic(m_startNode, m_endNode);
-		m_startNode.CalculateFScore();
+		//// Find a path again, without using diagonals, for getting the cost of using the path.
+		//// This is done so the cost of using a path is the amount of tiles traversed, with adjacent costing 1, and diagonals costing 2,
+		//// but not messing with the pathfinding by making diagonals as cheap as moving two adjacent, so the pathfinding for the unit's will prefer diagonals,
+		//// but will cost the same as if it was moving 2 adjacents rather than 1 diagonal.
 
-		m_openList.Enqueue(m_startNode);
+		//m_foundPath = false;
 
-		while (m_openList.Count > 0)
-		{
-			Node currentNode = m_openList.Dequeue();
+		//m_startNode = GetNode(startPos);
+		//m_endNode = GetNode(playerPos);
 
-			m_closedList.Add(currentNode);
+		//m_openList.Clear();
+		//m_closedList.Clear();
 
-			if (currentNode == m_endNode)
-			{
-				m_foundPath = true;
-				break;
-			}
+		//m_startNode.m_previousNode = null;
+		//m_startNode.gScore = 0;
+		//m_startNode.hScore = CalculateHeristic(m_startNode, m_endNode);
+		//m_startNode.CalculateFScore();
 
-			// Only searching the first 4 neighbours of the node, which are the adjacents.
-			for (int i = 0; i < 4; ++i)
-			{
-				Node neighbourNode = currentNode.adjacentNodes[i];
+		//m_openList.Enqueue(m_startNode);
 
-				if (neighbourNode == null)
-				{
-					continue;
-				}
+		//while (m_openList.Count > 0)
+		//{
+		//	Node currentNode = m_openList.Dequeue();
 
-				if (neighbourNode.m_isOnMap == false)
-				{
-					continue;
-				}
+		//	m_closedList.Add(currentNode);
 
-				if (m_closedList.Contains(neighbourNode) == true)
-				{
-					continue;
-				}
+		//	if (currentNode == m_endNode)
+		//	{
+		//		m_foundPath = true;
+		//		break;
+		//	}
 
-				if (m_openList.Contains(neighbourNode) == false)
-				{
-					neighbourNode.m_previousNode = currentNode;
-					neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
-					neighbourNode.hScore = CalculateHeristic(neighbourNode, m_endNode);
-					neighbourNode.CalculateFScore();
-					m_openList.Enqueue(neighbourNode);
-				}
-				else
-				{
-					int costs = currentNode.fScore + currentNode.m_costs[i];
-					if (costs < neighbourNode.fScore)
-					{
-						neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
-						neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
-						neighbourNode.m_previousNode = currentNode;
-					}
-				}
-			}
-		}
+		//	// Only searching the first 4 neighbours of the node, which are the adjacents.
+		//	for (int i = 0; i < 4; ++i)
+		//	{
+		//		Node neighbourNode = currentNode.adjacentNodes[i];
 
-		if (m_foundPath == true)
-		{
-			Node current = m_endNode;
-			int pathLength = 0;
-			while (current != null)
-			{
-				current = current.m_previousNode;
-				++pathLength;
-			}
-			cost = pathLength;
-			return true;
-		}
+		//		if (neighbourNode == null)
+		//		{
+		//			continue;
+		//		}
 
-		return false;
+		//		if (neighbourNode.m_isOnMap == false)
+		//		{
+		//			continue;
+		//		}
+
+		//		if (m_closedList.Contains(neighbourNode) == true)
+		//		{
+		//			continue;
+		//		}
+
+		//		if (m_openList.Contains(neighbourNode) == false)
+		//		{
+		//			neighbourNode.m_previousNode = currentNode;
+		//			neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+		//			neighbourNode.hScore = CalculateHeristic(neighbourNode, m_endNode);
+		//			neighbourNode.CalculateFScore();
+		//			m_openList.Enqueue(neighbourNode);
+		//		}
+		//		else
+		//		{
+		//			int costs = currentNode.fScore + currentNode.m_costs[i];
+		//			if (costs < neighbourNode.fScore)
+		//			{
+		//				neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
+		//				neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
+		//				neighbourNode.m_previousNode = currentNode;
+		//			}
+		//		}
+		//	}
+		//}
+
+		//if (m_foundPath == true)
+		//{
+		//	Node current = m_endNode;
+		//	int pathLength = 0;
+		//	while (current != null)
+		//	{
+		//		current = current.m_previousNode;
+		//		++pathLength;
+		//	}
+		//	cost = pathLength;
+		//	return true;
+		//}
+
+		//return false;
 	}
 
 	/// <summary>

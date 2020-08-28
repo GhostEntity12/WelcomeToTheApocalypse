@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AIManager : MonoBehaviour
@@ -8,31 +8,18 @@ public class AIManager : MonoBehaviour
     public static AIManager m_Instance = null;
 
     //Lists of units that track which AI unit is alive and which is dead.
-    public List<Unit> aliveUnits;
-    public List<Unit> deadUnits;
+    public List<Unit> m_ActiveAIUnits;
 
     //A list of the player's units.
-    public List<Unit> playerUnits;
+    public List<Unit> m_playerUnits;
 
     //Unit's that track the closest Unit that is controlled by the player, and a Unit for the current AI Unit.
-    public Unit closestPlayerUnit;
-    public Unit currentAIUnit;
+    public Unit m_ClosestPlayerUnit;
+    public Unit m_CurrentAIUnit;
 
     //The path for the AI to walk on.
-    public Stack<Node> path = new Stack<Node>();
-    public int pathCost;
-
-    //The AI's basic melee attack.
-    public BaseSkill skill;
-
-    //I guess this is needed to tell whos turn it is?
-    public bool isTurn;
-
-    //Can the AI Attack.
-    public bool canAttack;
-
-    //Float used to measure the distance between two units.
-    public float distance;
+    public Stack<Node> m_Path = new Stack<Node>();
+    public int m_PathCost = 0;
 
     //On Awake, initialise the instance of this manager.
     private void Awake()
@@ -40,130 +27,109 @@ public class AIManager : MonoBehaviour
         m_Instance = this;
     }
 
-    //Init the turn to not begin with the AI.
-    //It also can't attack yet.
-    private void Start()
+    // This was Update(), I turned it into a function that the GameManager calls instead
+    /// <summary>
+    /// Makes all AI units take their turns
+    /// </summary>
+    public void TakeAITurn()
     {
-        pathCost = 0;
-        isTurn = false;
-        canAttack = false;
-    }
+        // Prune the active units
+        DisableUnits(m_ActiveAIUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
-    private void Update()
-    {
-        //If it is the AI's turn.
-        if (isTurn)
+        Debug.Log($"Taking AI Turn: {m_ActiveAIUnits.Count} units");
+        // For each AI unit currently alive.
+        foreach (Unit unit in m_ActiveAIUnits)
         {
-            //A quick check to see who is alive.
-            CheckWhoRemains(aliveUnits);
+            // The current AI unit is assigned
+            m_CurrentAIUnit = unit;
+            GameManager.m_Instance.m_SelectedUnit = unit;
 
-            //For each AI unit currently alive.
-            foreach (Unit unit in aliveUnits)
+            // Perform the actions on their turn.
+            m_ClosestPlayerUnit = FindClosestPlayerUnit();
+
+            if (m_ClosestPlayerUnit)
             {
-                //Perform the actions on their turn.
-                FindClosestPlayerUnit(playerUnits);
-
-                //The current AI unit is assigned
-                currentAIUnit = unit;
-
-                //Find a path to the player controlled unit and check if we're in attacking range.
                 FindPathToPlayerUnit();
-                CheckAttackRange();
-
-                //If we can attack. Attack. TEMP
-                if (CheckAttackRange())
-                {
-                    Attack();
-                }
             }
-
-            //End the turn.
-            isTurn = false;
-
-            //Tell the game manager it is not our turn anymore.
-            GameManager.m_Instance.EndCurrentTurn();
         }
+
+        //Tell the game manager it is not our turn anymore.
+        GameManager.m_Instance.EndCurrentTurn();
     }
 
-    //When a unit dies, remove it from the list of alive units and add it to a list of dead units.
-    public void UnitDeath(Unit unit)
+    /// <summary>
+    /// Returns the closest player controlled unit to the AI.
+    /// </summary>
+    public Unit FindClosestPlayerUnit()
     {
-        aliveUnits.Remove(unit);
-        deadUnits.Add(unit);
-    }
-
-    //Returns the closest player controlled unit to the AI.
-    public Unit FindClosestPlayerUnit(List<Unit> playersUnits)
-    {
-        //Iterate through the list of player controlled units.
-        for (int i = 0; i < playersUnits.Count - 1; i++)
+        // New version of the same thing 
+        Dictionary<Unit, int> unitDistances = new Dictionary<Unit, int>();
+        foreach (Unit playerUnit in m_playerUnits)
         {
-            //The distance is done through transform matrix for now instead of node distance.
-            distance = Vector3.Distance(playersUnits[i].transform.position, transform.position);
-
-            closestPlayerUnit = playersUnits[i];
-
-            //If the distance of the next one is less than the one just found and the next element in the list is not null. Assign this to be the closest unit.
-            if (Vector3.Distance(playersUnits[i + 1].transform.position, transform.position) < distance && playersUnits[i] != null)
+            Stack<Node> refPath = new Stack<Node>();
+            if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, playerUnit.transform.position, ref refPath, out int dist))
             {
-                distance = Vector3.Distance(playersUnits[i + 1].transform.position, transform.position);
-                closestPlayerUnit = playersUnits[i + 1];
+                unitDistances.Add(playerUnit, dist);
+                Debug.Log($"{playerUnit.name}: {dist} tiles from {m_CurrentAIUnit.name}");
             }
         }
 
-        //Return the closest player controlled unit to that AI.
-        return closestPlayerUnit;
+        if (unitDistances.Count == 0) return null;
+
+        // If you want to select randomly from the closest characters.
+        // The current implementation returns the first character on the list in the case of a tie.
+        //var closestUnits = unitDistances.Where(ud1 => ud1.Value == unitDistances.Min(ud2 => ud2.Value));
+        //return closestUnits.ElementAt(Random.Range(0, closestUnits.Count())).Key;
+
+        // See https://stackoverflow.com/questions/2805703/good-way-to-get-the-key-of-the-highest-value-of-a-dictionary-in-c-sharp
+        // for a description of what this is
+        return unitDistances.Aggregate((next, lowest) => next.Value < lowest.Value ? next : lowest).Key;
     }
 
     //Finds the path from the two units and sets the AI movement path.
+    // Could probably be rewritten
     public void FindPathToPlayerUnit()
     {
-        if (Grid.m_Instance.FindPath(currentAIUnit.transform.position, closestPlayerUnit.transform.position, ref path, out pathCost))
+        if (Grid.m_Instance.FindAIPath(m_CurrentAIUnit.transform.position, m_ClosestPlayerUnit.transform.position, ref m_Path, out m_PathCost))
         {
-            currentAIUnit.SetMovementPath(path);
+            m_CurrentAIUnit.SetMovementPath(new Stack<Node>(m_Path.Take(Mathf.Min(m_CurrentAIUnit.GetCurrentMovement() + 1, m_Path.Count)).Reverse()));
+            m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
         }
     }
 
-    //Checks adjacent nodes of the AI unit to see if they are able to attack and hit the player.
-    public bool CheckAttackRange()
+    // Checks adjacent nodes of the AI unit to see if they are able to attack and hit the player.
+    // This is not expandable for other units. consider loking at all the nodes in range like in GameManager.cs - James L
+    public void CheckAttackRange()
     {
         for (int i = 0; i < 4; i++)
         {
-            if (Grid.m_Instance.GetNode(currentAIUnit.transform.position).adjacentNodes[i].unit?.m_Allegiance != Allegiance.Enemy)
+            Node node = Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position).adjacentNodes[i];
+            if (node.unit?.m_Allegiance == Allegiance.Player)
             {
-                canAttack = true;
-            }
-            else
-            {
-                canAttack = false;
+                Attack(node);
+                break;
             }
         }
-
-        return false;
     }
 
-    //Function to activate the unit's attack.
-    public void Attack()
+    /// <summary>
+    /// Triggers the unit's basic attack
+    /// </summary>
+    /// <param name="sourceNode"></param>
+    public void Attack(Node sourceNode)
     {
-        if (canAttack)
-        {
-            currentAIUnit.ActivateSkill(skill);
-        }
+        m_CurrentAIUnit.ActivateSkill(m_CurrentAIUnit.GetSkill(0), sourceNode);
     }
 
-    //At the beginning of the AI turn, check who is alive, sort out any dead member who may be in the alive list. (Just in case)
-    public void CheckWhoRemains(List<Unit> units)
-    {
-        foreach (Unit unit in units)
-        {
-            if (unit.GetCurrentHealth() <= 0)
-                UnitDeath(unit);
-        }
-    }
+    /// <summary>
+    /// Adds more units to the active units
+    /// </summary>
+    /// <param name="newUnits"></param>
+    public void EnableUnits(List<Unit> newUnits) => m_ActiveAIUnits.AddRange(newUnits);
 
-    //Make it our turn.
-    public void AICurrentTurn()
-    {
-        isTurn = true;
-    }
+    /// <summary>
+    /// Removes units from the active units
+    /// </summary>
+    /// <param name="deadUnits"></param>
+    public void DisableUnits(List<Unit> deadUnits) => m_ActiveAIUnits = m_ActiveAIUnits.Except(deadUnits).ToList();
 }
