@@ -62,8 +62,9 @@ public class AIManager : MonoBehaviour
     /// </summary>
     public Unit FindClosestPlayerUnit()
     {
-        // New version of the same thing 
         Dictionary<Unit, int> unitDistances = new Dictionary<Unit, int>();
+
+        // Find out how far away each unit is and store it in the Dictionary
         foreach (Unit playerUnit in m_playerUnits)
         {
             Stack<Node> refPath = new Stack<Node>();
@@ -90,9 +91,13 @@ public class AIManager : MonoBehaviour
     // Could probably be rewritten
     public void FindPathToPlayerUnit()
     {
-        if (Grid.m_Instance.FindAIPath(m_CurrentAIUnit.transform.position, m_ClosestPlayerUnit.transform.position, ref m_Path, out m_PathCost))
+        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, m_ClosestPlayerUnit.transform.position, ref m_Path, out m_PathCost))
         {
-            m_CurrentAIUnit.SetMovementPath(new Stack<Node>(m_Path.Take(Mathf.Min(m_CurrentAIUnit.GetCurrentMovement() + 1, m_Path.Count)).Reverse()));
+            // Duct tape and hot glue gun code to get it working
+            Stack<Node> path = new Stack<Node>(m_Path.Intersect(Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position))).Reverse());
+            m_CurrentAIUnit.SetMovementPath(path);
+            //m_CurrentAIUnit.SetMovementPath(new Stack<Node>(m_Path.Take(Mathf.Min(m_CurrentAIUnit.GetCurrentMovement() + 1, m_Path.Count)).Reverse()));
+            Debug.Log(string.Join(", ", m_CurrentAIUnit.GetMovementPath().Select(n => n.m_NodeHighlight.name)));
             m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
         }
     }
