@@ -217,8 +217,20 @@ public class DialogueManager : MonoBehaviour
     /// <returns></returns>
     Sprite GetCharacterPortrait(CharacterPortraitContainer character, string expression)
     {
-        try { return (Sprite)character.GetType().GetField(expression).GetValue(character); }
-        catch (KeyNotFoundException) { return defaultCharacterSprite; }
+        try { return (Sprite)typeof(CharacterPortraitContainer).GetField(expression).GetValue(character); }
+        catch (Exception exception)
+        {
+            if (exception is KeyNotFoundException) // Character not found - return default character sprite.
+            {
+                return defaultCharacterSprite;
+            }
+            else if (exception is NullReferenceException) // Expression not found - return neutral.
+            {
+                return (Sprite)typeof(CharacterPortraitContainer).GetField("neutral").GetValue(character);
+            }
+            else throw exception;
+
+        }
     }
 
     /// <summary>

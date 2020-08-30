@@ -131,12 +131,6 @@ public class Unit : MonoBehaviour
     {
         Grid.m_Instance.SetUnit(gameObject);
         m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
-        
-        if (m_Healthbar != null)
-        {
-            m_HealthChangeIndicatorScript = m_Healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
-            m_Healthbar.u = this;
-        }
     }
 
     void Update()
@@ -241,17 +235,12 @@ public class Unit : MonoBehaviour
     {
         if (m_CurrentHealth <= 0)
         {
-            Debug.Log("Dead");
+            Debug.Log($"{name} died");
             m_IsAlive = false;
 
             // Check if the unit has the "DefeatEnemyWinCondition" script on it.
             // If it does, the player has won the level by defeating the boss.
-            //try
-            {
-                DefeatEnemyWinCondition defeat = GetComponent<DefeatEnemyWinCondition>();
-                defeat?.EnemyDefeated();
-            }
-            //catch{}
+            GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
 
             // If this is a player unit, check if the player has any units remaining.
             if (m_Allegiance == Allegiance.Player)
