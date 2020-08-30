@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1414925497930186236}
   - component: {fileID: 7515467857841940814}
   - component: {fileID: 3566338433662106716}
-  - component: {fileID: 7881246340428375037}
-  - component: {fileID: 1597679022515245891}
+  - component: {fileID: 1059927209887367034}
+  - component: {fileID: 1226146616351209813}
   m_Layer: 0
   m_Name: Fence_Wood_1
   m_TagString: Untagged
@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: cb01de92ac72c7a4bb6d52a2b95d90fa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -81,7 +81,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &7881246340428375037
+--- !u!65 &1059927209887367034
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,7 +94,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2.0113428, y: 1.0685819, z: 0.380485}
   m_Center: {x: -1.0166291, y: 0.52858955, z: -0.0029466227}
---- !u!114 &1597679022515245891
+--- !u!114 &1226146616351209813
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

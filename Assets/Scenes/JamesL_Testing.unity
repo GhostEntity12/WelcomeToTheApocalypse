@@ -134,7 +134,6 @@ GameObject:
   - component: {fileID: 9146864}
   - component: {fileID: 9146863}
   - component: {fileID: 9146862}
-  - component: {fileID: 9146867}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -238,31 +237,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &9146867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9146861}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
 --- !u!1 &260735820
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,6 +391,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c32f3f7bd6b0834aadb1d8b5d14e92a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SelectedUnit: {fileID: 0}
   m_UnitsInCombat: []
   m_PlayerUnits: []
   m_LoseScreen: {fileID: 0}
@@ -446,18 +421,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e24fe1517013634dab8faf2edf93623, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aliveUnits:
+  m_ActiveAIUnits:
   - {fileID: 2005858191}
-  deadUnits: []
-  playerUnits:
+  m_playerUnits:
   - {fileID: 1347232841}
-  closestPlayerUnit: {fileID: 0}
-  currentAIUnit: {fileID: 0}
-  pathCost: 0
-  skill: {fileID: 0}
-  isTurn: 0
-  canAttack: 0
-  distance: 0
+  m_ClosestPlayerUnit: {fileID: 0}
+  m_CurrentAIUnit: {fileID: 0}
+  m_PathCost: 0
 --- !u!1 &635738319
 GameObject:
   m_ObjectHideFlags: 0

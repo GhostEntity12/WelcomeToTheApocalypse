@@ -131,9 +131,6 @@ public class Unit : MonoBehaviour
     {
         Grid.m_Instance.SetUnit(gameObject);
         m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
-        
-        if (m_Healthbar != null)
-            m_HealthChangeIndicatorScript = m_Healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
 
     void Update()
@@ -238,17 +235,12 @@ public class Unit : MonoBehaviour
     {
         if (m_CurrentHealth <= 0)
         {
-            Debug.Log("Dead");
+            Debug.Log($"{name} died");
             m_IsAlive = false;
 
             // Check if the unit has the "DefeatEnemyWinCondition" script on it.
             // If it does, the player has won the level by defeating the boss.
-            //try
-            {
-                DefeatEnemyWinCondition defeat = GetComponent<DefeatEnemyWinCondition>();
-                defeat?.EnemyDefeated();
-            }
-            //catch{}
+            GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
 
             // If this is a player unit, check if the player has any units remaining.
             if (m_Allegiance == Allegiance.Player)
@@ -381,13 +373,14 @@ public class Unit : MonoBehaviour
     /// Activate one of the unit's skills.
     /// </summary>
     /// <param name="skill"> The skill to activate. </param>
-    public void ActivateSkill(BaseSkill skill)
+    public void ActivateSkill(BaseSkill skill, Node castLocation)
     {
         // Doing my own search cause List.Find is gross.
         for (int i = 0; i < m_Skills.Count; ++i)
         {
             if (m_Skills[i] == skill)
             {
+                m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
                 m_Skills[i].CastSkill();
                 return;
             }

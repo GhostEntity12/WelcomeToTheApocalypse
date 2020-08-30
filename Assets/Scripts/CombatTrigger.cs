@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class CombatTrigger : MonoBehaviour
 {
-    public List<Unit> m_TriggerEnemyEncounter = new List<Unit>();
+    public List<Unit> m_EnemiesToActivate = new List<Unit>();
 
     public TextAsset scene;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other?.GetComponent<Unit>()?.GetAllegiance() == Allegiance.Player)
+        if (other.GetComponent<Unit>()?.GetAllegiance() == Allegiance.Player)
         {
-            // Give enemies in m_TriggerEnemyEncounter to the game manager for them to take turns.
+            AIManager.m_Instance.EnableUnits(m_EnemiesToActivate);
 
             if (scene)
             {

@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 4041055953673445008}
   - component: {fileID: 6269278991669295498}
   - component: {fileID: 6937628247170335980}
-  - component: {fileID: 942349535436767451}
-  - component: {fileID: 5110542698086255869}
+  - component: {fileID: 600428909372518646}
+  - component: {fileID: 6973685263682026680}
   m_Layer: 0
   m_Name: Fence_Wood_Cap
   m_TagString: Untagged
@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: cb01de92ac72c7a4bb6d52a2b95d90fa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -81,7 +81,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &942349535436767451
+--- !u!65 &600428909372518646
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,7 +94,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2.1755757, y: 1.0685819, z: 0.380485}
   m_Center: {x: -1.0987456, y: 0.52858955, z: -0.0029466227}
---- !u!114 &5110542698086255869
+--- !u!114 &6973685263682026680
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
