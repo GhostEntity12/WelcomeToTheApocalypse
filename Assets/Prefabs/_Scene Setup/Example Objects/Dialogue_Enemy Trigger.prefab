@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 828571899970241127}
   - component: {fileID: 1993961434605481803}
   - component: {fileID: 5412012325771029623}
+  - component: {fileID: 4837760970561082806}
   m_Layer: 0
   m_Name: Dialogue_Enemy Trigger
   m_TagString: Untagged
@@ -40,7 +41,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5472738219337565206}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 5, y: 1, z: 1}
@@ -59,3 +60,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EnemiesToActivate: []
   scene: {fileID: 0}
+--- !u!54 &4837760970561082806
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5472738219337565206}
+  serializedVersion: 2
+  m_Mass: 0.0000001
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0

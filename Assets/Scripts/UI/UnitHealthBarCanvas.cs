@@ -14,7 +14,9 @@ public class UnitHealthBarCanvas : MonoBehaviour
             GameObject healthbar = Instantiate(m_HealthbarTemplate, transform);
             healthbar.name = $"{u.name} Healthbar";
             // This is 🦀.
-            healthbar.GetComponent<HealthbarContainer>().m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>().Create();
+            var container = healthbar.GetComponent<HealthbarContainer>();
+            container.u = u;
+            container.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>().Create();
             u.SetHealthbar(healthbar);
         }
     }
