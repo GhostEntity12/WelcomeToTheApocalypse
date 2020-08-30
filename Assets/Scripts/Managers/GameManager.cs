@@ -217,7 +217,7 @@ public class GameManager : MonoBehaviour
                         {
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
-                            Debug.Log(m_SelectedUnit.GetActionPoints());
+                            Debug.Log(m_SelectedUnit.GetActionPoints(), m_SelectedUnit);
 
                             // Now deselect the skill and clear the targeting highlights.
                             m_TargetingState = TargetingState.Move;
@@ -235,7 +235,7 @@ public class GameManager : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("Not enough action points!");
+                            Debug.Log("Not enough action points!", m_SelectedUnit);
                         }
                     }
                 }
@@ -278,7 +278,6 @@ public class GameManager : MonoBehaviour
                         {
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
-                            Debug.Log(m_SelectedUnit.GetActionPoints());
 
                             // Now deselect the skill and clear the targeting highlights.
                             m_TargetingState = TargetingState.Move;
@@ -347,7 +346,7 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("You don't have enough action points to select this skill!");
+                    Debug.Log("You don't have enough action points to select this skill!", m_SelectedUnit);
                 }
             }
         }

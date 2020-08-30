@@ -10,15 +10,18 @@ public class HealthbarContainer : MonoBehaviour
 
     public TextMeshProUGUI m_HealthChangeIndicator = null;
 
-    public bool m_isMagnetic = false;
+    public bool m_IsMagnetic = false;
 
     public Unit u;
 
+    Transform m_Transform;
+
     Camera m_MainCam;
 
-    private void Awake()
+    private void Start()
     {
         m_MainCam = Camera.main;
+        m_Transform = u.m_HealthbarPosition;
     }
 
     public void SetChildrenActive(bool active)
@@ -31,9 +34,9 @@ public class HealthbarContainer : MonoBehaviour
 
     private void Update()
     {
-        if (m_isMagnetic)
+        if (m_IsMagnetic)
         {
-            transform.position = m_MainCam.WorldToScreenPoint(u.m_HealthbarPosition.position);
+            transform.position = m_MainCam.WorldToScreenPoint(m_Transform.position);
         }
     }
 }

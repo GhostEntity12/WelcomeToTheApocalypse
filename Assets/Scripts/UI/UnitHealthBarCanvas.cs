@@ -1,24 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class UnitHealthBarCanvas : MonoBehaviour
 {
     /// <summary>
     /// The healthbar to be put above all unit's heads
     /// </summary>
-    public GameObject m_HealthbarTemplate = null;
+    public GameObject m_HealthbarTemplate;
 
-    /// <summary>
-    /// List of units that need a healthbar to be placed above them.
-    /// </summary>
-    public List<Unit> m_UnitsForHealthbars = new List<Unit>();
-
-    private void Awake()
+    private void Start()
     {
-        foreach(Unit u in m_UnitsForHealthbars)
+        foreach (Unit u in UnitsManager.m_Instance.m_AllUnits)
         {
             GameObject healthbar = Instantiate(m_HealthbarTemplate, transform);
+            healthbar.name = $"{u.name} Healthbar";
             // This is 🦀.
             healthbar.GetComponent<HealthbarContainer>().m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>().Create();
             u.SetHealthbar(healthbar);
