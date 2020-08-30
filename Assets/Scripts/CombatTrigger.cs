@@ -9,7 +9,7 @@ public class CombatTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other?.GetComponent<Unit>()?.GetAllegiance() == Allegiance.Player)
+        if (other.GetComponent<Unit>()?.GetAllegiance() == Allegiance.Player)
         {
             AIManager.m_Instance.EnableUnits(m_EnemiesToActivate);
 

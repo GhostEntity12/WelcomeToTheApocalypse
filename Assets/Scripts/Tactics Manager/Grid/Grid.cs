@@ -28,6 +28,10 @@ public class Grid : MonoBehaviour
 	{
 		m_Instance = this;
 		GetComponent<GridObject>().isWalkable = true;
+		if (FindObjectsOfType<GridArea>().Length == 0)
+		{
+			Debug.LogError("Map incomplete, no areas declared walkable", this);
+		}
 		ReadLevel();
 	}
 

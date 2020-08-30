@@ -65,7 +65,7 @@ public class AIUnit : Unit
     {
         if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
         {
-            foreach (Unit unit in GameManager.m_Instance.m_PlayerUnits)
+            foreach (Unit unit in UnitsManager.m_Instance.m_PlayerUnits)
             {
                 if (unit.GetAllegiance() == Allegiance.Player)
                 {
