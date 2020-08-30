@@ -40,6 +40,7 @@ public class BaseSkill : ScriptableObject
     public TargetType targetType;
     // Whether the caster can target themselves
     public bool excludeCaster;
+    public Node m_SourceNode;
 
     [Header("Stats")]
     // What type of skill it is (and how many AP it costs to cast)
@@ -60,7 +61,6 @@ public class BaseSkill : ScriptableObject
 
     public virtual void CastSkill()
     {
-        Debug.Log("Skill cast");
         affectedUnits = affectedNodes.Select(t => t.unit)
             .Where(c => GameManager.IsTargetable(GameManager.m_Instance.GetSelectedUnit(), c, this))
             .Distinct() // Had to add this - for some reason, it grabbed the same character multiple times somehow

@@ -16,6 +16,8 @@ public class CameraMovement : MonoBehaviour
     private bool m_IsRotating;
     FacingDirection m_LookDirection = FacingDirection.North;
 
+    HealthbarContainer[] healthbarContainers;
+
     enum FacingDirection
     {
         North, East, South, West
@@ -34,6 +36,11 @@ public class CameraMovement : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        healthbarContainers = FindObjectsOfType<HealthbarContainer>();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -48,10 +55,11 @@ public class CameraMovement : MonoBehaviour
         Vector3 targetPosition = transform.position + (m_MovementInput * m_MoveSpeed);
 
         // Clamp the position
-        Vector3 clampedPosition = new Vector3();
-
-        clampedPosition.x = Mathf.Clamp(targetPosition.x, m_CameraBounds.min.x, m_CameraBounds.max.x);
-        clampedPosition.z = Mathf.Clamp(targetPosition.z, m_CameraBounds.min.z, m_CameraBounds.max.z);
+        Vector3 clampedPosition = new Vector3
+        {
+            x = Mathf.Clamp(targetPosition.x, m_CameraBounds.min.x, m_CameraBounds.max.x),
+            z = Mathf.Clamp(targetPosition.z, m_CameraBounds.min.z, m_CameraBounds.max.z)
+        };
 
 
         // Move the camera.
@@ -72,5 +80,10 @@ public class CameraMovement : MonoBehaviour
                 LeanTween.rotate(gameObject, new Vector3(0, (int)m_LookDirection * 90f, 0), 0.4f).setEase(rotationType).setOnComplete(() => m_IsRotating = false);
             }
         }
+
+        //foreach (HealthbarContainer hbc in healthbarContainers)
+        //{
+        //    hbc.m_IsMagnetic = m_IsRotating;
+        //}
     }
 }
