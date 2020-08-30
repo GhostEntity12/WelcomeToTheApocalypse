@@ -7,19 +7,12 @@ public class AIManager : MonoBehaviour
     //Instance of the AIManager.
     public static AIManager m_Instance = null;
 
-    //Lists of units that track which AI unit is alive and which is dead.
-    public List<Unit> m_ActiveAIUnits;
-
-    //A list of the player's units.
-    public List<Unit> m_playerUnits;
-
     //Unit's that track the closest Unit that is controlled by the player, and a Unit for the current AI Unit.
-    public Unit m_ClosestPlayerUnit;
-    public Unit m_CurrentAIUnit;
+    private Unit m_ClosestPlayerUnit;
+    private Unit m_CurrentAIUnit;
 
     //The path for the AI to walk on.
     public Stack<Node> m_Path = new Stack<Node>();
-    public int m_PathCost = 0;
 
     //On Awake, initialise the instance of this manager.
     private void Awake()
@@ -34,11 +27,11 @@ public class AIManager : MonoBehaviour
     public void TakeAITurn()
     {
         // Prune the active units
-        DisableUnits(m_ActiveAIUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
+        DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
-        Debug.Log($"Taking AI Turn: {m_ActiveAIUnits.Count} units");
+        Debug.Log($"Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
         // For each AI unit currently alive.
-        foreach (Unit unit in m_ActiveAIUnits)
+        foreach (Unit unit in UnitsManager.m_Instance.m_ActiveEnemyUnits)
         {
             // The current AI unit is assigned
             m_CurrentAIUnit = unit;
@@ -65,7 +58,7 @@ public class AIManager : MonoBehaviour
         Dictionary<Unit, int> unitDistances = new Dictionary<Unit, int>();
 
         // Find out how far away each unit is and store it in the Dictionary
-        foreach (Unit playerUnit in m_playerUnits)
+        foreach (Unit playerUnit in UnitsManager.m_Instance.m_PlayerUnits)
         {
             Stack<Node> refPath = new Stack<Node>();
             if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, playerUnit.transform.position, ref refPath, out int dist))
@@ -91,7 +84,7 @@ public class AIManager : MonoBehaviour
     // Could probably be rewritten
     public void FindPathToPlayerUnit()
     {
-        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, m_ClosestPlayerUnit.transform.position, ref m_Path, out m_PathCost))
+        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, m_ClosestPlayerUnit.transform.position, ref m_Path, out int pathCost))
         {
             // Duct tape and hot glue gun code to get it working
             Stack<Node> path = new Stack<Node>(m_Path.Intersect(Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position))).Reverse());
@@ -130,11 +123,11 @@ public class AIManager : MonoBehaviour
     /// Adds more units to the active units
     /// </summary>
     /// <param name="newUnits"></param>
-    public void EnableUnits(List<Unit> newUnits) => m_ActiveAIUnits.AddRange(newUnits);
+    public void EnableUnits(List<Unit> newUnits) => UnitsManager.m_Instance.m_ActiveEnemyUnits.AddRange(newUnits);
 
     /// <summary>
     /// Removes units from the active units
     /// </summary>
     /// <param name="deadUnits"></param>
-    public void DisableUnits(List<Unit> deadUnits) => m_ActiveAIUnits = m_ActiveAIUnits.Except(deadUnits).ToList();
+    public void DisableUnits(List<Unit> deadUnits) => UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Except(deadUnits).ToList();
 }
