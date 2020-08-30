@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public enum UIStyle
@@ -64,6 +65,14 @@ public class UIManager : MonoBehaviour
 	private void Awake()
 	{
 		m_Instance = this;
+
+		// Creates an EventSystem if it can't find one
+		if (FindObjectOfType<EventSystem>() == null)
+		{
+			GameObject eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+			eventSystem.transform.SetSiblingIndex(transform.GetSiblingIndex() + 1);
+		}
+
 	}
 
 	/// <summary>

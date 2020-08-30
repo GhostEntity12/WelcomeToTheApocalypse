@@ -81,9 +81,9 @@ public class CameraMovement : MonoBehaviour
             }
         }
 
-        foreach (HealthbarContainer hbc in healthbarContainers)
-        {
-            hbc.m_isMagnetic = m_IsRotating;
-        }
+        //foreach (HealthbarContainer hbc in healthbarContainers)
+        //{
+        //    hbc.m_IsMagnetic = m_IsRotating;
+        //}
     }
 }

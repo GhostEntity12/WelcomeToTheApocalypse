@@ -66,19 +66,9 @@ public class GameManager : MonoBehaviour
     private Allegiance m_TeamCurrentTurn = Allegiance.Player;
 
     /// <summary>
-    /// List of the units in currently "in combat".
-    /// </summary>
-    public List<Unit> m_UnitsInCombat = new List<Unit>();
-
-    /// <summary>
     /// The cost of the player's unit moving to their target location.
     /// </summary>
     private int m_MovementCost = 0;
-
-    /// <summary>
-    /// List of the unit's the player controls.
-    /// </summary>
-    public List<Unit> m_PlayerUnits = new List<Unit>();
 
     /// <summary>
     /// The screen for when the player loses.
@@ -106,14 +96,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // Get all the unit's the player controls.
         dm = DialogueManager.instance;
-
-        foreach (Unit u in FindObjectsOfType<Unit>())
-        {
-            if (u.GetAllegiance() == Allegiance.Player)
-                m_PlayerUnits.Add(u);
-        }
     }
 
     // Update.
@@ -166,31 +149,20 @@ public class GameManager : MonoBehaviour
             m_TeamCurrentTurn = Allegiance.Player;
 
             // Reset the action points of the player's units.
-            foreach(Unit u in m_PlayerUnits)
+            foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
             {
                 u.ResetActionPoints();
             }
         }
 
         // Reset the movement of the units whos turn it now is.
-        foreach (Unit u in m_UnitsInCombat)
+        foreach (Unit u in UnitsManager.m_Instance.m_AllUnits)
         {
             if (u.GetAllegiance() == m_TeamCurrentTurn)
                 u.ResetCurrentMovement();
         }
 
         UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
-    }
-
-    /// <summary>
-    /// Add a list of enemies to the turn order.
-    /// </summary>
-    public void AddToTurnOrder(List<Unit> add)
-    {
-        foreach (Unit u in add)
-        {
-            m_UnitsInCombat.Add(u);
-        }
     }
 
     /// <summary>
@@ -226,7 +198,6 @@ public class GameManager : MonoBehaviour
 
                         // Highlight the appropriate tiles
                         m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-                        print(m_SelectedUnit.m_MovableNodes.Count);
                         m_SelectedUnit.HighlightMovableNodes();
                     }
                 }
@@ -246,7 +217,7 @@ public class GameManager : MonoBehaviour
                         {
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
-                            Debug.Log(m_SelectedUnit.GetActionPoints());
+                            Debug.Log(m_SelectedUnit.GetActionPoints(), m_SelectedUnit);
 
                             // Now deselect the skill and clear the targeting highlights.
                             m_TargetingState = TargetingState.Move;
@@ -264,7 +235,7 @@ public class GameManager : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("Not enough action points!");
+                            Debug.Log("Not enough action points!", m_SelectedUnit);
                         }
                     }
                 }
@@ -307,7 +278,6 @@ public class GameManager : MonoBehaviour
                         {
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
-                            Debug.Log(m_SelectedUnit.GetActionPoints());
 
                             // Now deselect the skill and clear the targeting highlights.
                             m_TargetingState = TargetingState.Move;
@@ -376,7 +346,7 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("You don't have enough action points to select this skill!");
+                    Debug.Log("You don't have enough action points to select this skill!", m_SelectedUnit);
                 }
             }
         }
@@ -479,20 +449,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void CheckPlayerUnitsAlive()
     {
-        // The number of units alive.
-        int alive = 0;
-
-        // Go through all the player's units, and check how many are alive.
-        foreach(Unit u in m_PlayerUnits)
-        {
-            if (u.GetAlive())
-            {
-                alive++;
-            }
-        }
-
         // If true, all player units are dead.
-        if (alive == 0)
+        if (UnitsManager.m_Instance.m_PlayerUnits.Where(u => u.GetAlive()).Count() == 0)
         {
             // All the player's units are dead, the player lost.
             // Pause the game and display the lose screen for the player.
