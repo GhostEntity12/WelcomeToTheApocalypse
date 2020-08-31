@@ -55,7 +55,7 @@ public class HealthChangeIndicator : MonoBehaviour
 
     public void Create()
     {
-        m_HealthbarCanvas = transform.parent.GetComponent<UnitHealthBarCanvas>();
+        m_HealthbarCanvas = GetComponentInParent<UnitHealthBarCanvas>();
         m_TMPro = GetComponent<TextMeshProUGUI>();
     }
 

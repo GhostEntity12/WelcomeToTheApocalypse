@@ -45,7 +45,7 @@ public class UIManager : MonoBehaviour
 	public Image m_SkillsBackground;
 	public Image m_TurnBackground;
 	public Image m_PortraitImage;
-	public Image[] m_SkillSlots;
+	public SkillButton[] m_SkillSlots;
 	public RawImage m_PortraitRenderTexture;
 	public Image m_LeftSpeakerImage;
 	public Image m_RightSpeakerImage;
@@ -151,23 +151,12 @@ public class UIManager : MonoBehaviour
 	/// <param name="uiData"></param>
 	private void LoadSkillsSkin(UIData uiData)
 	{
-		foreach (Image slot in m_SkillSlots)
+		foreach (SkillButton slot in m_SkillSlots)
 		{
-			slot.sprite = uiData.m_SkillBg;
+			slot.m_Image.sprite = uiData.m_SkillBg;
 		}
 
-		//if (uiData.m_PortraitRenderTexture)
-		//{
-		//	m_PortraitRenderTexture.color = new Color(1, 1, 1, 1);
-		//	m_PortraitImage.sprite = null;
-		//	m_PortraitRenderTexture.texture = uiData.m_PortraitRenderTexture;
-		//}
-		//else
-		//{
-			//m_PortraitRenderTexture.texture = null;
-			//m_PortraitRenderTexture.color = new Color(1, 1, 1, 0);
-			m_PortraitImage.sprite = uiData.m_SkillsPortrait;
-		//}
+		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
 		m_FaceBackground.color = uiData.m_Medium;
 		m_SkillsBackground.color = uiData.m_Light;
 		m_TurnBackground.color = uiData.m_Dark;
@@ -176,6 +165,7 @@ public class UIManager : MonoBehaviour
 		{
 			// TODO: Refactor
 			m_SkillSlots[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
+			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
 		}
 	}
 
@@ -242,15 +232,16 @@ public class UIManager : MonoBehaviour
 	{
 		switch (unitName.ToLower())
 		{
-			case "death":
+			case "player_death":
 				return UIStyle.Death;
-			case "pestilence":
+			case "player_pestilence":
 				return UIStyle.Pestilence;
-			case "famine":
+			case "player_famine":
 				return UIStyle.Famine;
-			case "war":
+			case "player_war":
 				return UIStyle.War;
 			default:
+				Debug.LogWarning($"No character with name {unitName} found.");
 				return UIStyle.Enemy;
 		}
 	}

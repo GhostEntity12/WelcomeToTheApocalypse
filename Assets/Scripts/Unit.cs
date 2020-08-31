@@ -48,10 +48,12 @@ public class Unit : MonoBehaviour
     /// </summary>
     public float m_MoveSpeed = 3.0f;
 
+    public List<BaseSkill> m_LearnedSkills = new List<BaseSkill>();
+
     /// <summary>
     /// The skills avaliable to the unit.
     /// </summary>
-    public List<BaseSkill> m_Skills = new List<BaseSkill>();
+    private List<BaseSkill> m_Skills = new List<BaseSkill>();
 
     /// <summary>
     /// The passive effect of the character.
