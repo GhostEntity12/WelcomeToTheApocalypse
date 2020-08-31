@@ -3,8 +3,8 @@
 [CreateAssetMenu]
 public class CharacterPortraitContainer : ScriptableObject
 {
-    public Sprite m_Neutral; 
-    public Sprite m_Angry; 
-    public Sprite m_Happy; 
-    public Sprite m_Tired;
+    public Sprite neutral; 
+    public Sprite angry; 
+    public Sprite happy; 
+    public Sprite tired;
 }

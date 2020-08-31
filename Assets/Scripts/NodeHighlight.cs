@@ -48,6 +48,11 @@ public class NodeHighlight : MonoBehaviour
 	/// <param name="state">What state the highlight should be set to</param>
 	public void ChangeHighlight(TileState state)
 	{
+		if (!m_Renderer)
+		{
+			m_Renderer = GetComponent<Renderer>();
+		}
+
 		if (state == TileState.None)
 		{
 			m_Renderer.enabled = false;
