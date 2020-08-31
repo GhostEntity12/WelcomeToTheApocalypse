@@ -96,7 +96,7 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The image representing the unit's health.
     /// </summary>
-    public HealthbarContainer m_Healthbar = null;
+    private HealthbarContainer m_Healthbar = null;
 
     /// <summary>
     /// The script for the health change indicator.
@@ -126,8 +126,6 @@ public class Unit : MonoBehaviour
 
         m_CurrentActionPoints = m_StartingActionPoints;
 
-        m_HealthChangeIndicatorScript = m_Healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
-
         m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
     }
 
@@ -135,7 +133,6 @@ public class Unit : MonoBehaviour
     {
         Grid.m_Instance.SetUnit(gameObject);
         m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
-        m_Healthbar.gameObject.SetActive(false);
     }
 
     void Update()
@@ -357,9 +354,10 @@ public class Unit : MonoBehaviour
     /// Set the healthbar of the unit.
     /// </summary>
     /// <param name="healthbar">The healthbar game object.</param>
-    public void SetHealthbar(GameObject healthbar)
+    public void SetHealthbar(HealthbarContainer healthbar)
     {
-        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();
+        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();        
+        m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
 
     /// <summary>
