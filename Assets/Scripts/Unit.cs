@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public enum Allegiance
 {
@@ -129,6 +127,8 @@ public class Unit : MonoBehaviour
         m_CurrentActionPoints = m_StartingActionPoints;
 
         m_HealthChangeIndicatorScript = m_Healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
+
+        m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
     }
 
     void Start()
@@ -184,7 +184,7 @@ public class Unit : MonoBehaviour
         {
             m_Healthbar.gameObject.SetActive(true);
             m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
-            m_Healthbar.m_HealthbarImage.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
+            m_Healthbar.m_HealthbarImage.fillAmount = (float)m_CurrentHealth / m_StartingHealth;
             m_Healthbar.SetChildrenActive(true);
             m_HealthChangeIndicatorScript.SetStartPositionToCurrent();
             m_HealthChangeIndicatorScript.Reset();

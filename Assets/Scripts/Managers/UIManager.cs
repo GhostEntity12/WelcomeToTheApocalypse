@@ -30,9 +30,6 @@ public class UIManager : MonoBehaviour
 		internal Vector2[] m_Cache = new Vector2[2];
 	}
 
-	public bool m_Debug = true;
-	public TextAsset m_TestDialogue;
-
 	[Header("Data")]
 	public UIData m_DeathUIData;
 	public UIData m_PestilenceUIData;
@@ -86,51 +83,6 @@ public class UIManager : MonoBehaviour
 		SetCachesAndPosition(m_LeftSpeaker, new Vector2(-800, 0));
 		SetCachesAndPosition(m_RightSpeaker, new Vector2(800, 0));
 		SetCachesAndPosition(m_DialogueUI, new Vector2(0, -400));
-	}
-
-	private void Update()
-	{
-		if (m_Debug)
-		{
-			if (Input.GetKeyDown(KeyCode.Alpha6))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.Death,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha7))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.Pestilence,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha8))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.Famine,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha9))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.War,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha0))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.Enemy,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Minus))
-			{
-				SwapToDialogue();
-			}
-			if (Input.GetKeyDown(KeyCode.Equals))
-			{
-				SwapFromDialogue();
-			}
-		}
 	}
 
 	/// <summary>
@@ -232,13 +184,13 @@ public class UIManager : MonoBehaviour
 	{
 		switch (unitName.ToLower())
 		{
-			case "player_death":
+			case string s when s == "player_death" || s == "death":
 				return UIStyle.Death;
-			case "player_pestilence":
+			case string s when s == "player_pestilence" || s == "pestilence":
 				return UIStyle.Pestilence;
-			case "player_famine":
+			case string s when s == "player_famine" || s == "famine":
 				return UIStyle.Famine;
-			case "player_war":
+			case string s when s == "player_war" || s == "war":
 				return UIStyle.War;
 			default:
 				Debug.LogWarning($"No character with name {unitName} found.");
@@ -283,10 +235,17 @@ public class UIManager : MonoBehaviour
 				() => SlideElement(m_DialogueUI, ScreenState.Onscreen)));
 	}
 
-	public void SwapToDialogue(TextAsset sourceFile = null)
+	public void SwapToDialogue(TextAsset sourceFile)
 	{
-		SlideSkills(ScreenState.Offscreen,
-			() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue));
+		if (sourceFile)
+		{
+			SlideSkills(ScreenState.Offscreen,
+				() => DialogueManager.instance.TriggerDialogue(sourceFile));
+		}
+		else
+		{
+			Debug.LogError("No dialogue file!");
+		}
 	}
 
 	public void SwapFromDialogue()
