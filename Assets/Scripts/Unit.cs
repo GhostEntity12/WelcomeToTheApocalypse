@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public enum Allegiance
 {
@@ -48,10 +46,12 @@ public class Unit : MonoBehaviour
     /// </summary>
     public float m_MoveSpeed = 3.0f;
 
+    public List<BaseSkill> m_LearnedSkills = new List<BaseSkill>();
+
     /// <summary>
     /// The skills avaliable to the unit.
     /// </summary>
-    public List<BaseSkill> m_Skills = new List<BaseSkill>();
+    private List<BaseSkill> m_Skills = new List<BaseSkill>();
 
     /// <summary>
     /// The passive effect of the character.
@@ -96,7 +96,7 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The image representing the unit's health.
     /// </summary>
-    public HealthbarContainer m_Healthbar = null;
+    private HealthbarContainer m_Healthbar = null;
 
     /// <summary>
     /// The script for the health change indicator.
@@ -125,6 +125,8 @@ public class Unit : MonoBehaviour
         m_CurrentMovement = m_StartingMovement;
 
         m_CurrentActionPoints = m_StartingActionPoints;
+
+        m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
     }
 
     void Start()
@@ -179,10 +181,11 @@ public class Unit : MonoBehaviour
         {
             m_Healthbar.gameObject.SetActive(true);
             m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
-            m_Healthbar.m_HealthbarImage.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
+            m_Healthbar.m_HealthbarImage.fillAmount = (float)m_CurrentHealth / m_StartingHealth;
             m_Healthbar.SetChildrenActive(true);
-            m_HealthChangeIndicatorScript.SetStartPosition(m_Healthbar.transform.position);
+            m_HealthChangeIndicatorScript.SetStartPositionToCurrent();
             m_HealthChangeIndicatorScript.Reset();
+            m_Healthbar.Reset();
         }
     }
 
@@ -351,9 +354,10 @@ public class Unit : MonoBehaviour
     /// Set the healthbar of the unit.
     /// </summary>
     /// <param name="healthbar">The healthbar game object.</param>
-    public void SetHealthbar(GameObject healthbar)
+    public void SetHealthbar(HealthbarContainer healthbar)
     {
-        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();
+        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();        
+        m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
 
     /// <summary>

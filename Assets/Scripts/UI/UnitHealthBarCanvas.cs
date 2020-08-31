@@ -13,11 +13,10 @@ public class UnitHealthBarCanvas : MonoBehaviour
         {
             GameObject healthbar = Instantiate(m_HealthbarTemplate, transform);
             healthbar.name = $"{u.name} Healthbar";
-            // This is 🦀.
-            var container = healthbar.GetComponent<HealthbarContainer>();
-            container.u = u;
+            HealthbarContainer container = healthbar.GetComponent<HealthbarContainer>();
+			container.SetUnit(u);
+			container.UnitSetHealthbar();
             container.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>().Create();
-            u.SetHealthbar(healthbar);
         }
     }
 }
