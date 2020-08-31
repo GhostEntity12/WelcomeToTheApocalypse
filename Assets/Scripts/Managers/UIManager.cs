@@ -117,6 +117,8 @@ public class UIManager : MonoBehaviour
 		{
 			// TODO: Refactor
 			m_SkillSlots[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
+			print(GameManager.m_Instance.GetSelectedUnit());
+			print(GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
 			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
 		}
 	}

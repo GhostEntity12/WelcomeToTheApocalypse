@@ -59,7 +59,8 @@ public class HealthbarContainer : MonoBehaviour
     private void Start()
     {
         m_MainCam = Camera.main;
-        m_Transform = m_Unit.m_HealthbarPosition;
+        if (m_Unit)
+            m_Transform = m_Unit.m_HealthbarPosition;
         m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>().Create();
     }
 
@@ -89,5 +90,16 @@ public class HealthbarContainer : MonoBehaviour
         m_Timer = 0.0f;
         m_HealthbarImage.color = m_FillColor;
         m_HealthbarBackImage.color = m_BackColor;
+    }
+
+    public void UnitSetHealthbar()
+    {
+        if (m_Unit != null)
+            m_Unit.SetHealthbar(this);
+    }
+
+    public void SetUnit(Unit unit)
+    {
+        m_Unit = unit;
     }
 }
