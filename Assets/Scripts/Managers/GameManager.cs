@@ -384,8 +384,8 @@ public class GameManager : MonoBehaviour
     /// <param name="skill"> The skill being selected. </param>
     public void SkillSelection(BaseSkill skill)
     {
-        // TODO: replace so the buttons just can't be clicked.
-        // if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
+        // Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
+        if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
 
         // Reset the nodes in the old target range
         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
@@ -428,8 +428,8 @@ public class GameManager : MonoBehaviour
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
-        // TODO: replace so the buttons just can't be clicked.
-        // if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
+        // Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
+        if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
 
         // Reset the nodes in the old target range
         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);

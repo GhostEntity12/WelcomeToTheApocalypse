@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -127,6 +128,10 @@ public class Unit : MonoBehaviour
         m_CurrentMovement = m_StartingMovement;
 
         m_CurrentActionPoints = m_StartingActionPoints;
+
+        // Create a new instantiated list of skills so they have seperate cooldowns
+        m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
+
     }
 
     void Start()
