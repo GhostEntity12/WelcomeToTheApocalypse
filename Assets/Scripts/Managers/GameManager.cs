@@ -322,7 +322,7 @@ public class GameManager : MonoBehaviour
                                 m_SelectedUnit.SetMovementPath(path);
                                 // Decrease the unit's movement by the cost.
                                 //- 1 because the cost it gets is the number of nodes in the path, which includes the node the unit starts on.
-                                m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost - 1);
+                                m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
                             }
                             // Should we do this after the unit has finished moving? - James L
                             m_SelectedUnit.HighlightMovableNodes(hitNode);
