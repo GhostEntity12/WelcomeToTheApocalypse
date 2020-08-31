@@ -125,12 +125,15 @@ public class Unit : MonoBehaviour
         m_CurrentMovement = m_StartingMovement;
 
         m_CurrentActionPoints = m_StartingActionPoints;
+
+        m_HealthChangeIndicatorScript = m_Healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
 
     void Start()
     {
         Grid.m_Instance.SetUnit(gameObject);
         m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
+        m_Healthbar.gameObject.SetActive(false);
     }
 
     void Update()
@@ -181,8 +184,9 @@ public class Unit : MonoBehaviour
             m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
             m_Healthbar.m_HealthbarImage.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
             m_Healthbar.SetChildrenActive(true);
-            m_HealthChangeIndicatorScript.SetStartPosition(m_Healthbar.transform.position);
+            m_HealthChangeIndicatorScript.SetStartPositionToCurrent();
             m_HealthChangeIndicatorScript.Reset();
+            m_Healthbar.Reset();
         }
     }
 
