@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -346,8 +347,13 @@ public class Grid : MonoBehaviour
 					continue;
 				}
 
+				if (neighbourNode.m_isBlocked == true)
+				{
+					continue;
+				}
+
 				// If the neighbour node isn't in the open list, calculate it's variables and add it.
-				if(m_openList.Contains(neighbourNode) == false)
+				if (m_openList.Contains(neighbourNode) == false)
 				{
 					neighbourNode.m_previousNode = currentNode;
 					neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
@@ -373,96 +379,13 @@ public class Grid : MonoBehaviour
 		if (m_foundPath == true)
 		{
 			Node current = m_endNode;
-			while (current != null)
+			cost = Mathf.FloorToInt(current.gScore / 19) * 2 + (current.gScore % 19 / 10);
+			while (current.m_previousNode != null)
 			{
+
 				path.Push(current);
 				current = current.m_previousNode;
 			}
-		}
-
-		// Find a path again, without using diagonals, for getting the cost of using the path.
-		// This is done so the cost of using a path is the amount of tiles traversed, with adjacent costing 1, and diagonals costing 2,
-		// but not messing with the pathfinding by making diagonals as cheap as moving two adjacent, so the pathfinding for the unit's will prefer diagonals,
-		// but will cost the same as if it was moving 2 adjacents rather than 1 diagonal.
-
-		m_foundPath = false;
-
-		m_startNode = GetNode(startPos);
-		m_endNode = GetNode(endPos);
-
-		m_openList.Clear();
-		m_closedList.Clear();
-
-		m_startNode.m_previousNode = null;
-		m_startNode.gScore = 0;
-		m_startNode.hScore = CalculateHeristic(m_startNode, m_endNode);
-		m_startNode.CalculateFScore();
-
-		m_openList.Enqueue(m_startNode);
-
-		while (m_openList.Count > 0)
-		{
-			Node currentNode = m_openList.Dequeue();
-
-			m_closedList.Add(currentNode);
-
-			if (currentNode == m_endNode)
-			{
-				m_foundPath = true;
-				break;
-			}
-
-			// Only searching the first 4 neighbours of the node, which are the adjacents.
-			for (int i = 0; i < 4; ++i)
-			{
-				Node neighbourNode = currentNode.adjacentNodes[i];
-
-				if (neighbourNode == null)
-				{
-					continue;
-				}
-
-				if (neighbourNode.m_isOnMap == false)
-				{
-					continue;
-				}
-
-				if (m_closedList.Contains(neighbourNode) == true)
-				{
-					continue;
-				}
-
-				if (m_openList.Contains(neighbourNode) == false)
-				{
-					neighbourNode.m_previousNode = currentNode;
-					neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
-					neighbourNode.hScore = CalculateHeristic(neighbourNode, m_endNode);
-					neighbourNode.CalculateFScore();
-					m_openList.Enqueue(neighbourNode);
-				}
-				else
-				{
-					int costs = currentNode.fScore + currentNode.m_costs[i];
-					if (costs < neighbourNode.fScore)
-					{
-						neighbourNode.gScore = currentNode.gScore + currentNode.m_costs[i];
-						neighbourNode.fScore = neighbourNode.gScore + neighbourNode.hScore;
-						neighbourNode.m_previousNode = currentNode;
-					}
-				}
-			}
-		}
-
-		if (m_foundPath == true)
-		{
-			Node current = m_endNode;
-			int pathLength = 0;
-			while (current != null)
-			{
-				current = current.m_previousNode;
-				++pathLength;
-			}
-			cost = pathLength;
 			return true;
 		}
 
@@ -759,13 +682,6 @@ public class Grid : MonoBehaviour
 		int dx = Mathf.Abs(node.x - endNode.x);
 		int dz = Mathf.Abs(node.z - endNode.z);
 
-		if (dx < dz)
-		{
-			return ((19 * dz) + 10 * (dx - dz));
-		}
-		else
-		{
-			return ((19 * dx) + 10 * (dz - dx));
-		}
+		return 19 * Mathf.Max(dx, dz) + 10 * Mathf.Abs(dx - dz);
 	}
 }

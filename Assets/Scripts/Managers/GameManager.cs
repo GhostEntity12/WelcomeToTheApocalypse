@@ -105,10 +105,10 @@ public class GameManager : MonoBehaviour
         // If it's currently the player's turn, check their inputs.
         // Commented out for debugging.
         //if (m_CurrentTurn == Allegiance.Player)
-        //if (!dm.dialogueActive)
-        //{
+        if (!dm.dialogueActive)
+        {
             PlayerInputs();
-        //}
+        }
 
         Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
     }
@@ -322,7 +322,7 @@ public class GameManager : MonoBehaviour
                                 m_SelectedUnit.SetMovementPath(path);
                                 // Decrease the unit's movement by the cost.
                                 //- 1 because the cost it gets is the number of nodes in the path, which includes the node the unit starts on.
-                                m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost - 1);
+                                m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
                             }
                             // Should we do this after the unit has finished moving? - James L
                             m_SelectedUnit.HighlightMovableNodes(hitNode);
@@ -381,11 +381,55 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Select a skill.
     /// </summary>
+    /// <param name="skill"> The skill being selected. </param>
+    public void SkillSelection(BaseSkill skill)
+    {
+        // Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
+        if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
+
+        // Reset the nodes in the old target range
+        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
+
+        // Update the GameManager's fields
+        m_SelectedSkill = skill;
+        m_TargetingState = TargetingState.Skill;
+
+        // Get the new affectable area
+        m_maxSkillRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
+
+        // Reset the highlight of movement nodes
+        m_SelectedUnit.m_MovableNodes.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.None));
+
+        // Tell the new nodes they're in range
+        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = true);
+
+        // Tell the appropriate nodes in distance (red) that they're in distance
+        foreach (Node node in Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true))
+        {
+            switch (m_SelectedSkill.targetType)
+            {
+                case TargetType.SingleTarget:
+                    node.m_NodeHighlight.m_IsTargetable = IsTargetable(m_SelectedUnit, node.unit, m_SelectedSkill);
+                    break;
+                case TargetType.Line:
+                    throw new NotImplementedException("Line target type not supported");
+                case TargetType.Terrain:
+                    node.m_NodeHighlight.m_IsTargetable = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Select a skill.
+    /// </summary>
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
-        // TODO: replace so the buttons just can't be clicked.
-        // if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
+        // Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
+        if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
 
         // Reset the nodes in the old target range
         m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
