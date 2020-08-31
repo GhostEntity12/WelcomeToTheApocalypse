@@ -379,38 +379,13 @@ public class Grid : MonoBehaviour
 		if (m_foundPath == true)
 		{
 			Node current = m_endNode;
-			int previousGScore = int.MaxValue;
-			int moveCost = 0;
-			int temp = 0;
-			print("Movement Cost: " + current.gScore);
-			while (current != null)
+			cost = Mathf.FloorToInt(current.gScore / 19) * 2 + (current.gScore % 19 / 10);
+			while (current.m_previousNode != null)
 			{
-				if (current.gScore <= (previousGScore - moveCost))
-				{
-					if ((previousGScore - 19) > 0)
-					{
-						print("Movement: " + 19);
-						moveCost = 19;
-						
-						temp += 2;
-						previousGScore = current.gScore;
-						print("GScore: " + (previousGScore - 19));
-					}
-					else if ((previousGScore - 10) > 0)
-					{
-						moveCost = 10;
 
-						++temp;
-						previousGScore = current.gScore;
-						print("GScore: " + (previousGScore - 10));
-					}
-				}
-				//Debug.Log(string.Join(", ", path));
 				path.Push(current);
 				current = current.m_previousNode;
 			}
-			print("Path Cost: " + temp);
-			cost = temp;
 			return true;
 		}
 
