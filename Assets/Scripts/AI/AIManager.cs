@@ -124,7 +124,12 @@ public class AIManager : MonoBehaviour
     /// Adds more units to the active units
     /// </summary>
     /// <param name="newUnits"></param>
-    public void EnableUnits(List<Unit> newUnits) => UnitsManager.m_Instance.m_ActiveEnemyUnits.AddRange(newUnits);
+    public void EnableUnits(List<Unit> newUnits)
+    {
+        UnitsManager.m_Instance.m_ActiveEnemyUnits.AddRange(newUnits);
+        // In case of units already added being in the list.
+        UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Distinct().ToList();
+    }
 
     /// <summary>
     /// Removes units from the active units
