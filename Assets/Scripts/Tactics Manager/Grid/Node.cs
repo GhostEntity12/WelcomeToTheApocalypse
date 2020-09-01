@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class Node
 {
+	private float m_movement;
+	private float m_damage;
+	private float m_kill;
+	private float m_healing;
 
-	public int[] m_neighbours = new int[8];
 	public int[] m_costs = new int[8];
 	public int x, z;
 	public int fScore, gScore, hScore;
@@ -45,5 +48,54 @@ public class Node
 	public void CalculateFScore()
 	{
 		fScore = gScore + hScore;
+	}
+
+	public float GetMinMax()
+	{
+		return m_movement + m_damage + m_kill + m_healing;
+	}
+
+
+	public void SetDamage(float damage)
+	{
+		m_damage = damage;
+	}
+
+	public float GetDamage()
+	{
+		return m_damage;
+	}
+
+
+	public void SetKill(float kill)
+	{
+		m_kill = kill;
+	}
+
+	public float GetKill()
+	{
+		return m_kill;
+	}
+
+
+	public void SetHealing(float healing)
+	{
+		m_healing = healing;
+	}
+
+	public float SetHealing()
+	{
+		return m_healing;
+	}
+
+
+	public void SetMovement(float movement)
+	{
+		m_movement = movement;
+	}
+
+	public float GetMovement()
+	{
+		return m_movement;
 	}
 }
