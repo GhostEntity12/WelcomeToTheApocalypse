@@ -47,7 +47,11 @@ public class AIManager : MonoBehaviour
             unit.GetHeuristicCalculator();
             unit.m_AIHeuristicCalculator.CalculateHeursitic();
 
-            FindOptimalNode(unit.m_MovableNodes);
+            
+            //Find the AI's best choice of move.
+            optimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(unit.GetCurrentMovement(), Grid.m_Instance.GetNode(unit.transform.position)));
+
+            Debug.LogWarning(optimalNode.m_NodeHighlight.name, optimalNode.m_NodeHighlight);
         }
 
         //Tell the game manager it is not our turn anymore.
