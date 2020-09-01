@@ -39,23 +39,6 @@ public class AIHeuristicCalculator : ScriptableObject
             return;
         }
 
-        // Figure out the skill the unit has with the largest range.
-        List<BaseSkill> unitSkills = currentUnit.GetSkills();
-
-        BaseSkill skillLargestRange = unitSkills[0];
-
-        int skillRange = skillLargestRange.m_CastableDistance + skillLargestRange.m_AffectedRange;
-
-        // Check which skill has the largest range.
-        foreach(BaseSkill s in unitSkills)
-        {
-            if ((s.m_CastableDistance + s.m_AffectedRange) > (skillLargestRange.m_CastableDistance + skillLargestRange.m_AffectedRange))
-            {
-                skillLargestRange = s;
-                skillRange = skillLargestRange.m_CastableDistance + skillLargestRange.m_AffectedRange;
-            }
-        }
-
         // Get the nodes the AI unit can affect this turn (movement + range of skill with largest range).
         //List<Node> reachableNodesToAffect = Grid.m_Instance.GetNodesWithinRadius(currentUnit.GetCurrentMovement() + skillRange, Grid.m_Instance.GetNode(currentUnit.transform.position));
 
@@ -65,6 +48,7 @@ public class AIHeuristicCalculator : ScriptableObject
         {
             switch(m_AIActionHeuristics[i])
             {
+                // Calculate heuristic for moveing to each node.
                 case AIHeuristics.Move:
                 foreach(Unit u in playerUnits)
                 {
@@ -83,12 +67,79 @@ public class AIHeuristicCalculator : ScriptableObject
                         path.Pop().SetMovement(j / path.Count);
                     }
                 }
-
-                
                 break;
 
                 case AIHeuristics.Attack:
                 // Calculate heuristics for attacking at this node.
+                List<Node> moveableNodes = Grid.m_Instance.GetNodesWithinRadius(currentUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(currentUnit.transform.position));
+
+                // Find the damage skills of the current unit for checking.
+                List<BaseSkill> unitSkills = currentUnit.GetSkills();
+                List<DamageSkill> damageSkills = new List<DamageSkill>();
+
+                foreach(BaseSkill s in unitSkills)
+                {
+                    // Try to convert the current skill to a damage skill.
+                    DamageSkill ds = s as DamageSkill;
+
+                    // If the damage skill isn't null, conversion was successful, and the skill is a damage skill.
+                    if (ds != null)
+                    {
+                        damageSkills.Add(ds);
+                    }
+                }
+
+                // Find the damage skill with the longest range.
+                DamageSkill longestRangeDSkill = null;
+                int longestDSkillRange = 0;
+
+                foreach(DamageSkill s in damageSkills)
+                {
+                    if(s.m_CastableDistance + s.m_AffectedRange > longestDSkillRange)
+                    {
+                        longestDSkillRange = s.m_CastableDistance + s.m_AffectedRange;
+                        longestRangeDSkill = s;
+                    }
+                }
+
+                // Go through each player unit.
+                foreach(Unit u in playerUnits)
+                {
+                    // Go through each node the AI unit can move to.
+                    foreach(Node n in moveableNodes)
+                    {
+                        List<Node> nodesSkillRange = Grid.m_Instance.GetNodesWithinRadius(longestDSkillRange, n);
+
+                        // Go through each node the AI unit can hit with their longest range skill from moveable node currently being checked.
+                        foreach(Node s in nodesSkillRange)
+                        {
+                            // If the node has a unit on it, check if they're controlled by the player and assign heuristic.
+                            if(s.unit != null)
+                            {
+                                if (s.unit.GetAllegiance() == Allegiance.Player)
+                                {
+                                    // If the current node's damage heuristic is greater than 0, it has already been assigned.
+                                    // Find attacking which unit will give best result to break tie.
+                                    if (n.GetDamage() > 0)
+                                    {
+                                        float currentDamage = n.GetDamage();
+                                        float newDamage = longestRangeDSkill.m_DamageAmount / s.unit.GetCurrentHealth();
+                                        if (newDamage > currentDamage)
+                                        {
+                                            currentDamage = newDamage;
+                                            n.SetDamage(currentDamage);
+                                        }
+                                    }
+                                    // Else, this is first time damage being set, just set normally.
+                                    else
+                                    {
+                                        n.SetDamage(longestRangeDSkill.m_DamageAmount / s.unit.GetCurrentHealth());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 break;
 
                 case AIHeuristics.Kill:
@@ -100,7 +151,7 @@ public class AIHeuristicCalculator : ScriptableObject
                 break;
 
                 default:
-                Debug.LogError("Heuristic calculator doesn't have valid heuristic.");
+                Debug.LogError("Heuristic calculator doesn't have valid heuristic to calculate for.");
                 break;
             }
         }
