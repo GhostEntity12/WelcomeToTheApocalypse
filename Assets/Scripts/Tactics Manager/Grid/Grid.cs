@@ -264,7 +264,7 @@ public class Grid : MonoBehaviour
 	}
 
 
-	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost) => FindPath(GetNode(startPos), GetNode(endPos), ref path, out cost);
+	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false) => FindPath(GetNode(startPos), GetNode(endPos), ref path, out cost, allowDiags, allowBlocked);
 
 	public bool FindPath(Node startNode, Node endNode, ref Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false)
 	{
