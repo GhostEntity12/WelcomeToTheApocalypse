@@ -26,10 +26,11 @@ public class AIManager : MonoBehaviour
     /// </summary>
     public void TakeAITurn()
     {
+        Debug.Log($"Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
+
         // Prune the active units
         DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
-        Debug.Log($"Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
         // For each AI unit currently alive.
         foreach (Unit unit in UnitsManager.m_Instance.m_ActiveEnemyUnits)
         {
@@ -129,5 +130,11 @@ public class AIManager : MonoBehaviour
     /// Removes units from the active units
     /// </summary>
     /// <param name="deadUnits"></param>
-    public void DisableUnits(List<Unit> deadUnits) => UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Except(deadUnits).ToList();
+    public void DisableUnits(List<Unit> deadUnits)
+    {
+        foreach (Unit deadUnit in deadUnits)
+        {
+            UnitsManager.m_Instance.m_ActiveEnemyUnits.Remove(deadUnit);
+        }
+    }
 }
