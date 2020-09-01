@@ -47,7 +47,11 @@ public class AIManager : MonoBehaviour
             unit.GetHeuristicCalculator();
             unit.m_AIHeuristicCalculator.CalculateHeursitic();
 
-            FindOptimalNode(unit.m_MovableNodes);
+            
+            //Find the AI's best choice of move.
+            optimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(unit.GetCurrentMovement(), Grid.m_Instance.GetNode(unit.transform.position)));
+
+            Debug.LogWarning(optimalNode.m_NodeHighlight.name, optimalNode.m_NodeHighlight);
         }
 
         //Tell the game manager it is not our turn anymore.
@@ -143,22 +147,6 @@ public class AIManager : MonoBehaviour
     //This function returns the node with the highest MinMax score of available nodes the AI Unit can move to.
     public Node FindOptimalNode(List<Node> nodes)
     {
-        //For each node in the list of available nodes to move to.
-        for (int i = 0; i < nodes.Count - 1; i++)
-        {
-            //Assign the highest score to the initial node.
-            highestMinMaxScore = nodes[i].GetMinMax();
-            optimalNode = nodes[i];
-
-            //If the next node has a higher score, assign it to that.
-            if (nodes[i + 1].GetMinMax() > highestMinMaxScore)
-            {
-                highestMinMaxScore = nodes[i + 1].GetMinMax();
-                optimalNode = nodes[i + 1];
-            }
-        }
-
-        //Return out with the optimal node.
-        return optimalNode;
+        return nodes.Aggregate((next, lowest) => next.GetMinMax() < lowest.GetMinMax() ? next : lowest);
     }
 }
