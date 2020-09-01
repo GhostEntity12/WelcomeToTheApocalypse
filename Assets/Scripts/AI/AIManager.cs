@@ -14,6 +14,12 @@ public class AIManager : MonoBehaviour
     //The path for the AI to walk on.
     public Stack<Node> m_Path = new Stack<Node>();
 
+    //A dictionary that contains the scores for the nodes, outlining which is more desirable to move to.
+    public Dictionary<Node, int> nodeScores = new Dictionary<Node, int>();
+
+    private float highestMinMaxScore;
+    private Node optimalNode = new Node();
+
     //On Awake, initialise the instance of this manager.
     private void Awake()
     {
@@ -26,11 +32,10 @@ public class AIManager : MonoBehaviour
     /// </summary>
     public void TakeAITurn()
     {
-        Debug.Log($"Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
-
         // Prune the active units
         DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
+        Debug.Log($"Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
         // For each AI unit currently alive.
         foreach (Unit unit in UnitsManager.m_Instance.m_ActiveEnemyUnits)
         {
@@ -38,13 +43,11 @@ public class AIManager : MonoBehaviour
             m_CurrentAIUnit = unit;
             GameManager.m_Instance.m_SelectedUnit = unit;
 
-            // Perform the actions on their turn.
-            m_ClosestPlayerUnit = FindClosestPlayerUnit();
+            //Calculate the heuristics of the unit and get them.
+            unit.GetHeuristicCalculator();
+            unit.m_AIHeuristicCalculator.CalculateHeursitic();
 
-            if (m_ClosestPlayerUnit)
-            {
-                FindPathToPlayerUnit();
-            }
+            FindOptimalNode(unit.m_MovableNodes);
         }
 
         //Tell the game manager it is not our turn anymore.
@@ -135,11 +138,27 @@ public class AIManager : MonoBehaviour
     /// Removes units from the active units
     /// </summary>
     /// <param name="deadUnits"></param>
-    public void DisableUnits(List<Unit> deadUnits)
+    public void DisableUnits(List<Unit> deadUnits) => UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Except(deadUnits).ToList();
+
+    //This function returns the node with the highest MinMax score of available nodes the AI Unit can move to.
+    public Node FindOptimalNode(List<Node> nodes)
     {
-        foreach (Unit deadUnit in deadUnits)
+        //For each node in the list of available nodes to move to.
+        for (int i = 0; i < nodes.Count - 1; i++)
         {
-            UnitsManager.m_Instance.m_ActiveEnemyUnits.Remove(deadUnit);
+            //Assign the highest score to the initial node.
+            highestMinMaxScore = nodes[i].GetMinMax();
+            optimalNode = nodes[i];
+
+            //If the next node has a higher score, assign it to that.
+            if (nodes[i + 1].GetMinMax() > highestMinMaxScore)
+            {
+                highestMinMaxScore = nodes[i + 1].GetMinMax();
+                optimalNode = nodes[i + 1];
+            }
         }
+
+        //Return out with the optimal node.
+        return optimalNode;
     }
 }
