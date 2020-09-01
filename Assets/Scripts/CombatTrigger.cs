@@ -11,6 +11,7 @@ public class CombatTrigger : MonoBehaviour
     {
         if (other.GetComponent<Unit>()?.GetAllegiance() == Allegiance.Player)
         {
+            Debug.Log(other.name, other);
             AIManager.m_Instance.EnableUnits(m_EnemiesToActivate);
 
             if (scene)
