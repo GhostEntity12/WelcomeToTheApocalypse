@@ -113,9 +113,14 @@ public class Unit : MonoBehaviour
     /// </summary>
     private int m_CurrentActionPoints = 0;
 
+    /// <summary>
+    /// Position of the unit's healthbar above their head.
+    /// </summary>
     public Transform m_HealthbarPosition = null;
 
     public Action m_ActionOnFinishPath;
+
+    public AIHeuristicCalculator m_AIHeuristicCalculator = null;
 
     // On startup.
     void Awake()
@@ -359,6 +364,12 @@ public class Unit : MonoBehaviour
         m_Healthbar = healthbar.GetComponent<HealthbarContainer>();        
         m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
+
+    /// <summary>
+    /// Get the heuristic calculator on the unit.
+    /// </summary>
+    /// <returns>The unit's heuristic calculator.</returns>
+    public AIHeuristicCalculator GetHeuristicCalculator() { return m_AIHeuristicCalculator; }
 
     /// <summary>
     /// Gets the nodes the unit can move to, stores them and highlights them.
