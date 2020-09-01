@@ -56,7 +56,7 @@ public class AIHeuristicCalculator : ScriptableObject
                 {
                     Stack<Node> path = new Stack<Node>();
                     int pathCost = 0;
-                    if (!Grid.m_Instance.FindPath(currentUnit.transform.position, u.transform.position, ref path, out pathCost))
+                    if (!Grid.m_Instance.FindPath(currentUnit.transform.position, u.transform.position, ref path, out pathCost, allowBlocked: true))
                     {
                         Debug.LogError("Pathfinding couldn't find a path between AI unit " + currentUnit.name + " and " + u.name + ".");
                         continue;
