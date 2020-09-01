@@ -147,6 +147,23 @@ public class AIManager : MonoBehaviour
     //This function returns the node with the highest MinMax score of available nodes the AI Unit can move to.
     public Node FindOptimalNode(List<Node> nodes)
     {
-        return nodes.Aggregate((next, lowest) => next.GetMinMax() < lowest.GetMinMax() ? next : lowest);
+        
+        //For each node in the list of available nodes to move to.
+        for (int i = 0; i < nodes.Count - 1; i++)
+        {
+            //Assign the highest score to the initial node.
+            highestMinMaxScore = nodes[i].GetMinMax();
+            optimalNode = nodes[i];
+
+            //If the next node has a higher score, assign it to that.
+            if (nodes[i + 1].GetMinMax() > highestMinMaxScore)
+            {
+                highestMinMaxScore = nodes[i + 1].GetMinMax();
+                optimalNode = nodes[i + 1];
+            }
+        }
+
+        //Return out with the optimal node.
+        return nodes.Aggregate((next, highest) => next.GetMinMax() > highest.GetMinMax() ? next : highest); 
     }
 }
