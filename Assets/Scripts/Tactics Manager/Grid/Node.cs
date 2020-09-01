@@ -22,6 +22,8 @@ public class Node
 
 	public GridObject obstacle;
 
+	private Unit m_aiTarget;
+
 	public Unit unit;
 
 	public GameObject m_tile;
@@ -83,7 +85,7 @@ public class Node
 		m_healing = healing;
 	}
 
-	public float SetHealing()
+	public float GetHealing()
 	{
 		return m_healing;
 	}
@@ -97,5 +99,15 @@ public class Node
 	public float GetMovement()
 	{
 		return m_movement;
+	}
+
+	public void SetAITarget(Unit unit)
+	{
+		m_aiTarget = unit;
+	}
+
+	public Unit GetAITarget()
+	{
+		return m_aiTarget;
 	}
 }
