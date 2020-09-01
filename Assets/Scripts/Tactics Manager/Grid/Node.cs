@@ -83,7 +83,7 @@ public class Node
 		m_healing = healing;
 	}
 
-	public float SetHealing()
+	public float GetHealing()
 	{
 		return m_healing;
 	}
