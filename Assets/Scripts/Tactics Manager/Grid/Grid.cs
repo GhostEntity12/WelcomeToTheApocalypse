@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -681,13 +682,6 @@ public class Grid : MonoBehaviour
 		int dx = Mathf.Abs(node.x - endNode.x);
 		int dz = Mathf.Abs(node.z - endNode.z);
 
-		if (dx < dz)
-		{
-			return ((19 * dz) + 10 * (dx - dz));
-		}
-		else
-		{
-			return ((19 * dx) + 10 * (dz - dx));
-		}
+		return 19 * Mathf.Max(dx, dz) + 10 * Mathf.Abs(dx - dz);
 	}
 }
