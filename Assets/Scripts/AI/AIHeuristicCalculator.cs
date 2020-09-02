@@ -21,7 +21,6 @@ public class AIHeuristicCalculator : ScriptableObject
     /// </summary>
     public void CalculateHeursitic()
     {
-        List<Unit> activeUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits;
         Unit currentUnit = null;
 
         foreach(Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
@@ -66,6 +65,13 @@ public class AIHeuristicCalculator : ScriptableObject
                     // Will favour shortest path.
                     for(int j = 0; j < path.Count; ++j)
                     {
+                        // Make sure we don't normalize with 0.
+                        if (j == 0)
+                        {
+                            path.Pop().SetMovement(0);
+                            continue;
+                        }
+
                         path.Pop().SetMovement(j / path.Count);
                     }
                 }
