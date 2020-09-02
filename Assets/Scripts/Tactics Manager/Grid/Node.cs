@@ -111,12 +111,5 @@ public class Node
 		return m_aiTarget;
 	}
 
-	public void ResetAIHeuristics()
-	{
-		m_damage = 0;
-		m_movement = 0;
-		m_kill = 0;
-		m_healing = 0;
-		m_aiTarget = null;
-	}
+	public void ResetHeuristic() => m_movement = m_damage = m_kill = m_healing = 0;
 }
