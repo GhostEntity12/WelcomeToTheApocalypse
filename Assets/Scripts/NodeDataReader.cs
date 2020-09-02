@@ -42,7 +42,7 @@ public class NodeDataReader : MonoBehaviour
 
 			}
 
-			Debug.Log(output);
+			Debug.Log(output, n.m_NodeHighlight);
 		}
 	}
 }
