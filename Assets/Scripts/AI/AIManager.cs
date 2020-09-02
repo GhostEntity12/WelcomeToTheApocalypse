@@ -20,6 +20,8 @@ public class AIManager : MonoBehaviour
     private float highestMinMaxScore;
     private Node optimalNode = new Node();
 
+    private List<Node> modifyNodes = new List<Node>();
+
     //On Awake, initialise the instance of this manager.
     private void Awake()
     {
@@ -158,6 +160,8 @@ public class AIManager : MonoBehaviour
     {
         AIHeuristicCalculator heuristics = unit.GetHeuristicCalculator();
 
+        modifyNodes.Distinct().ToList().ForEach(n => n.ResetHeuristic());
+
         for (int i = 0; i < heuristics.m_AIActionHeuristics.Count; ++i)
         {
             switch (heuristics.m_AIActionHeuristics[i])
@@ -180,7 +184,9 @@ public class AIManager : MonoBehaviour
 
                         for (int j = 0; j < pathLength; ++j)
                         {
-                            path.Pop().SetMovement((float)j / pathLength);
+                            Node n = path.Pop();
+                            n.SetMovement((float)j / pathLength);
+                            modifyNodes.Add(n);
                         }
                     }
                     break;
@@ -210,11 +216,13 @@ public class AIManager : MonoBehaviour
                                 {
                                     // TODO: figure out how to do this properly
                                     nodes[j]?.SetDamage(Mathf.Max(node.GetDamage(), skill.m_DamageAmount) * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition)* 0.1f));
+                                    modifyNodes.Add(nodes[j]);
                                 }
 
                                 if (node.unit.GetCurrentHealth() <= skill.m_DamageAmount)
                                 {
                                     node.SetKill(heuristics.m_KillPoints);
+                                    modifyNodes.Add(node);
                                 }
                             }
                         }
@@ -239,6 +247,7 @@ public class AIManager : MonoBehaviour
                             if (node.unit?.GetAllegiance() == Allegiance.Enemy)
                             {
                                 node.SetHealing(Mathf.Max(node.GetDamage(), skill.m_HealAmount));
+                                modifyNodes.Add(node);
                             }
                         }
                     }
