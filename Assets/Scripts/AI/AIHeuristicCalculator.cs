@@ -106,7 +106,15 @@ public class AIHeuristicCalculator : ScriptableObject
                         longestDSkillRange = s.m_CastableDistance + s.m_AffectedRange;
                         longestRangeDSkill = s;
                     }
-                }                  
+                }
+
+                // The unit has no damage skills.
+                if(longestRangeDSkill == null)
+                {
+                    Debug.LogWarning("AI unit doesn't have damage skill but was assigned to calculate damage heuristic.", currentUnit);
+                    break;
+                }
+
                 // Go through each node the AI unit can move to.
                 foreach(Node n in moveableNodes)
                 {
@@ -182,7 +190,15 @@ public class AIHeuristicCalculator : ScriptableObject
                         longestHSkillRange = s.m_CastableDistance + s.m_AffectedRange;
                         longestRangeHSkill = s;
                     }
-                }           
+                }    
+
+                // The unit has no damage skills.
+                if(longestRangeHSkill == null)
+                {
+                    Debug.LogWarning("AI unit doesn't have heal skill but was assigned to calculate heal heuristic.", currentUnit);
+                    break;
+                }
+       
                 // Go through each node the AI unit can move to.
                 foreach(Node n in moveableNodes)
                 {
