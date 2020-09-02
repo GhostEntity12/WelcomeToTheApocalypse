@@ -147,7 +147,6 @@ public class AIManager : MonoBehaviour
     //This function returns the node with the highest MinMax score of available nodes the AI Unit can move to.
     public Node FindOptimalNode(List<Node> nodes)
     {
-        
         //For each node in the list of available nodes to move to.
         for (int i = 0; i < nodes.Count - 1; i++)
         {
