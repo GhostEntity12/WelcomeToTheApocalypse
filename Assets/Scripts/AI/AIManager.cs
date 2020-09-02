@@ -44,8 +44,7 @@ public class AIManager : MonoBehaviour
             GameManager.m_Instance.m_SelectedUnit = unit;
 
             //Calculate the heuristics of the unit and get them.
-            unit.GetHeuristicCalculator();
-            unit.m_AIHeuristicCalculator.CalculateHeursitic();
+            CalculateHeursitics(unit);
 
             
             //Find the AI's best choice of move.
@@ -163,7 +162,101 @@ public class AIManager : MonoBehaviour
             }
         }
 
+        optimalNode = nodes.Aggregate((next, highest) => next.GetMinMax() > highest.GetMinMax() ? next : highest);
+
+        print(optimalNode.GetMinMax());
+
+        print(string.Join(", ", nodes.Select(n => n.GetMinMax())));
+
         //Return out with the optimal node.
-        return nodes.Aggregate((next, highest) => next.GetMinMax() > highest.GetMinMax() ? next : highest); 
+        return optimalNode; 
+    }
+
+    void CalculateHeursitics(Unit unit)
+    {
+        AIHeuristicCalculator heuristics = unit.GetHeuristicCalculator();
+
+        for (int i = 0; i < heuristics.m_AIActionHeuristics.Count; ++i)
+        {
+            switch (heuristics.m_AIActionHeuristics[i])
+            {
+                // Calculate heuristic for moving to each node.
+                case AIHeuristics.Move:
+                    foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+                    {
+                        Stack<Node> path = new Stack<Node>();
+                        int pathCost = 0;
+                        if (!Grid.m_Instance.FindPath(unit.transform.position, u.transform.position, ref path, out pathCost, allowBlocked: true))
+                        {
+                            Debug.LogError("Pathfinding couldn't find a path between AI unit " + unit.name + " and " + u.name + ".");
+                            continue;
+                        }
+
+                        // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
+                        // Will favour shortest path.
+                        for (int j = 0; j < path.Count; ++j)
+                        {
+                            path.Pop().SetMovement((float)j / path.Count);
+                        }
+                    }
+                    break;
+
+                // Calculate heuristic for attacking.
+                case AIHeuristics.Attack:
+                    // Find the damage skills of the current unit for checking.
+
+                    List<DamageSkill> damageSkills = unit.GetSkills().OfType<DamageSkill>().ToList();
+
+                    foreach (DamageSkill skill in damageSkills)
+                    {
+                        List<Node> nodesInRange =
+                            Grid.m_Instance.GetNodesWithinRadius(
+                                skill.m_AffectedRange + skill.m_CastableDistance + unit.GetCurrentMovement(),
+                                Grid.m_Instance.GetNode(unit.transform.position)
+                                );
+
+                        foreach (Node node in nodesInRange)
+                        {
+                            if (node.unit?.GetAllegiance() == Allegiance.Player)
+                            {
+                                node.SetDamage(Mathf.Max(node.GetDamage(), skill.m_DamageAmount));
+
+                                if (node.unit.GetCurrentHealth() <= skill.m_DamageAmount)
+                                {
+                                    node.SetKill(heuristics.m_KillPoints);
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                // Calculate heuristic for healing.                
+                case AIHeuristics.Heal:
+
+                    List<HealSkill> healSkills = unit.GetSkills().OfType<HealSkill>().ToList();
+
+                    foreach (HealSkill skill in healSkills)
+                    {
+                        List<Node> nodesInRange =
+                            Grid.m_Instance.GetNodesWithinRadius(
+                                skill.m_AffectedRange + skill.m_CastableDistance + unit.GetCurrentMovement(),
+                                Grid.m_Instance.GetNode(unit.transform.position)
+                                );
+
+                        foreach (Node node in nodesInRange)
+                        {
+                            if (node.unit?.GetAllegiance() == Allegiance.Enemy)
+                            {
+                                node.SetHealing(Mathf.Max(node.GetDamage(), skill.m_HealAmount));
+                            }
+                        }
+                    }
+                    break;
+
+                default:
+                    Debug.LogError("Heuristic calculator doesn't have valid heuristic to calculate for.");
+                    break;
+            }
+        }
     }
 }
