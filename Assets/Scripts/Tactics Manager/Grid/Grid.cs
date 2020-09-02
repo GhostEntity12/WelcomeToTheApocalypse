@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 [RequireComponent(typeof(GridObject))]
@@ -484,4 +485,17 @@ public class Grid : MonoBehaviour
 
 		return 19 * Mathf.Max(dx, dz) + 10 * Mathf.Abs(dx - dz);
 	}
+
+	[ContextMenu("Do Heuristic Heatmap")]
+	void HeuristicHeatmap()
+	{
+		NodeHighlight[] nodeHighlights = m_NodeArray.GetComponentsInChildren<NodeHighlight>();
+		foreach (var item in nodeHighlights)
+		{
+			item.GetComponent<Renderer>().enabled = true;
+			float c = GetNode(item.transform.position).GetMinMax();
+			item.GetComponent<Renderer>().material.color = new Color(c, c, c, 1);
+		}
+	}
+
 }
