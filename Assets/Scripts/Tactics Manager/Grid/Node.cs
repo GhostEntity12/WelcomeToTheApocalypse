@@ -110,4 +110,6 @@ public class Node
 	{
 		return m_aiTarget;
 	}
+
+	public void ResetHeuristic() => m_movement = m_damage = m_kill = m_healing = 0;
 }
