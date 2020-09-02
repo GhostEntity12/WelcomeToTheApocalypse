@@ -51,6 +51,8 @@ public class AIManager : MonoBehaviour
             optimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(unit.GetCurrentMovement(), Grid.m_Instance.GetNode(unit.transform.position), true));
 
             Debug.LogWarning(optimalNode.m_NodeHighlight.name, optimalNode.m_NodeHighlight);
+
+            FindPathToPlayerUnit();
         }
 
         //Tell the game manager it is not our turn anymore.
@@ -91,7 +93,7 @@ public class AIManager : MonoBehaviour
     // Could probably be rewritten
     public void FindPathToPlayerUnit()
     {
-        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, m_ClosestPlayerUnit.transform.position, ref m_Path, out int pathCost))
+        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, optimalNode.worldPosition, ref m_Path, out int pathCost))
         {
             // Duct tape and hot glue gun code to get it working
             Stack<Node> path = new Stack<Node>(m_Path.Intersect(Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position))).Reverse());
