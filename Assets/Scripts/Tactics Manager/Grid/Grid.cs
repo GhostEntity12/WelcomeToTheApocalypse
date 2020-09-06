@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 [RequireComponent(typeof(GridObject))]
@@ -264,7 +265,7 @@ public class Grid : MonoBehaviour
 	}
 
 
-	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost) => FindPath(GetNode(startPos), GetNode(endPos), ref path, out cost);
+	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false) => FindPath(GetNode(startPos), GetNode(endPos), ref path, out cost, allowDiags, allowBlocked);
 
 	public bool FindPath(Node startNode, Node endNode, ref Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false)
 	{
@@ -484,4 +485,17 @@ public class Grid : MonoBehaviour
 
 		return 19 * Mathf.Max(dx, dz) + 10 * Mathf.Abs(dx - dz);
 	}
+
+	[ContextMenu("Do Heuristic Heatmap")]
+	void HeuristicHeatmap()
+	{
+		NodeHighlight[] nodeHighlights = m_NodeArray.GetComponentsInChildren<NodeHighlight>();
+		foreach (var item in nodeHighlights)
+		{
+			item.GetComponent<Renderer>().enabled = true;
+			float c = GetNode(item.transform.position).GetMinMax();
+			item.GetComponent<Renderer>().material.color = new Color(c, c, c, 1);
+		}
+	}
+
 }
