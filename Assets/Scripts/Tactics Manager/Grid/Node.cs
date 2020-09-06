@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class Node
 {
+	private float m_movement;
+	private float m_damage;
+	private float m_kill;
+	private float m_healing;
 
-	public int[] m_neighbours = new int[8];
 	public int[] m_costs = new int[8];
 	public int x, z;
 	public int fScore, gScore, hScore;
@@ -18,6 +21,8 @@ public class Node
 	public Vector3 worldPosition;
 
 	public GridObject obstacle;
+
+	private Unit m_aiTarget;
 
 	public Unit unit;
 
@@ -46,4 +51,65 @@ public class Node
 	{
 		fScore = gScore + hScore;
 	}
+
+	public float GetMinMax()
+	{
+		return m_movement + m_damage + m_kill + m_healing;
+	}
+
+
+	public void SetDamage(float damage)
+	{
+		m_damage = damage;
+	}
+
+	public float GetDamage()
+	{
+		return m_damage;
+	}
+
+
+	public void SetKill(float kill)
+	{
+		m_kill = kill;
+	}
+
+	public float GetKill()
+	{
+		return m_kill;
+	}
+
+
+	public void SetHealing(float healing)
+	{
+		m_healing = healing;
+	}
+
+	public float GetHealing()
+	{
+		return m_healing;
+	}
+
+
+	public void SetMovement(float movement)
+	{
+		m_movement = movement;
+	}
+
+	public float GetMovement()
+	{
+		return m_movement;
+	}
+
+	public void SetAITarget(Unit unit)
+	{
+		m_aiTarget = unit;
+	}
+
+	public Unit GetAITarget()
+	{
+		return m_aiTarget;
+	}
+
+	public void ResetHeuristic() => m_movement = m_damage = m_kill = m_healing = 0;
 }

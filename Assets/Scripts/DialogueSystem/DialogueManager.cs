@@ -188,10 +188,11 @@ public class DialogueManager : MonoBehaviour
             nameHolder.anchoredPosition = new Vector2(-namePos.x, namePos.y);
         }
 
-
+        // Grey out the other character
         LeanTween.color(otherBust.rectTransform, Color.gray, 0.1f);
         LeanTween.color(bust.rectTransform, Color.white, 0.1f);
 
+        // Swap portraits
         if (character == currentCharacter)
         {
             bust.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
@@ -216,8 +217,20 @@ public class DialogueManager : MonoBehaviour
     /// <returns></returns>
     Sprite GetCharacterPortrait(CharacterPortraitContainer character, string expression)
     {
-        try { return (Sprite)character.GetType().GetField(expression).GetValue(character); }
-        catch (KeyNotFoundException) { return defaultCharacterSprite; }
+        try { return (Sprite)typeof(CharacterPortraitContainer).GetField(expression).GetValue(character); }
+        catch (Exception exception)
+        {
+            if (exception is KeyNotFoundException) // Character not found - return default character sprite.
+            {
+                return defaultCharacterSprite;
+            }
+            else if (exception is NullReferenceException) // Expression not found - return neutral.
+            {
+                return (Sprite)typeof(CharacterPortraitContainer).GetField("neutral").GetValue(character);
+            }
+            else throw exception;
+
+        }
     }
 
     /// <summary>
@@ -286,9 +299,6 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    // DEBUG
-    [ContextMenu("Trigger Dialogue")]
-    void TriggerDialogue() => TriggerDialogue(sceneName);
     public void TriggerDialogue(TextAsset _sceneName)
     {
         dialogueActive = true;

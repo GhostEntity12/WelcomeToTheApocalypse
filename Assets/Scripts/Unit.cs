@@ -1,10 +1,7 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-
-using static Ghost.BFS;
 
 public enum Allegiance
 {
@@ -49,10 +46,12 @@ public class Unit : MonoBehaviour
     /// </summary>
     public float m_MoveSpeed = 3.0f;
 
+    public List<BaseSkill> m_LearnedSkills = new List<BaseSkill>();
+
     /// <summary>
     /// The skills avaliable to the unit.
     /// </summary>
-    public List<BaseSkill> m_Skills = new List<BaseSkill>();
+    private List<BaseSkill> m_Skills = new List<BaseSkill>();
 
     /// <summary>
     /// The passive effect of the character.
@@ -72,12 +71,12 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// Is the character alive?
     /// </summary>
-    private bool m_Alive = true;
+    private bool m_IsAlive = true;
 
     /// <summary>
     /// Is the character moving?
     /// </summary>
-    private bool m_Moving = false;
+    private bool m_IsMoving = false;
 
     /// <summary>
     /// The path for the character to take to get to their destination.
@@ -97,17 +96,7 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The image representing the unit's health.
     /// </summary>
-    public Image m_HealthBar = null;
-
-    /// <summary>
-    /// The text indicating a change to a unit's health.
-    /// </summary>
-    public GameObject m_HealthChangeIndicator = null;
-
-    /// <summary>
-    /// The text of the health change indicator.
-    /// </summary>
-    private TextMeshProUGUI m_HealthChangeIndicatorText = null;
+    private HealthbarContainer m_Healthbar = null;
 
     /// <summary>
     /// The script for the health change indicator.
@@ -124,6 +113,15 @@ public class Unit : MonoBehaviour
     /// </summary>
     private int m_CurrentActionPoints = 0;
 
+    /// <summary>
+    /// Position of the unit's healthbar above their head.
+    /// </summary>
+    public Transform m_HealthbarPosition = null;
+
+    public Action m_ActionOnFinishPath;
+
+    public AIHeuristicCalculator m_AIHeuristicCalculator = null;
+
     // On startup.
     void Awake()
     {
@@ -133,8 +131,7 @@ public class Unit : MonoBehaviour
 
         m_CurrentActionPoints = m_StartingActionPoints;
 
-        m_HealthChangeIndicatorText = m_HealthChangeIndicator.GetComponent<TextMeshProUGUI>();
-        m_HealthChangeIndicatorScript = m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
+        m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
     }
 
     void Start()
@@ -146,13 +143,13 @@ public class Unit : MonoBehaviour
     void Update()
     {
         // If have a target that the unit hasn't arrived at yet, move towards the target position.
-        if (m_Moving)
+        if (m_IsMoving)
         {
-            //Debug.Log((transform.position - m_TargetNode.worldPosition).magnitude);
             transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.1 units close to target is close enough).
             if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
             {
+                // Set the actual position to the target
                 transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
 
                 // Target the next node.
@@ -163,8 +160,10 @@ public class Unit : MonoBehaviour
                 // Have arrived at the final node in the path, stop moving.
                 else
                 {
-                    m_Moving = false;
+                    m_IsMoving = false;
                     Grid.m_Instance.SetUnit(gameObject);
+                    m_ActionOnFinishPath?.Invoke();
+                    m_ActionOnFinishPath = null;
                 }
             }
         }
@@ -183,8 +182,16 @@ public class Unit : MonoBehaviour
         if (m_CurrentHealth > m_StartingHealth)
             m_CurrentHealth = m_StartingHealth;
 
-        m_HealthBar.fillAmount = (float) m_CurrentHealth / m_StartingHealth;
-        m_HealthChangeIndicatorScript.Reset();
+        if (m_Healthbar != null)
+        {
+            m_Healthbar.gameObject.SetActive(true);
+            m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
+            m_Healthbar.m_HealthbarImage.fillAmount = (float)m_CurrentHealth / m_StartingHealth;
+            m_Healthbar.SetChildrenActive(true);
+            m_HealthChangeIndicatorScript.SetStartPositionToCurrent();
+            m_HealthChangeIndicatorScript.Reset();
+            m_Healthbar.Reset();
+        }
     }
 
     /// <summary>
@@ -199,9 +206,13 @@ public class Unit : MonoBehaviour
     /// <param name="increase"> The amount to increase the unit's health by. </param>
     public void IncreaseCurrentHealth(int increase)
     {
-        m_HealthChangeIndicatorText.text = "+" + increase;
         SetCurrentHealth(m_CurrentHealth + increase);
-        m_HealthChangeIndicatorScript.HealthIncreased();
+
+        if (m_Healthbar != null)
+        {
+            m_Healthbar.m_HealthChangeIndicator.text = "+" + increase;
+            m_HealthChangeIndicatorScript.HealthIncreased();
+        }
     }
 
     /// <summary>
@@ -210,9 +221,13 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
-        m_HealthChangeIndicatorText.text = "-" + decrease;
         SetCurrentHealth(m_CurrentHealth - decrease);
-        m_HealthChangeIndicatorScript.HealthDecrease();
+
+        if (m_Healthbar != null)
+        {
+            m_Healthbar.m_HealthChangeIndicator.text = "-" + decrease;
+            m_HealthChangeIndicatorScript.HealthDecrease();
+        }
     }
 
     /// <summary>
@@ -228,23 +243,18 @@ public class Unit : MonoBehaviour
     {
         if (m_CurrentHealth <= 0)
         {
-            Debug.Log("Dead");
-            m_Alive = false;
+            Debug.Log($"{name} died");
+            m_IsAlive = false;
 
             // Check if the unit has the "DefeatEnemyWinCondition" script on it.
             // If it does, the player has won the level by defeating the boss.
-            try
-            {
-                DefeatEnemyWinCondition defeat = GetComponent<DefeatEnemyWinCondition>();
-                defeat.EnemyDefeated();
-            }
-            catch{}
+            GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
 
-            // TODO: replace
             // If this is a player unit, check if the player has any units remaining.
             if (m_Allegiance == Allegiance.Player)
                 GameManager.m_Instance.CheckPlayerUnitsAlive();
 
+            // TODO: replace with something to actually remove the unit
             gameObject.SetActive(false);
         }
     }
@@ -282,7 +292,7 @@ public class Unit : MonoBehaviour
     public void SetMovementPath(Stack<Node> path)
     {
         m_MovementPath = path;
-        m_Moving = true;
+        m_IsMoving = true;
         SetTargetNodePosition(m_MovementPath.Pop());
     }
 
@@ -314,7 +324,7 @@ public class Unit : MonoBehaviour
     /// Get if the unit is alive.
     /// </summary>
     /// <returns>If the unit is alive.</returns>
-    public bool GetAlive() { return m_Alive; }
+    public bool GetAlive() { return m_IsAlive; }
 
     /// <summary>
     /// Get the unit's action points.
@@ -346,6 +356,22 @@ public class Unit : MonoBehaviour
     public void AddStatusEffect(InflictableStatus effect) { m_StatusEffects.Add(effect); }
 
     /// <summary>
+    /// Set the healthbar of the unit.
+    /// </summary>
+    /// <param name="healthbar">The healthbar game object.</param>
+    public void SetHealthbar(HealthbarContainer healthbar)
+    {
+        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();        
+        m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
+    }
+
+    /// <summary>
+    /// Get the heuristic calculator on the unit.
+    /// </summary>
+    /// <returns>The unit's heuristic calculator.</returns>
+    public AIHeuristicCalculator GetHeuristicCalculator() { return m_AIHeuristicCalculator; }
+
+    /// <summary>
     /// Gets the nodes the unit can move to, stores them and highlights them.
     /// </summary>
     /// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
@@ -362,13 +388,14 @@ public class Unit : MonoBehaviour
     /// Activate one of the unit's skills.
     /// </summary>
     /// <param name="skill"> The skill to activate. </param>
-    public void ActivateSkill(BaseSkill skill)
+    public void ActivateSkill(BaseSkill skill, Node castLocation)
     {
         // Doing my own search cause List.Find is gross.
         for (int i = 0; i < m_Skills.Count; ++i)
         {
             if (m_Skills[i] == skill)
             {
+                m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
                 m_Skills[i].CastSkill();
                 return;
             }

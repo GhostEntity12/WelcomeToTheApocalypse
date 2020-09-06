@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public enum UIStyle
@@ -29,9 +30,6 @@ public class UIManager : MonoBehaviour
 		internal Vector2[] m_Cache = new Vector2[2];
 	}
 
-	public bool m_Debug = true;
-	public TextAsset m_TestDialogue;
-
 	[Header("Data")]
 	public UIData m_DeathUIData;
 	public UIData m_PestilenceUIData;
@@ -44,7 +42,7 @@ public class UIManager : MonoBehaviour
 	public Image m_SkillsBackground;
 	public Image m_TurnBackground;
 	public Image m_PortraitImage;
-	public Image[] m_SkillSlots;
+	public SkillButton[] m_SkillSlots;
 	public RawImage m_PortraitRenderTexture;
 	public Image m_LeftSpeakerImage;
 	public Image m_RightSpeakerImage;
@@ -64,6 +62,14 @@ public class UIManager : MonoBehaviour
 	private void Awake()
 	{
 		m_Instance = this;
+
+		// Creates an EventSystem if it can't find one
+		if (FindObjectOfType<EventSystem>() == null)
+		{
+			GameObject eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+			eventSystem.transform.SetSiblingIndex(transform.GetSiblingIndex() + 1);
+		}
+
 	}
 
 	/// <summary>
@@ -77,51 +83,6 @@ public class UIManager : MonoBehaviour
 		SetCachesAndPosition(m_LeftSpeaker, new Vector2(-800, 0));
 		SetCachesAndPosition(m_RightSpeaker, new Vector2(800, 0));
 		SetCachesAndPosition(m_DialogueUI, new Vector2(0, -400));
-	}
-
-	private void Update()
-	{
-		if (m_Debug)
-		{
-			if (Input.GetKeyDown(KeyCode.Alpha6))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.Death,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha7))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.Pestilence,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha8))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.Famine,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha9))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.War,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Alpha0))
-			{
-				SlideSkills(ScreenState.Offscreen,
-					() => LoadUI(UIStyle.Enemy,
-						() => SlideSkills(ScreenState.Onscreen)));
-			}
-			if (Input.GetKeyDown(KeyCode.Minus))
-			{
-				SwapToDialogue();
-			}
-			if (Input.GetKeyDown(KeyCode.Equals))
-			{
-				SwapFromDialogue();
-			}
-		}
 	}
 
 	/// <summary>
@@ -142,23 +103,12 @@ public class UIManager : MonoBehaviour
 	/// <param name="uiData"></param>
 	private void LoadSkillsSkin(UIData uiData)
 	{
-		foreach (Image slot in m_SkillSlots)
+		foreach (SkillButton slot in m_SkillSlots)
 		{
-			slot.sprite = uiData.m_SkillBg;
+			slot.m_Image.sprite = uiData.m_SkillBg;
 		}
 
-		//if (uiData.m_PortraitRenderTexture)
-		//{
-		//	m_PortraitRenderTexture.color = new Color(1, 1, 1, 1);
-		//	m_PortraitImage.sprite = null;
-		//	m_PortraitRenderTexture.texture = uiData.m_PortraitRenderTexture;
-		//}
-		//else
-		//{
-			//m_PortraitRenderTexture.texture = null;
-			//m_PortraitRenderTexture.color = new Color(1, 1, 1, 0);
-			m_PortraitImage.sprite = uiData.m_SkillsPortrait;
-		//}
+		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
 		m_FaceBackground.color = uiData.m_Medium;
 		m_SkillsBackground.color = uiData.m_Light;
 		m_TurnBackground.color = uiData.m_Dark;
@@ -167,6 +117,7 @@ public class UIManager : MonoBehaviour
 		{
 			// TODO: Refactor
 			m_SkillSlots[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
+			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
 		}
 	}
 
@@ -233,15 +184,16 @@ public class UIManager : MonoBehaviour
 	{
 		switch (unitName.ToLower())
 		{
-			case "death":
+			case string s when s == "player_death" || s == "death":
 				return UIStyle.Death;
-			case "pestilence":
+			case string s when s == "player_pestilence" || s == "pestilence":
 				return UIStyle.Pestilence;
-			case "famine":
+			case string s when s == "player_famine" || s == "famine":
 				return UIStyle.Famine;
-			case "war":
+			case string s when s == "player_war" || s == "war":
 				return UIStyle.War;
 			default:
+				Debug.LogWarning($"No character with name {unitName} found.");
 				return UIStyle.Enemy;
 		}
 	}
@@ -283,10 +235,17 @@ public class UIManager : MonoBehaviour
 				() => SlideElement(m_DialogueUI, ScreenState.Onscreen)));
 	}
 
-	public void SwapToDialogue(TextAsset sourceFile = null)
+	public void SwapToDialogue(TextAsset sourceFile)
 	{
-		SlideSkills(ScreenState.Offscreen,
-			() => DialogueManager.instance.TriggerDialogue(sourceFile ?? m_TestDialogue));
+		if (sourceFile)
+		{
+			SlideSkills(ScreenState.Offscreen,
+				() => DialogueManager.instance.TriggerDialogue(sourceFile));
+		}
+		else
+		{
+			Debug.LogError("No dialogue file!");
+		}
 	}
 
 	public void SwapFromDialogue()
