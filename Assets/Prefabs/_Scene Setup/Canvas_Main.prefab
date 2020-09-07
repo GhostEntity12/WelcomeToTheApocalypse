@@ -113,8 +113,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccf6ef2d4fa9e364faff636505f4b3ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Debug: 1
-  m_TestDialogue: {fileID: 0}
   m_DeathUIData:
     m_SkillsPortrait: {fileID: 21300000, guid: 453b48b2b8567a04282a551756790fc3, type: 3}
     m_Dark: {r: 0.28235295, g: 0.20392159, b: 0.37254903, a: 1}
@@ -660,6 +658,101 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380276583673146811, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].eventID
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380276583673146811, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: TriggerSkill
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380276583673146811, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380276583673146811, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].eventID
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380276583673146811, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380276583673146811, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380276583673146811, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380276583673146811, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5380276583673146811, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: TriggerSkill
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].eventID
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225987535509999632, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d4d8baf5af2e6149a6de0dfedef1874, type: 3}
