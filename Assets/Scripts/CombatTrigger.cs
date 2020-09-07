@@ -7,6 +7,13 @@ public class CombatTrigger : MonoBehaviour
 
     public TextAsset scene;
 
+
+    private void Awake()
+    {
+        // Remove empty slots
+        m_EnemiesToActivate.RemoveAll(m => m == null);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Unit>()?.GetAllegiance() == Allegiance.Player)
