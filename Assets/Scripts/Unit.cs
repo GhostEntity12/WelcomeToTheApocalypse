@@ -118,7 +118,7 @@ public class Unit : MonoBehaviour
     /// </summary>
     public Transform m_HealthbarPosition = null;
 
-    public Action m_ActionOnFinishPath;
+    public Action<Unit> m_ActionOnFinishPath;
 
     public AIHeuristicCalculator m_AIHeuristicCalculator = null;
 
@@ -137,7 +137,7 @@ public class Unit : MonoBehaviour
     void Start()
     {
         Grid.m_Instance.SetUnit(gameObject);
-        m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
+       m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
     }
 
     void Update()
@@ -145,12 +145,12 @@ public class Unit : MonoBehaviour
         // If have a target that the unit hasn't arrived at yet, move towards the target position.
         if (m_IsMoving)
         {
-            transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position,m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.1 units close to target is close enough).
-            if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
+            if ((transform.position -m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
             {
                 // Set the actual position to the target
-                transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
+                transform.position =m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
 
                 // Target the next node.
                 if (m_MovementPath.Count > 0)
@@ -162,7 +162,7 @@ public class Unit : MonoBehaviour
                 {
                     m_IsMoving = false;
                     Grid.m_Instance.SetUnit(gameObject);
-                    m_ActionOnFinishPath?.Invoke();
+                    m_ActionOnFinishPath?.Invoke(this);
                     m_ActionOnFinishPath = null;
                 }
             }
@@ -301,6 +301,7 @@ public class Unit : MonoBehaviour
         m_MovementPath = path;
         m_IsMoving = true;
         SetTargetNodePosition(m_MovementPath.Pop());
+        print(string.Join(", ", path.Select(n=>n.m_NodeHighlight.name)));
     }
 
     /// <summary>
@@ -312,7 +313,7 @@ public class Unit : MonoBehaviour
         // Unassign the unit on the current node.
         // Before setting the new target node.
         Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
-        m_CurrentTargetNode = target;
+       m_CurrentTargetNode = target;
     }
 
     /// <summary>
