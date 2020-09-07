@@ -8,7 +8,6 @@ public class AIManager : MonoBehaviour
     public static AIManager m_Instance = null;
 
     //Unit's that track the closest Unit that is controlled by the player, and a Unit for the current AI Unit.
-    private Unit m_ClosestPlayerUnit;
     private Unit m_CurrentAIUnit;
 
     //The path for the AI to walk on.
@@ -17,7 +16,6 @@ public class AIManager : MonoBehaviour
     //A dictionary that contains the scores for the nodes, outlining which is more desirable to move to.
     public Dictionary<Node, int> nodeScores = new Dictionary<Node, int>();
 
-    private float highestMinMaxScore;
     private Node optimalNode = new Node();
 
     private List<Node> modifyNodes = new List<Node>();
@@ -54,7 +52,7 @@ public class AIManager : MonoBehaviour
 
             Debug.LogWarning(optimalNode.m_NodeHighlight.name, optimalNode.m_NodeHighlight);
 
-            FindPathToPlayerUnit();
+            FindPathToOptimalNode();
         }
 
         //Tell the game manager it is not our turn anymore.
@@ -63,15 +61,11 @@ public class AIManager : MonoBehaviour
 
     //Finds the path from the two units and sets the AI movement path.
     // Could probably be rewritten
-    public void FindPathToPlayerUnit()
+    public void FindPathToOptimalNode()
     {
         if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, optimalNode.worldPosition, ref m_Path, out int pathCost))
         {
-            // Duct tape and hot glue gun code to get it working
-            Stack<Node> path = new Stack<Node>(m_Path.Intersect(Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position))).Reverse());
-            m_CurrentAIUnit.SetMovementPath(path);
-            //m_CurrentAIUnit.SetMovementPath(new Stack<Node>(m_Path.Take(Mathf.Min(m_CurrentAIUnit.GetCurrentMovement() + 1, m_Path.Count)).Reverse()));
-            Debug.Log(string.Join(", ", m_CurrentAIUnit.GetMovementPath().Select(n => n.m_NodeHighlight.name)));
+            m_CurrentAIUnit.SetMovementPath(m_Path);
             m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
         }
     }
