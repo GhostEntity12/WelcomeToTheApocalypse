@@ -265,15 +265,17 @@ public class Grid : MonoBehaviour
 	}
 
 
-	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false) => FindPath(GetNode(startPos), GetNode(endPos), ref path, out cost, allowDiags, allowBlocked);
+	public bool FindPath(Vector3 startPos, Vector3 endPos, out Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false) => FindPath(GetNode(startPos), GetNode(endPos), out path, out cost, allowDiags, allowBlocked);
 
-	public bool FindPath(Node startNode, Node endNode, ref Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false)
+	public bool FindPath(Node startNode, Node endNode, out Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false)
 	{
 		// Assigned just for the leaving before looking for a path.
 		cost = 0;
 
 		Node m_startNode = startNode;
 		Node m_endNode = endNode;
+
+		path = new Stack<Node>();
 
 		// Make sure the start and end nodes are valid.
 		if (m_startNode == null || m_endNode == null)
@@ -420,7 +422,7 @@ public class Grid : MonoBehaviour
 		// Might have f'ed something up, but it works ¯\_(._.)_/¯
 		// - James L
 
-		return FindPath(startPos, endPos, ref path, out cost);
+		return FindPath(startPos, endPos, out path, out cost);
 	}
 
 	/// <summary>
@@ -487,14 +489,14 @@ public class Grid : MonoBehaviour
 	}
 
 	[ContextMenu("Do Heuristic Heatmap")]
-	void HeuristicHeatmap()
+	private void HeuristicHeatmap()
 	{
 		NodeHighlight[] nodeHighlights = m_NodeArray.GetComponentsInChildren<NodeHighlight>();
 		foreach (var item in nodeHighlights)
 		{
 			item.GetComponent<Renderer>().enabled = true;
-			float c = GetNode(item.transform.position).GetMinMax();
-			item.GetComponent<Renderer>().material.color = new Color(c, c, c, 1);
+			Node n = GetNode(item.transform.position);
+			item.GetComponent<Renderer>().material.color = new Color(n.GetMovement(), n.GetDamage(), n.GetHealing(), 1);
 		}
 	}
 

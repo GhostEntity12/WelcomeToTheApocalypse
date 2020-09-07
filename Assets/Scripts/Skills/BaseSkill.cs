@@ -99,8 +99,6 @@ public class BaseSkill : ScriptableObject
         {
             --m_CurrentCooldown;
         }
-
-        Debug.Log(name + " Cooldown: " + m_CurrentCooldown, this);
     }
 
     /// <summary>

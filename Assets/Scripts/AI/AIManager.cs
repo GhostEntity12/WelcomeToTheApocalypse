@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,7 +9,6 @@ public class AIManager : MonoBehaviour
     public static AIManager m_Instance = null;
 
     //Unit's that track the closest Unit that is controlled by the player, and a Unit for the current AI Unit.
-    private Unit m_ClosestPlayerUnit;
     private Unit m_CurrentAIUnit;
 
     //The path for the AI to walk on.
@@ -17,7 +17,6 @@ public class AIManager : MonoBehaviour
     //A dictionary that contains the scores for the nodes, outlining which is more desirable to move to.
     public Dictionary<Node, int> nodeScores = new Dictionary<Node, int>();
 
-    private float highestMinMaxScore;
     private Node optimalNode = new Node();
 
     private List<Node> modifyNodes = new List<Node>();
@@ -52,70 +51,37 @@ public class AIManager : MonoBehaviour
             //Find the AI's best choice of move.
             optimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(unit.GetCurrentMovement(), Grid.m_Instance.GetNode(unit.transform.position), true));
 
-            Debug.LogWarning(optimalNode.m_NodeHighlight.name, optimalNode.m_NodeHighlight);
+            Debug.LogWarning($"{unit.name} travelling to optimal node {optimalNode.m_NodeHighlight.name}", optimalNode.m_NodeHighlight);
 
-            FindPathToPlayerUnit();
+            FindPathToOptimalNode();
         }
 
         //Tell the game manager it is not our turn anymore.
         GameManager.m_Instance.EndCurrentTurn();
     }
 
-    /// <summary>
-    /// Returns the closest player controlled unit to the AI.
-    /// </summary>
-    public Unit FindClosestPlayerUnit()
-    {
-        Dictionary<Unit, int> unitDistances = new Dictionary<Unit, int>();
-
-        // Find out how far away each unit is and store it in the Dictionary
-        foreach (Unit playerUnit in UnitsManager.m_Instance.m_PlayerUnits)
-        {
-            Stack<Node> refPath = new Stack<Node>();
-            if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, playerUnit.transform.position, ref refPath, out int dist))
-            {
-                unitDistances.Add(playerUnit, dist);
-                Debug.Log($"{playerUnit.name}: {dist} tiles from {m_CurrentAIUnit.name}");
-            }
-        }
-
-        if (unitDistances.Count == 0) return null;
-
-        // If you want to select randomly from the closest characters.
-        // The current implementation returns the first character on the list in the case of a tie.
-        //var closestUnits = unitDistances.Where(ud1 => ud1.Value == unitDistances.Min(ud2 => ud2.Value));
-        //return closestUnits.ElementAt(Random.Range(0, closestUnits.Count())).Key;
-
-        // See https://stackoverflow.com/questions/2805703/good-way-to-get-the-key-of-the-highest-value-of-a-dictionary-in-c-sharp
-        // for a description of what this is
-        return unitDistances.Aggregate((next, lowest) => next.Value < lowest.Value ? next : lowest).Key;
-    }
-
     //Finds the path from the two units and sets the AI movement path.
     // Could probably be rewritten
-    public void FindPathToPlayerUnit()
+    public void FindPathToOptimalNode()
     {
-        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, optimalNode.worldPosition, ref m_Path, out int pathCost))
+        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, optimalNode.worldPosition, out m_Path, out int pathCost))
         {
-            // Duct tape and hot glue gun code to get it working
-            Stack<Node> path = new Stack<Node>(m_Path.Intersect(Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position))).Reverse());
-            m_CurrentAIUnit.SetMovementPath(path);
-            //m_CurrentAIUnit.SetMovementPath(new Stack<Node>(m_Path.Take(Mathf.Min(m_CurrentAIUnit.GetCurrentMovement() + 1, m_Path.Count)).Reverse()));
-            Debug.Log(string.Join(", ", m_CurrentAIUnit.GetMovementPath().Select(n => n.m_NodeHighlight.name)));
+            m_CurrentAIUnit.SetMovementPath(m_Path);
+            print(m_CurrentAIUnit.name + ": " + string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(no =>no.m_NodeHighlight.name)));
             m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
         }
     }
 
     // Checks adjacent nodes of the AI unit to see if they are able to attack and hit the player.
     // This is not expandable for other units. consider loking at all the nodes in range like in GameManager.cs - James L
-    public void CheckAttackRange()
+    public void CheckAttackRange(Unit u)
     {
         for (int i = 0; i < 4; i++)
         {
-            Node node = Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position).adjacentNodes[i];
+            Node node = Grid.m_Instance.GetNode(u.transform.position).adjacentNodes[i];
             if (node.unit?.m_Allegiance == Allegiance.Player)
             {
-                Attack(node);
+                Attack(node, u);
                 break;
             }
         }
@@ -125,9 +91,10 @@ public class AIManager : MonoBehaviour
     /// Triggers the unit's basic attack
     /// </summary>
     /// <param name="sourceNode"></param>
-    public void Attack(Node sourceNode)
+    public void Attack(Node sourceNode, Unit attacker) // TODO remove attacker - only exists for printng a debug statement
     {
         m_CurrentAIUnit.ActivateSkill(m_CurrentAIUnit.GetSkill(0), sourceNode);
+        Debug.Log($"{attacker.name} is attacking {sourceNode.unit.name} with {m_CurrentAIUnit.GetSkill(0).name}");
     }
 
     /// <summary>
@@ -150,7 +117,15 @@ public class AIManager : MonoBehaviour
     //This function returns the node with the highest MinMax score of available nodes the AI Unit can move to.
     public Node FindOptimalNode(List<Node> nodes)
     {
-        optimalNode = nodes.Aggregate((next, highest) => next.GetMinMax() > highest.GetMinMax() ? next : highest);
+        try
+        {
+            optimalNode = nodes.Aggregate((next, highest) => next.GetMinMax() > highest.GetMinMax() ? next : highest);
+        }
+        catch (InvalidOperationException)
+        {
+            Debug.LogError("There are no nodes in the list!");
+            optimalNode = null;
+        }
 
         //Return out with the optimal node.
         return optimalNode; 
@@ -161,6 +136,7 @@ public class AIManager : MonoBehaviour
         AIHeuristicCalculator heuristics = unit.GetHeuristicCalculator();
 
         modifyNodes.Distinct().ToList().ForEach(n => n.ResetHeuristic());
+        modifyNodes.Clear();
 
         for (int i = 0; i < heuristics.m_AIActionHeuristics.Count; ++i)
         {
@@ -171,7 +147,7 @@ public class AIManager : MonoBehaviour
                     foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
                     {
                         Stack<Node> path = new Stack<Node>();
-                        if (!Grid.m_Instance.FindPath(unit.transform.position, u.transform.position, ref path, out int pathCost, allowBlocked: true))
+                        if (!Grid.m_Instance.FindPath(unit.transform.position, u.transform.position, out path, out int pathCost, allowBlocked: true))
                         {
                             Debug.LogError("Pathfinding couldn't find a path between AI unit " + unit.name + " and " + u.name + ".");
                             continue;
