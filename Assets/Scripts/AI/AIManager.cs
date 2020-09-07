@@ -61,36 +61,6 @@ public class AIManager : MonoBehaviour
         GameManager.m_Instance.EndCurrentTurn();
     }
 
-    /// <summary>
-    /// Returns the closest player controlled unit to the AI.
-    /// </summary>
-    public Unit FindClosestPlayerUnit()
-    {
-        Dictionary<Unit, int> unitDistances = new Dictionary<Unit, int>();
-
-        // Find out how far away each unit is and store it in the Dictionary
-        foreach (Unit playerUnit in UnitsManager.m_Instance.m_PlayerUnits)
-        {
-            Stack<Node> refPath = new Stack<Node>();
-            if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, playerUnit.transform.position, ref refPath, out int dist))
-            {
-                unitDistances.Add(playerUnit, dist);
-                Debug.Log($"{playerUnit.name}: {dist} tiles from {m_CurrentAIUnit.name}");
-            }
-        }
-
-        if (unitDistances.Count == 0) return null;
-
-        // If you want to select randomly from the closest characters.
-        // The current implementation returns the first character on the list in the case of a tie.
-        //var closestUnits = unitDistances.Where(ud1 => ud1.Value == unitDistances.Min(ud2 => ud2.Value));
-        //return closestUnits.ElementAt(Random.Range(0, closestUnits.Count())).Key;
-
-        // See https://stackoverflow.com/questions/2805703/good-way-to-get-the-key-of-the-highest-value-of-a-dictionary-in-c-sharp
-        // for a description of what this is
-        return unitDistances.Aggregate((next, lowest) => next.Value < lowest.Value ? next : lowest).Key;
-    }
-
     //Finds the path from the two units and sets the AI movement path.
     // Could probably be rewritten
     public void FindPathToPlayerUnit()
