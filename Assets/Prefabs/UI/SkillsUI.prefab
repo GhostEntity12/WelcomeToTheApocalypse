@@ -68,6 +68,36 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2509926296429054979}
+          m_MethodName: DisplayTooltip
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2509926296429054979}
+          m_MethodName: DisplayTooltip
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 2
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!222 &293062643591801914
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -120,6 +150,7 @@ MonoBehaviour:
   m_Skill: {fileID: 0}
   m_Image: {fileID: 745132585084204647}
   m_Description: {fileID: 3653550658168222144}
+  m_DescriptionImage: {fileID: 0}
 --- !u!1 &678982534840494038
 GameObject:
   m_ObjectHideFlags: 0
@@ -1889,6 +1920,36 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5036684814752992478}
+          m_MethodName: DisplayTooltip
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5036684814752992478}
+          m_MethodName: DisplayTooltip
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!222 &5790464662928511561
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1941,6 +2002,7 @@ MonoBehaviour:
   m_Skill: {fileID: 0}
   m_Image: {fileID: 745132584991904042}
   m_Description: {fileID: 6598326263465657690}
+  m_DescriptionImage: {fileID: 0}
 --- !u!1 &3954248479282135477
 GameObject:
   m_ObjectHideFlags: 0
@@ -2136,6 +2198,7 @@ MonoBehaviour:
   m_Skill: {fileID: 0}
   m_Image: {fileID: 745132584176492498}
   m_Description: {fileID: 2675381533311190292}
+  m_DescriptionImage: {fileID: 0}
 --- !u!1 &6591228581326302077
 GameObject:
   m_ObjectHideFlags: 0
