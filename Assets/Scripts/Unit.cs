@@ -252,8 +252,15 @@ public class Unit : MonoBehaviour
 
             // If this is a player unit, check if the player has any units remaining.
             if (m_Allegiance == Allegiance.Player)
+            {
                 GameManager.m_Instance.CheckPlayerUnitsAlive();
+                UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
+                UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
+            }
 
+            Node currentNode = Grid.m_Instance.GetNode(transform.position);
+            currentNode.unit = null;
+            currentNode.m_isBlocked = false;
             // TODO: replace with something to actually remove the unit
             gameObject.SetActive(false);
         }
