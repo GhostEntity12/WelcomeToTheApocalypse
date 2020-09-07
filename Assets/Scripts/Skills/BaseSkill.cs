@@ -56,6 +56,9 @@ public class BaseSkill : ScriptableObject
     // The cost of using the skill
     public int m_Cost;
 
+    public int m_Cooldown = 3;
+    private int m_CurrentCooldown = 0;
+
     protected Unit[] affectedUnits;
     public List<Node> affectedNodes;
 
@@ -66,21 +69,43 @@ public class BaseSkill : ScriptableObject
             .Distinct() // Had to add this - for some reason, it grabbed the same character multiple times somehow
             .ToArray();
 
-        // Equivalent (mostly) non-LINQ version
+        /* Equivalent (mostly) non-LINQ version
 
-        //foreach (var item in affectedNodes.Select(n => n.unit)) 
-        //{
-        //    if (!item) continue;
+        foreach (var item in affectedNodes.Select(n => n.unit)) 
+        {
+            if (!item) continue;
 
-        //    if (GameManager.m_Instance.GetSelectedUnit() == item && this.excludeCaster) continue;
+            if (GameManager.m_Instance.GetSelectedUnit() == item && this.excludeCaster) continue;
 
-        //    if ((GameManager.m_Instance.GetSelectedUnit().m_Allegiance == item.m_Allegiance && this.targets == SkillTargets.Allies) ||
-        //        (GameManager.m_Instance.GetSelectedUnit().m_Allegiance != item.m_Allegiance && this.targets == SkillTargets.Foes) ||
-        //        (this.targets == SkillTargets.All))
-        //    {
-        //        affectedUnits.Append(item);
-        //    }
-        //    else continue;
-        //}
+            if ((GameManager.m_Instance.GetSelectedUnit().m_Allegiance == item.m_Allegiance && this.targets == SkillTargets.Allies) ||
+                (GameManager.m_Instance.GetSelectedUnit().m_Allegiance != item.m_Allegiance && this.targets == SkillTargets.Foes) ||
+                (this.targets == SkillTargets.All))
+            {
+                affectedUnits.Append(item);
+            }
+            else continue;
+        }*/
+
+            // Set the cooldown when the skill is used.
+            m_CurrentCooldown = m_Cooldown;
     }
+
+    /// <summary>
+    /// Decrement the cooldown of the skill.
+    /// </summary>
+    public virtual void DecrementCooldown()
+    {
+        if (m_CurrentCooldown > 0)
+        {
+            --m_CurrentCooldown;
+        }
+
+        Debug.Log(name + " Cooldown: " + m_CurrentCooldown, this);
+    }
+
+    /// <summary>
+    /// Get the current cooldown on the skill.
+    /// </summary>
+    /// <returns>The current cooldown of the skill.</returns>
+    public virtual int GetCurrentCooldown() { return m_CurrentCooldown; }
 }

@@ -611,6 +611,7 @@ MonoBehaviour:
   m_PlayerUnits: []
   m_EnemyUnits: []
   m_ActiveEnemyUnits: []
+  m_DeadPlayerUnits: []
 --- !u!1 &1476645591
 GameObject:
   m_ObjectHideFlags: 0
@@ -1333,6 +1334,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1476645592}
     m_Modifications:
+    - target: {fileID: 7091387528867765064, guid: 96f2633b4b69b2f4abb3680ba5f25f16,
+        type: 3}
+      propertyPath: m_AIHeuristicCalculator
+      value: 
+      objectReference: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
+        type: 2}
     - target: {fileID: 7091387528867765068, guid: 96f2633b4b69b2f4abb3680ba5f25f16,
         type: 3}
       propertyPath: m_LocalPosition.x
