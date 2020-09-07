@@ -322,7 +322,7 @@ public class GameManager : MonoBehaviour
                                 n.m_NodeHighlight.ChangeHighlight(TileState.None);
                             }
                             Stack<Node> path = new Stack<Node>();
-                            if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path, out m_MovementCost, true))
+                            if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out path, out m_MovementCost, true))
                             {
                                 m_SelectedUnit.SetMovementPath(path);
                                 // Decrease the unit's movement by the cost.
