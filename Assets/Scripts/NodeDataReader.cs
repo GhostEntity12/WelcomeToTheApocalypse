@@ -17,14 +17,6 @@ public class NodeDataReader : MonoBehaviour
 		{
 			Node n = g.GetNode(transform.position);
 
-			//Debug.LogWarning(
-			//	$"Position: {n.x}/{n.z}\n" +
-			//	$"Unit: {n.unit}\n" +
-			//	$"Is Walkable: {n.isOnMap}\n" +
-			//	$"Is Blocked: {n.isBlocked}\n" +
-			//	$"World Position: {n.worldPosition}\n" +
-			//	$"Node Highlight: {n.m_NodeHighlight.name}");
-
 			FieldInfo[] fieldInfos = typeof(Node).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 			string output = "======" + n.m_NodeHighlight.name + "======\n";
