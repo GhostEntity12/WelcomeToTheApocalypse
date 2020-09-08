@@ -140,6 +140,14 @@ public class GameManager : MonoBehaviour
             // Deselect unit.
             m_SelectedUnit = null;
 
+            // Check the passives of all the enemy units for any that trigger at the start of their turn.
+            foreach(Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
+            {
+                PassiveSkill ps = u.GetPassiveSkill();
+                if (ps != null)
+                    ps.CheckPrecondition(TriggerType.OnTurnStart);
+            }
+
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.TakeAITurn();
         }
@@ -152,6 +160,11 @@ public class GameManager : MonoBehaviour
             foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
             {
                 u.ResetActionPoints();
+
+                // Check the passives of all the player units for any that trigger at the start of their turn.
+                PassiveSkill ps = u.GetPassiveSkill();
+                if (ps != null)
+                    ps.CheckPrecondition(TriggerType.OnTurnStart);
 
                 foreach(BaseSkill s in u.GetSkills())
                 {
