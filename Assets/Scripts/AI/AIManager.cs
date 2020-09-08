@@ -14,12 +14,9 @@ public class AIManager : MonoBehaviour
     //The path for the AI to walk on.
     public Stack<Node> m_Path = new Stack<Node>();
 
-    //A dictionary that contains the scores for the nodes, outlining which is more desirable to move to.
-    public Dictionary<Node, int> nodeScores = new Dictionary<Node, int>();
+    private Node m_OptimalNode = new Node();
 
-    private Node optimalNode = new Node();
-
-    private List<Node> modifyNodes = new List<Node>();
+    private List<Node> m_ModifyNodes = new List<Node>();
 
     //On Awake, initialise the instance of this manager.
     private void Awake()
@@ -47,11 +44,11 @@ public class AIManager : MonoBehaviour
             //Calculate the heuristics of the unit and get them.
             CalculateHeursitics(unit);
 
-            
-            //Find the AI's best choice of move.
-            optimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(unit.GetCurrentMovement(), Grid.m_Instance.GetNode(unit.transform.position), true));
 
-            Debug.LogWarning($"{unit.name} travelling to optimal node {optimalNode.m_NodeHighlight.name}", optimalNode.m_NodeHighlight);
+            //Find the AI's best choice of move.
+            m_OptimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(unit.GetCurrentMovement(), Grid.m_Instance.GetNode(unit.transform.position), true));
+
+            Debug.LogWarning($"{unit.name} travelling to optimal node {m_OptimalNode.m_NodeHighlight.name}", m_OptimalNode.m_NodeHighlight);
 
             FindPathToOptimalNode();
         }
@@ -64,7 +61,7 @@ public class AIManager : MonoBehaviour
     // Could probably be rewritten
     public void FindPathToOptimalNode()
     {
-        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, optimalNode.worldPosition, out m_Path, out int pathCost))
+        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, m_OptimalNode.worldPosition, out m_Path, out int pathCost))
         {
             m_CurrentAIUnit.SetMovementPath(m_Path);
             print(m_CurrentAIUnit.name + ": " + string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(no =>no.m_NodeHighlight.name)));
@@ -119,24 +116,24 @@ public class AIManager : MonoBehaviour
     {
         try
         {
-            optimalNode = nodes.Aggregate((next, highest) => next.GetMinMax() > highest.GetMinMax() ? next : highest);
+            m_OptimalNode = nodes.Aggregate((next, highest) => next.GetMinMax() > highest.GetMinMax() ? next : highest);
         }
         catch (InvalidOperationException)
         {
             Debug.LogError("There are no nodes in the list!");
-            optimalNode = null;
+            m_OptimalNode = null;
         }
 
         //Return out with the optimal node.
-        return optimalNode; 
+        return m_OptimalNode; 
     }
 
     void CalculateHeursitics(Unit unit)
     {
         AIHeuristicCalculator heuristics = unit.GetHeuristicCalculator();
 
-        modifyNodes.Distinct().ToList().ForEach(n => n.ResetHeuristic());
-        modifyNodes.Clear();
+        m_ModifyNodes.Distinct().ToList().ForEach(n => n.ResetHeuristic());
+        m_ModifyNodes.Clear();
 
         for (int i = 0; i < heuristics.m_AIActionHeuristics.Count; ++i)
         {
@@ -162,7 +159,7 @@ public class AIManager : MonoBehaviour
                         {
                             Node n = path.Pop();
                             n.SetMovement((float)j / pathLength);
-                            modifyNodes.Add(n);
+                            m_ModifyNodes.Add(n);
                         }
                     }
                     break;
@@ -192,13 +189,13 @@ public class AIManager : MonoBehaviour
                                 {
                                     // TODO: figure out how to do this properly
                                     nodes[j]?.SetDamage(Mathf.Max(node.GetDamage(), skill.m_DamageAmount) * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition)* 0.1f));
-                                    modifyNodes.Add(nodes[j]);
+                                    m_ModifyNodes.Add(nodes[j]);
                                 }
 
                                 if (node.unit.GetCurrentHealth() <= skill.m_DamageAmount)
                                 {
                                     node.SetKill(heuristics.m_KillPoints);
-                                    modifyNodes.Add(node);
+                                    m_ModifyNodes.Add(node);
                                 }
                             }
                         }
@@ -223,7 +220,7 @@ public class AIManager : MonoBehaviour
                             if (node.unit?.GetAllegiance() == Allegiance.Enemy)
                             {
                                 node.SetHealing(Mathf.Max(node.GetDamage(), skill.m_HealAmount));
-                                modifyNodes.Add(node);
+                                m_ModifyNodes.Add(node);
                             }
                         }
                     }
