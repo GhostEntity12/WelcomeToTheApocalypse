@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 7091387528867765067}
   - component: {fileID: 7091387528867765066}
   - component: {fileID: 7091387528867765064}
-  - component: {fileID: 7091387528867765065}
+  - component: {fileID: 8801383062341861245}
   m_Layer: 9
   m_Name: Enemy_Ranged
   m_TagString: Untagged
@@ -131,11 +131,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a00bf960e6a84df4b911439c0dd4ccd3, type: 2}
   m_PassiveEffect: {fileID: 0}
   m_Allegiance: 1
-  m_Healthbar: {fileID: 0}
   m_StartingActionPoints: 1
   m_HealthbarPosition: {fileID: 3047641210271783541}
---- !u!64 &7091387528867765065
-MeshCollider:
+  m_AIHeuristicCalculator: {fileID: 0}
+--- !u!136 &8801383062341861245
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -144,7 +144,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -9114703323446395147, guid: 198cb5f86de279e4caac4b838f0f25ce, type: 3}
+  m_Radius: 0.49860206
+  m_Height: 1.9999996
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9999998, z: 0}
