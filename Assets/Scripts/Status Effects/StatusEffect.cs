@@ -12,7 +12,7 @@ public enum TriggerType
     OnTakeDamage
 }
 
-public abstract class StatusEffect : MonoBehaviour
+public abstract class StatusEffect : ScriptableObject
 {
     // How this status effect is triggered.
     public TriggerType m_TriggerType;
@@ -24,5 +24,5 @@ public abstract class StatusEffect : MonoBehaviour
     public string m_StatusDescription;
 
     // Check the preconditions for the status effect to take effect.
-    protected abstract bool CheckPrecondition(TriggerType trigger);
+    public abstract bool CheckPrecondition(TriggerType trigger);
 }

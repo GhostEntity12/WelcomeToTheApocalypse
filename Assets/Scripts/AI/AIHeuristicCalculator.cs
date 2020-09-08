@@ -10,7 +10,7 @@ public enum AIHeuristics
     Heal
 }
 
-[CreateAssetMenu(fileName = "AI Heuristic Calculator", menuName = "AI Heuristic Calculator", order = 2)]
+[CreateAssetMenu(menuName = "AI Heuristic Calculator")]
 public class AIHeuristicCalculator : ScriptableObject
 {
     public List<AIHeuristics> m_AIActionHeuristics = new List<AIHeuristics>();

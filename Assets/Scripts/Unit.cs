@@ -56,7 +56,7 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The passive effect of the character.
     /// </summary>
-    public StatusEffect m_PassiveEffect = null;
+    public PassiveSkill m_PassiveSkill = null;
 
     /// <summary>
     /// The status debuffs on the character.
@@ -137,7 +137,7 @@ public class Unit : MonoBehaviour
     void Start()
     {
         Grid.m_Instance.SetUnit(gameObject);
-       m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
+        m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
     }
 
     void Update()
@@ -222,6 +222,11 @@ public class Unit : MonoBehaviour
     public void DecreaseCurrentHealth(int decrease)
     {
         SetCurrentHealth(m_CurrentHealth - decrease);
+
+        if (m_PassiveSkill != null)
+        {
+            m_PassiveSkill.CheckPrecondition(TriggerType.OnTakeDamage);
+        }
 
         if (m_Healthbar != null)
         {
@@ -380,6 +385,12 @@ public class Unit : MonoBehaviour
     public AIHeuristicCalculator GetHeuristicCalculator() { return m_AIHeuristicCalculator; }
 
     /// <summary>
+    /// Get the passive skill on the unit.
+    /// </summary>
+    /// <returns>The unit's passive skill, null if it doesn't have one.</returns>
+    public PassiveSkill GetPassiveSkill() { return m_PassiveSkill; }
+
+    /// <summary>
     /// Gets the nodes the unit can move to, stores them and highlights them.
     /// </summary>
     /// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
@@ -405,6 +416,17 @@ public class Unit : MonoBehaviour
             {
                 m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
                 m_Skills[i].CastSkill();
+
+                if (m_PassiveSkill != null)
+                {
+                    // Check if skill being cast is a damage skill.
+                    // If so, check the unit's passive
+                    if (skill as DamageSkill != null)
+                    {                    
+                        m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage);
+                    }
+                }
+
                 return;
             }
         }
