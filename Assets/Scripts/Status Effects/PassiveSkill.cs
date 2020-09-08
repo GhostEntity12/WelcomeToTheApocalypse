@@ -5,5 +5,5 @@ using UnityEngine;
 public abstract class PassiveSkill : StatusEffect
 {
     // Check the preconditions for the status effect to take effect.
-    protected abstract override bool CheckPrecondition(TriggerType trigger);
+    public abstract override bool CheckPrecondition(TriggerType trigger);
 }
