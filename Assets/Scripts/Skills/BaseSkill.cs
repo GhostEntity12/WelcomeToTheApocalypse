@@ -64,6 +64,33 @@ public class BaseSkill : ScriptableObject
 
     public virtual void CastSkill()
     {
+        FindAffectedUnits();
+
+        // Set the cooldown when the skill is used.
+        m_CurrentCooldown = m_Cooldown;
+    }
+
+    /// <summary>
+    /// Decrement the cooldown of the skill.
+    /// </summary>
+    public virtual void DecrementCooldown()
+    {
+        if (m_CurrentCooldown > 0)
+        {
+            --m_CurrentCooldown;
+        }
+    }
+
+    /// <summary>
+    /// Get the current cooldown on the skill.
+    /// </summary>
+    /// <returns>The current cooldown of the skill.</returns>
+    public virtual int GetCurrentCooldown() { return m_CurrentCooldown; }
+
+    public Unit[] GetAffectedUnits() { return affectedUnits; }
+
+    public void FindAffectedUnits()
+    {
         affectedUnits = affectedNodes.Select(t => t.unit)
             .Where(c => GameManager.IsTargetable(GameManager.m_Instance.GetSelectedUnit(), c, this))
             .Distinct() // Had to add this - for some reason, it grabbed the same character multiple times somehow
@@ -85,25 +112,5 @@ public class BaseSkill : ScriptableObject
             }
             else continue;
         }*/
-
-            // Set the cooldown when the skill is used.
-            m_CurrentCooldown = m_Cooldown;
     }
-
-    /// <summary>
-    /// Decrement the cooldown of the skill.
-    /// </summary>
-    public virtual void DecrementCooldown()
-    {
-        if (m_CurrentCooldown > 0)
-        {
-            --m_CurrentCooldown;
-        }
-    }
-
-    /// <summary>
-    /// Get the current cooldown on the skill.
-    /// </summary>
-    /// <returns>The current cooldown of the skill.</returns>
-    public virtual int GetCurrentCooldown() { return m_CurrentCooldown; }
 }
