@@ -140,6 +140,14 @@ public class GameManager : MonoBehaviour
             // Deselect unit.
             m_SelectedUnit = null;
 
+            // Check the passives of all the enemy units for any that trigger at the start of their turn.
+            foreach(Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
+            {
+                PassiveSkill ps = u.GetPassiveSkill();
+                if (ps != null)
+                    ps.CheckPrecondition(TriggerType.OnTurnStart);
+            }
+
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.TakeAITurn();
         }
@@ -148,10 +156,20 @@ public class GameManager : MonoBehaviour
         {
             m_TeamCurrentTurn = Allegiance.Player;
 
-            // Reset the action points of the player's units.
+            // Reset the player's units.
             foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
             {
                 u.ResetActionPoints();
+
+                // Check the passives of all the player units for any that trigger at the start of their turn.
+                PassiveSkill ps = u.GetPassiveSkill();
+                if (ps != null)
+                    ps.CheckPrecondition(TriggerType.OnTurnStart);
+
+                foreach(BaseSkill s in u.GetSkills())
+                {
+                    s.DecrementCooldown();
+                }                
             }
         }
 
@@ -317,7 +335,7 @@ public class GameManager : MonoBehaviour
                                 n.m_NodeHighlight.ChangeHighlight(TileState.None);
                             }
                             Stack<Node> path = new Stack<Node>();
-                            if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, ref path, out m_MovementCost))
+                            if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out path, out m_MovementCost, true))
                             {
                                 m_SelectedUnit.SetMovementPath(path);
                                 // Decrease the unit's movement by the cost.
@@ -336,16 +354,20 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetKeyDown(m_AbilityHotkeys[i]))
             {
-                // Make sure the unit can afford to cast the skill before selecting it.
-                if (m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.GetSkill(i).m_Cost)
+                // Make sure the player has a unit selected.
+                if (m_SelectedUnit != null)
                 {
-                    SkillSelection(i);
-                    m_TargetingState = TargetingState.Skill;
-                    break;
-                }
-                else
-                {
-                    Debug.Log("You don't have enough action points to select this skill!", m_SelectedUnit);
+                    // Make sure the unit can afford to cast the skill and the skill isn't on cooldown before selecting it.
+                    if (m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.GetSkill(i).m_Cost && m_SelectedUnit.GetSkill(i).GetCurrentCooldown() == 0)
+                    {
+                        SkillSelection(i);
+                        m_TargetingState = TargetingState.Skill;
+                        break;
+                    }
+                    else
+                    {
+                        Debug.Log("You can't select this skill, either due to lack of action points or the skill is still on cooldown!", m_SelectedUnit);
+                    }
                 }
             }
         }

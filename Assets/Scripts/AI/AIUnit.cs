@@ -69,7 +69,7 @@ public class AIUnit : Unit
             {
                 if (unit.GetAllegiance() == Allegiance.Player)
                 {
-                    Grid.m_Instance.FindPath(transform.position, unit.transform.position, ref m_movementPath, out m_movementCost);
+                    Grid.m_Instance.FindPath(transform.position, unit.transform.position, out m_movementPath, out m_movementCost);
 
                     m_currentState = State.Moving;
 

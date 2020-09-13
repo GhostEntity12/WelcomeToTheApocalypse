@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Reflection;
 using UnityEngine;
 
 public enum TileState
@@ -85,4 +85,37 @@ public class NodeHighlight : MonoBehaviour
 			m_IsTargetable = false;
 		}
 	}
+
+	[ContextMenu("Read Node Data")]
+	void ReadData()
+	{
+		Grid g = FindObjectOfType<Grid>();
+
+		if (g)
+		{
+			Node n = g.GetNode(transform.position);
+
+			FieldInfo[] fieldInfos = typeof(Node).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+			string output = "======" + n.m_NodeHighlight.name + "======\n";
+
+			foreach (var item in fieldInfos)
+			{
+				try
+				{
+					output += $"{item.Name}: {item.GetValue(n)}\n";
+				}
+				catch (ArgumentException)
+				{
+					output += $"{item.Name}: unobtainable\n";
+				}
+
+			}
+
+			Debug.Log(output, n.m_NodeHighlight);
+		}
+	}
+
+	[ContextMenu("Print heuristic value")]
+	void phv() => Debug.Log(FindObjectOfType<Grid>().GetNode(transform.position).GetMinMax());
 }
