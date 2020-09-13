@@ -132,6 +132,12 @@ public class AIManager : MonoBehaviour
     {
         AIHeuristicCalculator heuristics = unit.GetHeuristicCalculator();
 
+        if (!heuristics)
+        {
+            Debug.LogError($"Unit {unit.name} was marked as an AI unit but lacks a Heuristics Calculator!");
+            return;
+        }
+
         m_ModifyNodes.Distinct().ToList().ForEach(n => n.ResetHeuristic());
         m_ModifyNodes.Clear();
 
