@@ -14,7 +14,7 @@ public class CameraMovement : MonoBehaviour
     public KeyCode m_RotateLeftKey = KeyCode.Q;
     public KeyCode m_RotateRightKey = KeyCode.E;
     private bool m_IsRotating;
-    FacingDirection m_LookDirection = FacingDirection.North;
+    FacingDirection m_LookDirection;
 
     HealthbarContainer[] healthbarContainers;
 
@@ -34,6 +34,10 @@ public class CameraMovement : MonoBehaviour
             m_CameraBounds = new Bounds(transform.position, Vector3.one);
             Debug.LogError("Missing collider to limit camera movement");
         }
+        // Snap to nearest 90 deg angle
+        transform.rotation = Quaternion.Euler(0f, Mathf.Round(transform.eulerAngles.y / 90) * 90, 0f);
+        // Get approx. angle to determine direction
+        m_LookDirection = (FacingDirection)(int)(transform.eulerAngles.y / 90);
     }
 
     private void Start()

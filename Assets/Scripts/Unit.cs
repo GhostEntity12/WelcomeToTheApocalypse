@@ -56,7 +56,7 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// The passive effect of the character.
     /// </summary>
-    public StatusEffect m_PassiveEffect = null;
+    public PassiveSkill m_PassiveSkill = null;
 
     /// <summary>
     /// The status debuffs on the character.
@@ -122,6 +122,8 @@ public class Unit : MonoBehaviour
 
     public AIHeuristicCalculator m_AIHeuristicCalculator = null;
 
+    private int m_ExtraDamage = 0;
+
     // On startup.
     void Awake()
     {
@@ -137,7 +139,7 @@ public class Unit : MonoBehaviour
     void Start()
     {
         Grid.m_Instance.SetUnit(gameObject);
-       m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
+        m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
     }
 
     void Update()
@@ -221,11 +223,19 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
-        SetCurrentHealth(m_CurrentHealth - decrease);
+        int damage = decrease + m_ExtraDamage;
+        
+        SetCurrentHealth(m_CurrentHealth - damage);
+        m_ExtraDamage = 0;
+
+        if (m_PassiveSkill != null)
+        {
+            m_PassiveSkill.CheckPrecondition(TriggerType.OnTakeDamage);
+        }
 
         if (m_Healthbar != null)
         {
-            m_Healthbar.m_HealthChangeIndicator.text = "-" + decrease;
+            m_Healthbar.m_HealthChangeIndicator.text = "-" + damage;
             m_HealthChangeIndicatorScript.HealthDecrease();
         }
     }
@@ -380,6 +390,17 @@ public class Unit : MonoBehaviour
     public AIHeuristicCalculator GetHeuristicCalculator() { return m_AIHeuristicCalculator; }
 
     /// <summary>
+    /// Get the passive skill on the unit.
+    /// </summary>
+    /// <returns>The unit's passive skill, null if it doesn't have one.</returns>
+    public PassiveSkill GetPassiveSkill() { return m_PassiveSkill; }
+
+    public void AddExtraDamage(int extra)
+    {
+        m_ExtraDamage += extra;
+    }
+
+    /// <summary>
     /// Gets the nodes the unit can move to, stores them and highlights them.
     /// </summary>
     /// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
@@ -402,9 +423,42 @@ public class Unit : MonoBehaviour
         for (int i = 0; i < m_Skills.Count; ++i)
         {
             if (m_Skills[i] == skill)
-            {
+            {                
                 m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
+                if (m_PassiveSkill != null)
+                {
+                    DamageSkill ds = skill as DamageSkill;
+                    // Check if skill being cast is a damage skill.
+                    // If so, check the unit's passive
+                    if (ds != null)
+                    {
+                        // Make sure the skill knows what units it will affect, so we can check them for the passive.
+                        ds.FindAffectedUnits();
+
+                        Unit[] hitUnits = ds.GetAffectedUnits();
+
+                        if (m_PassiveSkill.GetAffectSelf() ==  false)
+                        {
+                            // Check which units meet the prerequisits for the unit's passive.
+                            foreach(Unit u in hitUnits)
+                            {
+                                if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
+                                {
+                                    m_PassiveSkill.TakeEffect(u);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, this) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
+                            {
+                                m_PassiveSkill.TakeEffect(this);
+                            }
+                        }
+                    }
+                }
                 m_Skills[i].CastSkill();
+
                 return;
             }
         }

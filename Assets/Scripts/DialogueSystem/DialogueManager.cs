@@ -76,6 +76,7 @@ public class DialogueManager : MonoBehaviour
         bustR.sprite = null;
         nameBox.text = string.Empty;
         dialogueBox.text = string.Empty;
+        currentCharacter = null;
     }
 
     /// <summary>

@@ -15,5 +15,6 @@ public class DamageSkill : BaseSkill
 			unit.DecreaseCurrentHealth(m_DamageAmount);
 		}
 		// Damage each affected unit
+
 	}
 }

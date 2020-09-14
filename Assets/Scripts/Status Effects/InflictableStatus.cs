@@ -10,5 +10,5 @@ public abstract class InflictableStatus : StatusEffect
     private int m_RemainingDuration = 0;
 
     // Check the preconditions for the status effect to take effect.
-    protected override abstract bool CheckPrecondition(TriggerType trigger);
+    public override abstract bool CheckPrecondition(TriggerType trigger);
 }
