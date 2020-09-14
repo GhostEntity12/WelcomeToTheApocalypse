@@ -224,6 +224,7 @@ public class Unit : MonoBehaviour
     public void DecreaseCurrentHealth(int decrease)
     {
         int damage = decrease + m_ExtraDamage;
+        
         SetCurrentHealth(m_CurrentHealth - damage);
         m_ExtraDamage = 0;
 
@@ -436,12 +437,22 @@ public class Unit : MonoBehaviour
 
                         Unit[] hitUnits = ds.GetAffectedUnits();
 
-                        // Check which units meet the prerequisits for the unit's passive.
-                        foreach(Unit u in hitUnits)
+                        if (m_PassiveSkill.GetAffectSelf() ==  false)
                         {
-                            if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u))
+                            // Check which units meet the prerequisits for the unit's passive.
+                            foreach(Unit u in hitUnits)
                             {
-                                m_PassiveSkill.TakeEffect(u);
+                                if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
+                                {
+                                    m_PassiveSkill.TakeEffect(u);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, this) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
+                            {
+                                m_PassiveSkill.TakeEffect(this);
                             }
                         }
                     }
