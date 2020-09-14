@@ -145,7 +145,15 @@ public class GameManager : MonoBehaviour
             {
                 PassiveSkill ps = u.GetPassiveSkill();
                 if (ps != null)
-                    ps.CheckPrecondition(TriggerType.OnTurnStart);
+                {
+                    if (ps.CheckPrecondition(TriggerType.OnTurnStart, u) || ps.CheckPrecondition(TriggerType.OnTurnStart))
+                    {
+                        if (ps.GetAffectSelf() == true)
+                            ps.TakeEffect(u);
+                        else
+                            ps.TakeEffect();
+                    }
+                }
             }
 
             // Tell the AI Manager to take its turn

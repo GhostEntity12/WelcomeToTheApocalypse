@@ -7,12 +7,12 @@ public class DeathPassive : PassiveSkill
 {
     public int m_ExtraDamage = 5;
 
-    public override bool CheckPrecondition(TriggerType trigger, Unit target)
+    public override bool CheckPrecondition(TriggerType trigger, Unit affected)
     {
         // If the trigger being checked is the same as the trigger type of the passive.
-        if (base.CheckPrecondition(trigger, target) == true)
+        if (base.CheckPrecondition(trigger) == true)
         {
-            if(target.GetCurrentHealth() == target.m_StartingHealth)
+            if(affected.GetCurrentHealth() == affected.m_StartingHealth)
             {
                 Debug.Log("Death Passive triggered!");
                 return true;
@@ -22,8 +22,8 @@ public class DeathPassive : PassiveSkill
         return false;
     }
 
-    public override void TakeEffect(Unit target)
+    public override void TakeEffect(Unit affected)
     {
-        target.AddExtraDamage(m_ExtraDamage);
+        affected.AddExtraDamage(m_ExtraDamage);
     }
 }

@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class CombatTrigger : MonoBehaviour
 {
-    public List<Unit> m_EnemiesToActivate = new List<Unit>();
+    public GameObject m_EnemyGroupToActivate;
+    private Unit[] m_EnemiesToActivate = new Unit[] { };
 
     public TextAsset scene;
 
@@ -11,7 +12,7 @@ public class CombatTrigger : MonoBehaviour
     private void Awake()
     {
         // Remove empty slots
-        m_EnemiesToActivate.RemoveAll(m => m == null);
+        m_EnemiesToActivate = m_EnemyGroupToActivate.GetComponentsInChildren<Unit>();
     }
 
     private void OnTriggerEnter(Collider other)
