@@ -89,11 +89,11 @@ namespace Ghost
         /// <param name="callback">The function to call once the fade is complete</param>
         /// <param name="delay">The time to wait before fading</param>
         /// <returns></returns>
-        public static IEnumerator FadeCanvasGroup(CanvasGroup cg, float lerpTime, float start, float end, CallbackDelegateNull callback, float delay = 0f)
+        public static IEnumerator FadeCanvasGroup(CanvasGroup cg, float lerpTime, float start, float end, System.Action callback = null, float delay = 0f)
         {
             yield return FadeCanvasGroup(cg: cg, lerpTime: lerpTime, start: start, end: end, delay: delay);
 
-            callback();
+            callback?.Invoke();
         }
 
         /// <summary>
