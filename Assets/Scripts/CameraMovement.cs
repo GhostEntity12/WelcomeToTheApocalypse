@@ -34,7 +34,10 @@ public class CameraMovement : MonoBehaviour
             m_CameraBounds = new Bounds(transform.position, Vector3.one);
             Debug.LogError("Missing collider to limit camera movement");
         }
-        m_LookDirection = (FacingDirection)(int)(System.Math.Round(transform.rotation.eulerAngles.y, System.MidpointRounding.AwayFromZero) / 90);
+        // Snap to nearest 90 deg angle
+        transform.rotation = Quaternion.Euler(0f, Mathf.Round(transform.eulerAngles.y / 90) * 90, 0f);
+        // Get approx. angle to determine direction
+        m_LookDirection = (FacingDirection)(int)(transform.eulerAngles.y / 90);
     }
 
     private void Start()
