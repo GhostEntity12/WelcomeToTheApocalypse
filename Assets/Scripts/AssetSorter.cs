@@ -7,11 +7,16 @@ public class AssetSorter : MonoBehaviour
 	public enum SortType
 	{
 		Name,
+		xPos_Positive,
+		xPos_Negative,
+		yPos_Positive,
+		yPos_Negative,
 		zPos_Positive,
 		zPos_Negative,
 	}
 
 	public SortType m_SortType;
+
 	[ContextMenu("Sort Children")]
 	void SortChildren()
 	{
@@ -33,6 +38,18 @@ public class AssetSorter : MonoBehaviour
 		{
 			case SortType.Name:
 				assetsToSort = assetsToSort.OrderBy(go => go.name).ToList();
+				break;
+			case SortType.xPos_Positive:
+				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.x).ToList();
+				break;
+			case SortType.xPos_Negative:
+				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.x).Reverse().ToList();
+				break;
+			case SortType.yPos_Positive:
+				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.y).ToList();
+				break;
+			case SortType.yPos_Negative:
+				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.y).Reverse().ToList();
 				break;
 			case SortType.zPos_Positive:
 				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.z).ToList();
