@@ -78,7 +78,7 @@ public class AIManager : MonoBehaviour
             Node node = Grid.m_Instance.GetNode(u.transform.position).adjacentNodes[i];
             if (node.unit?.m_Allegiance == Allegiance.Player)
             {
-                Attack(node, u);
+                Attack(node);
                 break;
             }
         }
@@ -88,11 +88,16 @@ public class AIManager : MonoBehaviour
     /// Triggers the unit's basic attack
     /// </summary>
     /// <param name="sourceNode"></param>
-    public void Attack(Node sourceNode, Unit attacker) // TODO remove attacker - only exists for printng a debug statement
+    public void Attack(Node sourceNode)
     {
         m_CurrentAIUnit.ActivateSkill(m_CurrentAIUnit.GetSkill(0), sourceNode);
-        Debug.Log($"{attacker.name} is attacking {sourceNode.unit.name} with {m_CurrentAIUnit.GetSkill(0).name}");
     }
+
+    /// <summary>
+    /// Adds more units to the active units
+    /// </summary>
+    /// <param name="newUnits"></param>
+    public void EnableUnits(Unit[] newUnits) => EnableUnits(newUnits.ToList());
 
     /// <summary>
     /// Adds more units to the active units
