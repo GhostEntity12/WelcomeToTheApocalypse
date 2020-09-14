@@ -7,12 +7,12 @@ public class AssetSorter : MonoBehaviour
 	public enum SortType
 	{
 		Name,
-		xPos_Positive,
-		xPos_Negative,
-		yPos_Positive,
-		yPos_Negative,
-		zPos_Positive,
-		zPos_Negative,
+		xPosPositive,
+		xPosNegative,
+		yPosPositive,
+		yPosNegative,
+		zPosPositive,
+		zPosNegative,
 	}
 
 	public SortType m_SortType;
@@ -39,22 +39,22 @@ public class AssetSorter : MonoBehaviour
 			case SortType.Name:
 				assetsToSort = assetsToSort.OrderBy(go => go.name).ToList();
 				break;
-			case SortType.xPos_Positive:
+			case SortType.xPosPositive:
 				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.x).ToList();
 				break;
-			case SortType.xPos_Negative:
+			case SortType.xPosNegative:
 				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.x).Reverse().ToList();
 				break;
-			case SortType.yPos_Positive:
+			case SortType.yPosPositive:
 				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.y).ToList();
 				break;
-			case SortType.yPos_Negative:
+			case SortType.yPosNegative:
 				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.y).Reverse().ToList();
 				break;
-			case SortType.zPos_Positive:
+			case SortType.zPosPositive:
 				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.z).ToList();
 				break;
-			case SortType.zPos_Negative:
+			case SortType.zPosNegative:
 				assetsToSort = assetsToSort.OrderBy(go => go.transform.position.z).Reverse().ToList();
 				break;
 			default:
