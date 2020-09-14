@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(GridObject))]
+[RequireComponent(typeof(GridObject), typeof(BoxCollider))]
 public class Grid : MonoBehaviour
 {
 	public static Grid m_Instance = null;
@@ -31,6 +31,13 @@ public class Grid : MonoBehaviour
 		{
 			Debug.LogError("Map incomplete, no areas declared walkable", this);
 		}
+
+		// Fix any non-whole numbers
+		transform.position = new Vector3(Mathf.Floor(transform.position.x), Mathf.Floor(transform.position.y), Mathf.Floor(transform.position.z));
+		transform.localScale = Vector3.one;
+		BoxCollider c = GetComponent<BoxCollider>();
+		c.size = new Vector3(Mathf.Floor(c.bounds.size.x), Mathf.Floor(c.bounds.size.y), Mathf.Floor(c.bounds.size.z));
+
 		ReadLevel();
 	}
 
