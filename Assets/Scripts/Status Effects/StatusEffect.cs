@@ -23,6 +23,8 @@ public abstract class StatusEffect : ScriptableObject
     // Description of the status effect.
     public string m_StatusDescription;
 
+    public bool m_AffectSelf = false;
+
     /// <summary>
     /// Check the preconditoins for the status effect to take effect.
     /// </summary>
@@ -42,7 +44,7 @@ public abstract class StatusEffect : ScriptableObject
     /// <param name="trigger">What triggers the status effect.</param>
     /// <param name="target">The target of the status effect.</param>
     /// <returns>If the status effect was triggered.</returns>
-    public virtual bool CheckPrecondition(TriggerType trigger, Unit target)
+    public virtual bool CheckPrecondition(TriggerType trigger, Unit affected)
     {
         if (trigger == m_TriggerType)
             return true;
@@ -51,5 +53,7 @@ public abstract class StatusEffect : ScriptableObject
     }
 
     public virtual void TakeEffect() {}
-    public virtual void TakeEffect(Unit target) {}
+    public virtual void TakeEffect(Unit affected) {}
+
+    public bool GetAffectSelf() { return m_AffectSelf; }
 }
