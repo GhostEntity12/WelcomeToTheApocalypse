@@ -2,6 +2,10 @@
 
 public class CameraMovement : MonoBehaviour
 {
+    public CanvasGroup m_PixelScreen;
+    private CanvasGroup m_BlackScreen;
+    private bool m_IsSwapping;
+
     [Header("Movement")]
     public float m_MoveSpeed = 3.0f;
     private Vector3 m_MovementInput = Vector3.zero;
@@ -16,15 +20,20 @@ public class CameraMovement : MonoBehaviour
     private bool m_IsRotating;
     FacingDirection m_LookDirection;
 
-    HealthbarContainer[] healthbarContainers;
+    Camera m_Camera;
+
+    bool m_CanPixel;
 
     enum FacingDirection
     {
-        North, East, South, West
+        North, NorthEast, East, SouthEast, South, SouthWest, West, NorthWest
     }
 
     private void Awake()
     {
+        m_CanPixel = m_PixelScreen != null;
+        m_BlackScreen = UIManager.m_Instance.m_BlackScreen;
+        m_Camera = Camera.main;
         if (m_CameraLimits)
         {
             m_CameraBounds = m_CameraLimits.bounds;
@@ -35,14 +44,10 @@ public class CameraMovement : MonoBehaviour
             Debug.LogError("Missing collider to limit camera movement");
         }
         // Snap to nearest 90 deg angle
-        transform.rotation = Quaternion.Euler(0f, Mathf.Round(transform.eulerAngles.y / 90) * 90, 0f);
+        transform.rotation = Quaternion.Euler(0f, Mathf.Round(transform.eulerAngles.y / 45) * 45, 0f);
         // Get approx. angle to determine direction
-        m_LookDirection = (FacingDirection)(int)(transform.eulerAngles.y / 90);
-    }
+        m_LookDirection = (FacingDirection)(int)(transform.eulerAngles.y / 45);
 
-    private void Start()
-    {
-        healthbarContainers = FindObjectsOfType<HealthbarContainer>();
     }
 
     // Update is called once per frame
@@ -72,22 +77,56 @@ public class CameraMovement : MonoBehaviour
         if (!m_IsRotating)
         {
             if (Input.GetKeyDown(m_RotateLeftKey))
-            {
-                m_IsRotating = true;
-                m_LookDirection = (FacingDirection)(((int)m_LookDirection + 5) % 4);
-                LeanTween.rotate(gameObject, new Vector3(0, (int)m_LookDirection * 90f, 0), 0.4f).setEase(rotationType).setOnComplete(() => m_IsRotating = false);
-            }
+                RotateLeft(0.4f);
             else if (Input.GetKeyDown(m_RotateRightKey))
-            {
-                m_IsRotating = true;
-                m_LookDirection = (FacingDirection)(((int)m_LookDirection + 3) % 4);
-                LeanTween.rotate(gameObject, new Vector3(0, (int)m_LookDirection * 90f, 0), 0.4f).setEase(rotationType).setOnComplete(() => m_IsRotating = false);
-            }
+                RotateRight(0.4f);
         }
 
-        //foreach (HealthbarContainer hbc in healthbarContainers)
-        //{
-        //    hbc.m_IsMagnetic = m_IsRotating;
-        //}
+        if (Input.GetKeyDown(KeyCode.F3) && !m_IsSwapping)
+        {
+            m_IsSwapping = true;
+            SwapToFromIsoCam();
+        }
+        else if (Input.GetKeyDown(KeyCode.F4) && m_Camera.orthographic)
+        {
+            m_IsSwapping = true;
+            SwapPixMode();
+        }
+    }
+
+    void RotateLeft(float rotSpeed)
+    {
+        m_IsRotating = true;
+        m_LookDirection = (FacingDirection)(((int)m_LookDirection + 9) % 8);
+        LeanTween.rotate(gameObject, new Vector3(0, (int)m_LookDirection * 45f, 0), rotSpeed).setEase(rotationType).setOnComplete(() => m_IsRotating = false);
+    }
+    
+    void RotateRight(float rotSpeed)
+    {
+        m_IsRotating = true;
+        m_LookDirection = (FacingDirection)(((int)m_LookDirection + 7) % 8);
+        LeanTween.rotate(gameObject, new Vector3(0, (int)m_LookDirection * 45f, 0), rotSpeed).setEase(rotationType).setOnComplete(() => m_IsRotating = false);
+    }
+
+    void SwapToFromIsoCam()
+    {
+        StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 0.15f, 0, 1, () =>
+                {
+                    m_Camera.orthographic = !m_Camera.orthographic;
+                    if ((int)m_LookDirection % 2 == 0 && m_Camera.orthographic)
+                        RotateLeft(0.05f);
+                    if (!m_Camera.orthographic && m_PixelScreen.alpha == 1)
+                        SwapPixMode();
+                    StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 0.15f, 1, 0, 0f));
+                    m_IsSwapping = false;
+                }));
+    }
+
+    void SwapPixMode()
+    {
+        if (!m_CanPixel) return;
+
+        bool b = m_PixelScreen.alpha == 0;
+        StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_PixelScreen, 0.15f, b ? 0 : 1, b ? 1 : 0, () => m_IsSwapping = false));
     }
 }

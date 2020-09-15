@@ -230,7 +230,13 @@ public class Unit : MonoBehaviour
 
         if (m_PassiveSkill != null)
         {
-            m_PassiveSkill.CheckPrecondition(TriggerType.OnTakeDamage);
+            if (m_PassiveSkill.CheckPrecondition(TriggerType.OnTakeDamage, this) || m_PassiveSkill.CheckPrecondition(TriggerType.OnTakeDamage))
+            {
+                if (m_PassiveSkill.GetAffectSelf() == true)
+                    m_PassiveSkill.TakeEffect(this);
+                else
+                    m_PassiveSkill.TakeEffect();
+            }
         }
 
         if (m_Healthbar != null)
