@@ -2,7 +2,8 @@
 
 public class CameraMovement : MonoBehaviour
 {
-    public CanvasGroup m_BlackScreen;
+    public CanvasGroup m_PixelScreen;
+    private CanvasGroup m_BlackScreen;
     private bool m_IsSwapping;
 
     [Header("Movement")]
@@ -21,6 +22,8 @@ public class CameraMovement : MonoBehaviour
 
     Camera m_Camera;
 
+    bool m_CanPixel;
+
     enum FacingDirection
     {
         North, NorthEast, East, SouthEast, South, SouthWest, West, NorthWest
@@ -28,6 +31,8 @@ public class CameraMovement : MonoBehaviour
 
     private void Awake()
     {
+        m_CanPixel = m_PixelScreen != null;
+        m_BlackScreen = UIManager.m_Instance.m_BlackScreen;
         m_Camera = Camera.main;
         if (m_CameraLimits)
         {
@@ -42,6 +47,7 @@ public class CameraMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, Mathf.Round(transform.eulerAngles.y / 45) * 45, 0f);
         // Get approx. angle to determine direction
         m_LookDirection = (FacingDirection)(int)(transform.eulerAngles.y / 45);
+
     }
 
     // Update is called once per frame
@@ -81,6 +87,11 @@ public class CameraMovement : MonoBehaviour
             m_IsSwapping = true;
             SwapToFromIsoCam();
         }
+        else if (Input.GetKeyDown(KeyCode.F4) && m_Camera.orthographic)
+        {
+            m_IsSwapping = true;
+            SwapPixMode();
+        }
     }
 
     void RotateLeft(float rotSpeed)
@@ -102,11 +113,20 @@ public class CameraMovement : MonoBehaviour
         StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 0.15f, 0, 1, () =>
                 {
                     m_Camera.orthographic = !m_Camera.orthographic;
-                    if ((int)m_LookDirection % 2 == 0)
+                    if ((int)m_LookDirection % 2 == 0 && m_Camera.orthographic)
                         RotateLeft(0.05f);
+                    if (!m_Camera.orthographic && m_PixelScreen.alpha == 1)
+                        SwapPixMode();
                     StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 0.15f, 1, 0, 0f));
                     m_IsSwapping = false;
                 }));
+    }
 
+    void SwapPixMode()
+    {
+        if (!m_CanPixel) return;
+
+        bool b = m_PixelScreen.alpha == 0;
+        StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_PixelScreen, 0.15f, b ? 0 : 1, b ? 1 : 0, () => m_IsSwapping = false));
     }
 }

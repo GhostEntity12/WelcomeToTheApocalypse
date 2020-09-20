@@ -21,6 +21,7 @@ public abstract class StatusEffect : ScriptableObject
     public Sprite m_StatusIcon;
 
     // Description of the status effect.
+    [TextArea(1, 5)]
     public string m_StatusDescription;
 
     public bool m_AffectSelf = false;
