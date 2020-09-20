@@ -11,6 +11,7 @@ public enum UIStyle
 public class UIManager : MonoBehaviour
 {
 	public static UIManager m_Instance;
+	public CanvasGroup m_BlackScreen;
 
 	[Serializable]
 	public class UIData
