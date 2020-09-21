@@ -75,13 +75,40 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public Canvas m_LoseScreen = null;
 
+    /// <summary>
+    /// If the left mouse button is down.
+    /// </summary>
     private bool m_LeftMouseDown = false;
 
+    /// <summary>
+    /// The node the mouse is hovering over.
+    /// </summary>
     private Node m_CachedNode;
 
+    /// <summary>
+    /// The max range of a skill on the pathfinding grid.
+    /// </summary>
     private List<Node> m_maxSkillRange = new List<Node>();
 
+    /// <summary>
+    /// The dialogue manager, not the Dungeon Master.
+    /// </summary>
     private DialogueManager dm;
+
+    /// <summary>
+    /// The button for ending the turn.
+    /// </summary>
+    public EndTurnButton m_EndTurnButton = null;
+
+    /// <summary>
+    /// The turn indicator.
+    /// </summary>
+    public TurnIndicator m_TurnIndicator = null;
+
+    /// <summary>
+    /// The action point counter, for the currently selected unit.
+    /// </summary>
+    public ActionPointCounter m_ActionPointCounter = null;
 
     // On startup.
     private void Awake()
@@ -97,6 +124,9 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         dm = DialogueManager.instance;
+
+        m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
+        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
     }
 
     // Update.
@@ -188,7 +218,12 @@ public class GameManager : MonoBehaviour
                 u.ResetCurrentMovement();
         }
 
-        UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
+        UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);        
+
+        // Tell end turn button who's turn it currently is.
+        m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
+
+        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
     }
 
     /// <summary>
@@ -225,6 +260,10 @@ public class GameManager : MonoBehaviour
                         // Highlight the appropriate tiles
                         m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
                         m_SelectedUnit.HighlightMovableNodes();
+
+                        // Update the UI's action point counter to display the newly selected unit's action points.
+                        m_ActionPointCounter.ResetActionPointCounter();
+                        m_ActionPointCounter.UpdateActionPointCounter();
                     }
                 }
             }
@@ -256,6 +295,8 @@ public class GameManager : MonoBehaviour
                             }
             
                             m_SelectedUnit.HighlightMovableNodes();
+
+                            m_ActionPointCounter.UpdateActionPointCounter();
             
                             m_SelectedSkill = null;
                         }
@@ -316,6 +357,8 @@ public class GameManager : MonoBehaviour
                             }
             
                             m_SelectedUnit.HighlightMovableNodes();
+
+                            m_ActionPointCounter.UpdateActionPointCounter();
             
                             m_SelectedSkill = null;
                         }
