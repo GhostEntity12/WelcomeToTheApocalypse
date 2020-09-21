@@ -30,12 +30,6 @@ public class EndTurnButton : MonoBehaviour
 		m_OffScreenPosition = transform;
 	}
 
-	void Start()
-	{
-		// In here, to make sure the GameManager has been created before asking it who's turn it is for startup.
-		UpdateCurrentTeamTurn(GameManager.m_Instance.GetCurrentTurn());
-	}
-
 	/// <summary>
 	/// Update the end turn button on who's turn it currently is.
 	/// </summary>
