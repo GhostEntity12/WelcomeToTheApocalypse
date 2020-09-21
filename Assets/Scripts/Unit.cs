@@ -407,6 +407,12 @@ public class Unit : MonoBehaviour
     }
 
     /// <summary>
+    /// Check if the unit is moving.
+    /// </summary>
+    /// <returns>If the unit is moving or not.</returns>
+    public bool GetMoving() { return m_IsMoving; }
+
+    /// <summary>
     /// Gets the nodes the unit can move to, stores them and highlights them.
     /// </summary>
     /// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
