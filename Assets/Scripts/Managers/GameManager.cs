@@ -83,6 +83,8 @@ public class GameManager : MonoBehaviour
 
     private DialogueManager dm;
 
+    public EndTurnButton m_EndTurnButton = null;
+
     // On startup.
     private void Awake()
     {
@@ -155,6 +157,9 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
+
+            // Tell end turn button who's turn it currently is.
+            m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
 
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.TakeAITurn();
