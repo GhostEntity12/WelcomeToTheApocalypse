@@ -85,6 +85,8 @@ public class GameManager : MonoBehaviour
 
     public EndTurnButton m_EndTurnButton = null;
 
+    public TurnIndicator m_TurnIndicator = null;
+
     // On startup.
     private void Awake()
     {
@@ -99,6 +101,9 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         dm = DialogueManager.instance;
+
+        m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
+        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
     }
 
     // Update.
@@ -158,9 +163,6 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            // Tell end turn button who's turn it currently is.
-            m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
-
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.TakeAITurn();
         }
@@ -193,7 +195,12 @@ public class GameManager : MonoBehaviour
                 u.ResetCurrentMovement();
         }
 
-        UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
+        UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);        
+
+        // Tell end turn button who's turn it currently is.
+        m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
+
+        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
     }
 
     /// <summary>
