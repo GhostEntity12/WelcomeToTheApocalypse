@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5b5e21c35f18ddb4c831e18f990c4922
+guid: f64887d6c9ae48b438d1b9ccec344163
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
@@ -15,8 +15,7 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
-    rigImportErrors: "Invalid Avatar Rig Configuration. Missing or invalid transform:\n\tRequired
-      human bone 'Hips' not found\n"
+    rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
@@ -24,7 +23,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -73,17 +72,7 @@ ModelImporter:
   humanDescription:
     serializedVersion: 3
     human: []
-    skeleton:
-    - name: EnemyMelee_Mesh(Clone)
-      parentName: 
-      position: {x: 0, y: 0, z: 0}
-      rotation: {x: 0, y: 0, z: 0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: polySurface33
-      parentName: EnemyMelee_Mesh(Clone)
-      position: {x: -0, y: 1.9125837, z: 0.04149267}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
+    skeleton: []
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
@@ -94,7 +83,7 @@ ModelImporter:
     globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
-    hasExtraRoot: 1
+    hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
