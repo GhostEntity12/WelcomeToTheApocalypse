@@ -242,8 +242,8 @@ public class GameManager : MonoBehaviour
             // Check if the player is selecting another character.
             if (m_TargetingState == TargetingState.Move)
             {
-                // Check player input.
-                if (m_LeftMouseDown)
+                // Check player input and make sure the player's cursor isn't over the end turn button.
+                if (m_LeftMouseDown && !m_EndTurnButton.GetMouseOverButton())
                 {
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
@@ -271,7 +271,7 @@ public class GameManager : MonoBehaviour
             else if (m_TargetingState == TargetingState.Skill)
             {
                 // Check player input.
-                if (m_LeftMouseDown)
+                if (m_LeftMouseDown && !m_EndTurnButton.GetMouseOverButton())
                 {
                     // Cast the skill the player has selected.
                     // If hit unit is in affectable range,
@@ -335,7 +335,7 @@ public class GameManager : MonoBehaviour
                 }
 
                 // Check player input.
-                if (m_LeftMouseDown)
+                if (m_LeftMouseDown && !m_EndTurnButton.GetMouseOverButton())
                 {
                     // Cast the skill the player has selected.
                     // If hit tile is in affectable range,
@@ -376,7 +376,7 @@ public class GameManager : MonoBehaviour
                 if (m_SelectedUnit != null)
                 {
                     // Check input.
-                    if (m_LeftMouseDown)
+                    if (m_LeftMouseDown && !m_EndTurnButton.GetMouseOverButton())
                     {
                         if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
                         {

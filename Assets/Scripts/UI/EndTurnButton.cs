@@ -25,6 +25,11 @@ public class EndTurnButton : MonoBehaviour
 	/// </summary>
 	public float m_TweenTime = 0.1f;
 
+	/// <summary>
+	/// If the player's cursor is over the end turn button.
+	/// </summary>
+	private bool m_MouseOverButton = false;
+
 	void Awake()
 	{
 		m_OffScreenPosition = transform;
@@ -49,4 +54,19 @@ public class EndTurnButton : MonoBehaviour
 			LeanTween.move(gameObject, m_OffScreenPosition, m_TweenTime);
 		}
 	}
+
+	/// <summary>
+	/// Set if the player's mouse is over the end turn button.
+	/// </summary>
+	/// <param name="overButton">If the player's cursor is over the button.</param>
+	public void SetMouseOverButton(bool overButton)
+	{
+		m_MouseOverButton = overButton;
+	}
+
+	/// <summary>
+	/// Check if the player's mouse is over the end turn button.
+	/// </summary>
+	/// <returns>If the player's cursor is over the button.</returns>
+	public bool GetMouseOverButton() { return m_MouseOverButton; }
 }
