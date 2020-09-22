@@ -3,9 +3,17 @@ using UnityEngine;
 
 public class CombatTrigger : MonoBehaviour
 {
-    public List<Unit> m_EnemiesToActivate = new List<Unit>();
+    public GameObject m_EnemyGroupToActivate;
+    private Unit[] m_EnemiesToActivate = new Unit[] { };
 
     public TextAsset scene;
+
+
+    private void Awake()
+    {
+        // Remove empty slots
+        m_EnemiesToActivate = m_EnemyGroupToActivate.GetComponentsInChildren<Unit>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -15,7 +23,13 @@ public class CombatTrigger : MonoBehaviour
 
             if (scene)
             {
+                if (DialogueManager.instance.dialogueActive)
+                {
+                    Debug.LogError($"Dialogue manager is already displaying {DialogueManager.instance.sceneName}, can't start {scene}!");
+                    return;
+                }
                 UIManager.m_Instance.SwapToDialogue(scene);
+                Debug.Log(other.name, this);
             }
 
             gameObject.SetActive(false);
