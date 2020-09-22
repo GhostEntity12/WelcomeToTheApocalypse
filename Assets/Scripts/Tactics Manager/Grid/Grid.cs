@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
-[RequireComponent(typeof(GridObject))]
+[RequireComponent(typeof(GridObject), typeof(BoxCollider))]
 public class Grid : MonoBehaviour
 {
 	public static Grid m_Instance = null;
@@ -32,6 +31,13 @@ public class Grid : MonoBehaviour
 		{
 			Debug.LogError("Map incomplete, no areas declared walkable", this);
 		}
+
+		// Fix any non-whole numbers
+		transform.position = new Vector3(Mathf.Floor(transform.position.x), Mathf.Floor(transform.position.y), Mathf.Floor(transform.position.z));
+		transform.localScale = Vector3.one;
+		BoxCollider c = GetComponent<BoxCollider>();
+		c.size = new Vector3(Mathf.Floor(c.bounds.size.x), Mathf.Floor(c.bounds.size.y), Mathf.Floor(c.bounds.size.z));
+
 		ReadLevel();
 	}
 
@@ -265,15 +271,17 @@ public class Grid : MonoBehaviour
 	}
 
 
-	public bool FindPath(Vector3 startPos, Vector3 endPos, ref Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false) => FindPath(GetNode(startPos), GetNode(endPos), ref path, out cost, allowDiags, allowBlocked);
+	public bool FindPath(Vector3 startPos, Vector3 endPos, out Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false) => FindPath(GetNode(startPos), GetNode(endPos), out path, out cost, allowDiags, allowBlocked);
 
-	public bool FindPath(Node startNode, Node endNode, ref Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false)
+	public bool FindPath(Node startNode, Node endNode, out Stack<Node> path, out int cost, bool allowDiags = false, bool allowBlocked = false)
 	{
 		// Assigned just for the leaving before looking for a path.
 		cost = 0;
 
 		Node m_startNode = startNode;
 		Node m_endNode = endNode;
+
+		path = new Stack<Node>();
 
 		// Make sure the start and end nodes are valid.
 		if (m_startNode == null || m_endNode == null)
@@ -420,7 +428,7 @@ public class Grid : MonoBehaviour
 		// Might have f'ed something up, but it works ¯\_(._.)_/¯
 		// - James L
 
-		return FindPath(startPos, endPos, ref path, out cost);
+		return FindPath(startPos, endPos, out path, out cost);
 	}
 
 	/// <summary>
@@ -487,14 +495,14 @@ public class Grid : MonoBehaviour
 	}
 
 	[ContextMenu("Do Heuristic Heatmap")]
-	void HeuristicHeatmap()
+	private void HeuristicHeatmap()
 	{
 		NodeHighlight[] nodeHighlights = m_NodeArray.GetComponentsInChildren<NodeHighlight>();
 		foreach (var item in nodeHighlights)
 		{
 			item.GetComponent<Renderer>().enabled = true;
-			float c = GetNode(item.transform.position).GetMinMax();
-			item.GetComponent<Renderer>().material.color = new Color(c, c, c, 1);
+			Node n = GetNode(item.transform.position);
+			item.GetComponent<Renderer>().material.color = new Color(n.GetMovement(), n.GetDamage(), n.GetHealing(), 1);
 		}
 	}
 

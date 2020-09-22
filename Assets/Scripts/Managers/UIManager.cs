@@ -11,6 +11,7 @@ public enum UIStyle
 public class UIManager : MonoBehaviour
 {
 	public static UIManager m_Instance;
+	public CanvasGroup m_BlackScreen;
 
 	[Serializable]
 	public class UIData
@@ -118,6 +119,7 @@ public class UIManager : MonoBehaviour
 			// TODO: Refactor
 			m_SkillSlots[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
 			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
+			m_SkillSlots[i].UpdateTooltip();
 		}
 	}
 
@@ -184,13 +186,13 @@ public class UIManager : MonoBehaviour
 	{
 		switch (unitName.ToLower())
 		{
-			case string s when s == "player_death" || s == "death":
+			case string s when s.ToLower().Contains("death"):
 				return UIStyle.Death;
-			case string s when s == "player_pestilence" || s == "pestilence":
+			case string s when s.ToLower().Contains("pestilence"):
 				return UIStyle.Pestilence;
-			case string s when s == "player_famine" || s == "famine":
+			case string s when s.ToLower().Contains("famine"):
 				return UIStyle.Famine;
-			case string s when s == "player_war" || s == "war":
+			case string s when s.ToLower().Contains("war"):
 				return UIStyle.War;
 			default:
 				Debug.LogWarning($"No character with name {unitName} found.");

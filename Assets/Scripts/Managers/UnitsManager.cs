@@ -11,6 +11,7 @@ public class UnitsManager : MonoBehaviour
 	public List<Unit> m_PlayerUnits = new List<Unit>();
 	public List<Unit> m_EnemyUnits = new List<Unit>();
 	public List<Unit> m_ActiveEnemyUnits = new List<Unit>();
+	public List<Unit> m_DeadPlayerUnits = new List<Unit>();
 
 	private void Awake()
 	{
