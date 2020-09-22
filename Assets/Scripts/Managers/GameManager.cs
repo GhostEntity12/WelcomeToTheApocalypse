@@ -75,15 +75,44 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public Canvas m_LoseScreen = null;
 
+    /// <summary>
+    /// If the left mouse button is down.
+    /// </summary>
     private bool m_LeftMouseDown = false;
 
+    /// <summary>
+    /// The node the mouse is hovering over.
+    /// </summary>
     private Node m_CachedNode;
 
+    /// <summary>
+    /// The max range of a skill on the pathfinding grid.
+    /// </summary>
     private List<Node> m_maxSkillRange = new List<Node>();
 
+    /// <summary>
+    /// The dialogue manager, not the Dungeon Master.
+    /// </summary>
     private DialogueManager dm;
 
+    /// <summary>
+    /// The button for ending the turn.
+    /// </summary>
     public EndTurnButton m_EndTurnButton = null;
+
+    /// <summary>
+    /// The turn indicator.
+    /// </summary>
+    public TurnIndicator m_TurnIndicator = null;
+
+    /// <summary>
+    /// The action point counter, for the currently selected unit.
+    /// </summary>
+    public ActionPointCounter m_ActionPointCounter = null;
+
+    private List<InputBlockingUI> m_InputBlockingUIElements = new List<InputBlockingUI>();
+
+    private bool m_MouseOverUIBlockingElements = false;
 
     // On startup.
     private void Awake()
@@ -99,6 +128,11 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         dm = DialogueManager.instance;
+
+        m_InputBlockingUIElements = GameObject.FindObjectsOfType<InputBlockingUI>().ToList();
+
+        m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
+        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
     }
 
     // Update.
@@ -158,9 +192,6 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            // Tell end turn button who's turn it currently is.
-            m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
-
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.TakeAITurn();
         }
@@ -193,7 +224,12 @@ public class GameManager : MonoBehaviour
                 u.ResetCurrentMovement();
         }
 
-        UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
+        UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);        
+
+        // Tell end turn button who's turn it currently is.
+        m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
+
+        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
     }
 
     /// <summary>
@@ -205,6 +241,19 @@ public class GameManager : MonoBehaviour
 
         m_LeftMouseDown = Input.GetMouseButtonDown(0);
         
+        m_MouseOverUIBlockingElements = false;
+        // Check if the player's cursor is over any UI elements deemed to block the player's mouse inputs in the game world.
+        foreach(InputBlockingUI iBUI in m_InputBlockingUIElements)
+        {
+            // If the mouse is over one of them, make note of it and break from the loop.
+            // If the mouse is over a single element, no need to keep going through.
+            if (iBUI.GetMouseOverUIElement() == true)
+            {
+                m_MouseOverUIBlockingElements = true;
+                break;
+            }
+        }
+
         // Mouse is over a unit.
         if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
         {
@@ -213,7 +262,7 @@ public class GameManager : MonoBehaviour
             if (m_TargetingState == TargetingState.Move)
             {
                 // Check player input.
-                if (m_LeftMouseDown)
+                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
@@ -230,6 +279,10 @@ public class GameManager : MonoBehaviour
                         // Highlight the appropriate tiles
                         m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
                         m_SelectedUnit.HighlightMovableNodes();
+
+                        // Update the UI's action point counter to display the newly selected unit's action points.
+                        m_ActionPointCounter.ResetActionPointCounter();
+                        m_ActionPointCounter.UpdateActionPointCounter();
                     }
                 }
             }
@@ -237,7 +290,7 @@ public class GameManager : MonoBehaviour
             else if (m_TargetingState == TargetingState.Skill)
             {
                 // Check player input.
-                if (m_LeftMouseDown)
+                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
                     // Cast the skill the player has selected.
                     // If hit unit is in affectable range,
@@ -261,6 +314,8 @@ public class GameManager : MonoBehaviour
                             }
             
                             m_SelectedUnit.HighlightMovableNodes();
+
+                            m_ActionPointCounter.UpdateActionPointCounter();
             
                             m_SelectedSkill = null;
                         }
@@ -299,7 +354,7 @@ public class GameManager : MonoBehaviour
                 }
 
                 // Check player input.
-                if (m_LeftMouseDown)
+                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
                     // Cast the skill the player has selected.
                     // If hit tile is in affectable range,
@@ -321,6 +376,8 @@ public class GameManager : MonoBehaviour
                             }
             
                             m_SelectedUnit.HighlightMovableNodes();
+
+                            m_ActionPointCounter.UpdateActionPointCounter();
             
                             m_SelectedSkill = null;
                         }
@@ -338,7 +395,7 @@ public class GameManager : MonoBehaviour
                 if (m_SelectedUnit != null)
                 {
                     // Check input.
-                    if (m_LeftMouseDown)
+                    if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                     {
                         if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
                         {
