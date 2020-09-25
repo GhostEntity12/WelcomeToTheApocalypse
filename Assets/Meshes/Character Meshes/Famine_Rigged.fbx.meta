@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ff199a9a5c8494c4f916cd4683756e87
+guid: 92ad82b39d484834987c0a720dfbef45
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
@@ -15,9 +15,11 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
-    rigImportErrors: "Avatar creation failed:\n\tTransform 'locator1' not found in
-      HumanDescription.\n"
-    rigImportWarnings: 
+    rigImportErrors: 
+    rigImportWarnings: "Avatar Rig Configuration mis-match. Inbetween bone rotation
+      in configuration does not match rotation in animation file:\n\t'Jnt_Ankle_L'
+      : rotation error = 1.600833 deg\n\t'Jnt_Ankle_R' : rotation error = 1.600781
+      deg\n"
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -249,6 +251,14 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
+    - boneName: Jnt_Thumb_3_L
+      humanName: Left Thumb Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
     - boneName: Jnt_Mit_1_L
       humanName: Left Index Proximal
       limit:
@@ -289,6 +299,14 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
+    - boneName: Jnt_Thumb_3_R
+      humanName: Right Thumb Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
     - boneName: Jnt_Mit_1_R
       humanName: Right Index Proximal
       limit:
@@ -322,13 +340,18 @@ ModelImporter:
         length: 0
         modified: 0
     skeleton:
-    - name: Pestilence_Rigged(Clone)
+    - name: Famine_Rigged(Clone)
       parentName: 
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
+    - name: Famine 1
+      parentName: Famine_Rigged(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
     - name: locator1
-      parentName: Pestilence_Rigged(Clone)
+      parentName: Famine_Rigged(Clone)
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
@@ -339,58 +362,58 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Spine_1
       parentName: Jnt_Hip
-      position: {x: -0, y: 0.2205115, z: 0.00042093443}
+      position: {x: -0, y: 0.26985842, z: -0.0037268316}
       rotation: {x: -0.028521806, y: 0, z: -0, w: 0.9995932}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Spine_2
       parentName: Jnt_Spine_1
-      position: {x: 4.5484028e-17, y: 0.19989675, z: -0.0004542417}
+      position: {x: 4.5484028e-17, y: 0.25105608, z: 0.003473515}
       rotation: {x: 0.037894595, y: -0, z: -0, w: 0.99928176}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Clav_L
       parentName: Jnt_Spine_2
-      position: {x: -0.09462776, y: 0.063850336, z: -0.004367588}
+      position: {x: -0.09462776, y: 0.075338565, z: -0.029378884}
       rotation: {x: 0.0027503977, y: -0.0026948398, z: 0.69985056, w: 0.71427894}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Shoulder_L
       parentName: Jnt_Clav_L
-      position: {x: -2.8421708e-15, y: 0.079467565, z: 8.881784e-18}
+      position: {x: -3.410605e-15, y: 0.079467565, z: 4.440892e-18}
       rotation: {x: -0.039453782, y: 0.86101884, z: -0.012869759, w: 0.50687706}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Elbow_L
       parentName: Jnt_Shoulder_L
-      position: {x: -7.105427e-16, y: 0.21538289, z: 1.4210854e-16}
-      rotation: {x: -0.06671049, y: 0.95420784, z: 0.00040180972, w: 0.29161105}
+      position: {x: 0.0035114298, y: 0.36668503, z: 0.0024681464}
+      rotation: {x: -0.011102419, y: 0.95641327, z: 0.020446045, w: 0.29108834}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Wrist_L
       parentName: Jnt_Elbow_L
-      position: {x: -6.0396133e-16, y: 0.23862478, z: 5.684342e-16}
-      rotation: {x: 0.0037607914, y: -0.008682931, z: -0.035923745, w: 0.9993098}
+      position: {x: 0.031024462, y: 0.24448061, z: 0.0023425976}
+      rotation: {x: 0.009818482, y: 0.041798178, z: -0.107554406, w: 0.99327165}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Mit_1_L
       parentName: Jnt_Wrist_L
-      position: {x: -7.105427e-17, y: 0.15568712, z: -8.5265126e-16}
-      rotation: {x: 0.06603262, y: -0.23638898, z: 0.0098590925, w: 0.969362}
+      position: {x: -1.4210854e-16, y: 0.15568712, z: -2.842171e-16}
+      rotation: {x: 0.06033898, y: -0.2376661, z: 0.022477007, w: 0.96921045}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Mit_2_L
       parentName: Jnt_Mit_1_L
-      position: {x: 7.105427e-16, y: 0.078856535, z: 9.947598e-16}
-      rotation: {x: 0.018128378, y: -0.22383596, z: -0.01922891, w: 0.97426856}
+      position: {x: 4.2632563e-16, y: 0.078856535, z: 4.2632563e-16}
+      rotation: {x: 0.018127922, y: -0.22383568, z: -0.019228542, w: 0.9742686}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Mit_3_L
       parentName: Jnt_Mit_2_L
-      position: {x: 4.2632563e-16, y: 0.08115964, z: 1.4210854e-16}
-      rotation: {x: -1.4444475e-33, y: -6.938894e-17, z: -2.0816682e-17, w: 1}
+      position: {x: 1.4210854e-16, y: 0.08115964, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_1_L
       parentName: Jnt_Wrist_L
-      position: {x: 0.049999997, y: 0.08399999, z: -0.0010310549}
-      rotation: {x: -0.0013598971, y: -0.11532457, z: -0.31913787, w: 0.94066435}
+      position: {x: 0.048, y: 0.06, z: 0.027999999}
+      rotation: {x: 0.02922244, y: -0.1273609, z: -0.3146949, w: 0.94015557}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_2_L
       parentName: Jnt_Thumb_1_L
-      position: {x: 1.4210854e-16, y: 0.064097546, z: 1.1368684e-15}
-      rotation: {x: 0.025132025, y: -0.05110814, z: 0.027163772, w: 0.9980073}
+      position: {x: -0, y: 0.064097546, z: 7.105427e-16}
+      rotation: {x: 0.025130885, y: -0.05110813, z: 0.027164314, w: 0.99800724}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_3_L
       parentName: Jnt_Thumb_2_L
@@ -399,48 +422,48 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Clav_R
       parentName: Jnt_Spine_2
-      position: {x: 0.0946278, y: 0.063848324, z: -0.0043676533}
+      position: {x: 0.0946278, y: 0.07514326, z: -0.029000001}
       rotation: {x: 0.71427894, y: -0.69985056, z: -0.0026948398, w: -0.0027503977}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Shoulder_R
       parentName: Jnt_Clav_R
-      position: {x: 0.0000014527587, y: -0.079467714, z: 6.3504755e-16}
+      position: {x: 0.0000014527587, y: -0.079467714, z: 6.3060666e-16}
       rotation: {x: -0.039453782, y: 0.86101884, z: -0.012869759, w: 0.50687706}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Elbow_R
       parentName: Jnt_Shoulder_R
-      position: {x: 0.0000005861075, y: -0.21538226, z: -0.0000011128276}
-      rotation: {x: -0.06670787, y: 0.9542086, z: 0.00038933932, w: 0.29160917}
+      position: {x: -0.004026048, y: -0.35801786, z: -0.0021542874}
+      rotation: {x: -0.009996557, y: 0.95652825, z: 0.015068494, w: 0.2910788}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Wrist_R
       parentName: Jnt_Elbow_R
-      position: {x: 0.00000050299764, y: -0.23862457, z: 0.000007147308}
-      rotation: {x: 0.0037607914, y: -0.008682931, z: -0.035923745, w: 0.9993098}
+      position: {x: -0.030999998, y: -0.24399999, z: 0.002}
+      rotation: {x: -0.0010747396, y: -0.058552258, z: -0.10799661, w: 0.9924249}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Mit_1_R
       parentName: Jnt_Wrist_R
       position: {x: 0.000000057131295, y: -0.15568788, z: -0.000004628037}
-      rotation: {x: 0.06603415, y: -0.23638752, z: 0.009860091, w: 0.96936226}
+      rotation: {x: 0.06923093, y: -0.23753445, z: 0.018117514, w: 0.9687395}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Mit_2_R
       parentName: Jnt_Mit_1_R
       position: {x: 0.000001022993, y: -0.078855716, z: 0.0000023501643}
-      rotation: {x: 0.018099336, y: -0.22383659, z: -0.019208748, w: 0.9742693}
+      rotation: {x: 0.018098995, y: -0.22383666, z: -0.019207984, w: 0.97426933}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Mit_3_R
       parentName: Jnt_Mit_2_R
       position: {x: -0.0000020763462, y: -0.08116392, z: -0.0000021325766}
-      rotation: {x: -8.326673e-17, y: -6.938894e-17, z: -2.7755576e-17, w: 1}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_1_R
       parentName: Jnt_Wrist_R
-      position: {x: -0.04968736, y: -0.08411315, z: -0.00014855477}
-      rotation: {x: -0.0013958815, y: -0.115311444, z: -0.319129, w: 0.9406689}
+      position: {x: -0.048455622, y: -0.060027514, z: -0.027820965}
+      rotation: {x: -0.032067224, y: -0.10825796, z: -0.30271947, w: 0.9463683}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_2_R
       parentName: Jnt_Thumb_1_R
       position: {x: -0.0000016139581, y: -0.06409986, z: -0.0000034060238}
-      rotation: {x: 0.025169466, y: -0.05110777, z: 0.027146323, w: 0.9980069}
+      rotation: {x: 0.02516939, y: -0.05110779, z: 0.027146503, w: 0.9980068}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_3_R
       parentName: Jnt_Thumb_2_R
@@ -449,43 +472,43 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Neck
       parentName: Jnt_Spine_2
-      position: {x: 8.579206e-18, y: 0.10424264, z: 2.0872193e-16}
+      position: {x: 8.579206e-18, y: 0.11847345, z: 0.00034435632}
       rotation: {x: 0.012096314, y: -0, z: -0, w: 0.99992687}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Head
       parentName: Jnt_Neck
-      position: {x: 4.3924988e-17, y: 0.17076702, z: 3.907985e-16}
-      rotation: {x: 6.938894e-18, y: 0, z: -0, w: 1}
+      position: {x: 4.3924988e-17, y: 0.17076702, z: 4.0856205e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thigh_L
       parentName: Jnt_Hip
-      position: {x: -0.055, y: 0.049209137, z: 0.0013022369}
-      rotation: {x: 0.9888763, y: -0.14841165, z: -0.0013519723, w: -0.009792602}
+      position: {x: -0.06337735, y: 0.049209137, z: 0.0013022369}
+      rotation: {x: 0.98887634, y: -0.14841133, z: -0.0013517409, w: -0.009793991}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Knee_L
       parentName: Jnt_Thigh_L
-      position: {x: 4.973799e-16, y: 0.4602161, z: -4.2743585e-16}
+      position: {x: 4.2632563e-16, y: 0.4602161, z: -4.3076652e-16}
       rotation: {x: 0.03983684, y: -0.013426109, z: -0.0007928384, w: 0.9991157}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Ankle_L
       parentName: Jnt_Knee_L
-      position: {x: -7.105427e-16, y: 0.31506413, z: 3.774758e-16}
-      rotation: {x: -0.25595286, y: 0.08151669, z: -0.01536467, w: 0.9631236}
+      position: {x: -5.684342e-16, y: 0.31506413, z: 3.5083046e-16}
+      rotation: {x: -0.25708666, y: 0.07901515, z: -0.001667554, w: 0.9631512}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Foot_L
       parentName: Jnt_Ankle_L
-      position: {x: 4.2632563e-16, y: 0.13893102, z: -8.881784e-18}
-      rotation: {x: -0.4282468, y: 0.062403314, z: -0.10133785, w: 0.8957909}
+      position: {x: 3.5527135e-16, y: 0.13893102, z: -3.5527136e-17}
+      rotation: {x: -0.42609257, y: 0.073268294, z: -0.109812856, w: 0.8949961}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Toe_L
       parentName: Jnt_Foot_L
-      position: {x: -7.105427e-17, y: 0.12341991, z: -2.6645352e-17}
-      rotation: {x: -3.6111186e-35, y: 3.469447e-18, z: 1.0408341e-17, w: 1}
+      position: {x: -7.105427e-17, y: 0.12341991, z: -8.881784e-18}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thigh_R
       parentName: Jnt_Hip
-      position: {x: 0.055, y: 0.049209464, z: 0.0013022455}
-      rotation: {x: 0.009792584, y: -0.001351974, z: 0.14841151, w: 0.98887634}
+      position: {x: 0.063377395, y: 0.049209464, z: 0.0013022455}
+      rotation: {x: 0.009791198, y: -0.0013522035, z: 0.1484117, w: 0.9888763}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Knee_R
       parentName: Jnt_Thigh_R
@@ -495,41 +518,16 @@ ModelImporter:
     - name: Jnt_Ankle_R
       parentName: Jnt_Knee_R
       position: {x: -0.00000033157403, y: -0.31506458, z: 0.000000013948987}
-      rotation: {x: -0.25595286, y: 0.08151669, z: -0.01536467, w: 0.9631236}
+      rotation: {x: -0.25708395, y: 0.079015285, z: -0.0016677588, w: 0.96315193}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Foot_R
       parentName: Jnt_Ankle_R
       position: {x: 0.00000037413005, y: -0.13893086, z: 0.00000016413512}
-      rotation: {x: -0.4282467, y: 0.06240319, z: -0.10133775, w: 0.8957909}
+      rotation: {x: -0.42609257, y: 0.073268294, z: -0.109812856, w: 0.8949961}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Toe_R
       parentName: Jnt_Foot_R
       position: {x: -0.00000082132425, y: -0.12341983, z: 0.000000016899683}
-      rotation: {x: -9.7144515e-17, y: -1.8214596e-17, z: 6.938894e-18, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Scarf_1
-      parentName: locator1
-      position: {x: -0.053175777, y: 1.3669678, z: -0.07015109}
-      rotation: {x: -0.70111847, y: -0.091831155, z: -0.091831155, w: 0.70111847}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Scarf_2
-      parentName: Jnt_Scarf_1
-      position: {x: 5.3290704e-17, y: 0.25507858, z: 0}
-      rotation: {x: 2.5686082e-18, y: 1.28278086e-17, z: 0.20089152, w: 0.9796135}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Scarf_3
-      parentName: Jnt_Scarf_2
-      position: {x: 1.0658141e-16, y: 0.25149184, z: 0}
-      rotation: {x: 1.048305e-18, y: -3.6161024e-18, z: -0.05355104, w: 0.99856514}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Scarf_4
-      parentName: Jnt_Scarf_3
-      position: {x: -0.0012908548, y: 0.14447215, z: -1.4135799e-15}
-      rotation: {x: -0, y: -2.311116e-33, z: -1.0408341e-17, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Pestilence_Mesh
-      parentName: Pestilence_Rigged(Clone)
-      position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     armTwist: 0.5
