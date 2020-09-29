@@ -15,9 +15,11 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
-    rigImportErrors: "Avatar creation failed:\n\tTransform 'locator1' not found in
-      HumanDescription.\n"
-    rigImportWarnings: 
+    rigImportErrors: 
+    rigImportWarnings: "Avatar Rig Configuration mis-match. Inbetween bone rotation
+      in configuration does not match rotation in animation file:\n\t'Jnt_Foot_L'
+      : rotation error = 1.600794 deg\n\t'Jnt_Foot_R' : rotation error = 1.600811
+      deg\n"
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -113,7 +115,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Jnt_Foot_L
+    - boneName: Jnt_Ankle_L
       humanName: LeftFoot
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -121,7 +123,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Jnt_Foot_R
+    - boneName: Jnt_Ankle_R
       humanName: RightFoot
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -390,7 +392,7 @@ ModelImporter:
     - name: Jnt_Thumb_2_L
       parentName: Jnt_Thumb_1_L
       position: {x: 1.4210854e-16, y: 0.064097546, z: 1.1368684e-15}
-      rotation: {x: 0.025132025, y: -0.05110814, z: 0.027163772, w: 0.9980073}
+      rotation: {x: 0.025132023, y: -0.051108126, z: 0.027163712, w: 0.9980073}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_3_L
       parentName: Jnt_Thumb_2_L
@@ -420,7 +422,7 @@ ModelImporter:
     - name: Jnt_Mit_1_R
       parentName: Jnt_Wrist_R
       position: {x: 0.000000057131295, y: -0.15568788, z: -0.000004628037}
-      rotation: {x: 0.06603415, y: -0.23638752, z: 0.009860091, w: 0.96936226}
+      rotation: {x: 0.06603416, y: -0.23638754, z: 0.009860092, w: 0.9693623}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Mit_2_R
       parentName: Jnt_Mit_1_R
@@ -435,12 +437,12 @@ ModelImporter:
     - name: Jnt_Thumb_1_R
       parentName: Jnt_Wrist_R
       position: {x: -0.04968736, y: -0.08411315, z: -0.00014855477}
-      rotation: {x: -0.0013958815, y: -0.115311444, z: -0.319129, w: 0.9406689}
+      rotation: {x: -0.0013958816, y: -0.11531145, z: -0.31912902, w: 0.94066894}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_2_R
       parentName: Jnt_Thumb_1_R
       position: {x: -0.0000016139581, y: -0.06409986, z: -0.0000034060238}
-      rotation: {x: 0.025169466, y: -0.05110777, z: 0.027146323, w: 0.9980069}
+      rotation: {x: 0.025169585, y: -0.051107835, z: 0.027146412, w: 0.9980068}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_3_R
       parentName: Jnt_Thumb_2_R

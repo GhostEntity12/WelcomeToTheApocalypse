@@ -141,7 +141,8 @@ MonoBehaviour:
   m_Allegiance: 0
   m_StartingActionPoints: 2
   m_HealthbarPosition: {fileID: 552226458814592113}
-  m_AIHeuristicCalculator: {fileID: 0}
+  m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
+    type: 2}
 --- !u!136 &552226458667860040
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -475,7 +476,7 @@ GameObject:
   - component: {fileID: 8895199947434102501}
   - component: {fileID: 4688166782204535027}
   m_Layer: 9
-  m_Name: Famine 1
+  m_Name: Famine_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -513,8 +514,8 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 45ad1ac4ae66107449ca3e92a02eddc7, type: 2}
+  - {fileID: 2100000, guid: 59752842d78a6e54f8d264075dc08512, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -577,7 +578,7 @@ SkinnedMeshRenderer:
   - {fileID: 8501293523902820580}
   - {fileID: 4373565827121070584}
   m_BlendShapeWeights: []
-  m_RootBone: {fileID: 6433040418436661971}
+  m_RootBone: {fileID: 3383004449956793098}
   m_AABB:
     m_Center: {x: -0.0031963587, y: 0.11147767, z: 0.049854994}
     m_Extent: {x: 1.1159153, y: 1.059237, z: 0.34982264}
