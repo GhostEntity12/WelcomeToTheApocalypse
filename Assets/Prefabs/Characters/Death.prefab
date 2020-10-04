@@ -358,8 +358,8 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b0eb48215c695fa4da5c6df6931d503d, type: 2}
-  - {fileID: 2100000, guid: e1bb40e484c55d54291c89f626294bc9, type: 2}
+  - {fileID: 2100000, guid: cd1eb32bbab70884cb38f6fffef46eae, type: 2}
+  - {fileID: 2100000, guid: 0484c8d771cb28b40821f86915ac517e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -421,7 +421,7 @@ SkinnedMeshRenderer:
   - {fileID: 8816599995155984320}
   - {fileID: 5026675195327567365}
   m_BlendShapeWeights: []
-  m_RootBone: {fileID: 6779510038621649802}
+  m_RootBone: {fileID: 4816962704675111210}
   m_AABB:
     m_Center: {x: 0.000000029802322, y: -0.04275167, z: -0.010457009}
     m_Extent: {x: 0.95469236, y: 0.9784485, z: 0.35952336}
@@ -515,7 +515,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3103404157100037680}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4547313322579921644}
@@ -563,7 +563,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 24fb0ac64e5d27a4d86b838f80512fcb, type: 2}
   - {fileID: 11400000, guid: 410f337e8fc6ac34892d8d3dd78848b5, type: 2}
   - {fileID: 11400000, guid: 4e9404f9e0391b6408698d1c0aebb16e, type: 2}
-  m_PassiveSkill: {fileID: 0}
+  m_PassiveSkill: {fileID: 11400000, guid: ee2af7d51b5d20f4e8ed9a51e3e6331b, type: 2}
   m_Allegiance: 0
   m_StartingActionPoints: 2
   m_HealthbarPosition: {fileID: 6861607059217734811}
@@ -1427,6 +1427,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: baseplate
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: d62260faf5561314e93ea905bd266fbf,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d62260faf5561314e93ea905bd266fbf, type: 3}
