@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SkillName: Death's Embrace
   m_Icon: {fileID: 0}
-  m_Description: The user makes a high damage attack targeting a single adjacent
-    foe.
+  m_Description: Target an adjacent foe with a high damage attack, dealing 7 damage.
+    3 turn cooldown.
   targets: 2
   targetType: 0
   excludeCaster: 0
@@ -25,4 +25,5 @@ MonoBehaviour:
   m_CastableDistance: 1
   m_AffectedRange: 0
   m_Cost: 2
+  m_Cooldown: 3
   m_DamageAmount: 7

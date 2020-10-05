@@ -7,6 +7,8 @@ public class CameraMovement : MonoBehaviour
     private bool m_IsSwapping;
 
     [Header("Movement")]
+    public float m_AutoMoveSpeed;
+    public Vector3? m_AutoMoveDestination;
     public float m_MoveSpeed = 3.0f;
     private Vector3 m_MovementInput = Vector3.zero;
     public Collider m_CameraLimits;
@@ -56,6 +58,15 @@ public class CameraMovement : MonoBehaviour
         // Get player input this frame.
         m_MovementInput += transform.right * Input.GetAxis("Horizontal");
         m_MovementInput += transform.forward * Input.GetAxis("Vertical");
+
+        if (m_MovementInput.magnitude != 0)
+        {
+            m_AutoMoveDestination = null;
+        }
+        else if (m_AutoMoveDestination != null)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, (Vector3)m_AutoMoveDestination, Mathf.Clamp(Vector3.Distance(transform.position, (Vector3)m_AutoMoveDestination) * m_AutoMoveSpeed * Time.deltaTime, 1f * Time.deltaTime, 50f * Time.deltaTime));
+        }
 
         // Apply delta time.
         m_MovementInput *= Time.deltaTime;

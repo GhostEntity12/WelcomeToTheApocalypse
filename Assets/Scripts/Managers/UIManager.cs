@@ -22,6 +22,9 @@ public class UIManager : MonoBehaviour
 		public Color m_Medium;
 		public Color m_Light;
 		public Sprite m_SkillBg;
+
+		public Color m_IconLight;
+		public Color m_IconDark;
 	}
 
 	[Serializable]

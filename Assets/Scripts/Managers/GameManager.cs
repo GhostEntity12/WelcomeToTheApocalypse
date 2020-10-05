@@ -124,6 +124,8 @@ public class GameManager : MonoBehaviour
 
     private bool m_Paused = false;
 
+    private CameraMovement m_CameraMovement;
+
     // On startup.
     private void Awake()
     {
@@ -138,6 +140,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         dm = DialogueManager.instance;
+        m_CameraMovement = m_MainCamera.GetComponentInParent<CameraMovement>();
 
         m_InputBlockingUIElements = GameObject.FindObjectsOfType<InputBlockingUI>().ToList();
 
@@ -274,6 +277,7 @@ public class GameManager : MonoBehaviour
                 // Check player input.
                 if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
+                    m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
                     if (rayHitUnit != m_SelectedUnit) // TODO: revert to only player select
