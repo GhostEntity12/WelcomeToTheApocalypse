@@ -124,6 +124,8 @@ public class Unit : MonoBehaviour
 
     private int m_ExtraDamage = 0;
 
+    private int m_ExtraSkillDamage = 0;
+
     // On startup.
     void Awake()
     {
@@ -418,6 +420,11 @@ public class Unit : MonoBehaviour
         m_ExtraDamage += extra;
     }
 
+    public void AddExtraSkillDamage(int extra)
+    {
+        m_ExtraSkillDamage += extra;
+    }
+
     /// <summary>
     /// Check if the unit is moving.
     /// </summary>
@@ -473,6 +480,12 @@ public class Unit : MonoBehaviour
                                     {
                                         status.TakeEffect(u);
                                     }
+                                }
+                                // Add extra damage to the skill from status effect (if there is any).
+                                if (m_ExtraSkillDamage > 0)
+                                {
+                                    ds.AddExtraDamage(m_ExtraSkillDamage);
+                                    m_ExtraSkillDamage = 0;
                                 }
 
                                 if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))

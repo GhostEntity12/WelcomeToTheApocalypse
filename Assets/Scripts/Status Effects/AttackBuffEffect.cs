@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Skills/Status Effects/Damage Over Time Effect")]
-public class DamageOverTimeEffect : InflictableStatus
+[CreateAssetMenu(menuName = "Skills/Status Effects/Attack Buff Effect")]
+public class AttackBuffEffect : InflictableStatus
 {
-    public int m_DamageOverTime = 0;
+    public int m_AttackIncrease = 0;
 
 	public override bool CheckPrecondition(TriggerType trigger)
 	{
@@ -14,14 +14,13 @@ public class DamageOverTimeEffect : InflictableStatus
 
 	public override void TakeEffect(Unit affected)
 	{
-        if (m_RemainingDuration > 0)
+		if (m_RemainingDuration > 0)
         {
-            affected.DecreaseCurrentHealth(m_DamageOverTime);
-            m_RemainingDuration--;
+            affected.AddExtraDamage(m_AttackIncrease);
         }
         else
         {
             affected.RemoveStatusEffect(this);
-        }		
+        }
 	}
 }
