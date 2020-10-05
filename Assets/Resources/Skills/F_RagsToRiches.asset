@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SkillName: Rags To Riches
   m_Icon: {fileID: 0}
-  m_Description: The user raises an ally's spirits with the promise of a reward,
-    slightly increasing the damage they can deal for a few turns
+  m_Description: Raises an ally's spirits with the promise of a reward, slightly
+    increasing the damage they deal for a few turns. 3 turn cooldown.
   targets: 1
   targetType: 0
   excludeCaster: 0
@@ -25,5 +25,6 @@ MonoBehaviour:
   m_CastableDistance: 2
   m_AffectedRange: 0
   m_Cost: 2
+  m_Cooldown: 3
   m_DamageAmount: 0
   m_Effect: {fileID: 0}

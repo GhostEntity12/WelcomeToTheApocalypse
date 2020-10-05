@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SkillName: Benign Infection
   m_Icon: {fileID: 0}
-  m_Description: The user does something to heal an ally, idk?
+  m_Description: Supercharge the antibodies of an ally within 2 tiles, healing 3
+    damage. 3 turn cooldown.
   targets: 1
   targetType: 0
   excludeCaster: 0
@@ -24,5 +25,6 @@ MonoBehaviour:
   m_CastableDistance: 2
   m_AffectedRange: 0
   m_Cost: 2
+  m_Cooldown: 3
   m_HealAmount: 3
   chosenTarget: {fileID: 0}
