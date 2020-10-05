@@ -110,9 +110,21 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public ActionPointCounter m_ActionPointCounter = null;
 
+    /// <summary>
+    /// List of UI elements that block the player from being able to interact with the game.
+    /// </summary>
     private List<InputBlockingUI> m_InputBlockingUIElements = new List<InputBlockingUI>();
 
+    /// <summary>
+    /// Is the mouse hovering over a UI element that will block the player's inputs?
+    /// </summary>
     private bool m_MouseOverUIBlockingElements = false;
+
+    public Canvas m_PauseScreen = null;
+
+    private bool m_Paused = false;
+
+    private CameraMovement m_CameraMovement;
 
     // On startup.
     private void Awake()
@@ -128,6 +140,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         dm = DialogueManager.instance;
+        m_CameraMovement = m_MainCamera.GetComponentInParent<CameraMovement>();
 
         m_InputBlockingUIElements = GameObject.FindObjectsOfType<InputBlockingUI>().ToList();
 
@@ -207,13 +220,22 @@ public class GameManager : MonoBehaviour
 
                 // Check the passives of all the player units for any that trigger at the start of their turn.
                 PassiveSkill ps = u.GetPassiveSkill();
+
                 if (ps != null)
                     ps.CheckPrecondition(TriggerType.OnTurnStart);
 
                 foreach(BaseSkill s in u.GetSkills())
                 {
                     s.DecrementCooldown();
-                }                
+                }
+
+                foreach(InflictableStatus status in u.GetInflictableStatuses())
+                {
+                    if (status.CheckPrecondition(TriggerType.OnTurnStart) == true)
+                    {
+                        status.TakeEffect(u);
+                    }
+                }   
             }
         }
 
@@ -264,9 +286,10 @@ public class GameManager : MonoBehaviour
                 // Check player input.
                 if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
+                    m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
-                    if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAllegiance() == m_TeamCurrentTurn) // TODO: revert to only player select
+                    if (rayHitUnit != m_SelectedUnit) // TODO: revert to only player select
                     {                        
                         // Reset the nodes highlights before selecting the new unit
                         m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
@@ -392,7 +415,7 @@ public class GameManager : MonoBehaviour
             else if (m_TargetingState == TargetingState.Move)
             {
                 // Make sure a unit is selected.
-                if (m_SelectedUnit != null)
+                if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player)
                 {
                     // Check input.
                     if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
@@ -425,7 +448,7 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(m_AbilityHotkeys[i]))
             {
                 // Make sure the player has a unit selected.
-                if (m_SelectedUnit != null)
+                if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player)
                 {
                     // Make sure the unit can afford to cast the skill and the skill isn't on cooldown before selecting it.
                     if (m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.GetSkill(i).m_Cost && m_SelectedUnit.GetSkill(i).GetCurrentCooldown() == 0)
@@ -466,6 +489,20 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             EndCurrentTurn();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!m_Paused)
+            {
+                m_PauseScreen.gameObject.SetActive(true);
+                m_Paused = true;
+            }
+            else
+            {
+                m_PauseScreen.gameObject.SetActive(false);
+                m_Paused = false;
+            }
         }
     }
 
