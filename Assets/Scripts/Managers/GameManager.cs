@@ -220,13 +220,22 @@ public class GameManager : MonoBehaviour
 
                 // Check the passives of all the player units for any that trigger at the start of their turn.
                 PassiveSkill ps = u.GetPassiveSkill();
+
                 if (ps != null)
                     ps.CheckPrecondition(TriggerType.OnTurnStart);
 
                 foreach(BaseSkill s in u.GetSkills())
                 {
                     s.DecrementCooldown();
-                }                
+                }
+
+                foreach(InflictableStatus status in u.GetInflictableStatuses())
+                {
+                    if (status.CheckPrecondition(TriggerType.OnTurnStart) == true)
+                    {
+                        status.TakeEffect(u);
+                    }
+                }   
             }
         }
 

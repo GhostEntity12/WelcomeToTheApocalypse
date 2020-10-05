@@ -239,6 +239,14 @@ public class Unit : MonoBehaviour
             }
         }
 
+        foreach(InflictableStatus status in m_StatusEffects)
+        {
+            if (status.CheckPrecondition(TriggerType.OnTakeDamage) == true)
+            {
+                status.TakeEffect(this);
+            }
+        }
+
         if (m_Healthbar != null)
         {
             m_Healthbar.m_HealthChangeIndicator.text = "-" + damage;
@@ -379,6 +387,10 @@ public class Unit : MonoBehaviour
     /// <param name="effect"> The status effect to add to the unit. </param>
     public void AddStatusEffect(InflictableStatus effect) { m_StatusEffects.Add(effect); }
 
+    public void RemoveStatusEffect(InflictableStatus effect) { m_StatusEffects.Remove(effect); }
+
+    public List<InflictableStatus> GetInflictableStatuses() { return m_StatusEffects; }
+
     /// <summary>
     /// Set the healthbar of the unit.
     /// </summary>
@@ -454,6 +466,15 @@ public class Unit : MonoBehaviour
                             // Check which units meet the prerequisits for the unit's passive.
                             foreach(Unit u in hitUnits)
                             {
+                                
+                                foreach(InflictableStatus status in m_StatusEffects)
+                                {
+                                    if (status.CheckPrecondition(TriggerType.OnDealDamage) == true)
+                                    {
+                                        status.TakeEffect(u);
+                                    }
+                                }
+
                                 if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
                                 {
                                     m_PassiveSkill.TakeEffect(u);
