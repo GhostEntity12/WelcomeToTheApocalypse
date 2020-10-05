@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: D_Reap
   m_EditorClassIdentifier: 
   m_SkillName: Reap
-  m_Icon: {fileID: 0}
-  m_Description: The user makes a series of wide, sweeping attacks, hitting all foes
-    within range.
+  m_LightIcon: {fileID: 0}
+  m_DarkIcon: {fileID: 0}
+  m_Description: Target an area within {distance} tiles with a wide, sweeping attack,
+    dealing {damage} damage to all foes within {range} tiles. {cooldown} turn cooldown.
   targets: 2
   targetType: 2
   excludeCaster: 0
@@ -25,4 +26,5 @@ MonoBehaviour:
   m_CastableDistance: 5
   m_AffectedRange: 3
   m_Cost: 2
+  m_Cooldown: 3
   m_DamageAmount: 5

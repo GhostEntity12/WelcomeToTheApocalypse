@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: P_PestilencesMark
   m_EditorClassIdentifier: 
   m_SkillName: Pestilence's Mark
-  m_Icon: {fileID: 0}
-  m_Description: The user marks an enemy for death, dealing some damage immediately,
-    and a small amount of damage each turn.
+  m_LightIcon: {fileID: 0}
+  m_DarkIcon: {fileID: 0}
+  m_Description: Infect a foe within {distance} tiles, dealing {damage} damage immediately,
+    and {effectDamage} damage for {duration} turns. {cooldown} turn cooldown.
   targets: 2
   targetType: 0
   excludeCaster: 0
@@ -25,5 +26,6 @@ MonoBehaviour:
   m_CastableDistance: 5
   m_AffectedRange: 0
   m_Cost: 2
+  m_Cooldown: 3
   m_DamageAmount: 3
   m_Effect: {fileID: 0}
