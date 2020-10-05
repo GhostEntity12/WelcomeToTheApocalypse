@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(menuName = "Skills/Status Effects/Damage Over Time Effect")]
 public class DamageOverTimeEffect : InflictableStatus
 {
     public int m_DamageOverTime = 0;
