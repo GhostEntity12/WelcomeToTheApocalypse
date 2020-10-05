@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: D_Reap
   m_EditorClassIdentifier: 
   m_SkillName: Reap
-  m_Icon: {fileID: 0}
-  m_Description: Target an area within 5 tiles with a series of wide, sweeping attacks,
-    dealing 5 damage to all foes within range. 3 turn cooldown.
+  m_LightIcon: {fileID: 0}
+  m_DarkIcon: {fileID: 0}
+  m_Description: Target an area within {distance} tiles with a series of wide, sweeping
+    attacks, dealing {damage} damage to all foes within {range} tiles. {cooldown}
+    turn cooldown.
   targets: 2
   targetType: 2
   excludeCaster: 0

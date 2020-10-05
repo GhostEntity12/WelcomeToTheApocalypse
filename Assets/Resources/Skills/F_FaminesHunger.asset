@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: F_FaminesHunger
   m_EditorClassIdentifier: 
   m_SkillName: Famine's Hunger
-  m_Icon: {fileID: 0}
-  m_Description: Cripple a foe within 2 tiles, reducing the amount of damage they
-    can do for a few turns. 3 turn cooldown.
+  m_LightIcon: {fileID: 0}
+  m_DarkIcon: {fileID: 0}
+  m_Description: Cripple a foe within {distance} tiles, dealing {damage} damage and
+    reducing the amount of damage they can do for {duration} turns. {cooldown} turn
+    cooldown.
   targets: 2
   targetType: 0
   excludeCaster: 0
