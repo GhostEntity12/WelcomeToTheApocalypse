@@ -27,8 +27,10 @@ public class BaseSkill : ScriptableObject
     [Header("Display")]
     // The name of the skill
     public string m_SkillName;
-    // The icon which represents the skill
-    public Sprite m_Icon;
+    // The light half of the icon which represents the skill
+    public Sprite m_LightIcon;
+    // The dark half of the icon which represents the skill
+    public Sprite m_DarkIcon;
     //The skill's description
     [TextArea(1, 5)]
     public string m_Description;
