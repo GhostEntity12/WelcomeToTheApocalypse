@@ -33,6 +33,7 @@ public class AssetSeeder : MonoBehaviour
 
 
         parentObject = new GameObject(string.IsNullOrWhiteSpace(parentName) ? $"{prefab.name}Parent" : parentName);
+        parentObject.transform.position = spawnBounds.center;
         for (int i = 0; i < prefabCount; i++)
         {
             int tries = 0;
