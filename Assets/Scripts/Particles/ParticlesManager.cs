@@ -8,14 +8,32 @@ public class ParticlesManager : MonoBehaviour
 
 	private int m_rangedIndex;
 
+	private int m_deathIndex;
+
 	public float m_rangedSpeed = 0.1f;
 
-
+	//instantiate, slerp
 	public List<ParticleSystem> m_rangedPool;
 
-	public List<GameObject> m_damagePool;
+	//Zeroed
+	public List<GameObject> m_meleePool;
+	/// <summary>
+	/// Used to store the death particles
+	/// </summary>
+	//zeroed out
+	public List<ParticleSystem> m_deathPool;
 
-	public List<GameObject> m_deathPool;
+	/// <summary>
+	/// Used to check which unit is killed and which particle is its
+	/// </summary>
+	[Tooltip("Keeps track of the units to check which one is killed. Add the units in the same order as m_unitParticles so they have the same index.")]
+	public List<GameObject> m_units;
+
+	/// <summary>
+	/// The particles that are active while the unit is alive
+	/// </summary>
+	[Tooltip("Particles for the unit. Add the particles in the same order as m_units so they have the same index.")]
+	public List<ParticleSystem> m_unitParticles;
 
 	public List<ParticleSystem> m_activeRangedParticle;
 
@@ -55,6 +73,16 @@ public class ParticlesManager : MonoBehaviour
 		//activeParticle[0].transform.position = Vector3.MoveTowards(m_unitPos, m_endPosition[0], 5.0f);
 	}
 
+	public void OnKill(Vector3 killedUnit)
+	{
+		if (m_deathIndex < m_deathPool.Count)
+		{
+			m_deathPool[m_deathIndex].transform.position = killedUnit;
+			m_deathPool[m_deathIndex].Play();
+			++m_deathIndex;
+		}
+	}
+
 	void Update()
 	{
 
@@ -66,8 +94,8 @@ public class ParticlesManager : MonoBehaviour
 			//Goes through the active ranged partcles to move from an unit to another
 			for (int i = 0; i < m_activeRangedParticle.Count; ++i)
 			{
+				//m_activeRangedParticle[i].transform.position = Vector3.MoveTowards(m_activeRangedParticle[i].transform.position, m_endPosition[i], m_rangedSpeed);
 				m_activeRangedParticle[i].transform.position = Vector3.MoveTowards(m_activeRangedParticle[i].transform.position, m_endPosition[i], m_rangedSpeed);
-
 				travelTime += Time.deltaTime;
 				//Checks if the particle has reached its destination
 				//Removes the particle from active and the endposition for the particle
@@ -79,7 +107,7 @@ public class ParticlesManager : MonoBehaviour
 					m_activeRangedParticle.Remove(m_activeRangedParticle[i]);
 					m_endPosition.Remove(m_endPosition[i]);
 
-					if(m_rangedIndex < 0)
+					if(m_rangedIndex <= 0)
 					{
 						m_rangedIndex = 0;
 					}
@@ -93,13 +121,30 @@ public class ParticlesManager : MonoBehaviour
 				}
 			}
 		}
-		
+
+		foreach(ParticleSystem particle in m_deathPool)
+		{
+			if(particle.isStopped)
+			{
+				if (m_deathIndex <= 0)
+				{
+					m_deathIndex = 0;
+				}
+				else
+				{
+					--m_deathIndex;
+				}
+			}
+		}
+
+		//test coding
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit raycastHit;
 		if (Physics.Raycast(ray, out raycastHit))
 		{
 			if(Input.GetMouseButtonDown(0))
 			{
+				//OnKill(raycastHit.collider.gameObject.transform.position);
 				if (m_unitPos == Vector3.zero)
 				{
 					m_unitPos = raycastHit.collider.gameObject.transform.position;
