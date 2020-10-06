@@ -204,6 +204,8 @@ public class Unit : MonoBehaviour
     /// <returns> The current health of the unit. </returns>
     public int GetCurrentHealth() { return m_CurrentHealth; }
 
+    public int GetStartingHealth() { return m_StartingHealth; }
+
     /// <summary>
     /// Increase the unit's current health.
     /// </summary>
