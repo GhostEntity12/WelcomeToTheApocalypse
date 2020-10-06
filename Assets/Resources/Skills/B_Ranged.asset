@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: B_Ranged
   m_EditorClassIdentifier: 
   m_SkillName: Basic Ranged Attack
-  m_Icon: {fileID: 0}
-  m_Description: Target a foe within 4 tiles, deal 3 damage.
+  m_LightIcon: {fileID: 0}
+  m_DarkIcon: {fileID: 0}
+  m_Description: Target a foe within {distance} tiles. Deal {damage} damage.
   targets: 2
   targetType: 0
   excludeCaster: 0

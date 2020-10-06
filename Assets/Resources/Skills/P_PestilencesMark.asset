@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: P_PestilencesMark
   m_EditorClassIdentifier: 
   m_SkillName: Pestilence's Mark
-  m_Icon: {fileID: 0}
-  m_Description: Infect a foe within 5 tiles, dealing 3 damage immediately, and a
-    small amount of damage each turn. 3 turn cooldown.
+  m_LightIcon: {fileID: 0}
+  m_DarkIcon: {fileID: 0}
+  m_Description: Infect a foe within {distance} tiles, dealing {damage} damage immediately,
+    and {effectDamage} damage for {duration} turns. {cooldown} turn cooldown.
   targets: 2
   targetType: 0
   excludeCaster: 0

@@ -109,7 +109,7 @@ public class UIManager : MonoBehaviour
 	{
 		foreach (SkillButton slot in m_SkillSlots)
 		{
-			slot.m_Image.sprite = uiData.m_SkillBg;
+			slot.m_BgImage.sprite = uiData.m_SkillBg;
 		}
 
 		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
@@ -121,6 +121,8 @@ public class UIManager : MonoBehaviour
 		{
 			// TODO: Refactor
 			m_SkillSlots[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
+			m_SkillSlots[i].m_LightImage.color = uiData.m_IconLight;
+			m_SkillSlots[i].m_LightImage.color = uiData.m_IconDark;
 			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
 			m_SkillSlots[i].UpdateTooltip();
 		}
