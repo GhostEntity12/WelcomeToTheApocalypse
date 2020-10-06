@@ -124,6 +124,8 @@ public class Unit : MonoBehaviour
 
     private int m_ExtraDamage = 0;
 
+    private int m_ExtraSkillDamage = 0;
+
     // On startup.
     void Awake()
     {
@@ -202,6 +204,8 @@ public class Unit : MonoBehaviour
     /// <returns> The current health of the unit. </returns>
     public int GetCurrentHealth() { return m_CurrentHealth; }
 
+    public int GetStartingHealth() { return m_StartingHealth; }
+
     /// <summary>
     /// Increase the unit's current health.
     /// </summary>
@@ -236,6 +240,14 @@ public class Unit : MonoBehaviour
                     m_PassiveSkill.TakeEffect(this);
                 else
                     m_PassiveSkill.TakeEffect();
+            }
+        }
+
+        foreach(InflictableStatus status in m_StatusEffects)
+        {
+            if (status.CheckPrecondition(TriggerType.OnTakeDamage) == true)
+            {
+                status.TakeEffect(this);
             }
         }
 
@@ -379,6 +391,10 @@ public class Unit : MonoBehaviour
     /// <param name="effect"> The status effect to add to the unit. </param>
     public void AddStatusEffect(InflictableStatus effect) { m_StatusEffects.Add(effect); }
 
+    public void RemoveStatusEffect(InflictableStatus effect) { m_StatusEffects.Remove(effect); }
+
+    public List<InflictableStatus> GetInflictableStatuses() { return m_StatusEffects; }
+
     /// <summary>
     /// Set the healthbar of the unit.
     /// </summary>
@@ -404,6 +420,11 @@ public class Unit : MonoBehaviour
     public void AddExtraDamage(int extra)
     {
         m_ExtraDamage += extra;
+    }
+
+    public void AddExtraSkillDamage(int extra)
+    {
+        m_ExtraSkillDamage += extra;
     }
 
     /// <summary>
@@ -454,6 +475,21 @@ public class Unit : MonoBehaviour
                             // Check which units meet the prerequisits for the unit's passive.
                             foreach(Unit u in hitUnits)
                             {
+                                
+                                foreach(InflictableStatus status in m_StatusEffects)
+                                {
+                                    if (status.CheckPrecondition(TriggerType.OnDealDamage) == true)
+                                    {
+                                        status.TakeEffect(u);
+                                    }
+                                }
+                                // Add extra damage to the skill from status effect (if there is any).
+                                if (m_ExtraSkillDamage > 0)
+                                {
+                                    ds.AddExtraDamage(m_ExtraSkillDamage);
+                                    m_ExtraSkillDamage = 0;
+                                }
+
                                 if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
                                 {
                                     m_PassiveSkill.TakeEffect(u);

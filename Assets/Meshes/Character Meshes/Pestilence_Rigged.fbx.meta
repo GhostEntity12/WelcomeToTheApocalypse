@@ -16,7 +16,10 @@ ModelImporter:
     optimizeGameObjects: 0
     motionNodeName: 
     rigImportErrors: 
-    rigImportWarnings: 
+    rigImportWarnings: "Avatar Rig Configuration mis-match. Inbetween bone rotation
+      in configuration does not match rotation in animation file:\n\t'Jnt_Foot_L'
+      : rotation error = 1.600794 deg\n\t'Jnt_Foot_R' : rotation error = 1.600811
+      deg\n"
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -112,7 +115,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Jnt_Foot_L
+    - boneName: Jnt_Ankle_L
       humanName: LeftFoot
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -120,7 +123,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Jnt_Foot_R
+    - boneName: Jnt_Ankle_R
       humanName: RightFoot
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -312,39 +315,27 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
+    - boneName: Jnt_Spine_2
+      humanName: Chest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
     skeleton:
     - name: Pestilence_Rigged(Clone)
       parentName: 
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Pestilence_Mesh
+    - name: locator1
       parentName: Pestilence_Rigged(Clone)
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Scarf_1
-      parentName: Pestilence_Rigged(Clone)
-      position: {x: -0.07271688, y: 1.3669678, z: -0.075359344}
-      rotation: {x: -0.70111847, y: -0.091831155, z: -0.091831155, w: 0.70111847}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Scarf_2
-      parentName: Jnt_Scarf_1
-      position: {x: 5.3290704e-17, y: 0.25507858, z: 0}
-      rotation: {x: 2.5686082e-18, y: 1.28278086e-17, z: 0.20089152, w: 0.9796135}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Scarf_3
-      parentName: Jnt_Scarf_2
-      position: {x: 1.0658141e-16, y: 0.25149184, z: 0}
-      rotation: {x: 1.048305e-18, y: -3.6161024e-18, z: -0.05355104, w: 0.99856514}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Scarf_4
-      parentName: Jnt_Scarf_3
-      position: {x: -0.0012908548, y: 0.14447215, z: -1.4135799e-15}
-      rotation: {x: -0, y: -2.311116e-33, z: -1.0408341e-17, w: 1}
-      scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Hip
-      parentName: Pestilence_Rigged(Clone)
+      parentName: locator1
       position: {x: -0, y: 0.8615603, z: 0}
       rotation: {x: -0.013228184, y: 0, z: -0, w: 0.9999125}
       scale: {x: 1, y: 1, z: 1}
@@ -356,17 +347,7 @@ ModelImporter:
     - name: Jnt_Spine_2
       parentName: Jnt_Spine_1
       position: {x: 4.5484028e-17, y: 0.19989675, z: -0.0004542417}
-      rotation: {x: 0.037894595, y: 0, z: -0, w: 0.99928176}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Neck
-      parentName: Jnt_Spine_2
-      position: {x: 8.579206e-18, y: 0.10424264, z: 2.0872193e-16}
-      rotation: {x: 0.012096314, y: 0, z: -0, w: 0.99992687}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Head
-      parentName: Jnt_Neck
-      position: {x: 4.3924988e-17, y: 0.17076702, z: 3.907985e-16}
-      rotation: {x: 6.938894e-18, y: 0, z: -0, w: 1}
+      rotation: {x: 0.037894595, y: -0, z: -0, w: 0.99928176}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Clav_L
       parentName: Jnt_Spine_2
@@ -441,7 +422,7 @@ ModelImporter:
     - name: Jnt_Mit_1_R
       parentName: Jnt_Wrist_R
       position: {x: 0.000000057131295, y: -0.15568788, z: -0.000004628037}
-      rotation: {x: 0.06603415, y: -0.23638752, z: 0.009860091, w: 0.96936226}
+      rotation: {x: 0.06603416, y: -0.23638754, z: 0.009860092, w: 0.9693623}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Mit_2_R
       parentName: Jnt_Mit_1_R
@@ -456,7 +437,7 @@ ModelImporter:
     - name: Jnt_Thumb_1_R
       parentName: Jnt_Wrist_R
       position: {x: -0.04968736, y: -0.08411315, z: -0.00014855477}
-      rotation: {x: -0.0013958815, y: -0.115311444, z: -0.319129, w: 0.9406689}
+      rotation: {x: -0.0013958816, y: -0.11531145, z: -0.31912902, w: 0.94066894}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thumb_2_R
       parentName: Jnt_Thumb_1_R
@@ -467,6 +448,16 @@ ModelImporter:
       parentName: Jnt_Thumb_2_R
       position: {x: 0.0000022153943, y: -0.07616435, z: 0.0000033986225}
       rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Jnt_Neck
+      parentName: Jnt_Spine_2
+      position: {x: 8.579206e-18, y: 0.10424264, z: 2.0872193e-16}
+      rotation: {x: 0.012096314, y: -0, z: -0, w: 0.99992687}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Jnt_Head
+      parentName: Jnt_Neck
+      position: {x: 4.3924988e-17, y: 0.17076702, z: 3.907985e-16}
+      rotation: {x: 6.938894e-18, y: 0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Jnt_Thigh_L
       parentName: Jnt_Hip
@@ -517,6 +508,31 @@ ModelImporter:
       parentName: Jnt_Foot_R
       position: {x: -0.00000082132425, y: -0.12341983, z: 0.000000016899683}
       rotation: {x: -9.7144515e-17, y: -1.8214596e-17, z: 6.938894e-18, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Jnt_Scarf_1
+      parentName: locator1
+      position: {x: -0.053175777, y: 1.3669678, z: -0.07015109}
+      rotation: {x: -0.70111847, y: -0.091831155, z: -0.091831155, w: 0.70111847}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Jnt_Scarf_2
+      parentName: Jnt_Scarf_1
+      position: {x: 5.3290704e-17, y: 0.25507858, z: 0}
+      rotation: {x: 2.5686082e-18, y: 1.28278086e-17, z: 0.20089152, w: 0.9796135}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Jnt_Scarf_3
+      parentName: Jnt_Scarf_2
+      position: {x: 1.0658141e-16, y: 0.25149184, z: 0}
+      rotation: {x: 1.048305e-18, y: -3.6161024e-18, z: -0.05355104, w: 0.99856514}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Jnt_Scarf_4
+      parentName: Jnt_Scarf_3
+      position: {x: -0.0012908548, y: 0.14447215, z: -1.4135799e-15}
+      rotation: {x: -0, y: -2.311116e-33, z: -1.0408341e-17, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pestilence_Mesh
+      parentName: Pestilence_Rigged(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     armTwist: 0.5
     foreArmTwist: 0.5

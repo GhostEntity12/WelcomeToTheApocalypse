@@ -124,6 +124,10 @@ public class GameManager : MonoBehaviour
 
     private bool m_Paused = false;
 
+    private CameraMovement m_CameraMovement;
+
+    public UIHealthBar m_UIHealthBar = null;
+
     // On startup.
     private void Awake()
     {
@@ -138,6 +142,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         dm = DialogueManager.instance;
+        m_CameraMovement = m_MainCamera.GetComponentInParent<CameraMovement>();
 
         m_InputBlockingUIElements = GameObject.FindObjectsOfType<InputBlockingUI>().ToList();
 
@@ -217,13 +222,22 @@ public class GameManager : MonoBehaviour
 
                 // Check the passives of all the player units for any that trigger at the start of their turn.
                 PassiveSkill ps = u.GetPassiveSkill();
+
                 if (ps != null)
                     ps.CheckPrecondition(TriggerType.OnTurnStart);
 
                 foreach(BaseSkill s in u.GetSkills())
                 {
                     s.DecrementCooldown();
-                }                
+                }
+
+                foreach(InflictableStatus status in u.GetInflictableStatuses())
+                {
+                    if (status.CheckPrecondition(TriggerType.OnTurnStart) == true)
+                    {
+                        status.TakeEffect(u);
+                    }
+                }   
             }
         }
 
@@ -274,6 +288,7 @@ public class GameManager : MonoBehaviour
                 // Check player input.
                 if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
+                    m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
                     if (rayHitUnit != m_SelectedUnit) // TODO: revert to only player select
@@ -285,6 +300,7 @@ public class GameManager : MonoBehaviour
                         // Store the new unit
                         m_SelectedUnit = rayHitUnit;
                         UIManager.m_Instance.SwapUI(UIManager.m_Instance.GetUIStyle(m_SelectedUnit));
+                        m_UIHealthBar.SetHealthAmount((float)m_SelectedUnit.GetCurrentHealth() / m_SelectedUnit.GetStartingHealth());
 
                         // Highlight the appropriate tiles
                         m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
