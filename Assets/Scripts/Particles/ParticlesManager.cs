@@ -6,80 +6,153 @@ public class ParticlesManager : MonoBehaviour
 {
 	public static ParticlesManager m_Instance = null;
 
-	private int m_rangedIndex;
+	//Zeroed
+	[Header("Melee Particle")]
+	//public int m_numberOfMelee;
 
-	private int m_deathIndex;
+	//public GameObject m_meleeParent;
+
+	//public GameObject m_meleeParticle;
+
+	public ParticleSystem m_melee;
+
+
+	[Header("Heal Particle")]
+	//public int m_numberOfHeal;
+
+	//public GameObject m_healParent;
+
+	//public GameObject m_healParticle;
+
+	public ParticleSystem m_heal;
+
+
+	[Header("Ranged Particle")]
+	public int m_numberOfRanged;
 
 	public float m_rangedSpeed = 0.1f;
 
-	//instantiate, slerp
-	public List<ParticleSystem> m_rangedPool;
+	public GameObject m_rangedParent;
 
-	//Zeroed
-	public List<GameObject> m_meleePool;
+	public GameObject m_rangedParticle;
+
+	//instantiate, slerp
+	private List<ParticleSystem> m_rangedPool = new List<ParticleSystem>();
+
+	private List<ParticleSystem> m_activeRangedParticle = new List<ParticleSystem>();
+
+	private int m_rangedIndex;
+
+
+
 	/// <summary>
 	/// Used to store the death particles
 	/// </summary>
 	//zeroed out
-	public List<ParticleSystem> m_deathPool;
+	[Header("Death Particle")]
+	public int m_numberOfDeath;
 
+	public GameObject m_deathParent;
+
+	public GameObject m_deathParticle;
+
+	private List<ParticleSystem> m_deathPool = new List<ParticleSystem>();
+
+	private List<ParticleSystem> m_activeDeathParticle = new List<ParticleSystem>();
+
+	private int m_deathIndex;
 	/// <summary>
 	/// Used to check which unit is killed and which particle is its
 	/// </summary>
 	[Tooltip("Keeps track of the units to check which one is killed. Add the units in the same order as m_unitParticles so they have the same index.")]
-	public List<GameObject> m_units;
+	private List<GameObject> m_units;
 
 	/// <summary>
 	/// The particles that are active while the unit is alive
 	/// </summary>
-	[Tooltip("Particles for the unit. Add the particles in the same order as m_units so they have the same index.")]
-	public List<ParticleSystem> m_unitParticles;
+	public List<ParticleSystem> m_unitParticles = new List<ParticleSystem>();
 
-	public List<ParticleSystem> m_activeRangedParticle;
 
-	public List<Vector3> m_endPosition;
+	private List<Vector3> m_endPosition = new List<Vector3>();
 
 	private Vector3 m_unitPos = Vector3.zero;
 
 	private GameObject shootFrom;
 
 	private float travelTime;
-	
+
 	void Awake()
 	{
 		m_Instance = this;
 
-		for(int i = 0; i < m_rangedPool.Count; ++i)
+		for (int i = 0; i < m_numberOfRanged; ++i)
 		{
-			m_rangedPool[i].Stop();
+			m_rangedPool.Add(Instantiate(m_rangedParticle, m_rangedParent.transform).GetComponent<ParticleSystem>());
 		}
 
-		m_activeRangedParticle = new List<ParticleSystem>();
-		m_endPosition = new List<Vector3>();
+		for (int i = 0; i < m_numberOfDeath; ++i)
+		{
+			m_deathPool.Add(Instantiate(m_deathParticle, m_deathParent.transform).GetComponent<ParticleSystem>());
+		}
+
+		//for (int i = 0; i < m_numberOfMelee; ++i)
+		//{
+		//	m_meleePool.Add(Instantiate(m_meleeParticle, m_meleeParent.transform).GetComponent<ParticleSystem>());
+		//}
+
+		//for (int i = 0; i < m_numberOfHeal; ++i)
+		//{
+		//	m_healPool.Add(Instantiate(m_healParticle, m_healParent.transform).GetComponent<ParticleSystem>());
+		//}
 	}
 
 	/// <summary>
 	/// Move ranged particle to desired destination
 	/// </summary>
 
-	public void RangedParticle(Vector3 unitPos, Vector3 endPos)
+	public void RangedAttack(Vector3 unitPos, Vector3 targetPos)
 	{
 		m_rangedPool[m_rangedIndex].transform.position = unitPos;
 		m_rangedPool[m_rangedIndex].Play();
 		m_activeRangedParticle.Add(m_rangedPool[m_rangedIndex]);
-		m_endPosition.Add(endPos);
-		print(Vector3.Distance(unitPos, endPos));
+		m_endPosition.Add(targetPos);
+		print(Vector3.Distance(unitPos, targetPos));
 		++m_rangedIndex;
 		//activeParticle[0].transform.position = Vector3.MoveTowards(m_unitPos, m_endPosition[0], 5.0f);
 	}
 
-	public void OnKill(Vector3 killedUnit)
+	public void OnAttack(Vector3 unitPos)
+	{
+		m_melee.transform.position = unitPos;
+		m_melee.Play();
+	}
+
+	public void OnHeal(Vector3 targetPos)
+	{
+		m_heal.transform.position = targetPos;
+		m_heal.Play();
+	}
+
+	public void OnDeath(Vector3 killedUnitPos)
 	{
 		if (m_deathIndex < m_deathPool.Count)
 		{
-			m_deathPool[m_deathIndex].transform.position = killedUnit;
+			m_deathPool[m_deathIndex].transform.position = killedUnitPos;
 			m_deathPool[m_deathIndex].Play();
+			m_activeDeathParticle.Add(m_deathPool[m_deathIndex]);
+			m_activeDeathParticle.Reverse();
 			++m_deathIndex;
+			//print("Pre: " + m_deathIndex);
+		}
+		for (int i = 0; i < m_unitParticles.Count; ++i)
+		{
+			if (m_unitParticles[i].transform.position == killedUnitPos)
+			{
+				m_unitParticles[i].Stop();
+				//print("Unit: " + killedUnitPos);
+				//print("Particle: " + m_unitParticles[i].transform.position);
+				break;
+			}
 		}
 	}
 
@@ -100,14 +173,14 @@ public class ParticlesManager : MonoBehaviour
 				//Checks if the particle has reached its destination
 				//Removes the particle from active and the endposition for the particle
 				//Removes one from the ranged index
-				if(m_activeRangedParticle[i].transform.position == m_endPosition[i])
+				if (m_activeRangedParticle[i].transform.position == m_endPosition[i])
 				{
 					m_activeRangedParticle[i].time = m_activeRangedParticle[i].main.duration;
 
 					m_activeRangedParticle.Remove(m_activeRangedParticle[i]);
 					m_endPosition.Remove(m_endPosition[i]);
 
-					if(m_rangedIndex <= 0)
+					if (m_rangedIndex <= 0)
 					{
 						m_rangedIndex = 0;
 					}
@@ -122,40 +195,39 @@ public class ParticlesManager : MonoBehaviour
 			}
 		}
 
-		foreach(ParticleSystem particle in m_deathPool)
+		//Checks if it still emitting particles before removing and resetting the index
+		for (int i = 0; i < m_activeDeathParticle.Count; ++i)
 		{
-			if(particle.isStopped)
+			if (!m_activeDeathParticle[i].isEmitting)
 			{
-				if (m_deathIndex <= 0)
+				m_activeDeathParticle.Remove(m_activeDeathParticle[i]);
+				if (m_deathIndex >= 5)
 				{
 					m_deathIndex = 0;
 				}
-				else
-				{
-					--m_deathIndex;
-				}
+				//print("Post: " + m_deathIndex);
 			}
 		}
 
-		//test coding
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		RaycastHit raycastHit;
-		if (Physics.Raycast(ray, out raycastHit))
-		{
-			if(Input.GetMouseButtonDown(0))
-			{
-				//OnKill(raycastHit.collider.gameObject.transform.position);
-				if (m_unitPos == Vector3.zero)
-				{
-					m_unitPos = raycastHit.collider.gameObject.transform.position;
-				}
-				else
-				{
-					RangedParticle(m_unitPos, raycastHit.collider.gameObject.transform.position);
-					m_unitPos = Vector3.zero;
-				}
-			}
-		}
+		////Used to send particles around between units for testing
+		//Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		//RaycastHit raycastHit;
+		//if (Physics.Raycast(ray, out raycastHit))
+		//{
+		//	if(Input.GetMouseButtonDown(0))
+		//	{
+		//		OnDeath(raycastHit.collider.gameObject.transform.position);
+		//		//if (m_unitPos == Vector3.zero)
+		//		//{
+		//		//	m_unitPos = raycastHit.collider.gameObject.transform.position;
+		//		//}
+		//		//else
+		//		//{
+		//		//	RangedAttack(m_unitPos, raycastHit.collider.gameObject.transform.position);
+		//		//	m_unitPos = Vector3.zero;
+		//		//}
+		//	}
+		//}
 	}
 
 
