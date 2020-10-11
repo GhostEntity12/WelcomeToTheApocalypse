@@ -25,14 +25,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Boolean_729C417E: 0
     - _ToonEdgeStrength: 0.01
     - _ToonFresnelPower: 2.5
     - _ToonFresnelWidth: 1
+    - _ToonOutlineDepth: 0.4
+    - _ToonOutlineNormals: 0
+    - _ToonOutlineThickness: 2
     - _ToonSmoothness: 0
     m_Colors:
     - _ToonFresnelColor: {r: 1, g: 1, b: 1, a: 1}
     - _ToonHighlightColor: {r: 1, g: 1, b: 1, a: 1}
     - _ToonMainColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
+    - _ToonOutlineColor: {r: 0, g: 0, b: 0, a: 0}
     - _ToonShadowColor: {r: 0.39999998, g: 0.39999998, b: 0.39999998, a: 1}
 --- !u!114 &630272328670059161
 MonoBehaviour:

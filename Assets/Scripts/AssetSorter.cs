@@ -68,6 +68,8 @@ namespace Ghost
 			{
 				assetsToSort[i].SetSiblingIndex(startingIndex + i);
 			}
+
+			Debug.Log($"AssetSorter on GameObject <b>{gameObject.name}</b> sorted <b>{assetsToSort.Count}</b> children by sort type <b>{m_SortType}</b>");
 		}
 	}
 }
