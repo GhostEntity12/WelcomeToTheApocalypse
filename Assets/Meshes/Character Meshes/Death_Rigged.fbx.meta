@@ -3,7 +3,17 @@ guid: 488b24fd6d2d363419c8d1b7fcee7bdb
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Death_01
+    second: {fileID: 2100000, guid: cd1eb32bbab70884cb38f6fffef46eae, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat_Death_02
+    second: {fileID: 2100000, guid: 0484c8d771cb28b40821f86915ac517e, type: 2}
   materials:
     materialImportMode: 0
     materialName: 0
@@ -540,7 +550,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  autoGenerateAvatarMappingIfUnspecified: 0
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
   avatarSetup: 1

@@ -110,7 +110,7 @@ public class ParticlesManager : MonoBehaviour
 	/// Move ranged particle to desired destination
 	/// </summary>
 
-	public void RangedAttack(Vector3 unitPos, Vector3 targetPos)
+	public void OnRanged(Vector3 unitPos, Vector3 targetPos)
 	{
 		m_rangedPool[m_rangedIndex].transform.position = unitPos;
 		m_rangedPool[m_rangedIndex].Play();
@@ -121,7 +121,7 @@ public class ParticlesManager : MonoBehaviour
 		//activeParticle[0].transform.position = Vector3.MoveTowards(m_unitPos, m_endPosition[0], 5.0f);
 	}
 
-	public void OnAttack(Vector3 unitPos)
+	public void OnMelee(Vector3 unitPos)
 	{
 		m_melee.transform.position = unitPos;
 		m_melee.Play();
