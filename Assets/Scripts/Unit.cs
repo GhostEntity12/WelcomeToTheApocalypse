@@ -338,7 +338,6 @@ public class Unit : MonoBehaviour
     // Set the movement path of the character.
     public void SetMovementPath(Stack<Node> path)
     {
-
         m_MovementPath = path;
         m_IsMoving = true;
 
@@ -358,6 +357,7 @@ public class Unit : MonoBehaviour
         // Before setting the new target node.
         Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
        m_CurrentTargetNode = target;
+       transform.LookAt(m_CurrentTargetNode.worldPosition);
     }
 
     /// <summary>
@@ -522,6 +522,7 @@ public class Unit : MonoBehaviour
                     }
                 }
                 m_Skills[i].CastSkill();
+                transform.LookAt(castLocation.worldPosition);
 				// Play skill animation
 				m_animator.SetTrigger("TriggerSkill");
 				return;
