@@ -147,7 +147,7 @@ public class GameManager : MonoBehaviour
         m_InputBlockingUIElements = GameObject.FindObjectsOfType<InputBlockingUI>().ToList();
 
         m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
-        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
+        UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
     }
 
     // Update.
@@ -179,6 +179,8 @@ public class GameManager : MonoBehaviour
         if (m_TeamCurrentTurn == Allegiance.Player)
         {
             m_TeamCurrentTurn = Allegiance.Enemy;
+
+            UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
 
             // Stop highlighting node's the player can move to.
             if (m_SelectedUnit)
@@ -215,8 +217,10 @@ public class GameManager : MonoBehaviour
         {
             m_TeamCurrentTurn = Allegiance.Player;
 
+            UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
+
             // Reset the player's units.
-            foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+            foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
             {
                 u.ResetActionPoints();
 
@@ -252,8 +256,6 @@ public class GameManager : MonoBehaviour
 
         // Tell end turn button who's turn it currently is.
         m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
-
-        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
     }
 
     /// <summary>
