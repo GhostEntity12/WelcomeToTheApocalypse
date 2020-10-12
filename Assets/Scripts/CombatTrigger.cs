@@ -29,7 +29,6 @@ public class CombatTrigger : MonoBehaviour
                     return;
                 }
                 UIManager.m_Instance.SwapToDialogue(scene);
-                Debug.Log(other.name, this);
             }
 
             gameObject.SetActive(false);
