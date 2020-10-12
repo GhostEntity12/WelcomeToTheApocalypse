@@ -40,6 +40,7 @@ public class UIManager : MonoBehaviour
 	public UIData m_FamineUIData;
 	public UIData m_WarUIData;
 	public UIData m_EnemyUIData;
+	public Color[] m_TurnIndicatorColors = new Color[2];
 
 	[Header("Graphical Elements")]
 	public Image m_FaceBackground;
@@ -50,6 +51,7 @@ public class UIManager : MonoBehaviour
 	public RawImage m_PortraitRenderTexture;
 	public Image m_LeftSpeakerImage;
 	public Image m_RightSpeakerImage;
+	public Image m_TurnIndicatorImage;
 
 
 	[Header("Tweening")]
@@ -60,6 +62,7 @@ public class UIManager : MonoBehaviour
 	public TweenedElement m_LeftSpeaker;
 	public TweenedElement m_RightSpeaker;
 	public TweenedElement m_DialogueUI;
+	public TweenedElement m_TurnIndicator;
 
 	public enum ScreenState { Onscreen, Offscreen }
 
@@ -87,6 +90,7 @@ public class UIManager : MonoBehaviour
 		SetCachesAndPosition(m_LeftSpeaker, new Vector2(-800, 0));
 		SetCachesAndPosition(m_RightSpeaker, new Vector2(800, 0));
 		SetCachesAndPosition(m_DialogueUI, new Vector2(0, -400));
+		SetCachesAndPosition(m_TurnIndicator, new Vector2(300, 300));
 	}
 
 	/// <summary>
@@ -264,5 +268,24 @@ public class UIManager : MonoBehaviour
 				SlideSkills(ScreenState.Onscreen);
 			}
 		});
+	}
+
+	public void SwapTurnIndicator(Allegiance newTeamTurn)
+	{
+		SlideElement(m_TurnIndicator, ScreenState.Offscreen, () =>
+		{
+			GameManager.m_Instance.m_TurnIndicator.UpdateTurnIndicator(newTeamTurn);
+			m_TurnIndicatorImage.color = m_TurnIndicatorColors[(int)newTeamTurn];
+			SlideElement(m_TurnIndicator, ScreenState.Onscreen);
+		});
+	}
+
+	public void HideTurnIndicator()
+	{
+		SlideElement(m_TurnIndicator, ScreenState.Offscreen);
+	}
+	public void ShowTurnIndicator()
+	{
+		SlideElement(m_TurnIndicator, ScreenState.Onscreen);
 	}
 }
