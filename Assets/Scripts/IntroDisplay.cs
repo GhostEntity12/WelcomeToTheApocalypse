@@ -7,8 +7,7 @@ using UnityEngine;
 
 public class IntroDisplay : MonoBehaviour
 {
-	[SerializeField]
-	TextAsset m_IntroScript;
+	public TextAsset m_IntroScript;
 	[SerializeField]
 	float m_TimeBetweenLines = 0.5f;
 	[SerializeField]
