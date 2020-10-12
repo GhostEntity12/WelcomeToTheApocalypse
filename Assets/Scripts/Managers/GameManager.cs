@@ -147,7 +147,7 @@ public class GameManager : MonoBehaviour
         m_InputBlockingUIElements = GameObject.FindObjectsOfType<InputBlockingUI>().ToList();
 
         m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
-        UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
+        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
     }
 
     // Update.
