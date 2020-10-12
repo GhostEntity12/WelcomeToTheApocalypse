@@ -458,6 +458,17 @@ public class GameManager : MonoBehaviour
                     // Make sure the unit can afford to cast the skill and the skill isn't on cooldown before selecting it.
                     if (m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.GetSkill(i).m_Cost && m_SelectedUnit.GetSkill(i).GetCurrentCooldown() == 0)
                     {
+                        // Clear the skill targeting highlights.
+                        foreach (Node n in m_maxSkillRange)
+                        {
+                            m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+                            m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                            n.m_NodeHighlight.ChangeHighlight(TileState.None);
+                        }
+
+                        m_SelectedUnit.HighlightMovableNodes();        
+                        m_SelectedSkill = null;
+                        
                         SkillSelection(i);
                         m_TargetingState = TargetingState.Skill;
                         break;
