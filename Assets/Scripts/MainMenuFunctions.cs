@@ -30,7 +30,7 @@ public class MainMenuFunctions : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
-        StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 1.0f, 0.0f, 1.0f, SceneManager.LoadScene, "Famine_Split"));
+        StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 1.5f, 0.0f, 1.0f, SceneManager.LoadScene, "Famine_Split"));
         m_Anim.SetTrigger("isMainGame");
     }
 

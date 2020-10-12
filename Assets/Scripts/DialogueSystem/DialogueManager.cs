@@ -291,6 +291,7 @@ public class DialogueManager : MonoBehaviour
                 leftCharacter = null;
                 rightCharacter = null;
                 sceneName = null;
+                UIManager.m_Instance.ShowTurnIndicator();
                 return;
             }
             else
@@ -302,6 +303,7 @@ public class DialogueManager : MonoBehaviour
 
     public void TriggerDialogue(TextAsset _sceneName)
     {
+        UIManager.m_Instance.HideTurnIndicator();
         dialogueActive = true;
         ClearDialogueBox();
         sceneName = _sceneName;
