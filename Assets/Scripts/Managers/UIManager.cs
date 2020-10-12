@@ -279,4 +279,13 @@ public class UIManager : MonoBehaviour
 			SlideElement(m_TurnIndicator, ScreenState.Onscreen);
 		});
 	}
+
+	public void HideTurnIndicator()
+	{
+		SlideElement(m_TurnIndicator, ScreenState.Offscreen);
+	}
+	public void ShowTurnIndicator()
+	{
+		SlideElement(m_TurnIndicator, ScreenState.Onscreen);
+	}
 }
