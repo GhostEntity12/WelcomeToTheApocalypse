@@ -122,7 +122,9 @@ public class Unit : MonoBehaviour
 
     public AIHeuristicCalculator m_AIHeuristicCalculator = null;
 
-    private int m_ExtraDamage = 0;
+	private Animator m_animator;
+
+	private int m_ExtraDamage = 0;
 
     private int m_ExtraSkillDamage = 0;
 
@@ -136,12 +138,15 @@ public class Unit : MonoBehaviour
         m_CurrentActionPoints = m_StartingActionPoints;
 
         m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
-    }
+
+
+	}
 
     void Start()
     {
         Grid.m_Instance.SetUnit(gameObject);
         m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
+		m_animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -165,6 +170,9 @@ public class Unit : MonoBehaviour
                 else
                 {
                     m_IsMoving = false;
+
+					//m_animator.SetBool("isWalking", m_IsMoving);
+
                     Grid.m_Instance.SetUnit(gameObject);
                     m_ActionOnFinishPath?.Invoke(this);
                     m_ActionOnFinishPath = null;
@@ -228,7 +236,9 @@ public class Unit : MonoBehaviour
     public void DecreaseCurrentHealth(int decrease)
     {
         int damage = decrease + m_ExtraDamage;
-        
+		// Plays damage animation
+		m_animator.SetTrigger("TriggerDamage");
+
         SetCurrentHealth(m_CurrentHealth - damage);
         m_ExtraDamage = 0;
 
@@ -289,7 +299,9 @@ public class Unit : MonoBehaviour
             Node currentNode = Grid.m_Instance.GetNode(transform.position);
             currentNode.unit = null;
             currentNode.m_isBlocked = false;
-            // TODO: replace with something to actually remove the unit
+			// Play death animation
+			m_animator.SetTrigger("TriggerDeath");
+			// TODO: replace with something to actually remove the unit
             gameObject.SetActive(false);
         }
     }
@@ -326,8 +338,12 @@ public class Unit : MonoBehaviour
     // Set the movement path of the character.
     public void SetMovementPath(Stack<Node> path)
     {
+
         m_MovementPath = path;
         m_IsMoving = true;
+
+		m_animator.SetBool("isWalking", m_IsMoving);
+
         SetTargetNodePosition(m_MovementPath.Pop());
         print(string.Join(", ", path.Select(n=>n.m_NodeHighlight.name)));
     }
@@ -506,8 +522,9 @@ public class Unit : MonoBehaviour
                     }
                 }
                 m_Skills[i].CastSkill();
-
-                return;
+				// Play skill animation
+				m_animator.SetTrigger("TriggerSkill");
+				return;
             }
         }
 
