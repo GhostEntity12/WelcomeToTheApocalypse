@@ -180,6 +180,8 @@ public class GameManager : MonoBehaviour
         {
             m_TeamCurrentTurn = Allegiance.Enemy;
 
+            UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
+
             // Stop highlighting node's the player can move to.
             if (m_SelectedUnit)
             {
@@ -215,8 +217,10 @@ public class GameManager : MonoBehaviour
         {
             m_TeamCurrentTurn = Allegiance.Player;
 
+            UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
+
             // Reset the player's units.
-            foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+            foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
             {
                 u.ResetActionPoints();
 
@@ -252,8 +256,6 @@ public class GameManager : MonoBehaviour
 
         // Tell end turn button who's turn it currently is.
         m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
-
-        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
     }
 
     /// <summary>
@@ -449,22 +451,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < m_AbilityHotkeys.Length; i++)
         {
             if (Input.GetKeyDown(m_AbilityHotkeys[i]))
-            {
-                // Make sure the player has a unit selected.
-                if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player)
-                {
-                    // Make sure the unit can afford to cast the skill and the skill isn't on cooldown before selecting it.
-                    if (m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.GetSkill(i).m_Cost && m_SelectedUnit.GetSkill(i).GetCurrentCooldown() == 0)
-                    {
-                        SkillSelection(i);
-                        m_TargetingState = TargetingState.Skill;
-                        break;
-                    }
-                    else
-                    {
-                        Debug.Log("You can't select this skill, either due to lack of action points or the skill is still on cooldown!", m_SelectedUnit);
-                    }
-                }
+            {                    
+                SkillSelection(i);
+                break;
             }
         }
         
@@ -518,37 +507,45 @@ public class GameManager : MonoBehaviour
         // Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
         if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
 
-        // Reset the nodes in the old target range
-        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
-
-        // Update the GameManager's fields
-        m_SelectedSkill = skill;
-        m_TargetingState = TargetingState.Skill;
-
-        // Get the new affectable area
-        m_maxSkillRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
-
-        // Reset the highlight of movement nodes
-        m_SelectedUnit.m_MovableNodes.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.None));
-
-        // Tell the new nodes they're in range
-        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = true);
-
-        // Tell the appropriate nodes in distance (red) that they're in distance
-        foreach (Node node in Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true))
+        // Make sure the player has a unit selected.
+        if (m_SelectedUnit != null)
         {
-            switch (m_SelectedSkill.targetType)
+            // Make sure the unit can afford to cast the skill and the skill isn't on cooldown before selecting it.
+            if (m_SelectedUnit.GetActionPoints() >= skill.m_Cost && skill.GetCurrentCooldown() == 0)
             {
-                case TargetType.SingleTarget:
-                    node.m_NodeHighlight.m_IsTargetable = IsTargetable(m_SelectedUnit, node.unit, m_SelectedSkill);
-                    break;
-                case TargetType.Line:
-                    throw new NotImplementedException("Line target type not supported");
-                case TargetType.Terrain:
-                    node.m_NodeHighlight.m_IsTargetable = true;
-                    break;
-                default:
-                    break;
+                // Reset the nodes in the old target range
+                m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
+
+                // Update the GameManager's fields
+                m_SelectedSkill = skill;
+                m_TargetingState = TargetingState.Skill;
+
+                // Get the new affectable area
+                m_maxSkillRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
+
+                // Reset the highlight of movement nodes
+                m_SelectedUnit.m_MovableNodes.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.None));
+
+                // Tell the new nodes they're in range
+                m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = true);
+
+                // Tell the appropriate nodes in distance (red) that they're in distance
+                foreach (Node node in Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true))
+                {
+                    switch (m_SelectedSkill.targetType)
+                    {
+                        case TargetType.SingleTarget:
+                            node.m_NodeHighlight.m_IsTargetable = IsTargetable(m_SelectedUnit, node.unit, m_SelectedSkill);
+                            break;
+                        case TargetType.Line:
+                            throw new NotImplementedException("Line target type not supported");
+                        case TargetType.Terrain:
+                            node.m_NodeHighlight.m_IsTargetable = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }        
             }
         }
     }
