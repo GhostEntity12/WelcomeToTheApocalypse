@@ -210,12 +210,13 @@ public class GameManager : MonoBehaviour
             }
 
             // Tell the AI Manager to take its turn
-            AIManager.m_Instance.TakeAITurn();
+            AIManager.m_Instance.SetAITurn(true);
         }
         // Enemy ends turn.
         else
         {
             m_TeamCurrentTurn = Allegiance.Player;
+            AIManager.m_Instance.SetAITurn(false);
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
 
