@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ActionPointCounter : MonoBehaviour
 {
     /// <summary>
     /// List of objects that will serve as counters for the unit's action points.
     /// </summary>
-    private List<GameObject> m_Counters = new List<GameObject>();
+    private List<Image> m_Counters = new List<Image>();
+
+    public Color m_ActiveColor;
+    public Color m_InactiveColor;
 
     void Awake()
     {
@@ -15,7 +19,7 @@ public class ActionPointCounter : MonoBehaviour
         // These are the counters for the unit's action points.
         for(int i = 0; i < transform.childCount; ++i)
         {
-            GameObject child = transform.GetChild(i).gameObject;
+            Image child = transform.GetChild(i).GetComponent<Image>();
 
             // Make sure the child is valid.
             if (child)
@@ -30,7 +34,7 @@ public class ActionPointCounter : MonoBehaviour
     {
         for (int i = m_Counters.Count; i > GameManager.m_Instance.GetSelectedUnit().GetActionPoints(); --i)
         {
-            m_Counters[i - 1].SetActive(false);
+            m_Counters[i - 1].color = m_InactiveColor;
         }
     }
 
@@ -41,7 +45,7 @@ public class ActionPointCounter : MonoBehaviour
     {
         for(int i = 0; i < m_Counters.Count; ++i)
         {
-            m_Counters[i].SetActive(true);
+            m_Counters[i].color = m_ActiveColor;
         }
     }
 }

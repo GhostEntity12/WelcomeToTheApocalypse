@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -17, y: 0}
-  m_SizeDelta: {x: 668.80005, y: 982.34985}
+  m_AnchoredPosition: {x: -30, y: 0}
+  m_SizeDelta: {x: 680, y: 1020}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &3372697108279094315
 CanvasRenderer:
@@ -108,8 +108,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 155, y: -18.75}
-  m_SizeDelta: {x: -350, y: -77.5}
+  m_AnchoredPosition: {x: 0, y: -18.75}
+  m_SizeDelta: {x: -40, y: -77.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2283685582305872623
 CanvasRenderer:
@@ -279,8 +279,8 @@ CanvasGroup:
   m_GameObject: {fileID: 2283685582343941868}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!114 &2474658254774195239
 MonoBehaviour:
@@ -299,8 +299,8 @@ MonoBehaviour:
   nameBox: {fileID: 2283685583615650977}
   dialogueBox: {fileID: 2283685582305872622}
   nameHolder: {fileID: 2283685583460280065}
-  bustL: {fileID: 0}
-  bustR: {fileID: 0}
+  bustL: {fileID: 2283685583659455413}
+  bustR: {fileID: 1176382530100319334}
   delay: 0.025
   sceneName: {fileID: 0}
   clearAfterScene: 1
@@ -341,7 +341,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -500, y: 37.5}
+  m_AnchoredPosition: {x: -735, y: 37.5}
   m_SizeDelta: {x: 300, y: 75}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &2283685583460280067
@@ -571,8 +571,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 17, y: 240.5}
-  m_SizeDelta: {x: 668.8, y: 982.34985}
+  m_AnchoredPosition: {x: 680, y: 0}
+  m_SizeDelta: {x: 650, y: 1020}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &2283685583659455414
 CanvasRenderer:

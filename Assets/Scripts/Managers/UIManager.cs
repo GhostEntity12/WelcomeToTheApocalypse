@@ -124,7 +124,7 @@ public class UIManager : MonoBehaviour
 		for (int i = 0; i < m_SkillSlots.Length; i++)
 		{
 			// TODO: Refactor
-			m_SkillSlots[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
+			m_SkillSlots[i].transform.parent.gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
 			m_SkillSlots[i].m_LightImage.color = uiData.m_IconLight;
 			m_SkillSlots[i].m_LightImage.color = uiData.m_IconDark;
 			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
