@@ -128,6 +128,10 @@ public class GameManager : MonoBehaviour
 
     public UIHealthBar m_UIHealthBar = null;
 
+    public Canvas m_PrematureTurnEndScreen = null;
+
+    private bool m_PrematureTurnEndPrompted = false;
+
     // On startup.
     private void Awake()
     {
@@ -178,6 +182,18 @@ public class GameManager : MonoBehaviour
         // Player ends turn.
         if (m_TeamCurrentTurn == Allegiance.Player)
         {
+            if (m_PrematureTurnEndPrompted == false)
+            {
+                // Check player units for prematurely ending turn here.
+                if (CheckPrematureTurnEnding() == true)
+                {
+                    m_PrematureTurnEndPrompted = true;
+                    m_PrematureTurnEndScreen.gameObject.SetActive(true);
+                    return;
+                }
+            }
+
+            m_PrematureTurnEndPrompted = false;
             m_TeamCurrentTurn = Allegiance.Enemy;
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
@@ -210,12 +226,13 @@ public class GameManager : MonoBehaviour
             }
 
             // Tell the AI Manager to take its turn
-            AIManager.m_Instance.TakeAITurn();
+            AIManager.m_Instance.SetAITurn(true);
         }
         // Enemy ends turn.
         else
         {
             m_TeamCurrentTurn = Allegiance.Player;
+            AIManager.m_Instance.SetAITurn(false);
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
 
@@ -435,6 +452,7 @@ public class GameManager : MonoBehaviour
                             Stack<Node> path = new Stack<Node>();
                             if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out path, out m_MovementCost, true))
                             {
+                                m_PrematureTurnEndPrompted = false;
                                 m_SelectedUnit.SetMovementPath(path);
                                 // Decrease the unit's movement by the cost.
                                 m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
@@ -453,6 +471,7 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(m_AbilityHotkeys[i]))
             {                    
                 SkillSelection(i);
+                m_PrematureTurnEndPrompted = false;
                 break;
             }
         }
@@ -638,6 +657,28 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <returns>The allegiance of the team whose turn it currently is.</returns>
     public Allegiance GetCurrentTurn() { return m_TeamCurrentTurn; }
+
+    public bool CheckPrematureTurnEnding()
+    {
+        List<Unit> playerUnits = UnitsManager.m_Instance.m_PlayerUnits;
+        string unitsWithPossibleActions = "";
+
+        foreach(Unit u in playerUnits)
+        {
+            if (u.GetCurrentMovement() > 0)
+            {
+                unitsWithPossibleActions += u.name + " ";
+            }
+
+            else if (u.GetActionPoints() > 0)
+            {
+                unitsWithPossibleActions += u.name + " ";
+            }
+        }
+        m_PrematureTurnEndScreen.GetComponent<PlayerUnitsHaveTurnRemaining>().ConcatenateRemainingCharactersText(unitsWithPossibleActions);
+
+        return unitsWithPossibleActions != "";
+    }
 
     public static void CreateVersionText()
     {
