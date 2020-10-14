@@ -293,7 +293,7 @@ public class GameManager : MonoBehaviour
                     m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
-                    if (rayHitUnit != m_SelectedUnit) // TODO: revert to only player select
+                    if (rayHitUnit != m_SelectedUnit) 
                     {                        
                         // Reset the nodes highlights before selecting the new unit
                         m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
@@ -307,6 +307,8 @@ public class GameManager : MonoBehaviour
                         // Highlight the appropriate tiles
                         m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
                         m_SelectedUnit.HighlightMovableNodes();
+
+                        StatusEffectTooltipManager.m_Instance.UpdateActiveEffects();
 
                         // Update the UI's action point counter to display the newly selected unit's action points.
                         m_ActionPointCounter.ResetActionPointCounter();
