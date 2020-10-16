@@ -3,6 +3,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEditor;
 
 public class AIManager : MonoBehaviour
 {
@@ -135,9 +136,18 @@ public class AIManager : MonoBehaviour
     /// Removes units from the active units
     /// </summary>
     /// <param name="deadUnits"></param>
-    public void DisableUnits(List<Unit> deadUnits) => UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Except(deadUnits).ToList();
+    public void DisableUnits(List<Unit> deadUnits)
+    {
+        UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Except(deadUnits).ToList();
 
-    //This function returns the node with the highest MinMax score of available nodes the AI Unit can move to.
+        GameManager.m_Instance.PodClearCheck();
+    }
+
+    /// <summary> 
+    /// Returns the node with the highest MinMax score of available nodes the AI Unit can move to.
+    /// </summary>
+    /// <param name="nodes">The nodes from which to select the best node</param>
+    /// <returns></returns>
     public Node FindOptimalNode(List<Node> nodes)
     {
         try

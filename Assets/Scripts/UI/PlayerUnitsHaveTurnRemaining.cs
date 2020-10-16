@@ -8,11 +8,6 @@ public class PlayerUnitsHaveTurnRemaining : MonoBehaviour
 {
     public TextMeshProUGUI m_UnitsStillWithTurnsText = null;
 
-    public void ConcatenateRemainingCharactersText(string newText)
-    {
-        m_UnitsStillWithTurnsText.text += newText;
-    }
-
     public void ResetText()
     {
         m_UnitsStillWithTurnsText.text = "";

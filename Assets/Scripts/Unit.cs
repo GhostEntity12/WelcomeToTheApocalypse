@@ -473,7 +473,7 @@ public class Unit : MonoBehaviour
         for (int i = 0; i < m_Skills.Count; ++i)
         {
             if (m_Skills[i] == skill)
-            {                
+            {
                 m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
                 if (m_PassiveSkill != null)
                 {

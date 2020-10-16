@@ -15,6 +15,8 @@ public class SkillButton : MonoBehaviour
 
 	public Image m_TooltipImage;
 
+	public Image m_Cooldown;
+
 	public TextMeshProUGUI m_NameText;
 
 	public TextMeshProUGUI m_DescriptionText;
@@ -59,7 +61,7 @@ public class SkillButton : MonoBehaviour
 
 		m_NameText.text = m_Skill.m_SkillName;
 		
-		m_CooldownText.text = $"<b>Cooldown</b>\n{m_Skill.m_CooldownLength} {(m_Skill.m_CooldownLength == 1 ? "turn" : "turns")}";
+		m_CooldownText.text = $"<b>Cooldown</b>\n{(m_Skill.m_CooldownLength == 0? "None":$"{m_Skill.m_CooldownLength} {(m_Skill.m_CooldownLength == 1 ? "turn" : "turns")}")}";
 
 		m_RangeText.text = $"<b>Range</b>\n{m_Skill.m_CastableDistance} {(m_Skill.m_CastableDistance == 1 ? "tile" : "tiles")}";
 
@@ -74,5 +76,14 @@ public class SkillButton : MonoBehaviour
 	public void DisplayTooltip(bool show)
 	{
 		m_TooltipImage.gameObject.SetActive(show);
+	}
+
+	public void UpdateCooldownDisplay()
+	{
+		if (m_Skill)
+		{
+			print($"{m_Skill.name}: {m_Skill.m_CurrentCooldown}/{m_Skill.m_CooldownLength}");
+			m_Cooldown.fillAmount = m_Skill.m_CooldownLength == 0 ? 0 : (float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength;
+		}
 	}
 }
