@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -62,7 +63,30 @@ public class UIManager : MonoBehaviour
 	public TweenedElement m_LeftSpeaker;
 	public TweenedElement m_RightSpeaker;
 	public TweenedElement m_DialogueUI;
-	public TweenedElement m_TurnIndicator;
+	public TweenedElement m_TurnIndicatorUI;
+
+	[Header("Other Elements")]
+
+	/// <summary>
+	/// The screen for when the player loses.
+	/// </summary>
+	public Canvas m_LoseScreen = null;
+	public Canvas m_PauseScreen = null;
+	private bool m_Paused = false;
+	public UIHealthBar m_UIHealthBar = null;
+	public Canvas m_PrematureTurnEndScreen = null;
+	/// <summary>
+	/// The button for ending the turn.
+	/// </summary>
+	public EndTurnButton m_EndTurnButton = null;
+	/// <summary>
+	/// The turn indicator.
+	/// </summary>
+	public TurnIndicator m_TurnIndicator = null;
+	/// <summary>
+	/// The action point counter, for the currently selected unit.
+	/// </summary>
+	public ActionPointCounter m_ActionPointCounter = null;
 
 	public enum ScreenState { Onscreen, Offscreen }
 
@@ -84,13 +108,33 @@ public class UIManager : MonoBehaviour
 	/// </summary>
 	private void Start()
 	{
+		m_EndTurnButton.UpdateCurrentTeamTurn(GameManager.m_Instance.m_TeamCurrentTurn);
+		m_TurnIndicator.UpdateTurnIndicator(GameManager.m_Instance.m_TeamCurrentTurn);
+
 		// Cache the positions
 		SetCachesAndPosition(m_PortraitUI, new Vector2(-400, -400));
 		SetCachesAndPosition(m_SkillsUI, new Vector2(400, -400));
 		SetCachesAndPosition(m_LeftSpeaker, new Vector2(-800, 0));
 		SetCachesAndPosition(m_RightSpeaker, new Vector2(800, 0));
 		SetCachesAndPosition(m_DialogueUI, new Vector2(0, -400));
-		SetCachesAndPosition(m_TurnIndicator, new Vector2(300, 300));
+		SetCachesAndPosition(m_TurnIndicatorUI, new Vector2(300, 300));
+	}
+
+	private void Update()
+	{
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			if (!m_Paused)
+			{
+				m_PauseScreen.gameObject.SetActive(true);
+				m_Paused = true;
+			}
+			else
+			{
+				m_PauseScreen.gameObject.SetActive(false);
+				m_Paused = false;
+			}
+		}
 	}
 
 	/// <summary>
@@ -124,11 +168,17 @@ public class UIManager : MonoBehaviour
 		for (int i = 0; i < m_SkillSlots.Length; i++)
 		{
 			// TODO: Refactor
-			m_SkillSlots[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
+			m_SkillSlots[i].transform.parent.gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
 			m_SkillSlots[i].m_LightImage.color = uiData.m_IconLight;
 			m_SkillSlots[i].m_LightImage.color = uiData.m_IconDark;
 			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
 			m_SkillSlots[i].UpdateTooltip();
+		}
+
+		// Update the cooldowns
+		foreach (SkillButton button in m_SkillSlots)
+		{
+			button.UpdateCooldownDisplay();
 		}
 	}
 
@@ -239,6 +289,10 @@ public class UIManager : MonoBehaviour
 				() => SlideSkills(ScreenState.Onscreen)));
 	}
 
+	/// <summary>
+	/// Swaps the style of the dialogue
+	/// </summary>
+	/// <param name="uiStyle"></param>
 	public void SwapDialogue(UIStyle uiStyle)
 	{
 		SlideElement(m_DialogueUI, ScreenState.Offscreen,
@@ -272,20 +326,41 @@ public class UIManager : MonoBehaviour
 
 	public void SwapTurnIndicator(Allegiance newTeamTurn)
 	{
-		SlideElement(m_TurnIndicator, ScreenState.Offscreen, () =>
+		SlideElement(m_TurnIndicatorUI, ScreenState.Offscreen, () =>
 		{
-			GameManager.m_Instance.m_TurnIndicator.UpdateTurnIndicator(newTeamTurn);
+			m_TurnIndicator.UpdateTurnIndicator(newTeamTurn);
 			m_TurnIndicatorImage.color = m_TurnIndicatorColors[(int)newTeamTurn];
-			SlideElement(m_TurnIndicator, ScreenState.Onscreen);
+			SlideElement(m_TurnIndicatorUI, ScreenState.Onscreen);
 		});
 	}
 
 	public void HideTurnIndicator()
 	{
-		SlideElement(m_TurnIndicator, ScreenState.Offscreen);
+		SlideElement(m_TurnIndicatorUI, ScreenState.Offscreen);
 	}
+
 	public void ShowTurnIndicator()
 	{
-		SlideElement(m_TurnIndicator, ScreenState.Onscreen);
+		SlideElement(m_TurnIndicatorUI, ScreenState.Onscreen);
+	}
+
+	public bool CheckPrematureTurnEnding()
+	{
+		List<Unit> playerUnits = UnitsManager.m_Instance.m_PlayerUnits;
+
+		foreach (Unit u in playerUnits)
+		{
+			if (u.GetCurrentMovement() > 0)
+			{
+				return true;
+			}
+
+			else if (u.GetActionPoints() > 0)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

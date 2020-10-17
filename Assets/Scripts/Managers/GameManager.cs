@@ -63,17 +63,12 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Which team's turn is it currently.
     /// </summary>
-    private Allegiance m_TeamCurrentTurn = Allegiance.Player;
+    public Allegiance m_TeamCurrentTurn = Allegiance.Player;
 
     /// <summary>
     /// The cost of the player's unit moving to their target location.
     /// </summary>
     private int m_MovementCost = 0;
-
-    /// <summary>
-    /// The screen for when the player loses.
-    /// </summary>
-    public Canvas m_LoseScreen = null;
 
     /// <summary>
     /// If the left mouse button is down.
@@ -96,21 +91,6 @@ public class GameManager : MonoBehaviour
     private DialogueManager dm;
 
     /// <summary>
-    /// The button for ending the turn.
-    /// </summary>
-    public EndTurnButton m_EndTurnButton = null;
-
-    /// <summary>
-    /// The turn indicator.
-    /// </summary>
-    public TurnIndicator m_TurnIndicator = null;
-
-    /// <summary>
-    /// The action point counter, for the currently selected unit.
-    /// </summary>
-    public ActionPointCounter m_ActionPointCounter = null;
-
-    /// <summary>
     /// List of UI elements that block the player from being able to interact with the game.
     /// </summary>
     private List<InputBlockingUI> m_InputBlockingUIElements = new List<InputBlockingUI>();
@@ -120,17 +100,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private bool m_MouseOverUIBlockingElements = false;
 
-    public Canvas m_PauseScreen = null;
-
-    private bool m_Paused = false;
-
     private CameraMovement m_CameraMovement;
 
-    public UIHealthBar m_UIHealthBar = null;
-
-    public Canvas m_PrematureTurnEndScreen = null;
-
-    private bool m_PrematureTurnEndPrompted = false;
+    public int m_PodClearBonus = 5;
 
     // On startup.
     private void Awake()
@@ -148,10 +120,7 @@ public class GameManager : MonoBehaviour
         dm = DialogueManager.instance;
         m_CameraMovement = m_MainCamera.GetComponentInParent<CameraMovement>();
 
-        m_InputBlockingUIElements = GameObject.FindObjectsOfType<InputBlockingUI>().ToList();
-
-        m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
-        m_TurnIndicator.UpdateTurnIndicator(m_TeamCurrentTurn);
+        m_InputBlockingUIElements = FindObjectsOfType<InputBlockingUI>().ToList();
     }
 
     // Update.
@@ -174,6 +143,18 @@ public class GameManager : MonoBehaviour
     /// <returns> The unit the player has selected. </returns>
     public Unit GetSelectedUnit() { return m_SelectedUnit; }
 
+    public void TryEndTurn()
+    {
+        // Check player units for prematurely ending turn here.
+        if (UIManager.m_Instance.CheckPrematureTurnEnding() == true)
+        {
+            UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(true);
+            return;
+        }
+
+        EndCurrentTurn();
+    }
+
     /// <summary>
     /// End the current turn.
     /// </summary>
@@ -182,18 +163,6 @@ public class GameManager : MonoBehaviour
         // Player ends turn.
         if (m_TeamCurrentTurn == Allegiance.Player)
         {
-            if (m_PrematureTurnEndPrompted == false)
-            {
-                // Check player units for prematurely ending turn here.
-                if (CheckPrematureTurnEnding() == true)
-                {
-                    m_PrematureTurnEndPrompted = true;
-                    m_PrematureTurnEndScreen.gameObject.SetActive(true);
-                    return;
-                }
-            }
-
-            m_PrematureTurnEndPrompted = false;
             m_TeamCurrentTurn = Allegiance.Enemy;
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
@@ -272,7 +241,7 @@ public class GameManager : MonoBehaviour
         UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);        
 
         // Tell end turn button who's turn it currently is.
-        m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
+        UIManager.m_Instance.m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
     }
 
     /// <summary>
@@ -310,8 +279,8 @@ public class GameManager : MonoBehaviour
                     m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
-                    if (rayHitUnit != m_SelectedUnit) // TODO: revert to only player select
-                    {                        
+                    if (rayHitUnit != m_SelectedUnit) 
+                    {
                         // Reset the nodes highlights before selecting the new unit
                         m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
                         m_SelectedUnit?.m_MovableNodes.ForEach(u => u.m_NodeHighlight.ChangeHighlight(TileState.None));
@@ -319,15 +288,17 @@ public class GameManager : MonoBehaviour
                         // Store the new unit
                         m_SelectedUnit = rayHitUnit;
                         UIManager.m_Instance.SwapUI(UIManager.m_Instance.GetUIStyle(m_SelectedUnit));
-                        m_UIHealthBar.SetHealthAmount((float)m_SelectedUnit.GetCurrentHealth() / m_SelectedUnit.GetStartingHealth());
+                        UIManager.m_Instance.m_UIHealthBar.SetHealthAmount((float)m_SelectedUnit.GetCurrentHealth() / m_SelectedUnit.GetStartingHealth());
 
                         // Highlight the appropriate tiles
                         m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
                         m_SelectedUnit.HighlightMovableNodes();
 
+                        StatusEffectTooltipManager.m_Instance.UpdateActiveEffects();
+
                         // Update the UI's action point counter to display the newly selected unit's action points.
-                        m_ActionPointCounter.ResetActionPointCounter();
-                        m_ActionPointCounter.UpdateActionPointCounter();
+                        UIManager.m_Instance.m_ActionPointCounter.ResetActionPointCounter();
+                        UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
                     }
                 }
             }
@@ -360,7 +331,7 @@ public class GameManager : MonoBehaviour
             
                             m_SelectedUnit.HighlightMovableNodes();
 
-                            m_ActionPointCounter.UpdateActionPointCounter();
+                            UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
             
                             m_SelectedSkill = null;
                         }
@@ -422,7 +393,7 @@ public class GameManager : MonoBehaviour
             
                             m_SelectedUnit.HighlightMovableNodes();
 
-                            m_ActionPointCounter.UpdateActionPointCounter();
+                            UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
             
                             m_SelectedSkill = null;
                         }
@@ -452,7 +423,6 @@ public class GameManager : MonoBehaviour
                             Stack<Node> path = new Stack<Node>();
                             if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out path, out m_MovementCost, true))
                             {
-                                m_PrematureTurnEndPrompted = false;
                                 m_SelectedUnit.SetMovementPath(path);
                                 // Decrease the unit's movement by the cost.
                                 m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
@@ -471,7 +441,6 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(m_AbilityHotkeys[i]))
             {                    
                 SkillSelection(i);
-                m_PrematureTurnEndPrompted = false;
                 break;
             }
         }
@@ -499,21 +468,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            EndCurrentTurn();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!m_Paused)
-            {
-                m_PauseScreen.gameObject.SetActive(true);
-                m_Paused = true;
-            }
-            else
-            {
-                m_PauseScreen.gameObject.SetActive(false);
-                m_Paused = false;
-            }
+            TryEndTurn();
         }
     }
 
@@ -648,7 +603,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Everybody's dead, everybody's dead Dave!");
 
             Time.timeScale = 0.0f;
-            m_LoseScreen.gameObject.SetActive(true);
+            UIManager.m_Instance.m_LoseScreen.gameObject.SetActive(true);
         }
     }
 
@@ -658,26 +613,15 @@ public class GameManager : MonoBehaviour
     /// <returns>The allegiance of the team whose turn it currently is.</returns>
     public Allegiance GetCurrentTurn() { return m_TeamCurrentTurn; }
 
-    public bool CheckPrematureTurnEnding()
+    public void PodClearCheck()
     {
-        List<Unit> playerUnits = UnitsManager.m_Instance.m_PlayerUnits;
-        string unitsWithPossibleActions = "";
-
-        foreach(Unit u in playerUnits)
+        if (UnitsManager.m_Instance.m_ActiveEnemyUnits.Count == 0)
         {
-            if (u.GetCurrentMovement() > 0)
+            foreach (var item in UnitsManager.m_Instance.m_PlayerUnits.Where(u => u.GetAlive()))
             {
-                unitsWithPossibleActions += u.name + " ";
-            }
-
-            else if (u.GetActionPoints() > 0)
-            {
-                unitsWithPossibleActions += u.name + " ";
+                item.IncreaseCurrentHealth(m_PodClearBonus);
             }
         }
-        m_PrematureTurnEndScreen.GetComponent<PlayerUnitsHaveTurnRemaining>().ConcatenateRemainingCharactersText(unitsWithPossibleActions);
-
-        return unitsWithPossibleActions != "";
     }
 
     public static void CreateVersionText()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using UnityEngine;
 
 public enum Allegiance
@@ -333,7 +334,7 @@ public class Unit : MonoBehaviour
     /// Get a specific skill.
     /// </summary>
     /// <param name="skillIndex"> The index of the skill to get. </param>
-    public BaseSkill GetSkill(int skillIndex) { return m_Skills[skillIndex]; }
+    public BaseSkill GetSkill(int skillIndex) { try { return m_Skills[skillIndex]; } catch (Exception) { return null; } }
 
     // Set the movement path of the character.
     public void SetMovementPath(Stack<Node> path)
@@ -472,7 +473,7 @@ public class Unit : MonoBehaviour
         for (int i = 0; i < m_Skills.Count; ++i)
         {
             if (m_Skills[i] == skill)
-            {                
+            {
                 m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
                 if (m_PassiveSkill != null)
                 {
@@ -531,4 +532,13 @@ public class Unit : MonoBehaviour
 
         Debug.LogError("Skill " + skill.name + " couldn't be found in " + gameObject.name + ".");
     }
+
+    /*=====================================DEBUG STUFF AHEAD=====================================*/
+    [ContextMenu("Inflict Hunger")]
+    void Hunger() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackDown")) as InflictableStatus);
+    [ContextMenu("Inflict Mark")]
+    void Mark() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_DamageOverTime")) as InflictableStatus);
+    [ContextMenu("Inflict Riches")]
+    void Riches() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackUp")) as InflictableStatus);
 }
+ 
