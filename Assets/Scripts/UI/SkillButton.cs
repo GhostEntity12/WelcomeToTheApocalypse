@@ -13,20 +13,30 @@ public class SkillButton : MonoBehaviour
 
 	public Image m_DarkImage;
 
-	public TextMeshProUGUI m_Description;
+	public Image m_TooltipImage;
 
-	public Image m_DescriptionImage;
+	public Image m_Cooldown;
+
+	public TextMeshProUGUI m_NameText;
+
+	public TextMeshProUGUI m_DescriptionText;
+
+	public TextMeshProUGUI m_CooldownText;
+
+	public TextMeshProUGUI m_RangeText;
+
+	public Transform m_ApSlots;
 
 	public void TriggerSkill() => GameManager.m_Instance.SkillSelection(m_Skill);
 
 	void Awake()
 	{
-		m_DescriptionImage.gameObject.SetActive(false);
+		m_TooltipImage.gameObject.SetActive(false);
 	}
 
 	public void UpdateTooltip()
 	{
-		print(m_Skill);
+		if (!m_Skill) return;
 		string baseDescription = m_Skill.m_Description;
 		if (m_Skill is DamageSkill)
 		{
@@ -40,22 +50,42 @@ public class SkillButton : MonoBehaviour
 		{
 			try
 			{
-				baseDescription = baseDescription.Replace("{duration}", (m_Skill as StatusSkill).m_Effect.m_StartingDuration.ToString());
+				baseDescription = baseDescription.Replace("{duration}", (m_Skill as StatusSkill).m_Effect.m_StartingDuration.ToString()).Replace("{effectDamage}", (m_Skill as StatusSkill).m_DamageAmount.ToString());
 			}
 			catch (NullReferenceException)
 			{
 				Debug.LogError("Skill is lacking a required status!");
 			}
 		}
-		baseDescription = baseDescription.Replace("{distance}", m_Skill.m_CastableDistance.ToString());
-		baseDescription = baseDescription.Replace("{range}", m_Skill.m_AffectedRange.ToString());
-		baseDescription = baseDescription.Replace("{cooldown}", m_Skill.m_CooldownLength.ToString());
-		print(baseDescription);
-		m_Description.text = baseDescription;
+		baseDescription = baseDescription.Replace("{distance}", m_Skill.m_CastableDistance.ToString()).Replace("{range}", m_Skill.m_AffectedRange.ToString());
+
+		m_NameText.text = m_Skill.m_SkillName;
+
+		m_CooldownText.text = $"<b>Cooldown</b>\n{(m_Skill.m_CooldownLength == 0 ? "None" : $"{m_Skill.m_CooldownLength} {(m_Skill.m_CooldownLength == 1 ? "turn" : "turns")}")}";
+
+		m_RangeText.text = $"<b>Range</b>\n{m_Skill.m_CastableDistance} {(m_Skill.m_CastableDistance == 1 ? "tile" : "tiles")}";
+
+		for (int i = 0; i < m_ApSlots.childCount; i++)
+		{
+			m_ApSlots.GetChild(i).gameObject.SetActive(i < (int)m_Skill.m_SkillType);
+		}
+
+		m_DescriptionText.text = baseDescription;
 	}
 
 	public void DisplayTooltip(bool show)
 	{
-		m_DescriptionImage.gameObject.SetActive(show);
+		m_TooltipImage.gameObject.SetActive(show);
+	}
+
+	public void UpdateCooldownDisplay()
+	{
+		if (m_Skill)
+		{
+			m_Cooldown.fillAmount =
+				m_Skill.m_Cost > GameManager.m_Instance.GetSelectedUnit().GetActionPoints() ? 1 : // Filled if can't cast
+				m_Skill.m_CooldownLength == 0 ? 0 : // Empty if can cast
+				(float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength; // Partially filled if on cooldown
+		}
 	}
 }

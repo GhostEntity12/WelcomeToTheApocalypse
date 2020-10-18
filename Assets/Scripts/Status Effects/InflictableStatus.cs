@@ -7,7 +7,7 @@ public abstract class InflictableStatus : StatusEffect
     // Starting time for how long the status lasts.
     public int m_StartingDuration = 0;
     // How much time remains for the status.
-    protected int m_RemainingDuration = 0;
+    public int m_RemainingDuration = 0;
 
     // Check the preconditions for the status effect to take effect.
     public override abstract bool CheckPrecondition(TriggerType trigger);
