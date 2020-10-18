@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using UnityEngine;
 
 public enum Allegiance
@@ -123,11 +122,15 @@ public class Unit : MonoBehaviour
 
     public AIHeuristicCalculator m_AIHeuristicCalculator = null;
 
-	private Animator m_animator;
+    private Animator m_animator;
 
-	private int m_ExtraDamage = 0;
+    private int m_ExtraDamage = 0;
 
     private int m_ExtraSkillDamage = 0;
+
+    public TextAsset m_KillDialogue;
+
+    public UIData m_UIData;
 
     // On startup.
     void Awake()
@@ -139,15 +142,13 @@ public class Unit : MonoBehaviour
         m_CurrentActionPoints = m_StartingActionPoints;
 
         m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
-
-
-	}
+    }
 
     void Start()
     {
         Grid.m_Instance.SetUnit(gameObject);
         m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
-		m_animator = GetComponent<Animator>();
+        m_animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -155,12 +156,12 @@ public class Unit : MonoBehaviour
         // If have a target that the unit hasn't arrived at yet, move towards the target position.
         if (m_IsMoving)
         {
-            transform.position = Vector3.MoveTowards(transform.position,m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.1 units close to target is close enough).
-            if ((transform.position -m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
+            if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
             {
                 // Set the actual position to the target
-                transform.position =m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
+                transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
 
                 // Target the next node.
                 if (m_MovementPath.Count > 0)
@@ -172,7 +173,7 @@ public class Unit : MonoBehaviour
                 {
                     m_IsMoving = false;
 
-					//m_animator.SetBool("isWalking", m_IsMoving);
+                    //m_animator.SetBool("isWalking", m_IsMoving);
 
                     Grid.m_Instance.SetUnit(gameObject);
                     m_ActionOnFinishPath?.Invoke(this);
@@ -237,8 +238,8 @@ public class Unit : MonoBehaviour
     public void DecreaseCurrentHealth(int decrease)
     {
         int damage = decrease + m_ExtraDamage;
-		// Plays damage animation
-		m_animator.SetTrigger("TriggerDamage");
+        // Plays damage animation
+        m_animator.SetTrigger("TriggerDamage");
 
         SetCurrentHealth(m_CurrentHealth - damage);
         m_ExtraDamage = 0;
@@ -254,7 +255,7 @@ public class Unit : MonoBehaviour
             }
         }
 
-        foreach(InflictableStatus status in m_StatusEffects)
+        foreach (InflictableStatus status in m_StatusEffects)
         {
             if (status.CheckPrecondition(TriggerType.OnTakeDamage) == true)
             {
@@ -297,12 +298,17 @@ public class Unit : MonoBehaviour
                 UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
             }
 
+            if (m_KillDialogue)
+            {
+                DialogueManager.instance.TriggerDialogue(m_KillDialogue);
+            }
+
             Node currentNode = Grid.m_Instance.GetNode(transform.position);
             currentNode.unit = null;
             currentNode.m_isBlocked = false;
-			// Play death animation
-			m_animator.SetTrigger("TriggerDeath");
-			// TODO: replace with something to actually remove the unit
+            // Play death animation
+            m_animator.SetTrigger("TriggerDeath");
+            // TODO: replace with something to actually remove the unit
             gameObject.SetActive(false);
         }
     }
@@ -342,10 +348,10 @@ public class Unit : MonoBehaviour
         m_MovementPath = path;
         m_IsMoving = true;
 
-		m_animator.SetBool("isWalking", m_IsMoving);
+        m_animator.SetBool("isWalking", m_IsMoving);
 
         SetTargetNodePosition(m_MovementPath.Pop());
-        print(string.Join(", ", path.Select(n=>n.m_NodeHighlight.name)));
+        print(string.Join(", ", path.Select(n => n.m_NodeHighlight.name)));
     }
 
     /// <summary>
@@ -357,8 +363,8 @@ public class Unit : MonoBehaviour
         // Unassign the unit on the current node.
         // Before setting the new target node.
         Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
-       m_CurrentTargetNode = target;
-       transform.LookAt(m_CurrentTargetNode.worldPosition);
+        m_CurrentTargetNode = target;
+        transform.LookAt(m_CurrentTargetNode.worldPosition);
     }
 
     /// <summary>
@@ -418,7 +424,7 @@ public class Unit : MonoBehaviour
     /// <param name="healthbar">The healthbar game object.</param>
     public void SetHealthbar(HealthbarContainer healthbar)
     {
-        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();        
+        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();
         m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
 
@@ -487,13 +493,13 @@ public class Unit : MonoBehaviour
 
                         Unit[] hitUnits = ds.GetAffectedUnits();
 
-                        if (m_PassiveSkill.GetAffectSelf() ==  false)
+                        if (m_PassiveSkill.GetAffectSelf() == false)
                         {
                             // Check which units meet the prerequisits for the unit's passive.
-                            foreach(Unit u in hitUnits)
+                            foreach (Unit u in hitUnits)
                             {
-                                
-                                foreach(InflictableStatus status in m_StatusEffects)
+
+                                foreach (InflictableStatus status in m_StatusEffects)
                                 {
                                     if (status.CheckPrecondition(TriggerType.OnDealDamage) == true)
                                     {
@@ -524,9 +530,9 @@ public class Unit : MonoBehaviour
                 }
                 m_Skills[i].CastSkill();
                 transform.LookAt(castLocation.worldPosition);
-				// Play skill animation
-				m_animator.SetTrigger("TriggerSkill");
-				return;
+                // Play skill animation
+                m_animator.SetTrigger("TriggerSkill");
+                return;
             }
         }
 
@@ -541,4 +547,3 @@ public class Unit : MonoBehaviour
     [ContextMenu("Inflict Riches")]
     void Riches() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackUp")) as InflictableStatus);
 }
- 

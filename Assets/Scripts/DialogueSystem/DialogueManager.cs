@@ -108,7 +108,7 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
-            UIManager.m_Instance.SwapDialogue(UIManager.m_Instance.GetUIStyle(currentCharacter.name));
+            UIManager.m_Instance.SwapDialogue(currentCharacter.m_UiData);
         }
 
     }

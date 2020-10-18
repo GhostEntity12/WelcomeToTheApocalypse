@@ -146,8 +146,9 @@ public class GameManager : MonoBehaviour
     public void TryEndTurn()
     {
         // Check player units for prematurely ending turn here.
-        if (UIManager.m_Instance.CheckPrematureTurnEnding() == true)
+        if (UIManager.m_Instance.IsPrematureTurnEnding())
         {
+            UIManager.m_Instance.m_PrematureTurnEndScreen.UpdateText();
             UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(true);
             return;
         }
@@ -287,7 +288,7 @@ public class GameManager : MonoBehaviour
 
                         // Store the new unit
                         m_SelectedUnit = rayHitUnit;
-                        UIManager.m_Instance.SwapUI(UIManager.m_Instance.GetUIStyle(m_SelectedUnit));
+                        UIManager.m_Instance.SwapUI(m_SelectedUnit.m_UIData);
                         UIManager.m_Instance.m_UIHealthBar.SetHealthAmount((float)m_SelectedUnit.GetCurrentHealth() / m_SelectedUnit.GetStartingHealth());
 
                         // Highlight the appropriate tiles

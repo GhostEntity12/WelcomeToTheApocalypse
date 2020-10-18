@@ -60,8 +60,8 @@ public class SkillButton : MonoBehaviour
 		baseDescription = baseDescription.Replace("{distance}", m_Skill.m_CastableDistance.ToString()).Replace("{range}", m_Skill.m_AffectedRange.ToString());
 
 		m_NameText.text = m_Skill.m_SkillName;
-		
-		m_CooldownText.text = $"<b>Cooldown</b>\n{(m_Skill.m_CooldownLength == 0? "None":$"{m_Skill.m_CooldownLength} {(m_Skill.m_CooldownLength == 1 ? "turn" : "turns")}")}";
+
+		m_CooldownText.text = $"<b>Cooldown</b>\n{(m_Skill.m_CooldownLength == 0 ? "None" : $"{m_Skill.m_CooldownLength} {(m_Skill.m_CooldownLength == 1 ? "turn" : "turns")}")}";
 
 		m_RangeText.text = $"<b>Range</b>\n{m_Skill.m_CastableDistance} {(m_Skill.m_CastableDistance == 1 ? "tile" : "tiles")}";
 
@@ -82,8 +82,10 @@ public class SkillButton : MonoBehaviour
 	{
 		if (m_Skill)
 		{
-			print($"{m_Skill.name}: {m_Skill.m_CurrentCooldown}/{m_Skill.m_CooldownLength}");
-			m_Cooldown.fillAmount = m_Skill.m_CooldownLength == 0 ? 0 : (float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength;
+			m_Cooldown.fillAmount =
+				m_Skill.m_Cost > GameManager.m_Instance.GetSelectedUnit().GetActionPoints() ? 1 : // Filled if can't cast
+				m_Skill.m_CooldownLength == 0 ? 0 : // Empty if can cast
+				(float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength; // Partially filled if on cooldown
 		}
 	}
 }
