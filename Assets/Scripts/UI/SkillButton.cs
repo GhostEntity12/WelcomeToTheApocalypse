@@ -60,8 +60,8 @@ public class SkillButton : MonoBehaviour
 		baseDescription = baseDescription.Replace("{distance}", m_Skill.m_CastableDistance.ToString()).Replace("{range}", m_Skill.m_AffectedRange.ToString());
 
 		m_NameText.text = m_Skill.m_SkillName;
-		
-		m_CooldownText.text = $"<b>Cooldown</b>\n{(m_Skill.m_CooldownLength == 0? "None":$"{m_Skill.m_CooldownLength} {(m_Skill.m_CooldownLength == 1 ? "turn" : "turns")}")}";
+
+		m_CooldownText.text = $"<b>Cooldown</b>\n{(m_Skill.m_CooldownLength == 0 ? "None" : $"{m_Skill.m_CooldownLength} {(m_Skill.m_CooldownLength == 1 ? "turn" : "turns")}")}";
 
 		m_RangeText.text = $"<b>Range</b>\n{m_Skill.m_CastableDistance} {(m_Skill.m_CastableDistance == 1 ? "tile" : "tiles")}";
 

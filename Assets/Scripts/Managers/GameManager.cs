@@ -146,8 +146,9 @@ public class GameManager : MonoBehaviour
     public void TryEndTurn()
     {
         // Check player units for prematurely ending turn here.
-        if (UIManager.m_Instance.CheckPrematureTurnEnding() == true)
+        if (UIManager.m_Instance.IsPrematureTurnEnding())
         {
+            UIManager.m_Instance.m_PrematureTurnEndScreen.UpdateText();
             UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(true);
             return;
         }

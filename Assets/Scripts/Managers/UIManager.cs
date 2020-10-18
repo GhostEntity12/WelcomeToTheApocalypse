@@ -35,7 +35,7 @@ public class UIManager : MonoBehaviour
 		internal Vector2[] m_Cache = new Vector2[2];
 	}
 
-	[Header("Data")]
+	[Header("Skin Data")]
 	public UIData m_DeathUIData;
 	public UIData m_PestilenceUIData;
 	public UIData m_FamineUIData;
@@ -49,15 +49,19 @@ public class UIManager : MonoBehaviour
 	public Image m_TurnBackground;
 	public Image m_PortraitImage;
 	public SkillButton[] m_SkillSlots;
-	public RawImage m_PortraitRenderTexture;
 	public Image m_LeftSpeakerImage;
 	public Image m_RightSpeakerImage;
 	public Image m_TurnIndicatorImage;
+	/// <summary>
+	/// The button for ending the turn.
+	/// </summary>
+	public EndTurnButton m_EndTurnButton = null;
+	public UIHealthBar m_UIHealthBar = null;
 
 
 	[Header("Tweening")]
 	public float m_TweenSpeed = 0.2f;
-	[Space(10)]
+	[Space(5)]
 	public TweenedElement m_PortraitUI;
 	public TweenedElement m_SkillsUI;
 	public TweenedElement m_LeftSpeaker;
@@ -66,19 +70,6 @@ public class UIManager : MonoBehaviour
 	public TweenedElement m_TurnIndicatorUI;
 
 	[Header("Other Elements")]
-
-	/// <summary>
-	/// The screen for when the player loses.
-	/// </summary>
-	public Canvas m_LoseScreen = null;
-	public Canvas m_PauseScreen = null;
-	private bool m_Paused = false;
-	public UIHealthBar m_UIHealthBar = null;
-	public Canvas m_PrematureTurnEndScreen = null;
-	/// <summary>
-	/// The button for ending the turn.
-	/// </summary>
-	public EndTurnButton m_EndTurnButton = null;
 	/// <summary>
 	/// The turn indicator.
 	/// </summary>
@@ -87,6 +78,15 @@ public class UIManager : MonoBehaviour
 	/// The action point counter, for the currently selected unit.
 	/// </summary>
 	public ActionPointCounter m_ActionPointCounter = null;
+
+	[Header("Additional Screens")]
+	/// <summary>
+	/// The screen for when the player loses.
+	/// </summary>
+	public Canvas m_LoseScreen = null;
+	public PrematureTurnEndDisplay m_PrematureTurnEndScreen = null;
+	public GameObject m_PauseScreen = null;
+	private bool m_Paused = false;
 
 	public enum ScreenState { Onscreen, Offscreen }
 
@@ -124,16 +124,8 @@ public class UIManager : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
-			if (!m_Paused)
-			{
-				m_PauseScreen.gameObject.SetActive(true);
-				m_Paused = true;
-			}
-			else
-			{
-				m_PauseScreen.gameObject.SetActive(false);
-				m_Paused = false;
-			}
+			m_PauseScreen.gameObject.SetActive(!m_Paused);
+			m_Paused = !m_Paused;
 		}
 	}
 
@@ -344,7 +336,7 @@ public class UIManager : MonoBehaviour
 		SlideElement(m_TurnIndicatorUI, ScreenState.Onscreen);
 	}
 
-	public bool CheckPrematureTurnEnding()
+	public bool IsPrematureTurnEnding()
 	{
 		List<Unit> playerUnits = UnitsManager.m_Instance.m_PlayerUnits;
 
