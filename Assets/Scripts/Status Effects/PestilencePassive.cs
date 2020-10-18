@@ -23,6 +23,6 @@ public class PestilencePassive : PassiveSkill
 
 	public override void TakeEffect(Unit affected)
 	{
-        affected.AddExtraDamage(m_ExtraDamage);
+        affected.AddTakeExtraDamage(m_ExtraDamage);
 	}
 }
