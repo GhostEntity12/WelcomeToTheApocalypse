@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager instance;
+    public KeyCode[] ProgressionKeys = new KeyCode[1] { KeyCode.Return };
 
     public bool dialogueActive;
     bool isDisplayingText;
@@ -107,7 +108,7 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
-            UIManager.m_Instance.SwapDialogue(UIManager.m_Instance.GetUIStyle(currentCharacter.name));
+            UIManager.m_Instance.SwapDialogue(currentCharacter.m_UiData);
         }
 
     }
@@ -268,7 +269,7 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return) && canvasGroup.interactable) // If enter is pressed and the textboxes are visible
+        if (GetAnyKey(ProgressionKeys) && canvasGroup.interactable) // If enter is pressed and the textboxes are visible
         {
             if (isDisplayingText) // If the system is currently typing out, finish and return
             {
@@ -338,11 +339,11 @@ public class DialogueManager : MonoBehaviour
         //StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 1, PostFade));
     }
 
-    ///// <summary>
-    ///// Run via callback. Cleans up after fading.
-    ///// </summary>
-    //void PostFade()
-    //{
-    //    canvasGroup.interactable = canvasGroup.blocksRaycasts = canvasGroup.alpha == 1;
-    //}
+    bool GetAnyKey(params KeyCode[] aKeys)
+    {
+        foreach (var key in aKeys)
+            if (Input.GetKeyDown(key))
+                return true;
+        return false;
+    }
 }

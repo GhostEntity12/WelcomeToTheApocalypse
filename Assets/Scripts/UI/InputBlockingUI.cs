@@ -1,14 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(EventTrigger))]
 public class InputBlockingUI : MonoBehaviour
 {
 	/// <summary>
 	/// If the player's cursor is over the UI element.
 	/// </summary>
 	private bool m_MouseOverUIElement = false;
-    
+
 	/// <summary>
 	/// Set if the player's mouse is over the UI element.
 	/// </summary>

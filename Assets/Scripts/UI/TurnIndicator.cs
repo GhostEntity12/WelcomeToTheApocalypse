@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
-using TMPro;
 
 public class TurnIndicator : MonoBehaviour
 {
@@ -14,16 +12,6 @@ public class TurnIndicator : MonoBehaviour
     /// The text shown onscreen.
     /// </summary>
     private TextMeshProUGUI m_TMPText = null;
-
-    /// <summary>
-    /// Colour of the text when it is the player's turn.
-    /// </summary>
-    public Color m_PlayerTurnTextColour = Color.green;
-
-    /// <summary>
-    /// Colour of the text when it is the enemy's turn.
-    /// </summary>
-    public Color m_EnemyTurnTextColour = Color.red;
 
     void Awake()
     {
@@ -40,13 +28,11 @@ public class TurnIndicator : MonoBehaviour
         {
             Debug.Log("Player turn");
             m_TMPText.text = "Player turn";
-            m_TMPText.color = m_PlayerTurnTextColour;
         }
         else if (m_CurrentTeamTurn == Allegiance.Enemy)
         {
             Debug.Log("Enemy turn");
             m_TMPText.text = "Enemy turn";
-            m_TMPText.color = m_EnemyTurnTextColour;
         }
     }
 }
