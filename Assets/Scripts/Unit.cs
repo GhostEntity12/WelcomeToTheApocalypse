@@ -124,9 +124,9 @@ public class Unit : MonoBehaviour
 
     private Animator m_animator;
 
-    private int m_ExtraDamage = 0;
+    private int m_TakeExtraDamage = 0;
 
-    private int m_ExtraSkillDamage = 0;
+    private int m_DealExtraDamage = 0;
 
     public TextAsset m_KillDialogue;
 
@@ -237,12 +237,12 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
-        int damage = decrease + m_ExtraDamage;
+        int damage = decrease + m_TakeExtraDamage;
         // Plays damage animation
         m_animator.SetTrigger("TriggerDamage");
 
         SetCurrentHealth(m_CurrentHealth - damage);
-        m_ExtraDamage = 0;
+        m_TakeExtraDamage = 0;
 
         if (m_PassiveSkill != null)
         {
@@ -440,14 +440,27 @@ public class Unit : MonoBehaviour
     /// <returns>The unit's passive skill, null if it doesn't have one.</returns>
     public PassiveSkill GetPassiveSkill() { return m_PassiveSkill; }
 
-    public void AddExtraDamage(int extra)
+    /// <summary>
+    /// Add extra damage for the unit to take when damaged.
+    /// </summary>
+    /// <param name="extra">The amount of extra damage to take.</param>
+    public void AddTakeExtraDamage(int extra)
     {
-        m_ExtraDamage += extra;
+        m_TakeExtraDamage += extra;
     }
 
-    public void AddExtraSkillDamage(int extra)
+    /// <summary>
+    /// Add extra damage for the unit to deal when attacking.
+    /// </summary>
+    /// <param name="extra">The amount of extra damage to deal.</param>
+    public void AddDealExtraDamage(int extra)
     {
-        m_ExtraSkillDamage += extra;
+        m_DealExtraDamage += extra;
+    }
+
+    public void SetDealExtraDamage(int extra)
+    {
+        m_DealExtraDamage = extra;
     }
 
     /// <summary>
@@ -507,10 +520,9 @@ public class Unit : MonoBehaviour
                                     }
                                 }
                                 // Add extra damage to the skill from status effect (if there is any).
-                                if (m_ExtraSkillDamage > 0)
+                                if (m_DealExtraDamage > 0)
                                 {
-                                    ds.AddExtraDamage(m_ExtraSkillDamage);
-                                    m_ExtraSkillDamage = 0;
+                                    ds.AddExtraDamage(m_DealExtraDamage);
                                 }
 
                                 if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
