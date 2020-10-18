@@ -16,7 +16,8 @@ public class AttackBuffEffect : InflictableStatus
 	{
 		if (m_RemainingDuration > 0)
         {
-            affected.AddExtraSkillDamage(m_AttackIncrease);
+            affected.AddDealExtraDamage(m_AttackIncrease);
+			--m_RemainingDuration;
         }
         else
         {

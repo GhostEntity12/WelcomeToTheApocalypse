@@ -168,6 +168,11 @@ public class GameManager : MonoBehaviour
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
 
+            foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+            {
+                u.SetDealExtraDamage(0);
+            }
+
             // Stop highlighting node's the player can move to.
             if (m_SelectedUnit)
             {

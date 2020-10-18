@@ -16,7 +16,8 @@ public class AttackDebuffEffect : InflictableStatus
 	{
 		if (m_RemainingDuration > 0)
         {
-            affected.AddExtraSkillDamage(-m_AttackDecrease);
+            affected.AddDealExtraDamage(-m_AttackDecrease);
+			--m_RemainingDuration;
         }
         else
         {
