@@ -130,6 +130,8 @@ public class Unit : MonoBehaviour
 
     public TextAsset m_KillDialogue;
 
+    public UIData m_UIData;
+
     // On startup.
     void Awake()
     {

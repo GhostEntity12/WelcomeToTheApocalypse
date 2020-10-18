@@ -82,8 +82,10 @@ public class SkillButton : MonoBehaviour
 	{
 		if (m_Skill)
 		{
-			print($"{m_Skill.name}: {m_Skill.m_CurrentCooldown}/{m_Skill.m_CooldownLength}");
-			m_Cooldown.fillAmount = m_Skill.m_CooldownLength == 0 ? 0 : (float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength;
+			m_Cooldown.fillAmount =
+				m_Skill.m_Cost > GameManager.m_Instance.GetSelectedUnit().GetActionPoints() ? 1 : // Filled if can't cast
+				m_Skill.m_CooldownLength == 0 ? 0 : // Empty if can cast
+				(float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength; // Partially filled if on cooldown
 		}
 	}
 }
