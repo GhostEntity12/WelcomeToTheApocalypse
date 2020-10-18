@@ -539,6 +539,28 @@ public class Unit : MonoBehaviour
                             }
                         }
                     }
+                
+                    // Check if the skill being cast is the heal skill.
+                    HealSkill hs = skill as HealSkill;
+                    if (hs != null)
+                    {
+                        // Check if this unit has Pestilence's passive (should be Pestilence but you never know).
+                        PestilencePassive pesPassive = m_PassiveSkill as PestilencePassive;
+                        if (pesPassive != null)
+                        {
+                            // Use the heal resource before casting the skill.
+                            if (pesPassive.GetHealResource() > 0)
+                            {
+                                pesPassive.UseHealResource();
+                            }
+                            // If there is no heal resource remaining, output warning about it and leave function.
+                            else
+                            {
+                                Debug.LogWarning("Not enough heal resource for Pestilence to heal with.");
+                                return;
+                            }
+                        }
+                    }
                 }
                 m_Skills[i].CastSkill();
                 transform.LookAt(castLocation.worldPosition);
