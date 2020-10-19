@@ -45,6 +45,7 @@ public class ActionPointCounter : MonoBehaviour
     {
         for(int i = 0; i < m_Counters.Count; ++i)
         {
+            m_Counters[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().m_StartingActionPoints);
             m_Counters[i].color = m_ActiveColor;
         }
     }

@@ -13,14 +13,7 @@ public class AttackDebuffEffect : InflictableStatus
 	}
 
 	public override void TakeEffect(Unit affected)
-	{
-		if (m_RemainingDuration > 0)
-        {
-            affected.AddExtraSkillDamage(-m_AttackDecrease);
-        }
-        else
-        {
-            affected.RemoveStatusEffect(this);
-        }
+	{        
+        affected.AddDealExtraDamage(-m_AttackDecrease);
 	}
 }

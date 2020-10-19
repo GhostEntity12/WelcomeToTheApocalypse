@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using UnityEngine;
 
 public enum Allegiance
@@ -54,10 +53,12 @@ public class Unit : MonoBehaviour
     /// </summary>
     private List<BaseSkill> m_Skills = new List<BaseSkill>();
 
+    public PassiveSkill m_Passive;
+
     /// <summary>
     /// The passive effect of the character.
     /// </summary>
-    public PassiveSkill m_PassiveSkill = null;
+    private PassiveSkill m_PassiveSkill = null;
 
     /// <summary>
     /// The status debuffs on the character.
@@ -123,11 +124,15 @@ public class Unit : MonoBehaviour
 
     public AIHeuristicCalculator m_AIHeuristicCalculator = null;
 
-	private Animator m_animator;
+    private Animator m_animator;
 
-	private int m_ExtraDamage = 0;
+    private int m_TakeExtraDamage = 0;
 
-    private int m_ExtraSkillDamage = 0;
+    private int m_DealExtraDamage = 0;
+
+    public TextAsset m_KillDialogue;
+
+    public UIData m_UIData;
 
     // On startup.
     void Awake()
@@ -140,14 +145,17 @@ public class Unit : MonoBehaviour
 
         m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
 
-
-	}
+        if (m_Passive)
+        {
+            m_PassiveSkill = Instantiate(m_Passive);
+        }
+    }
 
     void Start()
     {
         Grid.m_Instance.SetUnit(gameObject);
         m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
-		m_animator = GetComponent<Animator>();
+        m_animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -155,12 +163,12 @@ public class Unit : MonoBehaviour
         // If have a target that the unit hasn't arrived at yet, move towards the target position.
         if (m_IsMoving)
         {
-            transform.position = Vector3.MoveTowards(transform.position,m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
             // If have arrived at position (0.1 units close to target is close enough).
-            if ((transform.position -m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
+            if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
             {
                 // Set the actual position to the target
-                transform.position =m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
+                transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
 
                 // Target the next node.
                 if (m_MovementPath.Count > 0)
@@ -172,7 +180,7 @@ public class Unit : MonoBehaviour
                 {
                     m_IsMoving = false;
 
-					//m_animator.SetBool("isWalking", m_IsMoving);
+                    //m_animator.SetBool("isWalking", m_IsMoving);
 
                     Grid.m_Instance.SetUnit(gameObject);
                     m_ActionOnFinishPath?.Invoke(this);
@@ -236,12 +244,12 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
-        int damage = decrease + m_ExtraDamage;
-		// Plays damage animation
-		m_animator.SetTrigger("TriggerDamage");
+        int damage = decrease + m_TakeExtraDamage;
+        // Plays damage animation
+        m_animator.SetTrigger("TriggerDamage");
 
         SetCurrentHealth(m_CurrentHealth - damage);
-        m_ExtraDamage = 0;
+        m_TakeExtraDamage = 0;
 
         if (m_PassiveSkill != null)
         {
@@ -254,7 +262,7 @@ public class Unit : MonoBehaviour
             }
         }
 
-        foreach(InflictableStatus status in m_StatusEffects)
+        foreach (InflictableStatus status in m_StatusEffects)
         {
             if (status.CheckPrecondition(TriggerType.OnTakeDamage) == true)
             {
@@ -297,12 +305,17 @@ public class Unit : MonoBehaviour
                 UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
             }
 
+            if (m_KillDialogue)
+            {
+                DialogueManager.instance.TriggerDialogue(m_KillDialogue);
+            }
+
             Node currentNode = Grid.m_Instance.GetNode(transform.position);
             currentNode.unit = null;
             currentNode.m_isBlocked = false;
-			// Play death animation
-			m_animator.SetTrigger("TriggerDeath");
-			// TODO: replace with something to actually remove the unit
+            // Play death animation
+            m_animator.SetTrigger("TriggerDeath");
+            // TODO: replace with something to actually remove the unit
             gameObject.SetActive(false);
         }
     }
@@ -342,10 +355,10 @@ public class Unit : MonoBehaviour
         m_MovementPath = path;
         m_IsMoving = true;
 
-		m_animator.SetBool("isWalking", m_IsMoving);
+        m_animator.SetBool("isWalking", m_IsMoving);
 
         SetTargetNodePosition(m_MovementPath.Pop());
-        print(string.Join(", ", path.Select(n=>n.m_NodeHighlight.name)));
+        print(string.Join(", ", path.Select(n => n.m_NodeHighlight.name)));
     }
 
     /// <summary>
@@ -357,8 +370,8 @@ public class Unit : MonoBehaviour
         // Unassign the unit on the current node.
         // Before setting the new target node.
         Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
-       m_CurrentTargetNode = target;
-       transform.LookAt(m_CurrentTargetNode.worldPosition);
+        m_CurrentTargetNode = target;
+        transform.LookAt(m_CurrentTargetNode.worldPosition);
     }
 
     /// <summary>
@@ -418,7 +431,7 @@ public class Unit : MonoBehaviour
     /// <param name="healthbar">The healthbar game object.</param>
     public void SetHealthbar(HealthbarContainer healthbar)
     {
-        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();        
+        m_Healthbar = healthbar.GetComponent<HealthbarContainer>();
         m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
     }
 
@@ -434,14 +447,27 @@ public class Unit : MonoBehaviour
     /// <returns>The unit's passive skill, null if it doesn't have one.</returns>
     public PassiveSkill GetPassiveSkill() { return m_PassiveSkill; }
 
-    public void AddExtraDamage(int extra)
+    /// <summary>
+    /// Add extra damage for the unit to take when damaged.
+    /// </summary>
+    /// <param name="extra">The amount of extra damage to take.</param>
+    public void AddTakeExtraDamage(int extra)
     {
-        m_ExtraDamage += extra;
+        m_TakeExtraDamage += extra;
     }
 
-    public void AddExtraSkillDamage(int extra)
+    /// <summary>
+    /// Add extra damage for the unit to deal when attacking.
+    /// </summary>
+    /// <param name="extra">The amount of extra damage to deal.</param>
+    public void AddDealExtraDamage(int extra)
     {
-        m_ExtraSkillDamage += extra;
+        m_DealExtraDamage += extra;
+    }
+
+    public void SetDealExtraDamage(int extra)
+    {
+        m_DealExtraDamage = extra;
     }
 
     /// <summary>
@@ -473,7 +499,7 @@ public class Unit : MonoBehaviour
         for (int i = 0; i < m_Skills.Count; ++i)
         {
             if (m_Skills[i] == skill)
-            {                
+            {
                 m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
                 if (m_PassiveSkill != null)
                 {
@@ -487,13 +513,13 @@ public class Unit : MonoBehaviour
 
                         Unit[] hitUnits = ds.GetAffectedUnits();
 
-                        if (m_PassiveSkill.GetAffectSelf() ==  false)
+                        if (m_PassiveSkill.GetAffectSelf() == false)
                         {
                             // Check which units meet the prerequisits for the unit's passive.
-                            foreach(Unit u in hitUnits)
+                            foreach (Unit u in hitUnits)
                             {
-                                
-                                foreach(InflictableStatus status in m_StatusEffects)
+
+                                foreach (InflictableStatus status in m_StatusEffects)
                                 {
                                     if (status.CheckPrecondition(TriggerType.OnDealDamage) == true)
                                     {
@@ -501,10 +527,9 @@ public class Unit : MonoBehaviour
                                     }
                                 }
                                 // Add extra damage to the skill from status effect (if there is any).
-                                if (m_ExtraSkillDamage > 0)
+                                if (m_DealExtraDamage > 0)
                                 {
-                                    ds.AddExtraDamage(m_ExtraSkillDamage);
-                                    m_ExtraSkillDamage = 0;
+                                    ds.AddExtraDamage(m_DealExtraDamage);
                                 }
 
                                 if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
@@ -521,12 +546,34 @@ public class Unit : MonoBehaviour
                             }
                         }
                     }
+                
+                    // Check if the skill being cast is the heal skill.
+                    HealSkill hs = skill as HealSkill;
+                    if (hs != null)
+                    {
+                        // Check if this unit has Pestilence's passive (should be Pestilence but you never know).
+                        PestilencePassive pesPassive = m_PassiveSkill as PestilencePassive;
+                        if (pesPassive != null)
+                        {
+                            // Use the heal resource before casting the skill.
+                            if (pesPassive.GetHealResource() > 0)
+                            {
+                                pesPassive.UseHealResource();
+                            }
+                            // If there is no heal resource remaining, output warning about it and leave function.
+                            else
+                            {
+                                Debug.LogWarning("Not enough heal resource for Pestilence to heal with.");
+                                return;
+                            }
+                        }
+                    }
                 }
                 m_Skills[i].CastSkill();
                 transform.LookAt(castLocation.worldPosition);
-				// Play skill animation
-				m_animator.SetTrigger("TriggerSkill");
-				return;
+                // Play skill animation
+                m_animator.SetTrigger("TriggerSkill");
+                return;
             }
         }
 
@@ -535,10 +582,35 @@ public class Unit : MonoBehaviour
 
     /*=====================================DEBUG STUFF AHEAD=====================================*/
     [ContextMenu("Inflict Hunger")]
-    void Hunger() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackDown")) as InflictableStatus);
+    protected void Hunger() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackDown")) as InflictableStatus);
     [ContextMenu("Inflict Mark")]
-    void Mark() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_DamageOverTime")) as InflictableStatus);
+    protected void Mark() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_DamageOverTime")) as InflictableStatus);
     [ContextMenu("Inflict Riches")]
-    void Riches() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackUp")) as InflictableStatus);
+    protected void Riches() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackUp")) as InflictableStatus);
+
+    [ContextMenu("Passive Status")]
+    protected void PassiveStatus()
+    {
+        if (m_PassiveSkill)
+        {
+            System.Reflection.FieldInfo[] fieldInfos = m_PassiveSkill.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+
+            string output = "======" + m_PassiveSkill.m_StatusName+ "======\n";
+
+            foreach (var item in fieldInfos)
+            {
+                try
+                {
+                    output += $"{item.Name}: {item.GetValue(m_PassiveSkill)}\n";
+                }
+                catch (ArgumentException)
+                {
+                    output += $"{item.Name}: unobtainable\n";
+                }
+
+            }
+
+            Debug.Log(output, this);
+        }
+    }
 }
- 

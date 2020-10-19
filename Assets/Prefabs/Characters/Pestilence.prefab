@@ -789,6 +789,7 @@ GameObject:
   - component: {fileID: 4293420453963866408}
   - component: {fileID: 3361287859424973867}
   - component: {fileID: 3634105245664109800}
+  - component: {fileID: -4122941542599818729}
   m_Layer: 9
   m_Name: Pestilence
   m_TagString: Untagged
@@ -852,11 +853,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a00bf960e6a84df4b911439c0dd4ccd3, type: 2}
   - {fileID: 11400000, guid: 6bc35e90e4d1ea341bc315e9bffc11e8, type: 2}
   - {fileID: 11400000, guid: 55f22032fefa38c4b874a055ee92b9c9, type: 2}
-  m_PassiveSkill: {fileID: 11400000, guid: 071e5c623ec67db40a0eb4a8ea8a3c94, type: 2}
+  m_Passive: {fileID: 11400000, guid: 071e5c623ec67db40a0eb4a8ea8a3c94, type: 2}
   m_Allegiance: 0
   m_StartingActionPoints: 2
   m_HealthbarPosition: {fileID: 2460461366541579917}
   m_AIHeuristicCalculator: {fileID: 0}
+  m_KillDialogue: {fileID: 0}
+  m_UIData: {fileID: 11400000, guid: 61653ecf76cf20c47bbea51245d3668a, type: 2}
 --- !u!136 &3634105245664109800
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -871,6 +874,19 @@ CapsuleCollider:
   m_Height: 2.0265527
   m_Direction: 1
   m_Center: {x: 0, y: 0.9947908, z: 0}
+--- !u!65 &-4122941542599818729
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5305189824182486066}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0250101, y: 0.060977716, z: 1.0250103}
+  m_Center: {x: 0.00000008940697, y: 0.030488858, z: -0.00000008940697}
 --- !u!1 &5400853572217806513
 GameObject:
   m_ObjectHideFlags: 0

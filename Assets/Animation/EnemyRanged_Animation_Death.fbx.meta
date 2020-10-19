@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: d2c1116237c88784ba2511b91852b554
+guid: 049e7970eb7b28849b693f68dc9c5716
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
-    second: Take 001
+    second: EnemyRanged_Animation_Death
   externalObjects: {}
   materials:
     materialImportMode: 0
@@ -17,32 +17,52 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
-    motionNodeName: 
+    motionNodeName: locator1
     rigImportErrors: 
-    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
-      copied configuration does not match position in animation file:\n\t'Jnt_Thigh_L'
-      : position error = 7906.016113 mm\n\t'Jnt_Knee_L' : position error = 45339.750000
-      mm\n\t'Jnt_Ankle_L' : position error = 31039.611328 mm\n\t'Jnt_Foot_L' : position
-      error = 13687.260742 mm\n\t'Jnt_Toe_L' : position error = 12159.130859 mm\n\t'Jnt_Thigh_R'
-      : position error = 7906.038574 mm\n\t'Jnt_Knee_R' : position error = 45339.769531
-      mm\n\t'Jnt_Ankle_R' : position error = 31039.654297 mm\n\t'Jnt_Foot_R' : position
-      error = 13687.244141 mm\n\t'Jnt_Toe_R' : position error = 12159.122070 mm\nRoot
-      scale mis-match. Copied Avatar Rig Configuration has (1,1,1) and animation
-      file has (0.01,0.01,0.01). Ensure files use same import units.\n"
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: EnemyRanged_Animation_Death
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 30
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 0
   meshes:
     lODScreenPercentages: []
@@ -340,69 +360,27 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
+    - boneName: Jnt_Spine_2
+      humanName: Chest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
     skeleton:
     - name: Base_Rig(Clone)
       parentName: 
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Mess
+    - name: base_mesh
       parentName: Base_Rig(Clone)
       position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: ikHandle2
-      parentName: Mess
-      position: {x: -0.31109282, y: 0.17703632, z: -0.01965087}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: ikHandle1
-      parentName: Mess
-      position: {x: 0.311093, y: 0.177036, z: -0.0196509}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Grp_Crtl_Nurbs
       parentName: Base_Rig(Clone)
-      position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Grp_IK_Foot_R
-      parentName: Grp_Crtl_Nurbs
-      position: {x: 0.311093, y: 0.17703597, z: -0.019650897}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Crtl_foot_R
-      parentName: Grp_IK_Foot_R
-      position: {x: 1.4210854e-16, y: 3.5527136e-17, z: -6.661338e-17}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Grp_Footroll_R
-      parentName: Crtl_foot_R
-      position: {x: 0.040044002, y: -0.11877609, z: 0.059920788}
-      rotation: {x: -0.62915987, y: 0.015166431, z: 0.018727886, w: 0.77690226}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Crtl_Footroll_R
-      parentName: Grp_Footroll_R
-      position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Grp_IK_Foot_L
-      parentName: Grp_Crtl_Nurbs
-      position: {x: -0.3110928, y: 0.17703632, z: -0.01965087}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Crtl_foot_L
-      parentName: Grp_IK_Foot_L
-      position: {x: 1.4210854e-16, y: -3.5527136e-17, z: 6.661338e-17}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Grp_Footroll_L
-      parentName: Crtl_foot_L
-      position: {x: -0.040043697, y: -0.11877641, z: 0.05992077}
-      rotation: {x: 0.77690226, y: -0.018727876, z: 0.015166424, w: 0.62915987}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Crtl_Footroll_L
-      parentName: Grp_Footroll_L
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
@@ -433,26 +411,6 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: Crtl_Spine_2
       parentName: Grp_Spine_2
-      position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Grp_Neck
-      parentName: Crtl_Spine_2
-      position: {x: 8.579206e-18, y: 0.10424264, z: 1.976197e-16}
-      rotation: {x: 0.012096314, y: -0, z: -0, w: 0.99992687}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Crtl_Neck
-      parentName: Grp_Neck
-      position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Grp_head
-      parentName: Crtl_Neck
-      position: {x: -8.579206e-18, y: 0.1706671, z: -0.004129792}
-      rotation: {x: -0.012096314, y: 0, z: -0, w: 0.99992687}
-      scale: {x: 0.22300765, y: 0.22300765, z: 0.22300765}
-    - name: Crtl_Head
-      parentName: Grp_head
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
@@ -496,36 +454,6 @@ ModelImporter:
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Grp_Thumb_1_L
-      parentName: Crtl_Wrist_L
-      position: {x: 0.06707568, y: 0.079429284, z: 0.021691067}
-      rotation: {x: 0.17602263, y: -0.17170456, z: -0.33523604, w: 0.9094781}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Crtl_Thumb_1_L
-      parentName: Grp_Thumb_1_L
-      position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Grp_Thumb_2_L
-      parentName: Crtl_Thumb_1_L
-      position: {x: 1.4210854e-16, y: 0.064097546, z: 7.105427e-16}
-      rotation: {x: 0.08919014, y: -0.05070005, z: 0.09640291, w: 0.99004096}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Crtl_Thumb_2_L
-      parentName: Grp_Thumb_2_L
-      position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Grp_Thumb_3_L
-      parentName: Crtl_Thumb_2_L
-      position: {x: -0, y: 0.07616748, z: -1.4210854e-16}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Crtl_Thumb_3_L
-      parentName: Grp_Thumb_3_L
-      position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0, y: -0, z: -0, w: 1}
-      scale: {x: 1, y: 1, z: 1}
     - name: Grp_Mitten_1_L
       parentName: Crtl_Wrist_L
       position: {x: -1.4210854e-16, y: 0.15568712, z: -2.842171e-16}
@@ -553,6 +481,36 @@ ModelImporter:
       scale: {x: 1, y: 1, z: 1}
     - name: Ctrl_Mitten_3_L
       parentName: Grp_Mitten_3_L
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Grp_Thumb_1_L
+      parentName: Crtl_Wrist_L
+      position: {x: 0.06707568, y: 0.079429284, z: 0.021691067}
+      rotation: {x: 0.17602263, y: -0.17170456, z: -0.33523604, w: 0.9094781}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Crtl_Thumb_1_L
+      parentName: Grp_Thumb_1_L
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Grp_Thumb_2_L
+      parentName: Crtl_Thumb_1_L
+      position: {x: 1.4210854e-16, y: 0.064097546, z: 7.105427e-16}
+      rotation: {x: 0.08919014, y: -0.05070005, z: 0.09640291, w: 0.99004096}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Crtl_Thumb_2_L
+      parentName: Grp_Thumb_2_L
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Grp_Thumb_3_L
+      parentName: Crtl_Thumb_2_L
+      position: {x: -0, y: 0.07616748, z: -1.4210854e-16}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Crtl_Thumb_3_L
+      parentName: Grp_Thumb_3_L
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
@@ -656,13 +614,63 @@ ModelImporter:
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Grp_IK_PoleVect_R
-      parentName: Grp_Crtl_Nurbs
-      position: {x: 0.21628577, y: 0.45950508, z: 0.23805597}
+    - name: Grp_Neck
+      parentName: Crtl_Spine_2
+      position: {x: 8.579206e-18, y: 0.10424264, z: 1.976197e-16}
+      rotation: {x: 0.012096314, y: -0, z: -0, w: 0.99992687}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Crtl_Neck
+      parentName: Grp_Neck
+      position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: Crtl_IK_PoleVect_R
-      parentName: Grp_IK_PoleVect_R
+    - name: Grp_head
+      parentName: Crtl_Neck
+      position: {x: -8.579206e-18, y: 0.1706671, z: -0.004129792}
+      rotation: {x: -0.012096314, y: 0, z: -0, w: 0.99992687}
+      scale: {x: 0.22300765, y: 0.22300765, z: 0.22300765}
+    - name: Crtl_Head
+      parentName: Grp_head
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Grp_IK_Foot_L
+      parentName: Grp_Crtl_Nurbs
+      position: {x: -0.3110928, y: 0.17703632, z: -0.01965087}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Crtl_foot_L
+      parentName: Grp_IK_Foot_L
+      position: {x: 1.4210854e-16, y: -3.5527136e-17, z: 6.661338e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Grp_Footroll_L
+      parentName: Crtl_foot_L
+      position: {x: -0.040043697, y: -0.11877641, z: 0.05992077}
+      rotation: {x: 0.77690226, y: -0.018727876, z: 0.015166424, w: 0.62915987}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Crtl_Footroll_L
+      parentName: Grp_Footroll_L
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Grp_IK_Foot_R
+      parentName: Grp_Crtl_Nurbs
+      position: {x: 0.311093, y: 0.17703597, z: -0.019650897}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Crtl_foot_R
+      parentName: Grp_IK_Foot_R
+      position: {x: 1.4210854e-16, y: 3.5527136e-17, z: -6.661338e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Grp_Footroll_R
+      parentName: Crtl_foot_R
+      position: {x: 0.040044002, y: -0.11877609, z: 0.059920788}
+      rotation: {x: -0.62915987, y: 0.015166431, z: 0.018727886, w: 0.77690226}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Crtl_Footroll_R
+      parentName: Grp_Footroll_R
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
@@ -676,8 +684,13 @@ ModelImporter:
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    - name: base_mesh
-      parentName: Base_Rig(Clone)
+    - name: Grp_IK_PoleVect_R
+      parentName: Grp_Crtl_Nurbs
+      position: {x: 0.21628577, y: 0.45950508, z: 0.23805597}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Crtl_IK_PoleVect_R
+      parentName: Grp_IK_PoleVect_R
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
@@ -699,17 +712,7 @@ ModelImporter:
     - name: Jnt_Spine_2
       parentName: Jnt_Spine_1
       position: {x: 4.5484028e-17, y: 0.20532358, z: -3.1974422e-16}
-      rotation: {x: 0.037894588, y: -0, z: -0, w: 0.9992817}
-      scale: {x: 1, y: 0.99999994, z: 0.99999994}
-    - name: Jnt_Neck
-      parentName: Jnt_Spine_2
-      position: {x: 8.579206e-18, y: 0.10424264, z: 2.1094237e-16}
-      rotation: {x: 0.012096316, y: -0, z: -0, w: 0.99992687}
-      scale: {x: 1, y: 1, z: 1}
-    - name: Jnt_Head
-      parentName: Jnt_Neck
-      position: {x: 4.3924988e-17, y: 0.17076702, z: 4.0856205e-16}
-      rotation: {x: -0, y: -0, z: -0, w: 1}
+      rotation: {x: 0.03789459, y: -0, z: -0, w: 0.99928176}
       scale: {x: 1, y: 0.99999994, z: 0.99999994}
     - name: Jnt_Clav_L
       parentName: Jnt_Spine_2
@@ -811,6 +814,16 @@ ModelImporter:
       position: {x: 0.0000022153943, y: -0.07616435, z: 0.0000033986225}
       rotation: {x: -0, y: -0, z: 0.0000000065192567, w: 1}
       scale: {x: 1, y: 1, z: 0.99999994}
+    - name: Jnt_Neck
+      parentName: Jnt_Spine_2
+      position: {x: 8.579206e-18, y: 0.10424264, z: 2.1094237e-16}
+      rotation: {x: 0.012096316, y: -0, z: -0, w: 0.99992687}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Jnt_Head
+      parentName: Jnt_Neck
+      position: {x: 4.3924988e-17, y: 0.17076702, z: 4.0856205e-16}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 0.99999994, z: 0.99999994}
     - name: Jnt_Thigh_L
       parentName: Jnt_Hip
       position: {x: -0.06337735, y: 0.049209137, z: 0.0013022369}
@@ -861,6 +874,21 @@ ModelImporter:
       position: {x: -0.00000082132425, y: -0.12341983, z: 0.000000016899683}
       rotation: {x: -0, y: -0, z: -0, w: 1}
       scale: {x: 1.0000002, y: 1.0000002, z: 1.0000004}
+    - name: Mess
+      parentName: Base_Rig(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: ikHandle1
+      parentName: Mess
+      position: {x: 0.311093, y: 0.177036, z: -0.0196509}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: ikHandle2
+      parentName: Mess
+      position: {x: -0.31109282, y: 0.17703632, z: -0.01965087}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
