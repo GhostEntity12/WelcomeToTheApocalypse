@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40a85c22c7d45514bbf05a29c983cf2b, type: 3}
-  m_Name: "What\u2019s Yours is Mine"
+  m_Script: {fileID: 11500000, guid: a1e1e51f7d64ead4d9b47fb3fe234c10, type: 3}
+  m_Name: D_Passive
   m_EditorClassIdentifier: 
-  m_TriggerType: 0
+  m_StatusName: 
+  m_TriggerType: 1
   m_StatusIcon: {fileID: 0}
-  m_StatusDescription: Regenerates a small amount of health upon damaging an enemy
+  m_StatusDescription: 
   m_AffectSelf: 0
-  m_HealthRegeneration: 0
+  m_StartingDuration: 5
+  m_RemainingDuration: 0

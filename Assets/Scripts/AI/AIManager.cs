@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEditor;
 
 public class AIManager : MonoBehaviour
 {
@@ -18,10 +20,22 @@ public class AIManager : MonoBehaviour
 
     private List<Node> m_ModifyNodes = new List<Node>();
 
+    private bool m_AITurn = false;
+
+    private int m_AIIterator = 0;
+
     //On Awake, initialise the instance of this manager.
     private void Awake()
     {
         m_Instance = this;
+    }
+
+    void Update()
+    {
+        if (m_AITurn == true)
+        {
+            TakeAITurn();
+        }
     }
 
     // This was Update(), I turned it into a function that the GameManager calls instead
@@ -34,27 +48,34 @@ public class AIManager : MonoBehaviour
         DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
         Debug.Log($"Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
-        // For each AI unit currently alive.
-        foreach (Unit unit in UnitsManager.m_Instance.m_ActiveEnemyUnits)
+        
+        // Check if we're done with the AI's turn.
+        if (m_AIIterator == UnitsManager.m_Instance.m_ActiveEnemyUnits.Count)
         {
-            // The current AI unit is assigned
-            m_CurrentAIUnit = unit;
-            GameManager.m_Instance.m_SelectedUnit = unit;
+            // If iterator is at the end of active AI units, reset iterator and end AI turn.
+            m_AIIterator = 0;
+            //Tell the game manager it is not our turn anymore.
+            GameManager.m_Instance.EndCurrentTurn();
+            return;
+        }
 
+        // The current AI unit is assigned
+        m_CurrentAIUnit = UnitsManager.m_Instance.m_ActiveEnemyUnits[m_AIIterator];
+        GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+        // For each AI unit currently alive.
+        if (m_CurrentAIUnit.GetMoving() == false)
+        {
             //Calculate the heuristics of the unit and get them.
-            CalculateHeursitics(unit);
+            CalculateHeursitics(m_CurrentAIUnit);
 
 
             //Find the AI's best choice of move.
-            m_OptimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(unit.GetCurrentMovement(), Grid.m_Instance.GetNode(unit.transform.position), true));
+            m_OptimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position), true));
 
-            Debug.LogWarning($"{unit.name} travelling to optimal node {m_OptimalNode.m_NodeHighlight.name}", m_OptimalNode.m_NodeHighlight);
+            Debug.LogWarning($"{m_CurrentAIUnit.name} travelling to optimal node {m_OptimalNode.m_NodeHighlight.name}", m_OptimalNode.m_NodeHighlight);
 
             FindPathToOptimalNode();
         }
-
-        //Tell the game manager it is not our turn anymore.
-        GameManager.m_Instance.EndCurrentTurn();
     }
 
     //Finds the path from the two units and sets the AI movement path.
@@ -82,6 +103,7 @@ public class AIManager : MonoBehaviour
                 break;
             }
         }
+        ++m_AIIterator;
     }
 
     /// <summary>
@@ -108,15 +130,25 @@ public class AIManager : MonoBehaviour
         UnitsManager.m_Instance.m_ActiveEnemyUnits.AddRange(newUnits);
         // In case of units already added being in the list.
         UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Distinct().ToList();
+        GameManager.m_Instance.m_DidHealthBonus = false;
     }
 
     /// <summary>
     /// Removes units from the active units
     /// </summary>
     /// <param name="deadUnits"></param>
-    public void DisableUnits(List<Unit> deadUnits) => UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Except(deadUnits).ToList();
+    public void DisableUnits(List<Unit> deadUnits)
+    {
+        UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Except(deadUnits).ToList();
 
-    //This function returns the node with the highest MinMax score of available nodes the AI Unit can move to.
+        GameManager.m_Instance.PodClearCheck();
+    }
+
+    /// <summary> 
+    /// Returns the node with the highest MinMax score of available nodes the AI Unit can move to.
+    /// </summary>
+    /// <param name="nodes">The nodes from which to select the best node</param>
+    /// <returns></returns>
     public Node FindOptimalNode(List<Node> nodes)
     {
         try
@@ -131,6 +163,11 @@ public class AIManager : MonoBehaviour
 
         //Return out with the optimal node.
         return m_OptimalNode; 
+    }
+
+    public void SetAITurn(bool aiTurn)
+    {
+        m_AITurn = aiTurn;
     }
 
     void CalculateHeursitics(Unit unit)

@@ -13,19 +13,18 @@ MonoBehaviour:
   m_Name: P_PestilencesMark
   m_EditorClassIdentifier: 
   m_SkillName: Pestilence's Mark
-  m_LightIcon: {fileID: 0}
-  m_DarkIcon: {fileID: 0}
+  m_LightIcon: {fileID: 21300000, guid: df41c7583895fdf40b2adab65903dd41, type: 3}
+  m_DarkIcon: {fileID: 21300000, guid: 1d2938d5a51a3bf44b7d4cf185402690, type: 3}
   m_Description: Infect a foe within {distance} tiles, dealing {damage} damage immediately,
-    and {effectDamage} damage for {duration} turns. {cooldown} turn cooldown.
+    and {effectDamage} damage for {duration} turns.
   targets: 2
   targetType: 0
   excludeCaster: 0
   m_SkillType: 2
   m_CooldownLength: 3
-  m_CooldownRemaining: 0
+  m_CurrentCooldown: 0
   m_CastableDistance: 5
   m_AffectedRange: 0
   m_Cost: 2
-  m_Cooldown: 3
   m_DamageAmount: 3
   m_Effect: {fileID: 11400000, guid: f03f2842c01f13a4da79a7b579b0446e, type: 2}

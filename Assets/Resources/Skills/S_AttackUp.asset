@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 586c2b460f861564e96fe0eb3f1c1138, type: 3}
   m_Name: S_AttackUp
   m_EditorClassIdentifier: 
+  m_StatusName: Rich!
   m_TriggerType: 1
   m_StatusIcon: {fileID: 0}
-  m_StatusDescription: 
+  m_StatusDescription: This unit has been embolded by Famine, increasing the damage
+    they deal by {increase} for {duration} more turns.
   m_AffectSelf: 0
   m_StartingDuration: 3
+  m_RemainingDuration: 3
   m_AttackIncrease: 1

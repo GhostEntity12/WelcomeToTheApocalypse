@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78f9ab8d24a43a54dbdf56d1576d408c, type: 3}
-  m_Name: Gone Too Soon
+  m_Script: {fileID: 11500000, guid: 40a85c22c7d45514bbf05a29c983cf2b, type: 3}
+  m_Name: F_Passive
   m_EditorClassIdentifier: 
+  m_StatusName: "What\u2019s Yours is Mine"
   m_TriggerType: 0
   m_StatusIcon: {fileID: 0}
-  m_StatusDescription: Deals more damage when attacking a unit that is at full health
+  m_StatusDescription: Regenerates a small amount of health upon damaging an enemy
   m_AffectSelf: 0
-  m_ExtraDamage: 1
+  m_HealthRegeneration: 0
