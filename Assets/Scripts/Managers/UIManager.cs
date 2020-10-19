@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,6 +11,11 @@ public class UIManager : MonoBehaviour
 
 	public static UIManager m_Instance;
 	public CanvasGroup m_BlackScreen;
+	
+	/// <summary>
+	/// List of UI elements that block the player from being able to interact with the game.
+	/// </summary>
+	private List<InputBlockingUI> m_InputBlockingUIElements = new List<InputBlockingUI>();
 
 	[Serializable]
 	public class TweenedElement
@@ -63,12 +69,17 @@ public class UIManager : MonoBehaviour
 	/// </summary>
 	public Canvas m_LoseScreen = null;
 	public PrematureTurnEndDisplay m_PrematureTurnEndScreen = null;
+	private InputBlockingUI m_EndTurnBlocker;
 	public GameObject m_PauseScreen = null;
 	private bool m_Paused = false;
 
 	private void Awake()
 	{
 		m_Instance = this;
+
+		m_InputBlockingUIElements = FindObjectsOfType<InputBlockingUI>().ToList();
+		m_PrematureTurnEndScreen.gameObject.SetActive(false);
+		m_EndTurnBlocker = m_PrematureTurnEndScreen.GetComponent<InputBlockingUI>();
 
 		// Creates an EventSystem if it can't find one
 		if (FindObjectOfType<EventSystem>() == null)
@@ -98,6 +109,10 @@ public class UIManager : MonoBehaviour
 
 	private void Update()
 	{
+		if (DialogueManager.instance.dialogueActive)
+		{
+			return;
+		}
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
 			m_PauseScreen.gameObject.SetActive(!m_Paused);
@@ -282,4 +297,26 @@ public class UIManager : MonoBehaviour
 
 		return false;
 	}
+
+	public bool CheckUIBlocking()
+	{
+		// Check if the player's cursor is over any UI elements deemed to block the player's mouse inputs in the game world.
+		foreach (InputBlockingUI iBUI in m_InputBlockingUIElements)
+		{
+			// If the mouse is over one of them, make note of it and break from the loop.
+			// If the mouse is over a single element, no need to keep going through.
+			if (iBUI.GetMouseOverUIElement())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void HidePrematureEndScreen()
+	{
+		m_EndTurnBlocker.SetMouseOverUIElement(false);
+		m_PrematureTurnEndScreen.gameObject.SetActive(false);
+	}
+
 }
