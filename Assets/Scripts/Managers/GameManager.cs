@@ -171,6 +171,14 @@ public class GameManager : MonoBehaviour
             foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
             {
                 u.SetDealExtraDamage(0);
+                foreach(InflictableStatus IS in u.GetInflictableStatuses())
+                {
+                    // If returns true, status effect's duration has reached 0, remove the status effect.
+                    if (IS.DecrementDuration() == true)
+                    {
+                        u.RemoveStatusEffect(IS);
+                    }
+                }
             }
 
             // Stop highlighting node's the player can move to.

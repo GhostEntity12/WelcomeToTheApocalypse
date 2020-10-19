@@ -12,5 +12,20 @@ public abstract class InflictableStatus : StatusEffect
     // Check the preconditions for the status effect to take effect.
     public override abstract bool CheckPrecondition(TriggerType trigger);
 
-    protected void ResetDuration() { m_RemainingDuration = m_StartingDuration; }
+    /// <summary>
+    /// Decrement the duration of the status effect.
+    /// </summary>
+    /// <returns>If the status effect's duration has eneded or not.</returns>
+    public bool DecrementDuration()
+    {        
+		if(m_RemainingDuration <= 0)
+		{
+            return true;
+		}
+		else
+		{
+			--m_RemainingDuration;
+            return false;
+		}
+    }
 }
