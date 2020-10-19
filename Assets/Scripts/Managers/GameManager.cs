@@ -208,6 +208,11 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+            if (UIManager.m_Instance.m_PrematureTurnEndScreen.isActiveAndEnabled == true)
+            {
+                UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(false);
+            }
+
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.SetAITurn(true);
         }
@@ -422,7 +427,7 @@ public class GameManager : MonoBehaviour
             else if (m_TargetingState == TargetingState.Move)
             {
                 // Make sure a unit is selected.
-                if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player)
+                if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player && m_SelectedUnit.GetMoving() == false)
                 {
                     // Check input.
                     if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
