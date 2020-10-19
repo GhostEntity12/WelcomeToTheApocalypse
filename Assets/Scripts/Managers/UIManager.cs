@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+	public enum ScreenState { Onscreen, Offscreen }
+
 	public static UIManager m_Instance;
 	public CanvasGroup m_BlackScreen;
+	
+	/// <summary>
+	/// List of UI elements that block the player from being able to interact with the game.
+	/// </summary>
+	private List<InputBlockingUI> m_InputBlockingUIElements = new List<InputBlockingUI>();
 
 	[Serializable]
 	public class TweenedElement
@@ -17,11 +25,6 @@ public class UIManager : MonoBehaviour
 	}
 
 	[Header("Skin Data")]
-	public UIData m_DeathUIData;
-	public UIData m_PestilenceUIData;
-	public UIData m_FamineUIData;
-	public UIData m_WarUIData;
-	public UIData m_EnemyUIData;
 	public Color[] m_TurnIndicatorColors = new Color[2];
 
 	[Header("Graphical Elements")]
@@ -66,14 +69,17 @@ public class UIManager : MonoBehaviour
 	/// </summary>
 	public Canvas m_LoseScreen = null;
 	public PrematureTurnEndDisplay m_PrematureTurnEndScreen = null;
+	private InputBlockingUI m_EndTurnBlocker;
 	public GameObject m_PauseScreen = null;
 	private bool m_Paused = false;
-
-	public enum ScreenState { Onscreen, Offscreen }
 
 	private void Awake()
 	{
 		m_Instance = this;
+
+		m_InputBlockingUIElements = FindObjectsOfType<InputBlockingUI>().ToList();
+		m_PrematureTurnEndScreen.gameObject.SetActive(false);
+		m_EndTurnBlocker = m_PrematureTurnEndScreen.GetComponent<InputBlockingUI>();
 
 		// Creates an EventSystem if it can't find one
 		if (FindObjectOfType<EventSystem>() == null)
@@ -103,6 +109,10 @@ public class UIManager : MonoBehaviour
 
 	private void Update()
 	{
+		if (DialogueManager.instance.dialogueActive)
+		{
+			return;
+		}
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
 			m_PauseScreen.gameObject.SetActive(!m_Paused);
@@ -111,7 +121,7 @@ public class UIManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Caches the positions of an object for tweening
+	/// Caches the positions of an TweenedElement object for tweening
 	/// </summary>
 	/// <param name="tweenedElement">The element whose positions are to be cached</param>
 	/// <param name="offset">The offset for when the element is offscreen</param>
@@ -122,6 +132,20 @@ public class UIManager : MonoBehaviour
 		tweenedElement.m_RectTransform.anchoredPosition = tweenedElement.m_Cache[1];
 	}
 
+	/// <summary>
+	/// Abstracted function which allows sliding UI elements on or offscreen if they are defined as TweenedElements
+	/// </summary>
+	/// <param name="element">The element to be tweened</param>
+	/// <param name="screenState">Whether the object should be on or off screen at the end of the tween</param>
+	/// <param name="onComplete">Function on callback</param>
+	/// <param name="tweenType">Overides the twwn type</param>
+	public void SlideElement(TweenedElement element, ScreenState screenState, Action onComplete = null, LeanTweenType tweenType = LeanTweenType.easeInOutCubic)
+	{
+		LeanTween.move(element.m_RectTransform, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(tweenType).setOnComplete(onComplete);
+	}
+
+
+	#region SkillsTweening
 	/// <summary>
 	/// Loads a skin for the skills UI
 	/// </summary>
@@ -142,9 +166,14 @@ public class UIManager : MonoBehaviour
 		{
 			// TODO: Refactor
 			m_SkillSlots[i].transform.parent.gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
-			m_SkillSlots[i].m_LightImage.color = uiData.m_IconLight;
-			m_SkillSlots[i].m_LightImage.color = uiData.m_IconDark;
 			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
+			if (m_SkillSlots[i].m_Skill)
+			{
+				m_SkillSlots[i].m_LightImage.sprite = m_SkillSlots[i].m_Skill.m_LightIcon;
+				m_SkillSlots[i].m_LightImage.color = uiData.m_IconLight;
+				m_SkillSlots[i].m_DarkImage.sprite = m_SkillSlots[i].m_Skill.m_DarkIcon;
+				m_SkillSlots[i].m_DarkImage.color = uiData.m_IconDark;
+			}
 			m_SkillSlots[i].UpdateTooltip();
 		}
 
@@ -158,56 +187,35 @@ public class UIManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Loads a skin for the dialogue UI
-	/// </summary>
-	/// <param name="uiStyle"></param>
-	/// <param name="actionOnFinish"></param>
-	private void LoadDialogueSkin(UIData uiData, Action actionOnFinish)
-	{
-		// TODO: implement skin change once UI is decided
-		DialogueManager.instance.StartDisplaying();
-		actionOnFinish();
-	}
-
-	/// <summary>
-	/// Abstracted function which allows sliding UI elements on or offscreen if they are defined as TweenedElements
-	/// </summary>
-	/// <param name="element">The element to be tweened</param>
-	/// <param name="screenState">Whether the object should be on or off screen at the end of the tween</param>
-	/// <param name="actionOnFinish">Function on callback</param>
-	/// <param name="tweenType">Overides the twwn type</param>
-	public void SlideElement(TweenedElement element, ScreenState screenState, Action actionOnFinish = null, LeanTweenType tweenType = LeanTweenType.easeInOutCubic)
-	{
-		LeanTween.move(element.m_RectTransform, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(tweenType).setOnComplete(actionOnFinish);
-	}
-
-	/// <summary>
 	/// Shorthand way of sliding both parts of the skills UI
 	/// </summary>
 	/// <param name="screenState"></param>
 	/// <param name="actionOnFinish"></param>
-	public void SlideSkills(ScreenState screenState, Action actionOnFinish = null)
+	public void SlideSkills(ScreenState screenState, Action onComplete = null)
 	{
-		SlideElement(m_PortraitUI, screenState, actionOnFinish);
+		SlideElement(m_PortraitUI, screenState, onComplete);
 		SlideElement(m_SkillsUI, screenState);
 	}
 
-	public void SwapUI(UIData uiStyle)
+	public void SwapSkillsUI(UIData uiStyle)
 	{
 		SlideSkills(ScreenState.Offscreen,
 			() => LoadSkillsSkin(uiStyle,
 				() => SlideSkills(ScreenState.Onscreen)));
 	}
+	#endregion
 
+	#region DialogueTweening
 	/// <summary>
-	/// Swaps the style of the dialogue
+	/// Loads a skin for the dialogue UI
 	/// </summary>
-	/// <param name="uiData"></param>
-	public void SwapDialogue(UIData uiData)
+	/// <param name="uiStyle"></param>
+	/// <param name="actionOnFinish"></param>
+	private void LoadDialogueSkin(UIData uiData, Action onComplete = null)
 	{
-		SlideElement(m_DialogueUI, ScreenState.Offscreen,
-			() => LoadDialogueSkin(uiData,
-				() => SlideElement(m_DialogueUI, ScreenState.Onscreen)));
+		// TODO: implement skin change once UI is decided
+		DialogueManager.instance.StartDisplaying();
+		onComplete?.Invoke();
 	}
 
 	public void SwapToDialogue(TextAsset sourceFile)
@@ -234,25 +242,41 @@ public class UIManager : MonoBehaviour
 		});
 	}
 
+	/// <summary>
+	/// Swaps the style of the dialogue
+	/// </summary>
+	/// <param name="uiData"></param>
+	public void SwapDialogue(UIData uiData)
+	{
+		SlideElement(m_DialogueUI, ScreenState.Offscreen,
+			() => LoadDialogueSkin(uiData,
+				() => SlideElement(m_DialogueUI, ScreenState.Onscreen)));
+	}
+	#endregion
+
+	#region TurnIndicatorTweening
 	public void SwapTurnIndicator(Allegiance newTeamTurn)
 	{
-		SlideElement(m_TurnIndicatorUI, ScreenState.Offscreen, () =>
+		HideTurnIndicator(() =>
 		{
 			m_TurnIndicator.UpdateTurnIndicator(newTeamTurn);
 			m_TurnIndicatorImage.color = m_TurnIndicatorColors[(int)newTeamTurn];
-			SlideElement(m_TurnIndicatorUI, ScreenState.Onscreen);
+			ShowTurnIndicator();
 		});
 	}
 
-	public void HideTurnIndicator()
+	public void HideTurnIndicator(Action onComplete = null)
 	{
 		SlideElement(m_TurnIndicatorUI, ScreenState.Offscreen);
+		onComplete?.Invoke();
 	}
 
-	public void ShowTurnIndicator()
+	public void ShowTurnIndicator(Action onComplete = null)
 	{
 		SlideElement(m_TurnIndicatorUI, ScreenState.Onscreen);
+		onComplete?.Invoke();
 	}
+	#endregion
 
 	public bool IsPrematureTurnEnding()
 	{
@@ -273,4 +297,26 @@ public class UIManager : MonoBehaviour
 
 		return false;
 	}
+
+	public bool CheckUIBlocking()
+	{
+		// Check if the player's cursor is over any UI elements deemed to block the player's mouse inputs in the game world.
+		foreach (InputBlockingUI iBUI in m_InputBlockingUIElements)
+		{
+			// If the mouse is over one of them, make note of it and break from the loop.
+			// If the mouse is over a single element, no need to keep going through.
+			if (iBUI.GetMouseOverUIElement())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void HidePrematureEndScreen()
+	{
+		m_EndTurnBlocker.SetMouseOverUIElement(false);
+		m_PrematureTurnEndScreen.gameObject.SetActive(false);
+	}
+
 }
