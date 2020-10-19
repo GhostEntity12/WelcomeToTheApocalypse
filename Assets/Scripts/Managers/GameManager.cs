@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Hotkeys for the abilities the player can activate.
     /// </summary>
-    private KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
+    private readonly KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
 
     /// <summary>
     /// Which team's turn is it currently.
@@ -121,6 +121,7 @@ public class GameManager : MonoBehaviour
         m_CameraMovement = m_MainCamera.GetComponentInParent<CameraMovement>();
 
         m_InputBlockingUIElements = FindObjectsOfType<InputBlockingUI>().ToList();
+        UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(false);
     }
 
     // Update.
@@ -211,6 +212,9 @@ public class GameManager : MonoBehaviour
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
 
+            // Deselect unit.
+            m_SelectedUnit = null;
+
             // Reset the player's units.
             foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
             {
@@ -293,7 +297,7 @@ public class GameManager : MonoBehaviour
 
                         // Store the new unit
                         m_SelectedUnit = rayHitUnit;
-                        UIManager.m_Instance.SwapUI(m_SelectedUnit.m_UIData);
+                        UIManager.m_Instance.SwapSkillsUI(m_SelectedUnit.m_UIData);
                         UIManager.m_Instance.m_UIHealthBar.SetHealthAmount((float)m_SelectedUnit.GetCurrentHealth() / m_SelectedUnit.GetStartingHealth());
 
                         // Highlight the appropriate tiles
@@ -321,8 +325,8 @@ public class GameManager : MonoBehaviour
                     {
                         if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
                         {
-                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
+                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
                             Debug.Log(m_SelectedUnit.GetActionPoints(), m_SelectedUnit);
 
                             // Now deselect the skill and clear the targeting highlights.

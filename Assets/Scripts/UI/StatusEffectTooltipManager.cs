@@ -60,12 +60,30 @@ public class StatusEffectTooltipManager : MonoBehaviour
 	public void UpdatePassive()
 	{
 		PassiveSkill passive = GameManager.m_Instance.GetSelectedUnit().GetPassiveSkill();
+		print(passive);
 		if (passive)
 		{
 			m_PassiveName.text = passive.m_StatusName;
 			m_PassiveDescription.text = passive.m_StatusDescription;
-			//TODO: fix passives
-			m_PassiveStatus.text = "This is a placeholder";
+			switch (passive)
+			{
+				case DeathPassive dp:
+					if (dp.m_PassiveStatusEffect.m_RemainingDuration > 0)
+					{
+						m_PassiveStatus.text = $"Currently receiving +{dp.m_PassiveStatusEffect.m_RemainingDuration} bonus damage";
+					}
+					else
+					{
+						m_PassiveStatus.text = $"{dp.m_StatusName} is inactive";
+					}
+					break;
+				case PestilencePassive pp:
+					int charges = Mathf.FloorToInt((float)pp.m_CurrentHealResource / pp.m_HealResourceCastCost);
+					m_PassiveStatus.text = $"Pestilence has {charges} charge{(charges == 1 ? "" : "s")} of Benign Infection remaining";
+					break;
+				default:
+					break;
+			}
 		}
 		m_PassiveEffect.SetActive(passive);
 	}
