@@ -5,7 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Skills/Passives/Pestilence Passive")]
 public class PestilencePassive : PassiveSkill
 {
-    private int m_HealResource = 0;
+    [SerializeField]
+    private int m_StartingHealResource = 0;
+
+    [SerializeField]
+    private int m_CurrentHealResource = 0;
 
     [SerializeField]
     private int m_HealResourceForDealingDamage = 0;
@@ -25,16 +29,16 @@ public class PestilencePassive : PassiveSkill
 
 	public override void TakeEffect()
 	{
-        m_HealResource += m_HealResourceForDealingDamage;
+        m_CurrentHealResource += m_HealResourceForDealingDamage;
 	}
 
     public int GetHealResource()
     {
-        return m_HealResource;
+        return m_CurrentHealResource;
     }
 
     public void UseHealResource()
     {
-        m_HealResource -= m_HealResourceCastCost;
+        m_CurrentHealResource -= m_HealResourceCastCost;
     }
 }
