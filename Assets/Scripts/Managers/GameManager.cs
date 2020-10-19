@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Hotkeys for the abilities the player can activate.
     /// </summary>
-    private KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
+    private readonly KeyCode[] m_AbilityHotkeys = new KeyCode[3] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
 
     /// <summary>
     /// Which team's turn is it currently.
@@ -91,18 +91,14 @@ public class GameManager : MonoBehaviour
     private DialogueManager dm;
 
     /// <summary>
-    /// List of UI elements that block the player from being able to interact with the game.
-    /// </summary>
-    private List<InputBlockingUI> m_InputBlockingUIElements = new List<InputBlockingUI>();
-
-    /// <summary>
     /// Is the mouse hovering over a UI element that will block the player's inputs?
     /// </summary>
-    private bool m_MouseOverUIBlockingElements = false;
+    public bool m_MouseOverUIBlockingElements = false;
 
     private CameraMovement m_CameraMovement;
 
     public int m_PodClearBonus = 5;
+    public bool m_DidHealthBonus;
 
     // On startup.
     private void Awake()
@@ -119,8 +115,6 @@ public class GameManager : MonoBehaviour
     {
         dm = DialogueManager.instance;
         m_CameraMovement = m_MainCamera.GetComponentInParent<CameraMovement>();
-
-        m_InputBlockingUIElements = FindObjectsOfType<InputBlockingUI>().ToList();
     }
 
     // Update.
@@ -161,12 +155,27 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void EndCurrentTurn()
     {
+        UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
+
         // Player ends turn.
         if (m_TeamCurrentTurn == Allegiance.Player)
         {
             m_TeamCurrentTurn = Allegiance.Enemy;
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
+
+            foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+            {
+                u.SetDealExtraDamage(0);
+                foreach(InflictableStatus IS in u.GetInflictableStatuses())
+                {
+                    // If returns true, status effect's duration has reached 0, remove the status effect.
+                    if (IS.DecrementDuration() == true)
+                    {
+                        u.RemoveStatusEffect(IS);
+                    }
+                }
+            }
 
             // Stop highlighting node's the player can move to.
             if (m_SelectedUnit)
@@ -195,6 +204,11 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+            if (UIManager.m_Instance.m_PrematureTurnEndScreen.isActiveAndEnabled == true)
+            {
+                UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(false);
+            }
+
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.SetAITurn(true);
         }
@@ -205,6 +219,9 @@ public class GameManager : MonoBehaviour
             AIManager.m_Instance.SetAITurn(false);
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
+
+            // Deselect unit.
+            m_SelectedUnit = null;
 
             // Reset the player's units.
             foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
@@ -237,9 +254,7 @@ public class GameManager : MonoBehaviour
         {
             if (u.GetAllegiance() == m_TeamCurrentTurn)
                 u.ResetCurrentMovement();
-        }
-
-        UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);        
+        }    
 
         // Tell end turn button who's turn it currently is.
         UIManager.m_Instance.m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
@@ -253,19 +268,8 @@ public class GameManager : MonoBehaviour
         m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
 
         m_LeftMouseDown = Input.GetMouseButtonDown(0);
-        
-        m_MouseOverUIBlockingElements = false;
-        // Check if the player's cursor is over any UI elements deemed to block the player's mouse inputs in the game world.
-        foreach(InputBlockingUI iBUI in m_InputBlockingUIElements)
-        {
-            // If the mouse is over one of them, make note of it and break from the loop.
-            // If the mouse is over a single element, no need to keep going through.
-            if (iBUI.GetMouseOverUIElement() == true)
-            {
-                m_MouseOverUIBlockingElements = true;
-                break;
-            }
-        }
+
+        m_MouseOverUIBlockingElements = UIManager.m_Instance.CheckUIBlocking();
 
         // Mouse is over a unit.
         if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
@@ -288,7 +292,7 @@ public class GameManager : MonoBehaviour
 
                         // Store the new unit
                         m_SelectedUnit = rayHitUnit;
-                        UIManager.m_Instance.SwapUI(m_SelectedUnit.m_UIData);
+                        UIManager.m_Instance.SwapSkillsUI(m_SelectedUnit.m_UIData);
                         UIManager.m_Instance.m_UIHealthBar.SetHealthAmount((float)m_SelectedUnit.GetCurrentHealth() / m_SelectedUnit.GetStartingHealth());
 
                         // Highlight the appropriate tiles
@@ -316,8 +320,8 @@ public class GameManager : MonoBehaviour
                     {
                         if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
                         {
-                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
+                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
                             Debug.Log(m_SelectedUnit.GetActionPoints(), m_SelectedUnit);
 
                             // Now deselect the skill and clear the targeting highlights.
@@ -409,7 +413,7 @@ public class GameManager : MonoBehaviour
             else if (m_TargetingState == TargetingState.Move)
             {
                 // Make sure a unit is selected.
-                if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player)
+                if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player && m_SelectedUnit.GetMoving() == false)
                 {
                     // Check input.
                     if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
@@ -618,9 +622,13 @@ public class GameManager : MonoBehaviour
     {
         if (UnitsManager.m_Instance.m_ActiveEnemyUnits.Count == 0)
         {
-            foreach (var item in UnitsManager.m_Instance.m_PlayerUnits.Where(u => u.GetAlive()))
+            if (!m_DidHealthBonus)
             {
-                item.IncreaseCurrentHealth(m_PodClearBonus);
+                foreach (var item in UnitsManager.m_Instance.m_PlayerUnits.Where(u => u.GetAlive()))
+                {
+                    item.IncreaseCurrentHealth(m_PodClearBonus);
+                }
+                m_DidHealthBonus = true;
             }
         }
     }

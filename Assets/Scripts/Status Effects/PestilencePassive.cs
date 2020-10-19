@@ -5,24 +5,45 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Skills/Passives/Pestilence Passive")]
 public class PestilencePassive : PassiveSkill
 {
-    public int m_ExtraDamage = 0;
+    [SerializeField]
+    private int m_StartingHealResource = 0;
 
-	public override bool CheckPrecondition(TriggerType trigger, Unit affected)
+    [SerializeField]
+    public int m_CurrentHealResource = 0;
+
+    [SerializeField]
+    private int m_HealResourceForDealingDamage = 0;
+
+    [SerializeField]
+    public int m_HealResourceCastCost = 0;
+
+    private void Awake()
+    {
+        m_CurrentHealResource = m_StartingHealResource;
+    }
+
+    public override bool CheckPrecondition(TriggerType trigger)
 	{
 		if (base.CheckPrecondition(trigger) == true)
         {
-            if (affected.GetCurrentHealth() < affected.m_StartingHealth)
-            {
-                Debug.Log("Pestilence Passive triggered!");
-                return true;
-            }
+            return true;
         }
 
         return false;
 	}
 
-	public override void TakeEffect(Unit affected)
+	public override void TakeEffect()
 	{
-        affected.AddExtraDamage(m_ExtraDamage);
+        m_CurrentHealResource += m_HealResourceForDealingDamage;
 	}
+
+    public int GetHealResource()
+    {
+        return m_CurrentHealResource;
+    }
+
+    public void UseHealResource()
+    {
+        m_CurrentHealResource -= m_HealResourceCastCost;
+    }
 }

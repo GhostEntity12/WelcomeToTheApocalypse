@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 8791478719681534220}
   - component: {fileID: 552226458667860041}
   - component: {fileID: 552226458667860040}
+  - component: {fileID: 6860175736070896555}
   m_Layer: 9
   m_Name: Famine
   m_TagString: Untagged
@@ -137,7 +138,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a00bf960e6a84df4b911439c0dd4ccd3, type: 2}
   - {fileID: 11400000, guid: 2a6d9d54dde6913448d77cf6b6ba2559, type: 2}
   - {fileID: 11400000, guid: 7e82132bc6246e143b1fc8cc4bdd2716, type: 2}
-  m_PassiveSkill: {fileID: 11400000, guid: 2568bf799691c514f8e3f0bc6feadbc5, type: 2}
+  m_Passive: {fileID: 11400000, guid: 2568bf799691c514f8e3f0bc6feadbc5, type: 2}
   m_Allegiance: 0
   m_StartingActionPoints: 2
   m_HealthbarPosition: {fileID: 552226458814592113}
@@ -158,6 +159,19 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!65 &6860175736070896555
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 552226458667860043}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0250101, y: 0.060977716, z: 1.0250103}
+  m_Center: {x: 0.00000008940697, y: 0.030488858, z: -0.00000008940697}
 --- !u!1 &552226458814592112
 GameObject:
   m_ObjectHideFlags: 0

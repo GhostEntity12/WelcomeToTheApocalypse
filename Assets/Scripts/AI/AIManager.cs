@@ -130,6 +130,7 @@ public class AIManager : MonoBehaviour
         UnitsManager.m_Instance.m_ActiveEnemyUnits.AddRange(newUnits);
         // In case of units already added being in the list.
         UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Distinct().ToList();
+        GameManager.m_Instance.m_DidHealthBonus = false;
     }
 
     /// <summary>

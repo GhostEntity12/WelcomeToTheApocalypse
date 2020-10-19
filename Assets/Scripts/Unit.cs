@@ -53,10 +53,12 @@ public class Unit : MonoBehaviour
     /// </summary>
     private List<BaseSkill> m_Skills = new List<BaseSkill>();
 
+    public PassiveSkill m_Passive;
+
     /// <summary>
     /// The passive effect of the character.
     /// </summary>
-    public PassiveSkill m_PassiveSkill = null;
+    private PassiveSkill m_PassiveSkill = null;
 
     /// <summary>
     /// The status debuffs on the character.
@@ -124,9 +126,9 @@ public class Unit : MonoBehaviour
 
     private Animator m_animator;
 
-    private int m_ExtraDamage = 0;
+    private int m_TakeExtraDamage = 0;
 
-    private int m_ExtraSkillDamage = 0;
+    private int m_DealExtraDamage = 0;
 
     public TextAsset m_KillDialogue;
 
@@ -142,6 +144,11 @@ public class Unit : MonoBehaviour
         m_CurrentActionPoints = m_StartingActionPoints;
 
         m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
+
+        if (m_Passive)
+        {
+            m_PassiveSkill = Instantiate(m_Passive);
+        }
     }
 
     void Start()
@@ -237,12 +244,12 @@ public class Unit : MonoBehaviour
     /// <param name="decrease"> The amount to decrease the unit's health by. </param>
     public void DecreaseCurrentHealth(int decrease)
     {
-        int damage = decrease + m_ExtraDamage;
+        int damage = decrease + m_TakeExtraDamage;
         // Plays damage animation
         m_animator.SetTrigger("TriggerDamage");
 
         SetCurrentHealth(m_CurrentHealth - damage);
-        m_ExtraDamage = 0;
+        m_TakeExtraDamage = 0;
 
         if (m_PassiveSkill != null)
         {
@@ -440,14 +447,27 @@ public class Unit : MonoBehaviour
     /// <returns>The unit's passive skill, null if it doesn't have one.</returns>
     public PassiveSkill GetPassiveSkill() { return m_PassiveSkill; }
 
-    public void AddExtraDamage(int extra)
+    /// <summary>
+    /// Add extra damage for the unit to take when damaged.
+    /// </summary>
+    /// <param name="extra">The amount of extra damage to take.</param>
+    public void AddTakeExtraDamage(int extra)
     {
-        m_ExtraDamage += extra;
+        m_TakeExtraDamage += extra;
     }
 
-    public void AddExtraSkillDamage(int extra)
+    /// <summary>
+    /// Add extra damage for the unit to deal when attacking.
+    /// </summary>
+    /// <param name="extra">The amount of extra damage to deal.</param>
+    public void AddDealExtraDamage(int extra)
     {
-        m_ExtraSkillDamage += extra;
+        m_DealExtraDamage += extra;
+    }
+
+    public void SetDealExtraDamage(int extra)
+    {
+        m_DealExtraDamage = extra;
     }
 
     /// <summary>
@@ -507,10 +527,9 @@ public class Unit : MonoBehaviour
                                     }
                                 }
                                 // Add extra damage to the skill from status effect (if there is any).
-                                if (m_ExtraSkillDamage > 0)
+                                if (m_DealExtraDamage > 0)
                                 {
-                                    ds.AddExtraDamage(m_ExtraSkillDamage);
-                                    m_ExtraSkillDamage = 0;
+                                    ds.AddExtraDamage(m_DealExtraDamage);
                                 }
 
                                 if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
@@ -524,6 +543,28 @@ public class Unit : MonoBehaviour
                             if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, this) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
                             {
                                 m_PassiveSkill.TakeEffect(this);
+                            }
+                        }
+                    }
+                
+                    // Check if the skill being cast is the heal skill.
+                    HealSkill hs = skill as HealSkill;
+                    if (hs != null)
+                    {
+                        // Check if this unit has Pestilence's passive (should be Pestilence but you never know).
+                        PestilencePassive pesPassive = m_PassiveSkill as PestilencePassive;
+                        if (pesPassive != null)
+                        {
+                            // Use the heal resource before casting the skill.
+                            if (pesPassive.GetHealResource() > 0)
+                            {
+                                pesPassive.UseHealResource();
+                            }
+                            // If there is no heal resource remaining, output warning about it and leave function.
+                            else
+                            {
+                                Debug.LogWarning("Not enough heal resource for Pestilence to heal with.");
+                                return;
                             }
                         }
                     }
@@ -541,9 +582,35 @@ public class Unit : MonoBehaviour
 
     /*=====================================DEBUG STUFF AHEAD=====================================*/
     [ContextMenu("Inflict Hunger")]
-    void Hunger() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackDown")) as InflictableStatus);
+    protected void Hunger() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackDown")) as InflictableStatus);
     [ContextMenu("Inflict Mark")]
-    void Mark() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_DamageOverTime")) as InflictableStatus);
+    protected void Mark() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_DamageOverTime")) as InflictableStatus);
     [ContextMenu("Inflict Riches")]
-    void Riches() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackUp")) as InflictableStatus);
+    protected void Riches() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackUp")) as InflictableStatus);
+
+    [ContextMenu("Passive Status")]
+    protected void PassiveStatus()
+    {
+        if (m_PassiveSkill)
+        {
+            System.Reflection.FieldInfo[] fieldInfos = m_PassiveSkill.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+
+            string output = "======" + m_PassiveSkill.m_StatusName+ "======\n";
+
+            foreach (var item in fieldInfos)
+            {
+                try
+                {
+                    output += $"{item.Name}: {item.GetValue(m_PassiveSkill)}\n";
+                }
+                catch (ArgumentException)
+                {
+                    output += $"{item.Name}: unobtainable\n";
+                }
+
+            }
+
+            Debug.Log(output, this);
+        }
+    }
 }
