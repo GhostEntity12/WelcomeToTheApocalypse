@@ -30,6 +30,7 @@ public class DialogueManager : MonoBehaviour
     public Image bustL;
     [Tooltip("The right-side object which holds characters' image")]
     public Image bustR;
+    public GameObject skipDialogueDisplay;
 
     [Header("Text Display Options")]
     [Tooltip("The length of time to wait between displaying characters")]
@@ -269,7 +270,13 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (GetAnyKey(ProgressionKeys) && canvasGroup.interactable) // If enter is pressed and the textboxes are visible
+        if (Input.GetKeyDown(KeyCode.Escape) && dialogueActive)
+        {
+            skipDialogueDisplay.SetActive(!skipDialogueDisplay.activeInHierarchy);
+            return;
+        }
+        if (skipDialogueDisplay.activeInHierarchy) return;
+        if (GetAnyKey(ProgressionKeys) && dialogueActive) // If enter is pressed and the textboxes are visible
         {
             if (isDisplayingText) // If the system is currently typing out, finish and return
             {
@@ -280,26 +287,37 @@ public class DialogueManager : MonoBehaviour
             }
             else if (currentLine >= fileLines.Length) // If there are no more lines
             {
-                if (clearAfterScene) // Clears the scene if told to
-                {
-                    sceneName = null;
-                }
-
-                UIManager.m_Instance.SwapFromDialogue();
-                dialogueActive = false;
-                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, ClearDialogueBox);
-                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen);
-                leftCharacter = null;
-                rightCharacter = null;
-                sceneName = null;
-                UIManager.m_Instance.ShowTurnIndicator();
-                return;
+                EndScene();
             }
             else
             {
                 LoadNewLine(); // Loads the next line
             }
         }
+    }
+
+    public void EndScene()
+    {
+        StopCoroutine(displayDialogueCoroutine); // Stops the typing out
+        dialogueBox.text = characterDialogue; // Fills the textbox with the entirety of the character's line
+        isDisplayingText = false; // Marks the system as no longer typing out
+
+        currentLine = fileLines.Length;
+
+        if (clearAfterScene) // Clears the scene if told to
+        {
+            sceneName = null;
+        }
+
+        UIManager.m_Instance.SwapFromDialogue();
+        dialogueActive = false;
+        UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, ClearDialogueBox);
+        UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen);
+        leftCharacter = null;
+        rightCharacter = null;
+        sceneName = null;
+        UIManager.m_Instance.ShowTurnIndicator();
+        return;
     }
 
     public void TriggerDialogue(TextAsset _sceneName)

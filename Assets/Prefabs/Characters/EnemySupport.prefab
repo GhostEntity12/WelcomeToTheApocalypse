@@ -1097,6 +1097,7 @@ GameObject:
   - component: {fileID: 5797668860574209761}
   - component: {fileID: 4890577196982342505}
   - component: {fileID: 5503797152080917563}
+  - component: {fileID: -5776083441418456511}
   m_Layer: 9
   m_Name: EnemySupport
   m_TagString: Untagged
@@ -1158,7 +1159,7 @@ MonoBehaviour:
   m_MoveSpeed: 5
   m_LearnedSkills:
   - {fileID: 11400000, guid: 24fb0ac64e5d27a4d86b838f80512fcb, type: 2}
-  m_PassiveSkill: {fileID: 0}
+  m_Passive: {fileID: 0}
   m_Allegiance: 1
   m_StartingActionPoints: 1
   m_HealthbarPosition: {fileID: 0}
@@ -1193,6 +1194,19 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.6
   m_Center: {x: 0, y: 0.9, z: -0.49}
+--- !u!65 &-5776083441418456511
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7393452089026487180}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0250101, y: 0.060977716, z: 1.0250103}
+  m_Center: {x: 0.00000008940697, y: 0.030488858, z: -0.00000008940697}
 --- !u!1 &8065856662740620165
 GameObject:
   m_ObjectHideFlags: 0
