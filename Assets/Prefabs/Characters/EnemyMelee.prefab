@@ -786,6 +786,7 @@ GameObject:
   - component: {fileID: 8050289540440531941}
   - component: {fileID: 2081477522993706962}
   - component: {fileID: 4712814040156628017}
+  - component: {fileID: 7670495935790479403}
   m_Layer: 9
   m_Name: EnemyMelee
   m_TagString: Untagged
@@ -821,7 +822,7 @@ Animator:
   m_GameObject: {fileID: 6149242854386668413}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: c19b523bb17d114488485b31a212278c, type: 3}
-  m_Controller: {fileID: 9100000, guid: 3b805288be48c154c89a7a7ce5a6c6c1, type: 2}
+  m_Controller: {fileID: 9100000, guid: 419de0564b873de4284125646ce12b76, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -847,7 +848,7 @@ MonoBehaviour:
   m_MoveSpeed: 3
   m_LearnedSkills:
   - {fileID: 11400000, guid: 24fb0ac64e5d27a4d86b838f80512fcb, type: 2}
-  m_PassiveSkill: {fileID: 0}
+  m_Passive: {fileID: 0}
   m_Allegiance: 1
   m_StartingActionPoints: 1
   m_HealthbarPosition: {fileID: 888164196435150192}
@@ -869,6 +870,19 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!65 &7670495935790479403
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6149242854386668413}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0250101, y: 0.060977716, z: 1.0250103}
+  m_Center: {x: 0.00000008940697, y: 0.030488858, z: -0.00000008940697}
 --- !u!1 &6209589796813727986
 GameObject:
   m_ObjectHideFlags: 0

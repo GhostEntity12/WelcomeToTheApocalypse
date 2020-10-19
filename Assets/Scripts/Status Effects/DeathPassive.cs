@@ -9,8 +9,7 @@ public class DeathPassive : PassiveSkill
 
     private int m_AliveActiveEnemiesIter = 0;
 
-    [SerializeField]
-    private DeathPassiveStatusEffect m_PassiveStatusEffect = null;
+    public DeathPassiveStatusEffect m_PassiveStatusEffect = null;
 
     public override bool CheckPrecondition(TriggerType trigger, Unit affected)
     {

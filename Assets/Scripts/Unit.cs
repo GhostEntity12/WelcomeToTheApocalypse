@@ -53,10 +53,12 @@ public class Unit : MonoBehaviour
     /// </summary>
     private List<BaseSkill> m_Skills = new List<BaseSkill>();
 
+    public PassiveSkill m_Passive;
+
     /// <summary>
     /// The passive effect of the character.
     /// </summary>
-    public PassiveSkill m_PassiveSkill = null;
+    private PassiveSkill m_PassiveSkill = null;
 
     /// <summary>
     /// The status debuffs on the character.
@@ -142,6 +144,11 @@ public class Unit : MonoBehaviour
         m_CurrentActionPoints = m_StartingActionPoints;
 
         m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
+
+        if (m_Passive)
+        {
+            m_PassiveSkill = Instantiate(m_Passive);
+        }
     }
 
     void Start()
@@ -575,9 +582,35 @@ public class Unit : MonoBehaviour
 
     /*=====================================DEBUG STUFF AHEAD=====================================*/
     [ContextMenu("Inflict Hunger")]
-    void Hunger() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackDown")) as InflictableStatus);
+    protected void Hunger() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackDown")) as InflictableStatus);
     [ContextMenu("Inflict Mark")]
-    void Mark() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_DamageOverTime")) as InflictableStatus);
+    protected void Mark() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_DamageOverTime")) as InflictableStatus);
     [ContextMenu("Inflict Riches")]
-    void Riches() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackUp")) as InflictableStatus);
+    protected void Riches() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackUp")) as InflictableStatus);
+
+    [ContextMenu("Passive Status")]
+    protected void PassiveStatus()
+    {
+        if (m_PassiveSkill)
+        {
+            System.Reflection.FieldInfo[] fieldInfos = m_PassiveSkill.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+
+            string output = "======" + m_PassiveSkill.m_StatusName+ "======\n";
+
+            foreach (var item in fieldInfos)
+            {
+                try
+                {
+                    output += $"{item.Name}: {item.GetValue(m_PassiveSkill)}\n";
+                }
+                catch (ArgumentException)
+                {
+                    output += $"{item.Name}: unobtainable\n";
+                }
+
+            }
+
+            Debug.Log(output, this);
+        }
+    }
 }

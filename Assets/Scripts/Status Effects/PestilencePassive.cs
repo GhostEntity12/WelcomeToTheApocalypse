@@ -9,15 +9,20 @@ public class PestilencePassive : PassiveSkill
     private int m_StartingHealResource = 0;
 
     [SerializeField]
-    private int m_CurrentHealResource = 0;
+    public int m_CurrentHealResource = 0;
 
     [SerializeField]
     private int m_HealResourceForDealingDamage = 0;
 
     [SerializeField]
-    private int m_HealResourceCastCost = 0;
+    public int m_HealResourceCastCost = 0;
 
-	public override bool CheckPrecondition(TriggerType trigger)
+    private void Awake()
+    {
+        m_CurrentHealResource = m_StartingHealResource;
+    }
+
+    public override bool CheckPrecondition(TriggerType trigger)
 	{
 		if (base.CheckPrecondition(trigger) == true)
         {

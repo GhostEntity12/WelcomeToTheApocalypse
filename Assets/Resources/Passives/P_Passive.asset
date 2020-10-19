@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: P_Passive
   m_EditorClassIdentifier: 
   m_StatusName: Salt in the Wound
-  m_TriggerType: 0
+  m_TriggerType: 1
   m_StatusIcon: {fileID: 0}
-  m_StatusDescription: "Deals more damage when attacking a unit that is below full
-    health\r"
+  m_StatusDescription: Pestilence uses the life force of enemies for her healing
   m_AffectSelf: 0
-  m_ExtraDamage: 0
+  m_StartingHealResource: 6
+  m_CurrentHealResource: 0
+  m_HealResourceForDealingDamage: 2
+  m_HealResourceCastCost: 3
