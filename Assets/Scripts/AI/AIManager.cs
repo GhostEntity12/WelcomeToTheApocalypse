@@ -81,7 +81,9 @@ public class AIManager : MonoBehaviour
         {
             m_CurrentAIUnit.SetMovementPath(m_Path);
             print(m_CurrentAIUnit.name + ": " + string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(no =>no.m_NodeHighlight.name)));
-            m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
+            // Make sure the AI wants to attack or heal once it reaches it's destination.
+            if(m_OptimalNode.GetDamage() > 0 || m_OptimalNode.GetHealing() > 0)
+                m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
         }
     }
 
