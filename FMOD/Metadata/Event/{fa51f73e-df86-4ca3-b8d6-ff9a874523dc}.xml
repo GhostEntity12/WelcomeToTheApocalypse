@@ -5,7 +5,7 @@
 			<value>Famine's Hunger (Debuff)</value>
 		</property>
 		<property name="outputFormat">
-			<value>0</value>
+			<value>1</value>
 		</property>
 		<relationship name="folder">
 			<destination>{fe84621b-45a9-4d68-857d-a8eaa35f65cd}</destination>
@@ -56,11 +56,18 @@
 	<object class="EventAutomatableProperties" id="{b5657cbb-124f-47f0-9a8d-776f7d866da5}" />
 	<object class="MarkerTrack" id="{63bcbce8-6322-44ca-ab7d-65ee41a7dfcc}" />
 	<object class="GroupTrack" id="{749c5218-4ba9-4310-8185-8a156f45b1c0}">
+		<relationship name="modules">
+			<destination>{53b2be60-6d2f-43ab-be07-9def64a61c52}</destination>
+		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{aa21eafc-dcd5-47ed-ae17-357faab8b5aa}</destination>
 		</relationship>
 	</object>
-	<object class="Timeline" id="{7743308a-8913-454c-b8dd-bd60157df3c0}" />
+	<object class="Timeline" id="{7743308a-8913-454c-b8dd-bd60157df3c0}">
+		<relationship name="modules">
+			<destination>{53b2be60-6d2f-43ab-be07-9def64a61c52}</destination>
+		</relationship>
+	</object>
 	<object class="EventMixerMaster" id="{1a8b637c-0910-442e-ab62-1c62201fe414}">
 		<relationship name="effectChain">
 			<destination>{f726294a-942c-4eea-bdae-e613334f0907}</destination>
@@ -78,6 +85,14 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{ddf551ab-1eff-4a0b-a5e3-b51fc227baa6}" />
+	<object class="SingleSound" id="{53b2be60-6d2f-43ab-be07-9def64a61c52}">
+		<property name="length">
+			<value>1.1288812980358667</value>
+		</property>
+		<relationship name="audioFile">
+			<destination>{c35b647f-15be-4dec-bbb7-ca67e0524736}</destination>
+		</relationship>
+	</object>
 	<object class="EventMixerGroup" id="{aa21eafc-dcd5-47ed-ae17-357faab8b5aa}">
 		<property name="name">
 			<value>Audio 1</value>
