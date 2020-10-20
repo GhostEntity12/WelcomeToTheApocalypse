@@ -26,7 +26,10 @@ public class AIManager : MonoBehaviour
 
     private BaseSkill m_OptimalSkill = null;
 
-    private Stack<Node> m_CurrentAIUnitPath = new Stack<Node>();
+    /// <summary>
+    /// List of MinMax scores of all the nodes in the scene.
+    /// </summary>
+    private List<Node> m_NodeHeuristicList = new List<Node>();
 
     //On Awake, initialise the instance of this manager.
     private void Awake()
@@ -69,26 +72,12 @@ public class AIManager : MonoBehaviour
             //Find the AI's best choice of move.
             m_OptimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position), true));
 
-            // If there is another unit standing on the optimal node, find the second best node.
-            if (m_OptimalNode.unit != null)
+            // While there is another unit standing on the current optimal node, get the next best node.
+            while (m_OptimalNode.unit != null)
             {
-                Node possibleNextNode = null;
-                for(int i = 0; i < m_OptimalNode.adjacentNodes.Count; ++i)
-                {
-                    Node nextBestNode = m_OptimalNode.adjacentNodes[i];
-                    if (possibleNextNode != null)
-                    {
-                        if (possibleNextNode.GetMinMax() < nextBestNode.GetMinMax())
-                        {
-                            possibleNextNode = nextBestNode;
-                        }
-                    }
-                    else
-                    {
-                        possibleNextNode = nextBestNode;
-                    }
-                }
-                m_OptimalNode = possibleNextNode;
+                m_OptimalNode = m_NodeHeuristicList.First();
+                // Remove it from the list.
+                m_NodeHeuristicList.RemoveAt(0);
             }
 
             Debug.LogWarning($"{m_CurrentAIUnit.name} travelling to optimal node {m_OptimalNode.m_NodeHighlight.name}", m_OptimalNode.m_NodeHighlight);
@@ -170,7 +159,14 @@ public class AIManager : MonoBehaviour
     {
         try
         {
-            m_OptimalNode = nodes.Aggregate((next, highest) => next.GetMinMax() > highest.GetMinMax() ? next : highest);
+            for(int i = 0; i < nodes.Count; ++i)
+            {
+                // Get the nodes as a list rather than the most optimal one.
+                // Allows us to keep track of the MinMax scores of other nodes.
+                m_NodeHeuristicList = nodes.OrderByDescending(n => n.GetMinMax()).ToList();
+                m_OptimalNode = m_NodeHeuristicList.First();
+                m_NodeHeuristicList.RemoveAt(0);
+            }
         }
         catch (InvalidOperationException)
         {
