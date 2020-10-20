@@ -24,7 +24,7 @@ public class AIManager : MonoBehaviour
 
     private int m_AIIterator = 0;
 
-    private DamageSkill m_BestDamageSkill = null;
+    private BaseSkill m_OptimalSkill = null;
 
     //On Awake, initialise the instance of this manager.
     private void Awake()
@@ -99,7 +99,7 @@ public class AIManager : MonoBehaviour
     /// <param name="sourceNode"></param>
     public void Attack(Node sourceNode)
     {
-        m_CurrentAIUnit.ActivateSkill(m_BestDamageSkill, Grid.m_Instance.GetNode(m_OptimalNode.GetAITarget().transform.position));
+        m_CurrentAIUnit.ActivateSkill(m_OptimalSkill, Grid.m_Instance.GetNode(m_OptimalNode.GetAITarget().transform.position));
     }
 
     /// <summary>
@@ -248,7 +248,7 @@ public class AIManager : MonoBehaviour
                                             Node currentDamageNode = nodes[j];
                                             currentDamageNode.SetDamage(newDamageH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition)* 0.1f));
                                             currentDamageNode.SetAITarget(node.unit);
-                                            m_BestDamageSkill = skill;
+                                            m_OptimalSkill = skill;
                                             m_ModifyNodes.Add(nodes[j]);
                                         }
                                     }
@@ -282,8 +282,30 @@ public class AIManager : MonoBehaviour
                         {
                             if (node.unit?.GetAllegiance() == Allegiance.Enemy)
                             {
-                                node.SetHealing(Mathf.Max(node.GetDamage(), skill.m_HealAmount));
-                                m_ModifyNodes.Add(node);
+                                // Get nodes in the area that the AI unit could hit the player unit from.
+                                List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
+
+                                // Go through each of the nodes the AI unit could heal from and add the heal heuristic to them.
+                                for (int j = 0; j < nodes.Count; j++) 
+                                {
+                                    // Calculate the new heal for the node's heal heuristic.
+                                    float newHealH = Mathf.Max(node.GetDamage(), skill.m_HealAmount);
+                                    if (newHealH < nodes[j].GetHealing())
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        if (nodes[j] != null)
+                                        {
+                                            Node currentDamageNode = nodes[j];
+                                            currentDamageNode.SetDamage(newHealH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition)* 0.1f));
+                                            currentDamageNode.SetAITarget(node.unit);
+                                            m_OptimalSkill = skill;
+                                            m_ModifyNodes.Add(nodes[j]);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
