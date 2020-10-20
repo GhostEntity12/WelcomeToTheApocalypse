@@ -315,10 +315,16 @@ public class Unit : MonoBehaviour
             currentNode.m_isBlocked = false;
             // Play death animation
             m_animator.SetTrigger("TriggerDeath");
-            // TODO: replace with something to actually remove the unit
-            gameObject.SetActive(false);
         }
     }
+
+	/// <summary>
+	/// Disables the unit and will be called by an Animator Event
+	/// </summary>
+	public void DisableUnit()
+	{
+		gameObject.SetActive(false);
+	}
 
     /// <summary>
     /// Get the current amount of movement of the character.
