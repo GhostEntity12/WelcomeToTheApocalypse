@@ -282,14 +282,14 @@ public class AIManager : MonoBehaviour
                         {
                             if (node.unit?.GetAllegiance() == Allegiance.Enemy)
                             {
-                                // Get nodes in the area that the AI unit could hit the player unit from.
+                                // Get nodes in the area that the AI unit could heal friendly units from.
                                 List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
 
                                 // Go through each of the nodes the AI unit could heal from and add the heal heuristic to them.
                                 for (int j = 0; j < nodes.Count; j++) 
                                 {
                                     // Calculate the new heal for the node's heal heuristic.
-                                    float newHealH = Mathf.Max(node.GetDamage(), skill.m_HealAmount);
+                                    float newHealH = Mathf.Max(node.GetHealing(), skill.m_HealAmount);
                                     if (newHealH < nodes[j].GetHealing())
                                     {
                                         continue;
@@ -298,9 +298,9 @@ public class AIManager : MonoBehaviour
                                     {
                                         if (nodes[j] != null)
                                         {
-                                            Node currentDamageNode = nodes[j];
-                                            currentDamageNode.SetDamage(newHealH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition)* 0.1f));
-                                            currentDamageNode.SetAITarget(node.unit);
+                                            Node currentHealNode = nodes[j];
+                                            currentHealNode.SetHealing(newHealH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition)* 0.1f));
+                                            currentHealNode.SetAITarget(node.unit);
                                             m_OptimalSkill = skill;
                                             m_ModifyNodes.Add(nodes[j]);
                                         }
