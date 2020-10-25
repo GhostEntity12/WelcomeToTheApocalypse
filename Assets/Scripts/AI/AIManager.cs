@@ -26,6 +26,11 @@ public class AIManager : MonoBehaviour
 
     private BaseSkill m_OptimalSkill = null;
 
+    /// <summary>
+    /// List of MinMax scores of all the nodes in the scene.
+    /// </summary>
+    private List<Node> m_NodeHeuristicList = new List<Node>();
+
     //On Awake, initialise the instance of this manager.
     private void Awake()
     {
@@ -58,7 +63,7 @@ public class AIManager : MonoBehaviour
         // The current AI unit is assigned
         m_CurrentAIUnit = UnitsManager.m_Instance.m_ActiveEnemyUnits[m_AIIterator];
         GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
-        // For each AI unit currently alive.
+        // Make sure the current unit isn't moving.
         if (m_CurrentAIUnit.GetMoving() == false)
         {
             //Calculate the heuristics of the unit and get them.
@@ -66,6 +71,14 @@ public class AIManager : MonoBehaviour
 
             //Find the AI's best choice of move.
             m_OptimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position), true));
+
+            // While there is another unit standing on the current optimal node, get the next best node.
+            while (m_OptimalNode.unit != null)
+            {
+                m_OptimalNode = m_NodeHeuristicList.First();
+                // Remove it from the list.
+                m_NodeHeuristicList.RemoveAt(0);
+            }
 
             Debug.LogWarning($"{m_CurrentAIUnit.name} travelling to optimal node {m_OptimalNode.m_NodeHighlight.name}", m_OptimalNode.m_NodeHighlight);
 
@@ -81,7 +94,9 @@ public class AIManager : MonoBehaviour
         {
             m_CurrentAIUnit.SetMovementPath(m_Path);
             print(m_CurrentAIUnit.name + ": " + string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(no =>no.m_NodeHighlight.name)));
-            m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
+            // Make sure the AI wants to attack or heal once it reaches it's destination.
+            if(m_OptimalNode.GetDamage() > 0 || m_OptimalNode.GetHealing() > 0)
+                m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
         }
     }
 
@@ -90,7 +105,6 @@ public class AIManager : MonoBehaviour
     public void CheckAttackRange(Unit u)
     {
         Attack(m_OptimalNode);
-        ++m_AIIterator;
     }
 
     /// <summary>
@@ -107,6 +121,11 @@ public class AIManager : MonoBehaviour
     /// </summary>
     /// <param name="newUnits"></param>
     public void EnableUnits(Unit[] newUnits) => EnableUnits(newUnits.ToList());
+
+    public void IncrementAIUnitIterator()
+    {
+        m_AIIterator++;
+    }
 
     /// <summary>
     /// Adds more units to the active units
@@ -140,7 +159,14 @@ public class AIManager : MonoBehaviour
     {
         try
         {
-            m_OptimalNode = nodes.Aggregate((next, highest) => next.GetMinMax() > highest.GetMinMax() ? next : highest);
+            for(int i = 0; i < nodes.Count; ++i)
+            {
+                // Get the nodes as a list rather than the most optimal one.
+                // Allows us to keep track of the MinMax scores of other nodes.
+                m_NodeHeuristicList = nodes.OrderByDescending(n => n.GetMinMax()).ToList();
+                m_OptimalNode = m_NodeHeuristicList.First();
+                m_NodeHeuristicList.RemoveAt(0);
+            }
         }
         catch (InvalidOperationException)
         {
@@ -282,14 +308,14 @@ public class AIManager : MonoBehaviour
                         {
                             if (node.unit?.GetAllegiance() == Allegiance.Enemy)
                             {
-                                // Get nodes in the area that the AI unit could hit the player unit from.
+                                // Get nodes in the area that the AI unit could heal friendly units from.
                                 List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
 
                                 // Go through each of the nodes the AI unit could heal from and add the heal heuristic to them.
                                 for (int j = 0; j < nodes.Count; j++) 
                                 {
                                     // Calculate the new heal for the node's heal heuristic.
-                                    float newHealH = Mathf.Max(node.GetDamage(), skill.m_HealAmount);
+                                    float newHealH = Mathf.Max(node.GetHealing(), skill.m_HealAmount);
                                     if (newHealH < nodes[j].GetHealing())
                                     {
                                         continue;
@@ -298,9 +324,9 @@ public class AIManager : MonoBehaviour
                                     {
                                         if (nodes[j] != null)
                                         {
-                                            Node currentDamageNode = nodes[j];
-                                            currentDamageNode.SetDamage(newHealH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition)* 0.1f));
-                                            currentDamageNode.SetAITarget(node.unit);
+                                            Node currentHealNode = nodes[j];
+                                            currentHealNode.SetHealing(newHealH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition)* 0.1f));
+                                            currentHealNode.SetAITarget(node.unit);
                                             m_OptimalSkill = skill;
                                             m_ModifyNodes.Add(nodes[j]);
                                         }
