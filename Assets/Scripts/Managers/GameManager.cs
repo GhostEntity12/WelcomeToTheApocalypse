@@ -544,6 +544,7 @@ public class GameManager : MonoBehaviour
         // Update the GameManager's fields
         m_SelectedSkill = m_SelectedUnit.GetSkill(skillNumber);
         m_TargetingState = TargetingState.Skill;
+		m_SelectedUnit.SetCastSkillEventIndex(skillNumber);
 
         // Get the new affectable area
         m_maxSkillRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);

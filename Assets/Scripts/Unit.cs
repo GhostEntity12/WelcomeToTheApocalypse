@@ -134,6 +134,11 @@ public class Unit : MonoBehaviour
 
     public UIData m_UIData;
 
+	[FMODUnity.EventRef]
+	public List<string> m_FMODSkillCastEvents = new List<string>();
+
+	private int m_CastSkillEventIndex = 0;
+
     // On startup.
     void Awake()
     {
@@ -484,6 +489,11 @@ public class Unit : MonoBehaviour
     /// <returns>If the unit is moving or not.</returns>
     public bool GetMoving() { return m_IsMoving; }
 
+	public void SetCastSkillEventIndex(int index)
+	{
+		m_CastSkillEventIndex = index;
+	}
+
     /// <summary>
     /// Gets the nodes the unit can move to, stores them and highlights them.
     /// </summary>
@@ -581,6 +591,8 @@ public class Unit : MonoBehaviour
                 transform.LookAt(castLocation.worldPosition);
                 // Play skill animation
                 m_animator.SetTrigger("TriggerSkill");
+				// Play the damage sound effect.
+				FMODUnity.RuntimeManager.PlayOneShot(m_FMODSkillCastEvents[m_CastSkillEventIndex], transform.position);
                 return;
             }
         }
