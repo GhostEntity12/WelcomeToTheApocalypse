@@ -185,6 +185,8 @@ public class Unit : MonoBehaviour
                     Grid.m_Instance.SetUnit(gameObject);
                     m_ActionOnFinishPath?.Invoke(this);
                     m_ActionOnFinishPath = null;
+
+                    AIManager.m_Instance.IncrementAIUnitIterator();
                 }
             }
         }
