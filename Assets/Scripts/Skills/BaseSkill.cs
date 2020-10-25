@@ -58,6 +58,8 @@ public class BaseSkill : ScriptableObject
     // The cost of using the skill
     public int m_Cost;
 
+	[FMODUnity.EventRef]
+	public string m_CastEvent = "";
 
     protected Unit[] affectedUnits;
     public List<Node> affectedNodes;
