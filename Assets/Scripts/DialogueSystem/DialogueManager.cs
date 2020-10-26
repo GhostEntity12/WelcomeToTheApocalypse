@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ghost;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -15,7 +16,6 @@ public class DialogueManager : MonoBehaviour
     IEnumerator displayDialogueCoroutine;
 
     [Header("UI")]
-    CanvasGroup canvasGroup;
     [Tooltip("Fow quickly the UI fades in")]
     public float uiFadeInSpeed = 0.4f;
     [Space(15)]
@@ -31,6 +31,7 @@ public class DialogueManager : MonoBehaviour
     [Tooltip("The right-side object which holds characters' image")]
     public Image bustR;
     public GameObject skipDialogueDisplay;
+    public CanvasGroup darkenedBackground;
 
     [Header("Text Display Options")]
     [Tooltip("The length of time to wait between displaying characters")]
@@ -54,19 +55,20 @@ public class DialogueManager : MonoBehaviour
     int currentLine;
     string characterName, characterDialogue, characterExpression;
     CharacterPortraitContainer currentCharacter;
+    Vector2 defaultPortraitSize;
 
     private enum Side { Left, Right }
 
     private void Awake()
     {
         instance = this;
-        canvasGroup = GetComponent<CanvasGroup>(); // Gets the canvas group to deal with fading opacity
         foreach (CharacterPortraitContainer characterPortraits in Resources.LoadAll<CharacterPortraitContainer>("Characters")) // Creates the dictionary
         {
             characterDictionary.Add(characterPortraits.name, characterPortraits);
         }
         ClearDialogueBox(); // Clears the dialogue box, just in case
         namePos = nameHolder.anchoredPosition;
+        defaultPortraitSize = bustL.rectTransform.sizeDelta;
     }
 
     /// <summary>
@@ -195,6 +197,10 @@ public class DialogueManager : MonoBehaviour
         LeanTween.color(otherBust.rectTransform, Color.gray, 0.1f);
         LeanTween.color(bust.rectTransform, Color.white, 0.1f);
 
+        // Grow the active speaker
+        LeanTween.size(otherBust.rectTransform, defaultPortraitSize, 0.1f);
+        LeanTween.size(bust.rectTransform, defaultPortraitSize * 1.1f, 0.1f);
+
         // Swap portraits
         if (character == currentCharacter)
         {
@@ -298,6 +304,7 @@ public class DialogueManager : MonoBehaviour
 
     public void EndScene()
     {
+        LeanTween.alphaCanvas(darkenedBackground, 0.0f, 0.2f);
         StopCoroutine(displayDialogueCoroutine); // Stops the typing out
         dialogueBox.text = characterDialogue; // Fills the textbox with the entirety of the character's line
         isDisplayingText = false; // Marks the system as no longer typing out
@@ -322,6 +329,7 @@ public class DialogueManager : MonoBehaviour
 
     public void TriggerDialogue(TextAsset _sceneName)
     {
+        LeanTween.alphaCanvas(darkenedBackground, 0.9f, 0.2f);
         UIManager.m_Instance.HideTurnIndicator();
         dialogueActive = true;
         ClearDialogueBox();
@@ -349,12 +357,7 @@ public class DialogueManager : MonoBehaviour
             StringSplitOptions.None
             );
         currentLine = 0;
-
-        canvasGroup.interactable = canvasGroup.blocksRaycasts = canvasGroup.alpha == 1;
-
         LoadNewLine();
-        // Fade the canvas in
-        //StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 1, PostFade));
     }
 
     bool GetAnyKey(params KeyCode[] aKeys)

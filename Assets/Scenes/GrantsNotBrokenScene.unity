@@ -828,6 +828,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6163158d0fab414439820319eca89b89, type: 3}
+--- !u!1 &12435648 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6508108911655432220, guid: 6163158d0fab414439820319eca89b89,
+    type: 3}
+  m_PrefabInstance: {fileID: 12435647}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &12435649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 12435648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ListenerNumber: -1
 --- !u!1 &19590167
 GameObject:
   m_ObjectHideFlags: 0
@@ -78637,6 +78656,56 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_FMODEvents.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_FMODSkillCastEvents.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_TakeDamageEvent
+      value: event:/Death/Base Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_DamageEvent
+      value: event:/Death/Base Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_FMODEvents.Array.data[0]
+      value: event:/Death/Base Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_FMODEvents.Array.data[1]
+      value: event:/Death/Death's Embrace (Single Target)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_FMODEvents.Array.data[2]
+      value: event:/Death/Reap (AoE)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_FMODSkillCastEvents.Array.data[0]
+      value: event:/Death/Base Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_FMODSkillCastEvents.Array.data[1]
+      value: event:/Death/Death's Embrace (Single Target)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_FMODSkillCastEvents.Array.data[2]
+      value: event:/Death/Reap (AoE)
       objectReference: {fileID: 0}
     - target: {fileID: 2110737400417084451, guid: 734f3d0a4fd966742965513c71b6d058,
         type: 3}
