@@ -318,6 +318,8 @@ public class DialogueManager : MonoBehaviour
 
         UIManager.m_Instance.SwapFromDialogue();
         dialogueActive = false;
+        LeanTween.size(bustL.rectTransform, defaultPortraitSize, 0.1f);
+        LeanTween.size(bustR.rectTransform, defaultPortraitSize, 0.1f);
         UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, ClearDialogueBox);
         UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen);
         leftCharacter = null;
@@ -329,7 +331,7 @@ public class DialogueManager : MonoBehaviour
 
     public void TriggerDialogue(TextAsset _sceneName)
     {
-        LeanTween.alphaCanvas(darkenedBackground, 0.9f, 0.2f);
+        LeanTween.alphaCanvas(darkenedBackground, 0.9f, 0.4f);
         UIManager.m_Instance.HideTurnIndicator();
         dialogueActive = true;
         ClearDialogueBox();
