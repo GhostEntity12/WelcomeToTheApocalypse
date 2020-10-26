@@ -1018,9 +1018,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6098521361433019460}
   - component: {fileID: 3505235810776742899}
+  - component: {fileID: 3985869889914333072}
   - component: {fileID: 6643607444910914829}
   - component: {fileID: 6612555669217686567}
-  - component: {fileID: 3985869889914333072}
   - component: {fileID: 2552799660386304981}
   m_Layer: 9
   m_Name: EnemyRanged
@@ -1066,6 +1066,31 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3985869889914333072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7131754596217534039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a1a46226b9ce264ab6ee8163b873071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StartingHealth: 12
+  m_StartingMovement: 4
+  m_MoveSpeed: 5
+  m_LearnedSkills:
+  - {fileID: 11400000, guid: a00bf960e6a84df4b911439c0dd4ccd3, type: 2}
+  m_Passive: {fileID: 0}
+  m_Allegiance: 1
+  m_StartingActionPoints: 1
+  m_HealthbarPosition: {fileID: 4490674637043435819}
+  m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
+    type: 2}
+  m_KillDialogue: {fileID: 0}
+  m_UIData: {fileID: 11400000, guid: 2e8510f334b7c55458d5bfd16fe2ddbe, type: 2}
 --- !u!65 &6643607444910914829
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1093,31 +1118,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &3985869889914333072
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7131754596217534039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a1a46226b9ce264ab6ee8163b873071, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_StartingHealth: 6
-  m_StartingMovement: 5
-  m_MoveSpeed: 5
-  m_LearnedSkills:
-  - {fileID: 11400000, guid: a00bf960e6a84df4b911439c0dd4ccd3, type: 2}
-  m_Passive: {fileID: 0}
-  m_Allegiance: 1
-  m_StartingActionPoints: 1
-  m_HealthbarPosition: {fileID: 4490674637043435819}
-  m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
-    type: 2}
-  m_KillDialogue: {fileID: 0}
-  m_UIData: {fileID: 11400000, guid: 2e8510f334b7c55458d5bfd16fe2ddbe, type: 2}
 --- !u!114 &2552799660386304981
 MonoBehaviour:
   m_ObjectHideFlags: 0
