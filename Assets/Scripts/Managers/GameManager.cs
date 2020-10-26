@@ -636,6 +636,7 @@ public class GameManager : MonoBehaviour
     public static void CreateVersionText()
     {
         if (GameObject.Find("VersionCanvas")) return;
+        if (Application.version.Contains("Gold")) return;
 
         GameObject cgo = new GameObject("VersionCanvas", typeof(Canvas), typeof(CanvasScaler));
         DontDestroyOnLoad(cgo);

@@ -27,32 +27,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &-5072395758925336569
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Famine_Menu_Idle
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: a02c835278261df4e99663cc879b35b2, type: 2}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &-3470219398809021739
 AnimatorState:
   serializedVersion: 5
@@ -60,7 +34,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Famine_Menu_Idle 0
+  m_Name: Famine_Menu_Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -183,9 +157,6 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: 1602348058830353705}
     m_Position: {x: 150, y: 160, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -5072395758925336569}
-    m_Position: {x: 185, y: 225, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3470219398809021739}
     m_Position: {x: 400, y: 160, z: 0}
@@ -360,7 +331,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.05
+  m_TransitionDuration: 0.3
   m_TransitionOffset: 0
   m_ExitTime: 0.9583333
   m_HasExitTime: 0
