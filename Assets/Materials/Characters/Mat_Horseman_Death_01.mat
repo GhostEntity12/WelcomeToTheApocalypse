@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1414712105759237528
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 2
 --- !u!21 &2100000
 Material:
   serializedVersion: 6
@@ -7,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Player_Pestilence_Toon_01
+  m_Name: Mat_Horseman_Death_01
   m_Shader: {fileID: -6465566751694194690, guid: 2cc517c54604d7b458c73ee5f6c487e1,
     type: 3}
   m_ShaderKeywords: _EMISSION
@@ -21,13 +34,13 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _ToonAlbedo:
-        m_Texture: {fileID: 2800000, guid: 6a20b83430cc2e448a50771f27a0bb69, type: 3}
+        m_Texture: {fileID: 2800000, guid: c5096f3a0a9a5ef40ad65cfea81fcbc0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Boolean_729C417E: 0
     - _ToonDoOutline: 0
-    - _ToonDoShadows: 0
+    - _ToonDoShadows: 1
     - _ToonEdgeStrength: 0.01
     - _ToonFresnelPower: 2.5
     - _ToonFresnelWidth: 1
@@ -41,16 +54,3 @@ Material:
     - _ToonMainColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
     - _ToonOutlineColor: {r: 0, g: 0, b: 0, a: 0}
     - _ToonShadowColor: {r: 0.39999998, g: 0.39999998, b: 0.39999998, a: 1}
---- !u!114 &630272328670059161
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 2
