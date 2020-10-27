@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
-using TMPro;
 
 public class HealthChangeIndicator : MonoBehaviour
 {
@@ -44,7 +42,7 @@ public class HealthChangeIndicator : MonoBehaviour
     /// The text with no alpha.
     /// To fade to.
     /// </summary>
-    private Color m_NoAlpha = new Color(0,0,0,0);
+    private Color m_NoAlpha = new Color(0, 0, 0, 0);
 
     /// <summary>
     /// The current colour of the text.
@@ -106,7 +104,7 @@ public class HealthChangeIndicator : MonoBehaviour
 
     public void SetStartPositionToCurrent()
     {
-        m_FloatStartPosition = transform.position;        
+        m_FloatStartPosition = transform.position;
         m_FloatEndPosition = new Vector3(m_FloatStartPosition.x, m_FloatStartPosition.y + m_FloatEndHeight, m_FloatStartPosition.z);
     }
 }

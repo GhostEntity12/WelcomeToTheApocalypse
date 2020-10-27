@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public abstract class InflictableStatus : StatusEffect
+﻿public abstract class InflictableStatus : StatusEffect
 {
     // Starting time for how long the status lasts.
     public int m_StartingDuration = 0;
@@ -17,15 +13,15 @@ public abstract class InflictableStatus : StatusEffect
     /// </summary>
     /// <returns>If the status effect's duration has eneded or not.</returns>
     public bool DecrementDuration()
-    {        
-		if(m_RemainingDuration <= 0)
-		{
+    {
+        if (m_RemainingDuration <= 0)
+        {
             return true;
-		}
-		else
-		{
-			--m_RemainingDuration;
+        }
+        else
+        {
+            --m_RemainingDuration;
             return false;
-		}
+        }
     }
 }

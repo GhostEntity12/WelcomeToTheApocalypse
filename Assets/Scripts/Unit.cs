@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
 using UnityEngine;
 
 public enum Allegiance
@@ -302,44 +301,44 @@ public class Unit : MonoBehaviour
 	/// </summary>
 	public void SetDealingDamage(int dealingDamage) { m_DealingDamage = dealingDamage; }
 
-    /// <summary>
-    /// Check if the unit's health is above 0.
-    /// If equal to or below, the unit is not alive.
-    /// </summary>
-    private void CheckAlive()
-    {
-        if (m_CurrentHealth <= 0)
-        {
-            Debug.Log($"{name} died");
-            m_IsAlive = false;
+	/// <summary>
+	/// Check if the unit's health is above 0.
+	/// If equal to or below, the unit is not alive.
+	/// </summary>
+	private void CheckAlive()
+	{
+		if (m_CurrentHealth <= 0)
+		{
+			Debug.Log($"{name} died");
+			m_IsAlive = false;
 
-            // Check if the unit has the "DefeatEnemyWinCondition" script on it.
-            // If it does, the player has won the level by defeating the boss.
-            GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
+			// Check if the unit has the "DefeatEnemyWinCondition" script on it.
+			// If it does, the player has won the level by defeating the boss.
+			GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
 
-            // If this is a player unit, check if the player has any units remaining.
-            if (m_Allegiance == Allegiance.Player)
-            {
-                GameManager.m_Instance.CheckPlayerUnitsAlive();
-                UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
-                UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
-            }
+			// If this is a player unit, check if the player has any units remaining.
+			if (m_Allegiance == Allegiance.Player)
+			{
+				GameManager.m_Instance.CheckPlayerUnitsAlive();
+				UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
+				UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
+			}
 
-            if (m_KillDialogue)
-            {
-                DialogueManager.instance.TriggerDialogue(m_KillDialogue);
-            }
+			if (m_KillDialogue)
+			{
+				DialogueManager.instance.TriggerDialogue(m_KillDialogue);
+			}
 
-            Node currentNode = Grid.m_Instance.GetNode(transform.position);
-            currentNode.unit = null;
-            currentNode.m_isBlocked = false;
-            // Play death animation
-            m_animator.SetTrigger("TriggerDeath");
+			Node currentNode = Grid.m_Instance.GetNode(transform.position);
+			currentNode.unit = null;
+			currentNode.m_isBlocked = false;
+			// Play death animation
+			m_animator.SetTrigger("TriggerDeath");
 
-            if (m_DeathSound != "")
-                FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
-        }
-    }
+			if (m_DeathSound != "")
+				FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+		}
+	}
 
 	/// <summary>
 	/// Disables the unit and will be called by an Animator Event
@@ -534,13 +533,12 @@ public class Unit : MonoBehaviour
 			// Check if the unit has the skill being cast.
 			if (m_Skills[i].m_SkillName == skill.m_SkillName)
 			{
-				m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
+				skill.affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
 				if (m_PassiveSkill != null)
 				{
 					DamageSkill ds = skill as DamageSkill;
 
 					// Check if skill being cast is a damage skill.
-					// If so, check the unit's passive
 					if (ds != null)
 					{
 						// Make sure the skill knows what units it will affect, so we can check them for the passive.
@@ -606,7 +604,7 @@ public class Unit : MonoBehaviour
 						}
 					}
 				}
-				m_Skills[i].CastSkill();
+				skill.CastSkill();
 				transform.LookAt(castLocation.worldPosition);
 
 				// Play skill animation
