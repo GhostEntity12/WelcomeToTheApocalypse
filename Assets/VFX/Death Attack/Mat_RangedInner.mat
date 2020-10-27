@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2592821644195507986
+--- !u!114 &-1273353214439856651
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Outter
-  m_Shader: {fileID: -6465566751694194690, guid: 0b64bee86ec012944b5e284075dd56df,
+  m_Name: Mat_RangedInner
+  m_Shader: {fileID: -6465566751694194690, guid: dd04d0f007e173b4db26b2e023a1c962,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -62,20 +62,36 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Vector1_11A29C6C: 0.5
+    - Vector1_34529947: 2.25
+    - Vector1_BFCB2EED: 10
+    - Vector1_D0FEBDFF: 0.1
+    - Vector1_E239AFEE: 0.125
+    - Vector1_F5BF170F: 7.75
     - _AlphaClip: 0
-    - _AttackRDisplacementStrength: 0.2
-    - _AttackRScale: 12.2
+    - _AttackRDisplacementStrength: 0.1
+    - _AttackRDistortionScale: 10
+    - _AttackRFalloff: 7.75
+    - _AttackRPointSize: 0.125
+    - _AttackRScale: 15
+    - _AttackRVectorPositionScale: 2.25
     - _Blend: 0
     - _BumpScale: 1
+    - _CoreSize: 7.75
     - _Cull: 2
     - _Cutoff: 0.5
     - _DstBlend: 0
     - _EnvironmentReflections: 1
+    - _FresnelStrength: 0.125
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
+    - _NoiseContrast: 0.5
+    - _NoiseStrength: 10
     - _OcclusionStrength: 1
+    - _OffsetContrast: 0.1
+    - _OffsetScale: 2.25
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 0.5
@@ -86,9 +102,15 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_EF5C5061: {r: 0.7268271, g: 0.028346404, b: 0.8584906, a: 0}
+    - Color_318C8737: {r: 1.7411011, g: 1.7411011, b: 1.7411011, a: 0}
+    - Color_985E7175: {r: 0.24775846, g: 0.031532895, b: 0.39641356, a: 0}
+    - Color_EF5C5061: {r: 1, g: 1, b: 1, a: 0}
     - _AttackRColor: {r: 0.737255, g: 0.737255, b: 0.737255, a: 1}
+    - _AttackRCoreColor: {r: 0.9544381, g: 0.033018887, b: 1, a: 0}
+    - _AttackRFringeColor: {r: 1, g: 1, b: 1, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _CoreColor: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FringeColor: {r: 0.4314387, g: 0.05522428, b: 0.6886792, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
