@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7313871622852076273}
   - component: {fileID: 8310066432886493436}
   - component: {fileID: 7741018153900168037}
+  - component: {fileID: 2142698174401207313}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -47,7 +48,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SelectedUnit: {fileID: 0}
   m_TeamCurrentTurn: 0
+  m_MouseOverUIBlockingElements: 0
   m_PodClearBonus: 5
+  m_DidHealthBonus: 0
 --- !u!114 &8310066432886493436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,3 +80,25 @@ MonoBehaviour:
   m_EnemyUnits: []
   m_ActiveEnemyUnits: []
   m_DeadPlayerUnits: []
+--- !u!114 &2142698174401207313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5059553532039120980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd5c325cb3ef9174b8a5fa8c98d76402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_melee: {fileID: 0}
+  m_heal: {fileID: 0}
+  m_numberOfRanged: 0
+  m_rangedSpeed: 0.1
+  m_rangedParent: {fileID: 0}
+  m_rangedParticle: {fileID: 0}
+  m_numberOfDeath: 0
+  m_deathParent: {fileID: 0}
+  m_deathParticle: {fileID: 0}
+  m_unitParticles: []
