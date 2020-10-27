@@ -14,6 +14,7 @@ public class DamageOverTimeEffect : InflictableStatus
 
 	public override void TakeEffect(Unit affected)
 	{
-        affected.DecreaseCurrentHealth(m_DamageOverTime);
+        affected.m_animator.SetTrigger("TriggerDamage");
+		affected.SetDealingDamage(m_DamageOverTime);
 	}
 }
