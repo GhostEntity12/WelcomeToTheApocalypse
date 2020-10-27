@@ -15,17 +15,16 @@ MonoBehaviour:
   m_SkillName: Basic Heal
   m_LightIcon: {fileID: 0}
   m_DarkIcon: {fileID: 0}
-  m_Description: Target an ally within {distance} tiles, heal {heal} damage. {cooldown}
-    turn cooldown.
+  m_Description: Target an ally within {distance} tiles, heal {heal} damage.
   targets: 1
   targetType: 0
   excludeCaster: 0
   m_SkillType: 1
   m_CooldownLength: 1
-  m_CooldownRemaining: 0
+  m_CurrentCooldown: 0
   m_CastableDistance: 2
   m_AffectedRange: 0
   m_Cost: 1
-  m_Cooldown: 3
-  m_HealAmount: 1
+  m_CastEvent: event:/Enemies/Support Heal
+  m_HealAmount: 4
   chosenTarget: {fileID: 0}

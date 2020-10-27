@@ -48,9 +48,9 @@ public class BaseSkill : ScriptableObject
     // What type of skill it is (and how many AP it costs to cast)
     public SkillType m_SkillType = SkillType.Special;
     // How many turns before the caster can cast the skill again
-    public int m_CooldownLength;
+    public int m_CooldownLength = 3;
     // How many remaining turns before the caster can cast the skill again
-    public int m_CooldownRemaining;
+    public int m_CurrentCooldown = 0;
     // How far away the skill can be cast from the caster
     public int m_CastableDistance;
     // How large of an area around the cast location will be affected
@@ -58,8 +58,8 @@ public class BaseSkill : ScriptableObject
     // The cost of using the skill
     public int m_Cost;
 
-    public int m_Cooldown = 3;
-    private int m_CurrentCooldown = 0;
+	[FMODUnity.EventRef]
+	public string m_CastEvent = "";
 
     protected Unit[] affectedUnits;
     public List<Node> affectedNodes;
@@ -69,7 +69,14 @@ public class BaseSkill : ScriptableObject
         FindAffectedUnits();
 
         // Set the cooldown when the skill is used.
-        m_CurrentCooldown = m_Cooldown;
+        m_CurrentCooldown = m_CooldownLength;
+
+        // Update the cooldowns
+        // TODO: do this properly
+        foreach (SkillButton button in UIManager.m_Instance.m_SkillSlots)
+        {
+            button.UpdateCooldownDisplay();
+        }
     }
 
     /// <summary>

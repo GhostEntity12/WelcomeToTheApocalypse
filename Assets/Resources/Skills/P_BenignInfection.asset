@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: P_BenignInfection
   m_EditorClassIdentifier: 
   m_SkillName: Benign Infection
-  m_LightIcon: {fileID: 0}
-  m_DarkIcon: {fileID: 0}
+  m_LightIcon: {fileID: 21300000, guid: 5b3f9bf08a8677c44a662e9cd3b88515, type: 3}
+  m_DarkIcon: {fileID: 21300000, guid: bfd09ee4b6d579a4ba387f40e660df4e, type: 3}
   m_Description: Supercharge the antibodies of an ally within {distance} tiles, healing
-    {heal} damage. {cooldown} turn cooldown.
+    {heal} damage.
   targets: 1
   targetType: 0
   excludeCaster: 0
-  m_SkillType: 1
+  m_SkillType: 2
   m_CooldownLength: 2
-  m_CooldownRemaining: 0
+  m_CurrentCooldown: 0
   m_CastableDistance: 2
   m_AffectedRange: 0
   m_Cost: 2
-  m_Cooldown: 3
-  m_HealAmount: 3
+  m_CastEvent: event:/Pestilence/Benign Infection (Heal)
+  m_HealAmount: 10
   chosenTarget: {fileID: 0}

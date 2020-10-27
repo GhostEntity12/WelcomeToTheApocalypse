@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ghost;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,13 +9,13 @@ using UnityEngine.UI;
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager instance;
+    public KeyCode[] ProgressionKeys = new KeyCode[1] { KeyCode.Return };
 
     public bool dialogueActive;
     bool isDisplayingText;
     IEnumerator displayDialogueCoroutine;
 
     [Header("UI")]
-    CanvasGroup canvasGroup;
     [Tooltip("Fow quickly the UI fades in")]
     public float uiFadeInSpeed = 0.4f;
     [Space(15)]
@@ -29,6 +30,8 @@ public class DialogueManager : MonoBehaviour
     public Image bustL;
     [Tooltip("The right-side object which holds characters' image")]
     public Image bustR;
+    public GameObject skipDialogueDisplay;
+    public CanvasGroup darkenedBackground;
 
     [Header("Text Display Options")]
     [Tooltip("The length of time to wait between displaying characters")]
@@ -52,19 +55,20 @@ public class DialogueManager : MonoBehaviour
     int currentLine;
     string characterName, characterDialogue, characterExpression;
     CharacterPortraitContainer currentCharacter;
+    Vector2 defaultPortraitSize;
 
     private enum Side { Left, Right }
 
     private void Awake()
     {
         instance = this;
-        canvasGroup = GetComponent<CanvasGroup>(); // Gets the canvas group to deal with fading opacity
         foreach (CharacterPortraitContainer characterPortraits in Resources.LoadAll<CharacterPortraitContainer>("Characters")) // Creates the dictionary
         {
             characterDictionary.Add(characterPortraits.name, characterPortraits);
         }
         ClearDialogueBox(); // Clears the dialogue box, just in case
         namePos = nameHolder.anchoredPosition;
+        defaultPortraitSize = bustL.rectTransform.sizeDelta;
     }
 
     /// <summary>
@@ -107,7 +111,7 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
-            UIManager.m_Instance.SwapDialogue(UIManager.m_Instance.GetUIStyle(currentCharacter.name));
+            UIManager.m_Instance.SwapDialogue(currentCharacter.m_UiData);
         }
 
     }
@@ -193,6 +197,10 @@ public class DialogueManager : MonoBehaviour
         LeanTween.color(otherBust.rectTransform, Color.gray, 0.1f);
         LeanTween.color(bust.rectTransform, Color.white, 0.1f);
 
+        // Grow the active speaker
+        LeanTween.size(otherBust.rectTransform, defaultPortraitSize, 0.1f);
+        LeanTween.size(bust.rectTransform, defaultPortraitSize * 1.1f, 0.1f);
+
         // Swap portraits
         if (character == currentCharacter)
         {
@@ -268,7 +276,13 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return) && canvasGroup.interactable) // If enter is pressed and the textboxes are visible
+        if (Input.GetKeyDown(KeyCode.Escape) && dialogueActive)
+        {
+            skipDialogueDisplay.SetActive(!skipDialogueDisplay.activeInHierarchy);
+            return;
+        }
+        if (skipDialogueDisplay.activeInHierarchy) return;
+        if (GetAnyKey(ProgressionKeys) && dialogueActive) // If enter is pressed and the textboxes are visible
         {
             if (isDisplayingText) // If the system is currently typing out, finish and return
             {
@@ -279,20 +293,7 @@ public class DialogueManager : MonoBehaviour
             }
             else if (currentLine >= fileLines.Length) // If there are no more lines
             {
-                if (clearAfterScene) // Clears the scene if told to
-                {
-                    sceneName = null;
-                }
-
-                UIManager.m_Instance.SwapFromDialogue();
-                dialogueActive = false;
-                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, ClearDialogueBox);
-                UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen);
-                leftCharacter = null;
-                rightCharacter = null;
-                sceneName = null;
-                UIManager.m_Instance.ShowTurnIndicator();
-                return;
+                EndScene();
             }
             else
             {
@@ -301,8 +302,36 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    public void EndScene()
+    {
+        LeanTween.alphaCanvas(darkenedBackground, 0.0f, 0.2f);
+        StopCoroutine(displayDialogueCoroutine); // Stops the typing out
+        dialogueBox.text = characterDialogue; // Fills the textbox with the entirety of the character's line
+        isDisplayingText = false; // Marks the system as no longer typing out
+
+        currentLine = fileLines.Length;
+
+        if (clearAfterScene) // Clears the scene if told to
+        {
+            sceneName = null;
+        }
+
+        UIManager.m_Instance.SwapFromDialogue();
+        dialogueActive = false;
+        LeanTween.size(bustL.rectTransform, defaultPortraitSize, 0.1f);
+        LeanTween.size(bustR.rectTransform, defaultPortraitSize, 0.1f);
+        UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, ClearDialogueBox);
+        UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen);
+        leftCharacter = null;
+        rightCharacter = null;
+        sceneName = null;
+        UIManager.m_Instance.ShowTurnIndicator();
+        return;
+    }
+
     public void TriggerDialogue(TextAsset _sceneName)
     {
+        LeanTween.alphaCanvas(darkenedBackground, 0.9f, 0.4f);
         UIManager.m_Instance.HideTurnIndicator();
         dialogueActive = true;
         ClearDialogueBox();
@@ -330,19 +359,14 @@ public class DialogueManager : MonoBehaviour
             StringSplitOptions.None
             );
         currentLine = 0;
-
-        canvasGroup.interactable = canvasGroup.blocksRaycasts = canvasGroup.alpha == 1;
-
         LoadNewLine();
-        // Fade the canvas in
-        //StartCoroutine(FadeCanvasGroup(canvasGroup, uiFadeInSpeed, canvasGroup.alpha, 1, PostFade));
     }
 
-    ///// <summary>
-    ///// Run via callback. Cleans up after fading.
-    ///// </summary>
-    //void PostFade()
-    //{
-    //    canvasGroup.interactable = canvasGroup.blocksRaycasts = canvasGroup.alpha == 1;
-    //}
+    bool GetAnyKey(params KeyCode[] aKeys)
+    {
+        foreach (var key in aKeys)
+            if (Input.GetKeyDown(key))
+                return true;
+        return false;
+    }
 }

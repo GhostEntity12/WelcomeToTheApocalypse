@@ -16,16 +16,16 @@ MonoBehaviour:
   m_LightIcon: {fileID: 0}
   m_DarkIcon: {fileID: 0}
   m_Description: Raises an ally's spirits with the promise of a reward, slightly
-    increasing the damage they deal for {duration} turns. {cooldown} turn cooldown.
+    increasing the damage they deal for {duration} turns.
   targets: 1
   targetType: 0
   excludeCaster: 0
   m_SkillType: 2
   m_CooldownLength: 3
-  m_CooldownRemaining: 0
+  m_CurrentCooldown: 0
   m_CastableDistance: 2
   m_AffectedRange: 0
   m_Cost: 2
-  m_Cooldown: 3
+  m_CastEvent: event:/Famine/Rags To Riches (Buff)
   m_DamageAmount: 0
   m_Effect: {fileID: 11400000, guid: b6732826534a58d468fbf616df579b52, type: 2}

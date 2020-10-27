@@ -14,14 +14,6 @@ public class DamageOverTimeEffect : InflictableStatus
 
 	public override void TakeEffect(Unit affected)
 	{
-        if (m_RemainingDuration > 0)
-        {
-            affected.DecreaseCurrentHealth(m_DamageOverTime);
-            m_RemainingDuration--;
-        }
-        else
-        {
-            affected.RemoveStatusEffect(this);
-        }		
+        affected.DecreaseCurrentHealth(m_DamageOverTime);
 	}
 }

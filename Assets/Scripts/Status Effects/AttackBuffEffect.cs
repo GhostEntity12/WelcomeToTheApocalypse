@@ -14,13 +14,6 @@ public class AttackBuffEffect : InflictableStatus
 
 	public override void TakeEffect(Unit affected)
 	{
-		if (m_RemainingDuration > 0)
-        {
-            affected.AddExtraSkillDamage(m_AttackIncrease);
-        }
-        else
-        {
-            affected.RemoveStatusEffect(this);
-        }
+		affected.AddDealExtraDamage(m_AttackIncrease);
 	}
 }

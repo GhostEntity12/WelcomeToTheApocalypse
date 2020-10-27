@@ -14,6 +14,8 @@ public enum TriggerType
 
 public abstract class StatusEffect : ScriptableObject
 {
+    public string m_StatusName;
+
     // How this status effect is triggered.
     public TriggerType m_TriggerType;
 

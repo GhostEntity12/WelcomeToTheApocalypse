@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ba71d73c4178814687e4fb5e28515c3, type: 3}
   m_Name: S_AttackDown
   m_EditorClassIdentifier: 
+  m_StatusName: 
   m_TriggerType: 1
   m_StatusIcon: {fileID: 0}
-  m_StatusDescription: 
+  m_StatusDescription: This unit has had its resources crippled by Famine, decreasing
+    the damage they deal by {decrease} for {duration} more turns.
   m_AffectSelf: 0
-  m_StartingDuration: 3
-  m_AttackDecrease: 1
+  m_StartingDuration: 4
+  m_RemainingDuration: 4
+  m_AttackDecrease: 2

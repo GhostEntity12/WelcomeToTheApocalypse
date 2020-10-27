@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f20a98783d3acf844a0a51abb62bb2c1, type: 3}
   m_Name: S_DamageOverTime
   m_EditorClassIdentifier: 
+  m_StatusName: 
   m_TriggerType: 0
   m_StatusIcon: {fileID: 0}
-  m_StatusDescription: 
+  m_StatusDescription: This unit has been marked by Pestilence, and will take {damage}
+    damage every turn for {duration} more turns.
   m_AffectSelf: 0
   m_StartingDuration: 3
-  m_DamageOverTime: 1
+  m_RemainingDuration: 3
+  m_DamageOverTime: 2

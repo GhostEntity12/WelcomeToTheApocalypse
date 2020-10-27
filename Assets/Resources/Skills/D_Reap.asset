@@ -13,18 +13,18 @@ MonoBehaviour:
   m_Name: D_Reap
   m_EditorClassIdentifier: 
   m_SkillName: Reap
-  m_LightIcon: {fileID: 0}
-  m_DarkIcon: {fileID: 0}
+  m_LightIcon: {fileID: 21300000, guid: 3b3d8452a947bd347ae020cce89ad84b, type: 3}
+  m_DarkIcon: {fileID: 21300000, guid: b02bf14e4df471f4eb136550ba8c57a2, type: 3}
   m_Description: Target an area within {distance} tiles with a wide, sweeping attack,
-    dealing {damage} damage to all foes within {range} tiles. {cooldown} turn cooldown.
+    dealing {damage} damage to all foes within {range} tiles.
   targets: 2
   targetType: 2
   excludeCaster: 0
   m_SkillType: 2
   m_CooldownLength: 3
-  m_CooldownRemaining: 0
+  m_CurrentCooldown: 0
   m_CastableDistance: 5
   m_AffectedRange: 3
   m_Cost: 2
-  m_Cooldown: 3
-  m_DamageAmount: 5
+  m_CastEvent: event:/Death/Reap (AoE)
+  m_DamageAmount: 8

@@ -46,7 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SelectedUnit: {fileID: 0}
-  m_LoseScreen: {fileID: 0}
+  m_TeamCurrentTurn: 0
+  m_PodClearBonus: 5
 --- !u!114 &8310066432886493436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,3 +76,4 @@ MonoBehaviour:
   m_PlayerUnits: []
   m_EnemyUnits: []
   m_ActiveEnemyUnits: []
+  m_DeadPlayerUnits: []
