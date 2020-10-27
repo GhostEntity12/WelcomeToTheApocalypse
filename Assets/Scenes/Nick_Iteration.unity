@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -4146,6 +4146,7 @@ MonoBehaviour:
   m_StartingActionPoints: 2
   m_HealthbarPosition: {fileID: 374421431}
   m_AIHeuristicCalculator: {fileID: 0}
+  m_animator: {fileID: 0}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 0}
 --- !u!23 &89654809
@@ -32502,6 +32503,7 @@ MonoBehaviour:
   m_HealthbarPosition: {fileID: 295943526}
   m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
     type: 2}
+  m_animator: {fileID: 0}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 0}
 --- !u!23 &723924585
@@ -33828,6 +33830,7 @@ MonoBehaviour:
   m_HealthbarPosition: {fileID: 429166545}
   m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
     type: 2}
+  m_animator: {fileID: 0}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 0}
 --- !u!23 &750908539
@@ -34087,6 +34090,7 @@ MonoBehaviour:
   m_HealthbarPosition: {fileID: 2012927677}
   m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
     type: 2}
+  m_animator: {fileID: 0}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 0}
 --- !u!23 &753170488
@@ -36465,6 +36469,7 @@ MonoBehaviour:
   m_HealthbarPosition: {fileID: 1074051861}
   m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
     type: 2}
+  m_animator: {fileID: 0}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 0}
 --- !u!23 &813525328
@@ -45883,6 +45888,7 @@ MonoBehaviour:
   m_HealthbarPosition: {fileID: 1651269971}
   m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
     type: 2}
+  m_animator: {fileID: 0}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 0}
 --- !u!23 &974045481
@@ -55634,6 +55640,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1525817925}
     m_Modifications:
+    - target: {fileID: 636176314266489422, guid: d5937d9f519d4ab418fbd35ed5c4ef6a,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 636176314266489422, guid: d5937d9f519d4ab418fbd35ed5c4ef6a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[2]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7a04fb9e0e8c0a24fad223ba0450ac2c, type: 2}
     - target: {fileID: 5390870504775585947, guid: d5937d9f519d4ab418fbd35ed5c4ef6a,
         type: 3}
       propertyPath: m_Name
@@ -56757,6 +56773,7 @@ MonoBehaviour:
   m_HealthbarPosition: {fileID: 792948680}
   m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
     type: 2}
+  m_animator: {fileID: 0}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 0}
 --- !u!23 &1236185208
@@ -79277,6 +79294,7 @@ MonoBehaviour:
   m_HealthbarPosition: {fileID: 1295051158}
   m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
     type: 2}
+  m_animator: {fileID: 0}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 0}
 --- !u!23 &1724866570
