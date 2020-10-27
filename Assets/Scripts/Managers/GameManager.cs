@@ -100,8 +100,8 @@ public class GameManager : MonoBehaviour
     public int m_PodClearBonus = 5;
     public bool m_DidHealthBonus;
 
-	[FMODUnity.EventRef]
-	public string m_TurnEndSound = "";
+    [FMODUnity.EventRef]
+    public string m_TurnEndSound = "";
 
     // On startup.
     private void Awake()
@@ -126,7 +126,7 @@ public class GameManager : MonoBehaviour
         // If it's currently the player's turn, check their inputs.
         // Commented out for debugging.
         //if (m_CurrentTurn == Allegiance.Player)
-        if (!dm.dialogueActive)
+        if (!UIManager.m_Instance.m_ActiveUI)
         {
             PlayerInputs();
         }
@@ -145,8 +145,7 @@ public class GameManager : MonoBehaviour
         // Check player units for prematurely ending turn here.
         if (UIManager.m_Instance.IsPrematureTurnEnding())
         {
-            UIManager.m_Instance.m_PrematureTurnEndScreen.UpdateText();
-            UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(true);
+            UIManager.m_Instance.m_PrematureTurnEndScreen.DisplayPrematureEndScreen(true);
             return;
         }
 
@@ -167,10 +166,10 @@ public class GameManager : MonoBehaviour
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
 
-            foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+            foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
             {
                 u.SetDealExtraDamage(0);
-                foreach(InflictableStatus IS in u.GetInflictableStatuses())
+                foreach (InflictableStatus IS in u.GetInflictableStatuses())
                 {
                     // If returns true, status effect's duration has reached 0, remove the status effect.
                     if (IS.DecrementDuration() == true)
@@ -201,7 +200,7 @@ public class GameManager : MonoBehaviour
             m_TargetingState = TargetingState.Move;
 
             // Check the passives of all the enemy units for any that trigger at the start of their turn.
-            foreach(Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
+            foreach (Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
             {
                 PassiveSkill ps = u.GetPassiveSkill();
                 if (ps != null)
@@ -214,11 +213,6 @@ public class GameManager : MonoBehaviour
                             ps.TakeEffect();
                     }
                 }
-            }
-
-            if (UIManager.m_Instance.m_PrematureTurnEndScreen.isActiveAndEnabled == true)
-            {
-                UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(false);
             }
 
             // Play the end turn sound on the camera.
@@ -249,18 +243,18 @@ public class GameManager : MonoBehaviour
                 if (ps != null)
                     ps.CheckPrecondition(TriggerType.OnTurnStart);
 
-                foreach(BaseSkill s in u.GetSkills())
+                foreach (BaseSkill s in u.GetSkills())
                 {
                     s.DecrementCooldown();
                 }
 
-                foreach(InflictableStatus status in u.GetInflictableStatuses())
+                foreach (InflictableStatus status in u.GetInflictableStatuses())
                 {
                     if (status.CheckPrecondition(TriggerType.OnTurnStart) == true)
                     {
                         status.TakeEffect(u);
                     }
-                }   
+                }
             }
         }
 
@@ -269,7 +263,7 @@ public class GameManager : MonoBehaviour
         {
             if (u.GetAllegiance() == m_TeamCurrentTurn)
                 u.ResetCurrentMovement();
-        }    
+        }
 
         // Tell end turn button who's turn it currently is.
         UIManager.m_Instance.m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
@@ -299,7 +293,7 @@ public class GameManager : MonoBehaviour
                     m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
-                    if (rayHitUnit != m_SelectedUnit) 
+                    if (rayHitUnit != m_SelectedUnit)
                     {
                         // Reset the nodes highlights before selecting the new unit
                         m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
@@ -348,11 +342,11 @@ public class GameManager : MonoBehaviour
                                 m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
                                 n.m_NodeHighlight.ChangeHighlight(TileState.None);
                             }
-            
+
                             m_SelectedUnit.HighlightMovableNodes();
 
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
-            
+
                             m_SelectedSkill = null;
                         }
                         else
@@ -410,11 +404,11 @@ public class GameManager : MonoBehaviour
                                 m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
                                 n.m_NodeHighlight.ChangeHighlight(TileState.None);
                             }
-            
+
                             m_SelectedUnit.HighlightMovableNodes();
 
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
-            
+
                             m_SelectedSkill = null;
                         }
                         else
@@ -454,7 +448,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        
+
         // Selecting a skill with the number keys.
         for (int i = 0; i < m_AbilityHotkeys.Length; i++)
         {
@@ -468,7 +462,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        
+
         // Cancelling skill targeting.
         if (Input.GetMouseButtonDown(1))
         {
@@ -549,7 +543,7 @@ public class GameManager : MonoBehaviour
                         default:
                             break;
                     }
-                }        
+                }
             }
         }
     }

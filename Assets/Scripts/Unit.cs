@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
 using UnityEngine;
 
 public enum Allegiance
@@ -302,44 +301,44 @@ public class Unit : MonoBehaviour
 	/// </summary>
 	public void SetDealingDamage(int dealingDamage) { m_DealingDamage = dealingDamage; }
 
-    /// <summary>
-    /// Check if the unit's health is above 0.
-    /// If equal to or below, the unit is not alive.
-    /// </summary>
-    private void CheckAlive()
-    {
-        if (m_CurrentHealth <= 0)
-        {
-            Debug.Log($"{name} died");
-            m_IsAlive = false;
+	/// <summary>
+	/// Check if the unit's health is above 0.
+	/// If equal to or below, the unit is not alive.
+	/// </summary>
+	private void CheckAlive()
+	{
+		if (m_CurrentHealth <= 0)
+		{
+			Debug.Log($"{name} died");
+			m_IsAlive = false;
 
-            // Check if the unit has the "DefeatEnemyWinCondition" script on it.
-            // If it does, the player has won the level by defeating the boss.
-            GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
+			// Check if the unit has the "DefeatEnemyWinCondition" script on it.
+			// If it does, the player has won the level by defeating the boss.
+			GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
 
-            // If this is a player unit, check if the player has any units remaining.
-            if (m_Allegiance == Allegiance.Player)
-            {
-                GameManager.m_Instance.CheckPlayerUnitsAlive();
-                UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
-                UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
-            }
+			// If this is a player unit, check if the player has any units remaining.
+			if (m_Allegiance == Allegiance.Player)
+			{
+				GameManager.m_Instance.CheckPlayerUnitsAlive();
+				UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
+				UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
+			}
 
-            if (m_KillDialogue)
-            {
-                DialogueManager.instance.TriggerDialogue(m_KillDialogue);
-            }
+			if (m_KillDialogue)
+			{
+				DialogueManager.instance.TriggerDialogue(m_KillDialogue);
+			}
 
-            Node currentNode = Grid.m_Instance.GetNode(transform.position);
-            currentNode.unit = null;
-            currentNode.m_isBlocked = false;
-            // Play death animation
-            m_animator.SetTrigger("TriggerDeath");
+			Node currentNode = Grid.m_Instance.GetNode(transform.position);
+			currentNode.unit = null;
+			currentNode.m_isBlocked = false;
+			// Play death animation
+			m_animator.SetTrigger("TriggerDeath");
 
-            if (m_DeathSound != "")
-                FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
-        }
-    }
+			if (m_DeathSound != "")
+				FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+		}
+	}
 
 	/// <summary>
 	/// Disables the unit and will be called by an Animator Event

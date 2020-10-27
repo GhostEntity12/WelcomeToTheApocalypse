@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "Skills/Status Effects/Damage Over Time Effect")]
 public class DamageOverTimeEffect : InflictableStatus
 {
-    public int m_DamageOverTime = 0;
+	public int m_DamageOverTime = 0;
 
 	public override bool CheckPrecondition(TriggerType trigger)
 	{
@@ -14,7 +12,7 @@ public class DamageOverTimeEffect : InflictableStatus
 
 	public override void TakeEffect(Unit affected)
 	{
-        affected.m_animator.SetTrigger("TriggerDamage");
+		affected.m_animator.SetTrigger("TriggerDamage");
 		affected.SetDealingDamage(m_DamageOverTime);
 	}
 }

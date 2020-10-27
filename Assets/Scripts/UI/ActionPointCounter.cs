@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +16,7 @@ public class ActionPointCounter : MonoBehaviour
     {
         // Get all the children of this object.
         // These are the counters for the unit's action points.
-        for(int i = 0; i < transform.childCount; ++i)
+        for (int i = 0; i < transform.childCount; ++i)
         {
             Image child = transform.GetChild(i).GetComponent<Image>();
 
@@ -43,7 +42,7 @@ public class ActionPointCounter : MonoBehaviour
     /// </summary>
     public void ResetActionPointCounter()
     {
-        for(int i = 0; i < m_Counters.Count; ++i)
+        for (int i = 0; i < m_Counters.Count; ++i)
         {
             m_Counters[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().m_StartingActionPoints);
             m_Counters[i].color = m_ActiveColor;
