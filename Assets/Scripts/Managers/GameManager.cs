@@ -188,8 +188,17 @@ public class GameManager : MonoBehaviour
                     n.m_NodeHighlight.ChangeHighlight(TileState.None);
                 }
             }
-            // Deselect unit.
+            // Clear the skill targeting highlights.
+            foreach (Node n in m_maxSkillRange)
+            {
+                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                n.m_NodeHighlight.ChangeHighlight(TileState.None);
+            }
+            // Reset stuff.
             m_SelectedUnit = null;
+            m_SelectedSkill = null;
+            m_TargetingState = TargetingState.Move;
 
             // Check the passives of all the enemy units for any that trigger at the start of their turn.
             foreach(Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
@@ -450,9 +459,13 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < m_AbilityHotkeys.Length; i++)
         {
             if (Input.GetKeyDown(m_AbilityHotkeys[i]))
-            {                    
-                SkillSelection(i);
-                break;
+            {
+                // Make sure the player can use the skill before selecting it.
+                if (m_SelectedUnit.m_LearnedSkills[i].GetCurrentCooldown() == 0 && m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.m_LearnedSkills[i].m_Cost)
+                {
+                    SkillSelection(i);
+                    break;
+                }
             }
         }
         
@@ -496,10 +509,16 @@ public class GameManager : MonoBehaviour
         if (m_SelectedUnit != null)
         {
             // Make sure the unit can afford to cast the skill and the skill isn't on cooldown before selecting it.
+            // Just in case.
             if (m_SelectedUnit.GetActionPoints() >= skill.m_Cost && skill.GetCurrentCooldown() == 0)
             {
                 // Reset the nodes in the old target range
-                m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
+                foreach (Node n in m_maxSkillRange)
+                {
+                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                    n.m_NodeHighlight.ChangeHighlight(TileState.None);
+                }
 
                 // Update the GameManager's fields
                 m_SelectedSkill = skill;
@@ -541,42 +560,7 @@ public class GameManager : MonoBehaviour
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
-        // Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
-        if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
-
-        // Reset the nodes in the old target range
-        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
-
-        // Update the GameManager's fields
-        m_SelectedSkill = m_SelectedUnit.GetSkill(skillNumber);
-        m_TargetingState = TargetingState.Skill;
-
-        // Get the new affectable area
-        m_maxSkillRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
-
-        // Reset the highlight of movement nodes
-        m_SelectedUnit.m_MovableNodes.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.None));
-
-        // Tell the new nodes they're in range
-        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = true);
-
-        // Tell the appropriate nodes in distance (red) that they're in distance
-        foreach (Node node in Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true))
-        {
-            switch (m_SelectedSkill.targetType)
-            {
-                case TargetType.SingleTarget:
-                    node.m_NodeHighlight.m_IsTargetable = IsTargetable(m_SelectedUnit, node.unit, m_SelectedSkill);
-                    break;
-                case TargetType.Line:
-                    throw new NotImplementedException("Line target type not supported");
-                case TargetType.Terrain:
-                    node.m_NodeHighlight.m_IsTargetable = true;
-                    break;
-                default:
-                    break;
-            }
-        }
+        SkillSelection(m_SelectedUnit.m_LearnedSkills[skillNumber]);
     }
 
     /// <summary>
