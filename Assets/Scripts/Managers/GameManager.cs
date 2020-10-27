@@ -100,6 +100,9 @@ public class GameManager : MonoBehaviour
     public int m_PodClearBonus = 5;
     public bool m_DidHealthBonus;
 
+	[FMODUnity.EventRef]
+	public string m_TurnEndSound = "";
+
     // On startup.
     private void Awake()
     {
@@ -208,6 +211,9 @@ public class GameManager : MonoBehaviour
             {
                 UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(false);
             }
+
+            // Play the end turn sound on the camera.
+            FMODUnity.RuntimeManager.PlayOneShot(m_TurnEndSound, Camera.main.transform.position);
 
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.SetAITurn(true);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using UnityEngine;
 
 public enum Allegiance
@@ -133,6 +134,9 @@ public class Unit : MonoBehaviour
     public TextAsset m_KillDialogue;
 
     public UIData m_UIData;
+
+    [FMODUnity.EventRef]
+    public string m_DeathSound = "";
 
     // On startup.
     void Awake()
@@ -317,6 +321,9 @@ public class Unit : MonoBehaviour
             currentNode.m_isBlocked = false;
             // Play death animation
             m_animator.SetTrigger("TriggerDeath");
+
+            if (m_DeathSound != "")
+                FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
         }
     }
 
