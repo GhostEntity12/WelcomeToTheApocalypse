@@ -14,7 +14,8 @@ public class DamageSkill : BaseSkill
 
 		foreach (Unit unit in affectedUnits)
 		{
-			unit.DecreaseCurrentHealth(m_DamageAmount + m_ExtraDamage);
+			unit.m_animator.SetTrigger("TriggerDamage");
+			unit.SetDealingDamage(m_DamageAmount + m_ExtraDamage);
 		}
 		// Damage each affected unit
 		m_ExtraDamage = 0;
