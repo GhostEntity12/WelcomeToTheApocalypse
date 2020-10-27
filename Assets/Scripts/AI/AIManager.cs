@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
@@ -299,13 +300,17 @@ public class AIManager : MonoBehaviour
                         List<Node> nodesInRange =
                             Grid.m_Instance.GetNodesWithinRadius(
                                 skill.m_AffectedRange + skill.m_CastableDistance + unit.GetCurrentMovement(),
-                                Grid.m_Instance.GetNode(unit.transform.position)
+                                Grid.m_Instance.GetNode(unit.transform.position),
+                                true
                                 );
+
+                        List<Node> nodesWithUnits = nodesInRange.Where(n => n.unit != null).ToList();
 
                         foreach (Node node in nodesInRange)
                         {
                             if (node.unit?.GetAllegiance() == Allegiance.Enemy)
                             {
+                                Unit currentUnit = node.unit;
                                 // Get nodes in the area that the AI unit could heal friendly units from.
                                 List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
 
@@ -313,7 +318,7 @@ public class AIManager : MonoBehaviour
                                 for (int j = 0; j < nodes.Count; j++)
                                 {
                                     // Calculate the new heal for the node's heal heuristic.
-                                    float newHealH = Mathf.Max(node.GetHealing(), skill.m_HealAmount);
+                                    float newHealH = skill.m_HealAmount + (currentUnit.GetStartingHealth() - currentUnit.GetCurrentHealth());
                                     if (newHealH < nodes[j].GetHealing())
                                     {
                                         continue;
