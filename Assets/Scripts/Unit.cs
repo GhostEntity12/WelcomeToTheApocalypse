@@ -581,6 +581,8 @@ public class Unit : MonoBehaviour
                 transform.LookAt(castLocation.worldPosition);
                 // Play skill animation
                 m_animator.SetTrigger("TriggerSkill");
+				// Play the damage sound effect.
+				FMODUnity.RuntimeManager.PlayOneShot(m_Skills[i].m_CastEvent, transform.position);
                 return;
             }
         }

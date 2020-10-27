@@ -30,8 +30,9 @@ public class MainMenuFunctions : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
-        StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 1.5f, 0.0f, 1.0f, SceneManager.LoadScene, "Famine_Split"));
         m_Anim.SetTrigger("isMainGame");
+        LeanTween.alphaCanvas(m_BlackScreen, 1.0f, 1.5f);
+        LeanTween.delayedCall(1.5f, () => SceneManager.LoadScene("Famine_Split"));
     }
 
     /// <summary>
@@ -39,7 +40,8 @@ public class MainMenuFunctions : MonoBehaviour
     /// </summary>
     public void QuitGame()
     {
-        StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 1.0f, 0.0f, 1.0f, Application.Quit));
+        LeanTween.alphaCanvas(m_BlackScreen, 1.0f, 1.0f);
+        LeanTween.delayedCall(1.0f, Application.Quit);
     }
 
     /// <summary>

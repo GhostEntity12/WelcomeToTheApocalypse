@@ -128,7 +128,7 @@ public class CameraMovement : MonoBehaviour
                         RotateLeft(0.05f);
                     if (!m_Camera.orthographic && m_PixelScreen.alpha == 1)
                         SwapPixMode();
-                    StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 0.15f, 1, 0, 0f));
+                    StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 0.15f, 1, 0));
                     m_IsSwapping = false;
                 }));
     }
