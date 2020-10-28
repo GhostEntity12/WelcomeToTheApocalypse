@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering.UI;
 
 public class AIManager : MonoBehaviour
 {
@@ -111,7 +113,9 @@ public class AIManager : MonoBehaviour
     /// <param name="sourceNode"></param>
     public void Attack(Node sourceNode)
     {
-        m_CurrentAIUnit.ActivateSkill(m_OptimalSkill, Grid.m_Instance.GetNode(m_OptimalNode.GetAITarget().transform.position));
+        Debug.Log(m_OptimalSkill.GetCurrentCooldown());
+        if (m_OptimalSkill.GetCurrentCooldown() <= 0)
+            m_CurrentAIUnit.ActivateSkill(m_OptimalSkill, Grid.m_Instance.GetNode(m_OptimalNode.GetAITarget().transform.position));
     }
 
     /// <summary>
@@ -123,6 +127,13 @@ public class AIManager : MonoBehaviour
     public void IncrementAIUnitIterator()
     {
         m_AIIterator++;
+
+        // Reset things from the AI unit's turn.
+        foreach(Node node in m_ModifyNodes)
+		{
+            node.ResetHeuristic();
+		}
+        m_OptimalSkill = null;
     }
 
     /// <summary>
@@ -247,8 +258,10 @@ public class AIManager : MonoBehaviour
                                 true
                                 );
 
+                        List<Node> nodesWithUnits = nodesInRange.Where(n => n.unit != null).ToList();
+
                         // Find a node that has a player unit on it.
-                        foreach (Node node in nodesInRange)
+                        foreach (Node node in nodesWithUnits)
                         {
                             // If the node has a player unit on it, calculate score for damaging the player unit.
                             if (node.unit?.GetAllegiance() == Allegiance.Player)
@@ -299,13 +312,17 @@ public class AIManager : MonoBehaviour
                         List<Node> nodesInRange =
                             Grid.m_Instance.GetNodesWithinRadius(
                                 skill.m_AffectedRange + skill.m_CastableDistance + unit.GetCurrentMovement(),
-                                Grid.m_Instance.GetNode(unit.transform.position)
+                                Grid.m_Instance.GetNode(unit.transform.position),
+                                true
                                 );
 
-                        foreach (Node node in nodesInRange)
+                        List<Node> nodesWithUnits = nodesInRange.Where(n => n.unit != null).ToList();
+
+                        foreach (Node node in nodesWithUnits)
                         {
                             if (node.unit?.GetAllegiance() == Allegiance.Enemy)
                             {
+                                Unit currentUnit = node.unit;
                                 // Get nodes in the area that the AI unit could heal friendly units from.
                                 List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
 
@@ -313,7 +330,7 @@ public class AIManager : MonoBehaviour
                                 for (int j = 0; j < nodes.Count; j++)
                                 {
                                     // Calculate the new heal for the node's heal heuristic.
-                                    float newHealH = Mathf.Max(node.GetHealing(), skill.m_HealAmount);
+                                    float newHealH = skill.m_HealAmount + (currentUnit.GetStartingHealth() - currentUnit.GetCurrentHealth());
                                     if (newHealH < nodes[j].GetHealing())
                                     {
                                         continue;
@@ -333,6 +350,94 @@ public class AIManager : MonoBehaviour
                             }
                         }
                     }
+                    break;
+
+                case AIHeuristics.StatusEffect:
+                    List<StatusSkill> statusSkills = m_CurrentAIUnit.GetSkills().OfType<StatusSkill>().ToList();
+
+                    foreach(StatusSkill skill in statusSkills)
+					{
+                        // Make sure the skill isn't on cooldown.
+                        if (skill.GetCurrentCooldown() <= 0)
+						{
+                            List<Node> nodesInRange =
+                            Grid.m_Instance.GetNodesWithinRadius(
+                                skill.m_AffectedRange + skill.m_CastableDistance + unit.GetCurrentMovement(),
+                                Grid.m_Instance.GetNode(unit.transform.position),
+                                true
+                                );
+
+                            List<Node> nodesWithUnits = nodesInRange.Where(n => n.unit != null).ToList();
+
+                            foreach (Node node in nodesWithUnits)
+                            {
+                                // Targets AI units.
+                                if (skill.targets == SkillTargets.Foes)
+                                {
+                                    // If unit is an AI unit.
+                                    if (node.unit.m_Allegiance == Allegiance.Enemy)
+                                    {
+                                        Unit currentUnit = node.unit;
+
+                                        // Get nodes in the area that the AI unit could inflict a status on units from.
+                                        List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
+
+                                        // Go through each of the nodes the AI unit could inflict a status from and add the status heuristic to them.
+                                        for (int j = 0; j < nodes.Count; j++)
+                                        {
+                                            // Try to put a status on the healthiest unit, to get the most value.
+                                            float newStatusH = currentUnit.GetCurrentHealth();
+                                            if (newStatusH < nodes[j].GetStatus())
+                                                continue;
+                                            else
+                                            {
+                                                if (nodes[j] != null)
+                                                {
+                                                    Node currentStatusNode = nodes[j];
+                                                    currentStatusNode.SetHealing(newStatusH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition) * 0.1f));
+                                                    currentStatusNode.SetAITarget(node.unit);
+                                                    m_OptimalSkill = skill;
+                                                    m_ModifyNodes.Add(nodes[j]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    // Targets Player units.
+                                    else if (skill.targets == SkillTargets.Allies)
+                                    {
+                                        // If unit is a Player unit.
+                                        if (node.unit.m_Allegiance == Allegiance.Player)
+                                        {
+                                            Unit currentUnit = node.unit;
+
+                                            // Get nodes in the area that the AI unit could inflict a status on units from.
+                                            List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
+
+                                            // Go through each of the nodes the AI unit could inflict a status from and add the status heuristic to them.
+                                            for (int j = 0; j < nodes.Count; j++)
+                                            {
+                                                // Try to put a status on the healthiest unit, to get the most value.
+                                                float newStatusH = currentUnit.GetCurrentHealth();
+                                                if (newStatusH < nodes[j].GetStatus())
+                                                    continue;
+                                                else
+                                                {
+                                                    if (nodes[j] != null)
+                                                    {
+                                                        Node currentStatusNode = nodes[j];
+                                                        currentStatusNode.SetHealing(newStatusH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition) * 0.1f));
+                                                        currentStatusNode.SetAITarget(node.unit);
+                                                        m_OptimalSkill = skill;
+                                                        m_ModifyNodes.Add(nodes[j]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+					}
                     break;
 
                 default:

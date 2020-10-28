@@ -37,9 +37,6 @@ public class HealSkill : BaseSkill
 
 	public override void CastSkill()
 	{
-		//Assigns the properties of the heal skill.
-		AssignSkillProperties();
-
 		base.CastSkill();
 		// Heal each affected unit
 

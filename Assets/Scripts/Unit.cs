@@ -533,13 +533,12 @@ public class Unit : MonoBehaviour
 			// Check if the unit has the skill being cast.
 			if (m_Skills[i].m_SkillName == skill.m_SkillName)
 			{
-				m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
+				skill.affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
 				if (m_PassiveSkill != null)
 				{
 					DamageSkill ds = skill as DamageSkill;
 
 					// Check if skill being cast is a damage skill.
-					// If so, check the unit's passive
 					if (ds != null)
 					{
 						// Make sure the skill knows what units it will affect, so we can check them for the passive.
@@ -605,7 +604,7 @@ public class Unit : MonoBehaviour
 						}
 					}
 				}
-				m_Skills[i].CastSkill();
+				skill.CastSkill();
 				transform.LookAt(castLocation.worldPosition);
 
 				// Play skill animation
