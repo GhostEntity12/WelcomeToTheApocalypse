@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -29,7 +27,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 	public void UpdateActiveEffects()
 	{
 		Unit selectedUnit = GameManager.m_Instance.GetSelectedUnit();
-		
+
 		UpdatePassive();
 
 		if (selectedUnit.GetInflictableStatuses().OfType<AttackBuffEffect>().Any())

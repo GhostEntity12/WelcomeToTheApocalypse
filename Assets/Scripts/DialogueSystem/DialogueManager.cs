@@ -1,5 +1,4 @@
-﻿using Ghost;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -326,11 +325,13 @@ public class DialogueManager : MonoBehaviour
         rightCharacter = null;
         sceneName = null;
         UIManager.m_Instance.ShowTurnIndicator();
+        UIManager.m_Instance.m_ActiveUI = false;
         return;
     }
 
     public void TriggerDialogue(TextAsset _sceneName)
     {
+        UIManager.m_Instance.m_ActiveUI = true;
         LeanTween.alphaCanvas(darkenedBackground, 0.9f, 0.4f);
         UIManager.m_Instance.HideTurnIndicator();
         dialogueActive = true;

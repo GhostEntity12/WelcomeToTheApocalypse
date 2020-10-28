@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "Skills/Passives/Pestilence Passive")]
 public class PestilencePassive : PassiveSkill
@@ -23,19 +21,19 @@ public class PestilencePassive : PassiveSkill
     }
 
     public override bool CheckPrecondition(TriggerType trigger)
-	{
-		if (base.CheckPrecondition(trigger) == true)
+    {
+        if (base.CheckPrecondition(trigger) == true)
         {
             return true;
         }
 
         return false;
-	}
+    }
 
-	public override void TakeEffect()
-	{
+    public override void TakeEffect()
+    {
         m_CurrentHealResource += m_HealResourceForDealingDamage;
-	}
+    }
 
     public int GetHealResource()
     {

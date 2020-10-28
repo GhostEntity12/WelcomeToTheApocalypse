@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "Skills/Passives/Death Passive")]
 public class DeathPassive : PassiveSkill
@@ -31,7 +29,7 @@ public class DeathPassive : PassiveSkill
                 return true;
             }
         }
-        
+
         return false;
     }
 
