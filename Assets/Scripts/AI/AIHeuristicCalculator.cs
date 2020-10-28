@@ -5,7 +5,8 @@ public enum AIHeuristics
 {
     Move,
     Attack,
-    Heal
+    Heal,
+    StatusEffect
 }
 
 [CreateAssetMenu(menuName = "AI Heuristic Calculator")]
