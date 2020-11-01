@@ -222,9 +222,9 @@ RectTransform:
   m_Father: {fileID: 589503769448651776}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 467.745, y: -242.705}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &589503770678316888
@@ -785,7 +785,7 @@ MonoBehaviour:
   m_LeftSpeakerImage: {fileID: 1015963581323264812}
   m_RightSpeakerImage: {fileID: 142834409025357055}
   m_TurnIndicatorImage: {fileID: 3908646025238810496}
-  m_EndTurnButton: {fileID: 7116137122341804601}
+  m_EndTurnButton: {fileID: 2204543065148566445}
   m_UIHealthBar: {fileID: 1949648731433240898}
   m_TweenSpeed: 0.1
   m_PortraitUI:
@@ -2790,7 +2790,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1771455060, guid: 9d4d8baf5af2e6149a6de0dfedef1874, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 9d4d8baf5af2e6149a6de0dfedef1874, type: 3}
 --- !u!114 &1272313686756722358 stripped
 MonoBehaviour:
@@ -2882,9 +2883,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7116137122341804601 stripped
+--- !u!114 &2204543065148566445 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8736576110593188229, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
+  m_CorrespondingSourceObject: {fileID: 389289313752207377, guid: 9d4d8baf5af2e6149a6de0dfedef1874,
     type: 3}
   m_PrefabInstance: {fileID: 2017353894286687164}
   m_PrefabAsset: {fileID: 0}
