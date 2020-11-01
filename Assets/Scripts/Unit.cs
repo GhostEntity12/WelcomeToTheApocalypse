@@ -9,10 +9,12 @@ public enum Allegiance
 	/// Character is on the player's side.
 	/// </summary>
 	Player,
+
 	/// <summary>
 	/// Character is an enemy to the player.
 	/// </summary>
 	Enemy,
+
 	/// <summary>
 	/// Character doesn't have an allegiance (just to be safe).
 	/// </summary>
@@ -136,7 +138,11 @@ public class Unit : MonoBehaviour
 
 	public UIData m_UIData;
 
+	[FMODUnity.EventRef]
+	public string m_DeathSound = "";
+
 	// On startup.
+
 	void Awake()
 	{
 		m_CurrentHealth = m_StartingHealth;
@@ -166,6 +172,7 @@ public class Unit : MonoBehaviour
 		if (m_IsMoving)
 		{
 			transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
+
 			// If have arrived at position (0.1 units close to target is close enough).
 			if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
 			{
@@ -173,6 +180,7 @@ public class Unit : MonoBehaviour
 				transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
 
 				// Target the next node.
+
 				if (m_MovementPath.Count > 0)
 				{
 					SetTargetNodePosition(m_MovementPath.Pop());
@@ -249,7 +257,9 @@ public class Unit : MonoBehaviour
 	public void DecreaseCurrentHealth()
 	{
 		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
+
 		// Plays damage animation
+
 		m_animator.SetTrigger("TriggerDamage");
 
 		SetCurrentHealth(m_CurrentHealth - damage);
@@ -324,6 +334,9 @@ public class Unit : MonoBehaviour
 			currentNode.m_isBlocked = false;
 			// Play death animation
 			m_animator.SetTrigger("TriggerDeath");
+
+			if (m_DeathSound != "")
+				FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
 		}
 	}
 
@@ -382,8 +395,11 @@ public class Unit : MonoBehaviour
 	/// <param name="target"> The node to set as the target. </param>
 	public void SetTargetNodePosition(Node target)
 	{
+
 		// Unassign the unit on the current node.
+
 		// Before setting the new target node.
+
 		Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
 		m_CurrentTargetNode = target;
 		transform.LookAt(m_CurrentTargetNode.worldPosition);
@@ -498,6 +514,7 @@ public class Unit : MonoBehaviour
 	public void HighlightMovableNodes(Node startingNode = null)
 	{
 		m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
+
 		foreach (Node node in m_MovableNodes)
 		{
 			node.m_NodeHighlight.ChangeHighlight(TileState.MovementRange);
@@ -513,14 +530,15 @@ public class Unit : MonoBehaviour
 		// Doing my own search cause List.Find is gross.
 		for (int i = 0; i < m_Skills.Count; ++i)
 		{
-			if (m_Skills[i] == skill)
+			// Check if the unit has the skill being cast.
+			if (m_Skills[i].m_SkillName == skill.m_SkillName)
 			{
-				m_Skills[i].affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
+				skill.affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
 				if (m_PassiveSkill != null)
 				{
 					DamageSkill ds = skill as DamageSkill;
+
 					// Check if skill being cast is a damage skill.
-					// If so, check the unit's passive
 					if (ds != null)
 					{
 						// Make sure the skill knows what units it will affect, so we can check them for the passive.
@@ -541,6 +559,7 @@ public class Unit : MonoBehaviour
 										status.TakeEffect(u);
 									}
 								}
+
 								// Add extra damage to the skill from status effect (if there is any).
 								if (m_DealExtraDamage > 0)
 								{
@@ -575,6 +594,7 @@ public class Unit : MonoBehaviour
 							{
 								pesPassive.UseHealResource();
 							}
+
 							// If there is no heal resource remaining, output warning about it and leave function.
 							else
 							{
@@ -584,10 +604,12 @@ public class Unit : MonoBehaviour
 						}
 					}
 				}
-				m_Skills[i].CastSkill();
+				skill.CastSkill();
 				transform.LookAt(castLocation.worldPosition);
+
 				// Play skill animation
 				m_animator.SetTrigger("TriggerSkill");
+
 				// Play the damage sound effect.
 				FMODUnity.RuntimeManager.PlayOneShot(m_Skills[i].m_CastEvent, transform.position);
 				return;
@@ -597,7 +619,10 @@ public class Unit : MonoBehaviour
 		Debug.LogError("Skill " + skill.name + " couldn't be found in " + gameObject.name + ".");
 	}
 
+
+
 	/*=====================================DEBUG STUFF AHEAD=====================================*/
+
 	[ContextMenu("Inflict Hunger")]
 	protected void Hunger() => AddStatusEffect(Instantiate(Resources.Load("Skills/S_AttackDown")) as InflictableStatus);
 	[ContextMenu("Inflict Mark")]

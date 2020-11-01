@@ -13,9 +13,19 @@ MonoBehaviour:
   m_Name: PlayerDeathUI
   m_EditorClassIdentifier: 
   m_SkillsPortrait: {fileID: 21300000, guid: be0f59b56aa522c4d8474d3f798a964c, type: 3}
-  m_Dark: {r: 0.28235295, g: 0.20392159, b: 0.37254903, a: 1}
-  m_Medium: {r: 0.49411768, g: 0.27450982, b: 0.54901963, a: 1}
-  m_Light: {r: 0.7176471, g: 0.7176471, b: 0.7176471, a: 1}
-  m_SkillBg: {fileID: 21300000, guid: b5de5d1e3e60f1643923c82ce159f788, type: 3}
+  m_Panels:
+    m_LeftPanel: {fileID: 21300000, guid: 16219ae34852f734293491c91756ac26, type: 3}
+    m_RightPanel: {fileID: 21300000, guid: ffccbb2b828b9c541841ce03f70ee2bc, type: 3}
+    m_RightPanelSmall: {fileID: 21300000, guid: a61ad56353b5cbf46a517a655206bf5c,
+      type: 3}
+  m_SkillDiamonds:
+    m_SkillDiamondSides: {fileID: 21300000, guid: 6ca7bcf9c0941614db18d6e3777660e4,
+      type: 3}
+    m_SkillDiamondCenter: {fileID: 21300000, guid: d63e4cfd850117141a4ecf308965b315,
+      type: 3}
+    m_SkillCloudColor: {r: 0.83329755, g: 0.5790762, b: 0.8584906, a: 1}
+  m_IconColors:
+    m_IconLight: {r: 0.6392157, g: 0.35686275, b: 0.909804, a: 1}
+    m_IconDark: {r: 0.5137255, g: 0.28627452, b: 0.7294118, a: 1}
   m_IconLight: {r: 0.6392157, g: 0.35686275, b: 0.909804, a: 1}
   m_IconDark: {r: 0.5137255, g: 0.28627452, b: 0.7294118, a: 1}

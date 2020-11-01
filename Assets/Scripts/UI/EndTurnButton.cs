@@ -1,14 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class EndTurnButton : MonoBehaviour
 {
 	/// <summary>
 	/// Which team's turn is it currently.
 	/// </summary>
-    private Allegiance m_CurrentTeamTurn = Allegiance.None;
+	private Allegiance m_CurrentTeamTurn = Allegiance.None;
 
 	/// <summary>
 	/// The position of the button when it is onscreen.
@@ -44,7 +41,7 @@ public class EndTurnButton : MonoBehaviour
 			LeanTween.move(gameObject, m_OnScreenPosition, m_TweenTime);
 		}
 		// Enemy's turn, move end turn button off screen.
-		else if(m_CurrentTeamTurn == Allegiance.Enemy)
+		else if (m_CurrentTeamTurn == Allegiance.Enemy)
 		{
 			LeanTween.move(gameObject, m_OffScreenPosition, m_TweenTime);
 		}

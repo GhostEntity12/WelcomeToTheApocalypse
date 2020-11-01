@@ -11,7 +11,7 @@ public class UIManager : MonoBehaviour
 
 	public static UIManager m_Instance;
 	public CanvasGroup m_BlackScreen;
-	
+
 	/// <summary>
 	/// List of UI elements that block the player from being able to interact with the game.
 	/// </summary>
@@ -24,13 +24,15 @@ public class UIManager : MonoBehaviour
 		internal Vector2[] m_Cache = new Vector2[2];
 	}
 
+	public bool m_ActiveUI = false;
+
 	[Header("Skin Data")]
 	public Color[] m_TurnIndicatorColors = new Color[2];
 
 	[Header("Graphical Elements")]
 	public Image m_FaceBackground;
 	public Image m_SkillsBackground;
-	public Image m_TurnBackground;
+	public Image m_SkillsBackgroundSmall;
 	public Image m_PortraitImage;
 	public SkillButton[] m_SkillSlots;
 	public Image m_LeftSpeakerImage;
@@ -78,7 +80,6 @@ public class UIManager : MonoBehaviour
 		m_Instance = this;
 
 		m_InputBlockingUIElements = FindObjectsOfType<InputBlockingUI>().ToList();
-		m_PrematureTurnEndScreen.gameObject.SetActive(false);
 		m_EndTurnBlocker = m_PrematureTurnEndScreen.GetComponent<InputBlockingUI>();
 
 		// Creates an EventSystem if it can't find one
@@ -115,10 +116,17 @@ public class UIManager : MonoBehaviour
 		}
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
+			if (m_PrematureTurnEndScreen.m_Active)
+			{
+				m_PrematureTurnEndScreen.DisplayPrematureEndScreen(false);
+				return;
+			}
 			m_PauseScreen.gameObject.SetActive(!m_Paused);
 			m_Paused = !m_Paused;
 		}
 	}
+
+	public InputBlockingUI EndTurnBlocker() => m_EndTurnBlocker;
 
 	/// <summary>
 	/// Caches the positions of an TweenedElement object for tweening
@@ -144,7 +152,6 @@ public class UIManager : MonoBehaviour
 		LeanTween.move(element.m_RectTransform, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(tweenType).setOnComplete(onComplete);
 	}
 
-
 	#region SkillsTweening
 	/// <summary>
 	/// Loads a skin for the skills UI
@@ -152,16 +159,20 @@ public class UIManager : MonoBehaviour
 	/// <param name="uiData"></param>
 	private void LoadSkillsSkin(UIData uiData, Action onComplete = null)
 	{
+		m_FaceBackground.sprite = uiData.m_Panels.m_LeftPanel;
+		m_SkillsBackground.sprite = uiData.m_Panels.m_RightPanel;
+		m_SkillsBackgroundSmall.sprite = uiData.m_Panels.m_RightPanelSmall;
+		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
+
+		// Update the skin of the skills
 		foreach (SkillButton slot in m_SkillSlots)
 		{
-			slot.m_BgImage.sprite = uiData.m_SkillBg;
+			slot.m_SidesImage.sprite = uiData.m_SkillDiamonds.m_SkillDiamondSides;
+			slot.m_CenterImage.sprite = uiData.m_SkillDiamonds.m_SkillDiamondCenter;
+			slot.m_LightningImage.material.SetColor("_UICloudTint", uiData.m_SkillDiamonds.m_SkillCloudColor);
 		}
 
-		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
-		m_FaceBackground.color = uiData.m_Medium;
-		m_SkillsBackground.color = uiData.m_Light;
-		m_TurnBackground.color = uiData.m_Dark;
-
+		// Assign the skills
 		for (int i = 0; i < m_SkillSlots.Length; i++)
 		{
 			// TODO: Refactor
@@ -169,10 +180,10 @@ public class UIManager : MonoBehaviour
 			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
 			if (m_SkillSlots[i].m_Skill)
 			{
-				m_SkillSlots[i].m_LightImage.sprite = m_SkillSlots[i].m_Skill.m_LightIcon;
-				m_SkillSlots[i].m_LightImage.color = uiData.m_IconLight;
-				m_SkillSlots[i].m_DarkImage.sprite = m_SkillSlots[i].m_Skill.m_DarkIcon;
-				m_SkillSlots[i].m_DarkImage.color = uiData.m_IconDark;
+				m_SkillSlots[i].m_LightIcon.sprite = m_SkillSlots[i].m_Skill.m_LightIcon;
+				m_SkillSlots[i].m_LightIcon.color = uiData.m_IconColors.m_IconLight;
+				m_SkillSlots[i].m_DarkIcon.sprite = m_SkillSlots[i].m_Skill.m_DarkIcon;
+				m_SkillSlots[i].m_DarkIcon.color = uiData.m_IconColors.m_IconDark;
 			}
 			m_SkillSlots[i].UpdateTooltip();
 		}
@@ -312,11 +323,4 @@ public class UIManager : MonoBehaviour
 		}
 		return false;
 	}
-
-	public void HidePrematureEndScreen()
-	{
-		m_EndTurnBlocker.SetMouseOverUIElement(false);
-		m_PrematureTurnEndScreen.gameObject.SetActive(false);
-	}
-
 }

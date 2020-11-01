@@ -100,6 +100,9 @@ public class GameManager : MonoBehaviour
     public int m_PodClearBonus = 5;
     public bool m_DidHealthBonus;
 
+    [FMODUnity.EventRef]
+    public string m_TurnEndSound = "";
+
     // On startup.
     private void Awake()
     {
@@ -123,7 +126,7 @@ public class GameManager : MonoBehaviour
         // If it's currently the player's turn, check their inputs.
         // Commented out for debugging.
         //if (m_CurrentTurn == Allegiance.Player)
-        if (!dm.dialogueActive)
+        if (!UIManager.m_Instance.m_ActiveUI)
         {
             PlayerInputs();
         }
@@ -142,8 +145,7 @@ public class GameManager : MonoBehaviour
         // Check player units for prematurely ending turn here.
         if (UIManager.m_Instance.IsPrematureTurnEnding())
         {
-            UIManager.m_Instance.m_PrematureTurnEndScreen.UpdateText();
-            UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(true);
+            UIManager.m_Instance.m_PrematureTurnEndScreen.DisplayPrematureEndScreen(true);
             return;
         }
 
@@ -164,10 +166,10 @@ public class GameManager : MonoBehaviour
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
 
-            foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+            foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
             {
                 u.SetDealExtraDamage(0);
-                foreach(InflictableStatus IS in u.GetInflictableStatuses())
+                foreach (InflictableStatus IS in u.GetInflictableStatuses())
                 {
                     // If returns true, status effect's duration has reached 0, remove the status effect.
                     if (IS.DecrementDuration() == true)
@@ -185,11 +187,20 @@ public class GameManager : MonoBehaviour
                     n.m_NodeHighlight.ChangeHighlight(TileState.None);
                 }
             }
-            // Deselect unit.
+            // Clear the skill targeting highlights.
+            foreach (Node n in m_maxSkillRange)
+            {
+                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                n.m_NodeHighlight.ChangeHighlight(TileState.None);
+            }
+            // Reset stuff.
             m_SelectedUnit = null;
+            m_SelectedSkill = null;
+            m_TargetingState = TargetingState.Move;
 
             // Check the passives of all the enemy units for any that trigger at the start of their turn.
-            foreach(Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
+            foreach (Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
             {
                 PassiveSkill ps = u.GetPassiveSkill();
                 if (ps != null)
@@ -204,10 +215,8 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            if (UIManager.m_Instance.m_PrematureTurnEndScreen.isActiveAndEnabled == true)
-            {
-                UIManager.m_Instance.m_PrematureTurnEndScreen.gameObject.SetActive(false);
-            }
+            // Play the end turn sound on the camera.
+            FMODUnity.RuntimeManager.PlayOneShot(m_TurnEndSound, Camera.main.transform.position);
 
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.SetAITurn(true);
@@ -234,18 +243,18 @@ public class GameManager : MonoBehaviour
                 if (ps != null)
                     ps.CheckPrecondition(TriggerType.OnTurnStart);
 
-                foreach(BaseSkill s in u.GetSkills())
+                foreach (BaseSkill s in u.GetSkills())
                 {
                     s.DecrementCooldown();
                 }
 
-                foreach(InflictableStatus status in u.GetInflictableStatuses())
+                foreach (InflictableStatus status in u.GetInflictableStatuses())
                 {
                     if (status.CheckPrecondition(TriggerType.OnTurnStart) == true)
                     {
                         status.TakeEffect(u);
                     }
-                }   
+                }
             }
         }
 
@@ -254,7 +263,7 @@ public class GameManager : MonoBehaviour
         {
             if (u.GetAllegiance() == m_TeamCurrentTurn)
                 u.ResetCurrentMovement();
-        }    
+        }
 
         // Tell end turn button who's turn it currently is.
         UIManager.m_Instance.m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
@@ -284,7 +293,7 @@ public class GameManager : MonoBehaviour
                     m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
                     // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
                     // Select that unit.
-                    if (rayHitUnit != m_SelectedUnit) 
+                    if (rayHitUnit != m_SelectedUnit)
                     {
                         // Reset the nodes highlights before selecting the new unit
                         m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
@@ -324,21 +333,10 @@ public class GameManager : MonoBehaviour
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
                             Debug.Log(m_SelectedUnit.GetActionPoints(), m_SelectedUnit);
 
-                            // Now deselect the skill and clear the targeting highlights.
-                            m_TargetingState = TargetingState.Move;
-
-                            foreach (Node n in m_maxSkillRange)
-                            {
-                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
-                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
-                                n.m_NodeHighlight.ChangeHighlight(TileState.None);
-                            }
-            
-                            m_SelectedUnit.HighlightMovableNodes();
-
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
-            
-                            m_SelectedSkill = null;
+
+                            // Now deselect the skill and clear the targeting highlights.
+                            CancelSkill();
                         }
                         else
                         {
@@ -386,21 +384,9 @@ public class GameManager : MonoBehaviour
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
 
-                            // Now deselect the skill and clear the targeting highlights.
-                            m_TargetingState = TargetingState.Move;
-
-                            foreach (Node n in m_maxSkillRange)
-                            {
-                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
-                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
-                                n.m_NodeHighlight.ChangeHighlight(TileState.None);
-                            }
-            
-                            m_SelectedUnit.HighlightMovableNodes();
-
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
-            
-                            m_SelectedSkill = null;
+                            // Now deselect the skill and clear the targeting highlights.
+                            CancelSkill();
                         }
                         else
                         {
@@ -439,36 +425,25 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        
+
         // Selecting a skill with the number keys.
         for (int i = 0; i < m_AbilityHotkeys.Length; i++)
         {
             if (Input.GetKeyDown(m_AbilityHotkeys[i]))
-            {                    
-                SkillSelection(i);
-                break;
+            {
+                // Make sure the player can use the skill before selecting it.
+                if (m_SelectedUnit.m_LearnedSkills[i].GetCurrentCooldown() == 0 && m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.m_LearnedSkills[i].m_Cost)
+                {
+                    SkillSelection(i);
+                    break;
+                }
             }
         }
-        
+
         // Cancelling skill targeting.
         if (Input.GetMouseButtonDown(1))
         {
-            if (m_TargetingState == TargetingState.Skill)
-            {
-                m_TargetingState = TargetingState.Move;
-
-                // Clear the skill targeting highlights.
-                foreach (Node n in m_maxSkillRange)
-                {
-                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
-                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
-                    n.m_NodeHighlight.ChangeHighlight(TileState.None);
-                }
-
-                m_SelectedUnit.HighlightMovableNodes();
-
-                m_SelectedSkill = null;
-            }
+            CancelSkill();
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -477,11 +452,36 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void CancelSkill()
+    {
+        if (m_TargetingState == TargetingState.Skill)
+        {
+            foreach (SkillButton button in UIManager.m_Instance.m_SkillSlots)
+            {
+                button.m_LightningImage.materialForRendering.SetFloat("_UIVerticalPan", 0);
+            }
+
+            m_TargetingState = TargetingState.Move;
+
+            // Clear the skill targeting highlights.
+            foreach (Node n in m_maxSkillRange)
+            {
+                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                n.m_NodeHighlight.ChangeHighlight(TileState.None);
+            }
+
+            m_SelectedUnit.HighlightMovableNodes();
+
+            m_SelectedSkill = null;
+        }
+    }
+
     /// <summary>
     /// Select a skill.
     /// </summary>
     /// <param name="skill"> The skill being selected. </param>
-    public void SkillSelection(BaseSkill skill)
+    public void SkillSelection(BaseSkill skill, SkillButton button)
     {
         // Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
         if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
@@ -490,10 +490,21 @@ public class GameManager : MonoBehaviour
         if (m_SelectedUnit != null)
         {
             // Make sure the unit can afford to cast the skill and the skill isn't on cooldown before selecting it.
+            // Just in case.
             if (m_SelectedUnit.GetActionPoints() >= skill.m_Cost && skill.GetCurrentCooldown() == 0)
             {
+                foreach (SkillButton b in UIManager.m_Instance.m_SkillSlots)
+                {
+                    b.m_LightningImage.materialForRendering.SetFloat("_UIVerticalPan", 0);
+                }
+                button.m_LightningImage.materialForRendering.SetFloat("_UIVerticalPan", 1);
                 // Reset the nodes in the old target range
-                m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
+                foreach (Node n in m_maxSkillRange)
+                {
+                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                    n.m_NodeHighlight.ChangeHighlight(TileState.None);
+                }
 
                 // Update the GameManager's fields
                 m_SelectedSkill = skill;
@@ -524,7 +535,7 @@ public class GameManager : MonoBehaviour
                         default:
                             break;
                     }
-                }        
+                }
             }
         }
     }
@@ -535,42 +546,7 @@ public class GameManager : MonoBehaviour
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
-        // Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
-        if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
-
-        // Reset the nodes in the old target range
-        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = false);
-
-        // Update the GameManager's fields
-        m_SelectedSkill = m_SelectedUnit.GetSkill(skillNumber);
-        m_TargetingState = TargetingState.Skill;
-
-        // Get the new affectable area
-        m_maxSkillRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
-
-        // Reset the highlight of movement nodes
-        m_SelectedUnit.m_MovableNodes.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.None));
-
-        // Tell the new nodes they're in range
-        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = true);
-
-        // Tell the appropriate nodes in distance (red) that they're in distance
-        foreach (Node node in Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true))
-        {
-            switch (m_SelectedSkill.targetType)
-            {
-                case TargetType.SingleTarget:
-                    node.m_NodeHighlight.m_IsTargetable = IsTargetable(m_SelectedUnit, node.unit, m_SelectedSkill);
-                    break;
-                case TargetType.Line:
-                    throw new NotImplementedException("Line target type not supported");
-                case TargetType.Terrain:
-                    node.m_NodeHighlight.m_IsTargetable = true;
-                    break;
-                default:
-                    break;
-            }
-        }
+        SkillSelection(m_SelectedUnit.m_LearnedSkills[skillNumber], UIManager.m_Instance.m_SkillSlots[skillNumber]);
     }
 
     /// <summary>

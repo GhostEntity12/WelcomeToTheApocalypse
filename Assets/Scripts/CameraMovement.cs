@@ -24,6 +24,8 @@ public class CameraMovement : MonoBehaviour
 
     Camera m_Camera;
 
+    public Camera m_PixelCam;
+
     bool m_CanPixel;
 
     enum FacingDirection
@@ -111,7 +113,7 @@ public class CameraMovement : MonoBehaviour
         m_LookDirection = (FacingDirection)(((int)m_LookDirection + 9) % 8);
         LeanTween.rotate(gameObject, new Vector3(0, (int)m_LookDirection * 45f, 0), rotSpeed).setEase(rotationType).setOnComplete(() => m_IsRotating = false);
     }
-    
+
     void RotateRight(float rotSpeed)
     {
         m_IsRotating = true;
@@ -121,23 +123,26 @@ public class CameraMovement : MonoBehaviour
 
     void SwapToFromIsoCam()
     {
-        StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 0.15f, 0, 1, () =>
-                {
-                    m_Camera.orthographic = !m_Camera.orthographic;
-                    if ((int)m_LookDirection % 2 == 0 && m_Camera.orthographic)
-                        RotateLeft(0.05f);
-                    if (!m_Camera.orthographic && m_PixelScreen.alpha == 1)
-                        SwapPixMode();
-                    StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_BlackScreen, 0.15f, 1, 0));
-                    m_IsSwapping = false;
-                }));
+        LeanTween.delayedCall(0.15f, () =>
+            {
+                m_Camera.orthographic = !m_Camera.orthographic;
+                if ((int)m_LookDirection % 2 == 0 && m_Camera.orthographic)
+                    RotateLeft(0.05f);
+                if (!m_Camera.orthographic && m_PixelScreen.alpha == 1)
+                    SwapPixMode();
+                LeanTween.alphaCanvas(m_BlackScreen, 0, 0.15f);
+                m_IsSwapping = false;
+            });
+        LeanTween.alphaCanvas(m_BlackScreen, 1, 0.15f);
     }
 
     void SwapPixMode()
     {
         if (!m_CanPixel) return;
 
+        m_PixelCam.enabled = !m_PixelCam.enabled;
         bool b = m_PixelScreen.alpha == 0;
-        StartCoroutine(Ghost.Fade.FadeCanvasGroup(m_PixelScreen, 0.15f, b ? 0 : 1, b ? 1 : 0, () => m_IsSwapping = false));
+        LeanTween.delayedCall(0.15f, () => m_IsSwapping = false);
+        LeanTween.alphaCanvas(m_PixelScreen, b ? 1 : 0, 0.15f);
     }
 }
