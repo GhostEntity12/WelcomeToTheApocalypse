@@ -125,6 +125,17 @@ public class AIManager : MonoBehaviour
     {
         m_AIIterator++;
 
+        // Check if we're done with the AI's turn.
+        if (m_AIIterator == UnitsManager.m_Instance.m_ActiveEnemyUnits.Count)
+        {
+            // If iterator is at the end of active AI units, reset iterator and end AI turn.
+            m_AIIterator = 0;
+            //Tell the game manager it is not our turn anymore.
+            GameManager.m_Instance.EndCurrentTurn();
+            // Get out of here.
+            return;
+        }
+
         // The current AI unit is assigned
         m_CurrentAIUnit = UnitsManager.m_Instance.m_ActiveEnemyUnits[m_AIIterator];
         GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
