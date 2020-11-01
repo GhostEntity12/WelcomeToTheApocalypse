@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum Allegiance
 {
@@ -464,6 +465,11 @@ public class Unit : MonoBehaviour
 	{
 		m_Healthbar = healthbar.GetComponent<HealthbarContainer>();
 		m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
+	}
+
+	public HealthbarContainer GetHealthBar()
+	{
+		return m_Healthbar;
 	}
 
 	/// <summary>

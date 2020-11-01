@@ -450,6 +450,19 @@ public class GameManager : MonoBehaviour
         {
             TryEndTurn();
         }
+
+        // Show health bars of player units and active enemies.
+        if (Input.GetKey(KeyCode.Tab))
+		{
+            foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+			{
+                u.GetHealthBar().Reset();
+			}
+            foreach(Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
+			{
+                u.GetHealthBar().Reset();
+            }
+		}
     }
 
     void CancelSkill()
