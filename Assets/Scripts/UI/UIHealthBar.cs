@@ -3,15 +3,11 @@ using UnityEngine.UI;
 
 public class UIHealthBar : MonoBehaviour
 {
-    private Image m_HealthBarImage = null;
-
-    void Awake()
-    {
-        m_HealthBarImage = GetComponent<Image>();
-    }
+    public Image m_HealthBarBackground = null;
+    public Image m_HealthBarFill = null;
 
     public void SetHealthAmount(float health)
     {
-        m_HealthBarImage.fillAmount = health;
+        m_HealthBarFill.fillAmount = health;
     }
 }
