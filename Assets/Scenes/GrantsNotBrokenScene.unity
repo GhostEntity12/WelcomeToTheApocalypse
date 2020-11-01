@@ -34074,22 +34074,22 @@ PrefabInstance:
     - target: {fileID: 589503770678316890, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 589503770678316890, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 589503770678316890, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 467.745
+      value: 410
       objectReference: {fileID: 0}
     - target: {fileID: 589503770678316890, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -60
       objectReference: {fileID: 0}
     - target: {fileID: 589503770678316890, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
@@ -78865,6 +78865,17 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1753420418589250735, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_WarningMessage
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'Jnt_Hip'\n\tTransform 'Jnt_Shoulder_L'\n\tTransform
+        'Jnt_Knee_R'\n\tTransform 'Jnt_Knee_L'\n\tTransform 'Jnt_Thigh_L'\n\tTransform
+        'Jnt_Spine_1'\n\tTransform 'Jnt_Elbow_L'\n\tTransform 'Jnt_Head'\n\tTransform
+        'Jnt_Ankle_L'\n\tTransform 'Jnt_Wrist_R'\n\tand more ...\n\tFrom animation
+        clip 'HorsemanDeath_Animation_Hit'"
       objectReference: {fileID: 0}
     - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
         type: 3}
