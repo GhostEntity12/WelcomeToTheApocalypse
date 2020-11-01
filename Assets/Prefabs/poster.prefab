@@ -109,7 +109,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3869190799073242992}
   m_LocalRotation: {x: 0, y: 0.5167585, z: -0, w: 0.8561312}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.05, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5808422959206675048}
@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 1423290209774774624}
   - component: {fileID: 5246628524504211168}
   m_Layer: 0
-  m_Name: PaperBase
+  m_Name: poster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -181,6 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6064429276261214db5e445e6b1aecfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_RandomiseSpeed: 0
 --- !u!1 &6820097192906251567
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,7 +206,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6820097192906251567}
   m_LocalRotation: {x: 0.02006929, y: -0.11696614, z: -0.16791567, w: 0.978632}
-  m_LocalPosition: {x: -0.09995327, y: 0, z: -0.012642822}
+  m_LocalPosition: {x: -0.028, y: 0, z: -0.032}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 951159838394083224}
