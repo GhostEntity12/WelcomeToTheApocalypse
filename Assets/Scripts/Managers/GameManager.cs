@@ -333,21 +333,10 @@ public class GameManager : MonoBehaviour
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
                             Debug.Log(m_SelectedUnit.GetActionPoints(), m_SelectedUnit);
 
-                            // Now deselect the skill and clear the targeting highlights.
-                            m_TargetingState = TargetingState.Move;
-
-                            foreach (Node n in m_maxSkillRange)
-                            {
-                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
-                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
-                                n.m_NodeHighlight.ChangeHighlight(TileState.None);
-                            }
-
-                            m_SelectedUnit.HighlightMovableNodes();
-
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
 
-                            m_SelectedSkill = null;
+                            // Now deselect the skill and clear the targeting highlights.
+                            CancelSkill();
                         }
                         else
                         {
@@ -395,21 +384,9 @@ public class GameManager : MonoBehaviour
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
 
-                            // Now deselect the skill and clear the targeting highlights.
-                            m_TargetingState = TargetingState.Move;
-
-                            foreach (Node n in m_maxSkillRange)
-                            {
-                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
-                                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
-                                n.m_NodeHighlight.ChangeHighlight(TileState.None);
-                            }
-
-                            m_SelectedUnit.HighlightMovableNodes();
-
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
-
-                            m_SelectedSkill = null;
+                            // Now deselect the skill and clear the targeting highlights.
+                            CancelSkill();
                         }
                         else
                         {
@@ -466,22 +443,7 @@ public class GameManager : MonoBehaviour
         // Cancelling skill targeting.
         if (Input.GetMouseButtonDown(1))
         {
-            if (m_TargetingState == TargetingState.Skill)
-            {
-                m_TargetingState = TargetingState.Move;
-
-                // Clear the skill targeting highlights.
-                foreach (Node n in m_maxSkillRange)
-                {
-                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
-                    m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
-                    n.m_NodeHighlight.ChangeHighlight(TileState.None);
-                }
-
-                m_SelectedUnit.HighlightMovableNodes();
-
-                m_SelectedSkill = null;
-            }
+            CancelSkill();
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -490,11 +452,36 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void CancelSkill()
+    {
+        if (m_TargetingState == TargetingState.Skill)
+        {
+            foreach (SkillButton button in UIManager.m_Instance.m_SkillSlots)
+            {
+                button.m_LightningImage.materialForRendering.SetFloat("_UIVerticalPan", 0);
+            }
+
+            m_TargetingState = TargetingState.Move;
+
+            // Clear the skill targeting highlights.
+            foreach (Node n in m_maxSkillRange)
+            {
+                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+                n.m_NodeHighlight.ChangeHighlight(TileState.None);
+            }
+
+            m_SelectedUnit.HighlightMovableNodes();
+
+            m_SelectedSkill = null;
+        }
+    }
+
     /// <summary>
     /// Select a skill.
     /// </summary>
     /// <param name="skill"> The skill being selected. </param>
-    public void SkillSelection(BaseSkill skill)
+    public void SkillSelection(BaseSkill skill, SkillButton button)
     {
         // Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
         if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
@@ -506,6 +493,11 @@ public class GameManager : MonoBehaviour
             // Just in case.
             if (m_SelectedUnit.GetActionPoints() >= skill.m_Cost && skill.GetCurrentCooldown() == 0)
             {
+                foreach (SkillButton b in UIManager.m_Instance.m_SkillSlots)
+                {
+                    b.m_LightningImage.materialForRendering.SetFloat("_UIVerticalPan", 0);
+                }
+                button.m_LightningImage.materialForRendering.SetFloat("_UIVerticalPan", 1);
                 // Reset the nodes in the old target range
                 foreach (Node n in m_maxSkillRange)
                 {
@@ -554,7 +546,7 @@ public class GameManager : MonoBehaviour
     /// <param name="skillNumber"> Index of the skill being selected. </param>
     public void SkillSelection(int skillNumber)
     {
-        SkillSelection(m_SelectedUnit.m_LearnedSkills[skillNumber]);
+        SkillSelection(m_SelectedUnit.m_LearnedSkills[skillNumber], UIManager.m_Instance.m_SkillSlots[skillNumber]);
     }
 
     /// <summary>
