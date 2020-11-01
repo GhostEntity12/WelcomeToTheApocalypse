@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Node
@@ -9,6 +7,7 @@ public class Node
 	private float m_damage;
 	private float m_kill;
 	private float m_healing;
+	private float m_status;
 
 	public int[] m_costs = new int[8];
 	public int x, z;
@@ -54,7 +53,7 @@ public class Node
 
 	public float GetMinMax()
 	{
-		return m_movement + m_damage + m_kill + m_healing;
+		return m_movement + m_damage + m_kill + m_healing + m_status;
 	}
 
 
@@ -101,6 +100,16 @@ public class Node
 		return m_movement;
 	}
 
+	public void SetStatus(float status)
+	{
+		m_status = status;
+	}
+
+	public float GetStatus()
+	{
+		return m_status;
+	}
+
 	public void SetAITarget(Unit unit)
 	{
 		m_aiTarget = unit;
@@ -111,5 +120,9 @@ public class Node
 		return m_aiTarget;
 	}
 
-	public void ResetHeuristic() => m_movement = m_damage = m_kill = m_healing = 0;
+	public void ResetHeuristic()
+	{
+		m_movement = m_damage = m_kill = m_healing = m_status = 0;
+		m_aiTarget = null;
+	}
 }

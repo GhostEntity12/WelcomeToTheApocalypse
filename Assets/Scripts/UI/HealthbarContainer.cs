@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class HealthbarContainer : MonoBehaviour
 {
@@ -43,7 +41,7 @@ public class HealthbarContainer : MonoBehaviour
 
     private float m_Timer = 0.0f;
 
-    private Color m_NoAlpha = new Color(0,0,0,0);
+    private Color m_NoAlpha = new Color(0, 0, 0, 0);
 
     private Color m_FillColor;
 

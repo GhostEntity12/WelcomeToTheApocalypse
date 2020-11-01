@@ -11,7 +11,7 @@ public class UIManager : MonoBehaviour
 
 	public static UIManager m_Instance;
 	public CanvasGroup m_BlackScreen;
-	
+
 	/// <summary>
 	/// List of UI elements that block the player from being able to interact with the game.
 	/// </summary>
@@ -23,6 +23,8 @@ public class UIManager : MonoBehaviour
 		public RectTransform m_RectTransform;
 		internal Vector2[] m_Cache = new Vector2[2];
 	}
+
+	public bool m_ActiveUI = false;
 
 	[Header("Skin Data")]
 	public Color[] m_TurnIndicatorColors = new Color[2];
@@ -78,7 +80,6 @@ public class UIManager : MonoBehaviour
 		m_Instance = this;
 
 		m_InputBlockingUIElements = FindObjectsOfType<InputBlockingUI>().ToList();
-		m_PrematureTurnEndScreen.gameObject.SetActive(false);
 		m_EndTurnBlocker = m_PrematureTurnEndScreen.GetComponent<InputBlockingUI>();
 
 		// Creates an EventSystem if it can't find one
@@ -115,10 +116,17 @@ public class UIManager : MonoBehaviour
 		}
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
+			if (m_PrematureTurnEndScreen.m_Active)
+			{
+				m_PrematureTurnEndScreen.DisplayPrematureEndScreen(false);
+				return;
+			}
 			m_PauseScreen.gameObject.SetActive(!m_Paused);
 			m_Paused = !m_Paused;
 		}
 	}
+
+	public InputBlockingUI EndTurnBlocker() => m_EndTurnBlocker;
 
 	/// <summary>
 	/// Caches the positions of an TweenedElement object for tweening
@@ -312,11 +320,4 @@ public class UIManager : MonoBehaviour
 		}
 		return false;
 	}
-
-	public void HidePrematureEndScreen()
-	{
-		m_EndTurnBlocker.SetMouseOverUIElement(false);
-		m_PrematureTurnEndScreen.gameObject.SetActive(false);
-	}
-
 }

@@ -85,9 +85,9 @@ public class SkillButton : MonoBehaviour
 			print(m_Skill + "/" + (m_Skill.m_Cost > GameManager.m_Instance.GetSelectedUnit().GetActionPoints()));
 			m_Cooldown.fillAmount =
 				m_Skill.m_CurrentCooldown > 0 ? // Partially filled if on cooldown
-					(float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength : 
+					(float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength :
 				m_Skill.m_Cost > GameManager.m_Instance.GetSelectedUnit().GetActionPoints() ? // Filled if AP cost is too high
-					1 : 
+					1 :
 				0; // Empty otherwise
 		}
 	}

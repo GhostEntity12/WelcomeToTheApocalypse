@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public enum AIHeuristics
 {
     Move,
     Attack,
-    Heal
+    Heal,
+    StatusEffect
 }
 
 [CreateAssetMenu(menuName = "AI Heuristic Calculator")]

@@ -23,6 +23,8 @@ public class Grid : MonoBehaviour
 	[Tooltip("Used to store the objects for the nodes")]
 	private GameObject m_NodeArray;
 
+	public LayerMask m_WalkableArea = 1 << 31;
+
 	void Awake()
 	{
 		m_Instance = this;
@@ -361,7 +363,7 @@ public class Grid : MonoBehaviour
 
 				if (!allowBlocked)
 				{
-					if (neighbourNode.m_isBlocked == true) 
+					if (neighbourNode.m_isBlocked == true)
 					{
 						continue;
 					}

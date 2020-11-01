@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum TriggerType
 {
@@ -55,8 +53,8 @@ public abstract class StatusEffect : ScriptableObject
             return false;
     }
 
-    public virtual void TakeEffect() {}
-    public virtual void TakeEffect(Unit affected) {}
+    public virtual void TakeEffect() { }
+    public virtual void TakeEffect(Unit affected) { }
 
     public bool GetAffectSelf() { return m_AffectSelf; }
 }
