@@ -12,6 +12,8 @@ public class AssetSeeder : MonoBehaviour
     public float yHeight;
     public int maxObjects = 5000;
 
+    public LayerMask m_GroundMask;
+
     [Min(0)]
     public int maxTries;
     [Min(0)]
@@ -51,6 +53,10 @@ public class AssetSeeder : MonoBehaviour
                     yHeight,
                     Random.Range(_spawnBounds.min.z, _spawnBounds.max.z)
                 );
+                if (Physics.Raycast(randPoint + Vector3.up * 10, Vector3.down, out RaycastHit hit, 15, layerMask)) 
+                {
+                    randPoint = hit.point;
+                }
 
                 tries++;
                 if (tries > maxTries) break;
@@ -58,6 +64,7 @@ public class AssetSeeder : MonoBehaviour
             int randPrefab = Random.Range(0, prefab.Count);
             if (tries <= maxTries)
             {
+
 #if UNITY_EDITOR
                 if (instantiateAsPrefab)
                 {
