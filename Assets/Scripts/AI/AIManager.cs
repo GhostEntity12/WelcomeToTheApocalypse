@@ -285,6 +285,11 @@ public class AIManager : MonoBehaviour
 				}
             }
             Debug.LogError("No node found for " + m_CurrentAIUnit + " to move to!");
+            if (!m_CurrentAIUnit)
+            {
+                // Assume no more units left.
+                GameManager.m_Instance.EndCurrentTurn();
+            }
                 //HeuristicResult bestChoice = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).First();
                 /*m_CurrentAIUnit = bestChoice.m_Unit;
                 GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
