@@ -303,6 +303,7 @@ public class AIManager : MonoBehaviour
         HeuristicResult hr = FindHeuristic(n, u);
         if (hr != null)
         {
+            print($"Updating {u}'s {n.m_NodeHighlight.name} heuristic: {type}, {value}");
             switch (type)
             {
                 case AIHeuristics.Move:
@@ -310,6 +311,10 @@ public class AIManager : MonoBehaviour
                     break;
                 case AIHeuristics.Attack:
                     hr.m_DamageValue += value;
+                    if (hr.m_DamageValue > 100)
+                    {
+                        Debug.LogWarning($"Uh oh, attack is {hr.m_DamageValue}");
+                    }
                     break;
                 case AIHeuristics.Heal:
                     hr.m_HealingValue += value;
@@ -331,6 +336,7 @@ public class AIManager : MonoBehaviour
         }
         else
         {
+            print("Adding new heuristic");
             m_HeuristicResults.Add(new HeuristicResult(u, type, value, n, healSkill, damageSkill));
         }
     }
