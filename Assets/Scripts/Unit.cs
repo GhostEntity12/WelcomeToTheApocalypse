@@ -158,6 +158,12 @@ public class Unit : MonoBehaviour
 		{
 			m_PassiveSkill = Instantiate(m_Passive);
 		}
+
+		// Set all skills to startup stuff, cause scriptable objects don't reset on scene load.
+		foreach(BaseSkill skill in m_LearnedSkills)
+		{
+			skill.Startup();
+		}
 	}
 
 	void Start()
