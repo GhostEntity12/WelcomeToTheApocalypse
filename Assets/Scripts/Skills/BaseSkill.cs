@@ -64,6 +64,11 @@ public class BaseSkill : ScriptableObject
     protected Unit[] affectedUnits;
     public List<Node> affectedNodes;
 
+    public void Startup()
+	{
+        m_CurrentCooldown = 0;
+	}
+
     public virtual void CastSkill()
     {
         FindAffectedUnits();
