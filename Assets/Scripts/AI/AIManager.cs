@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
+using UnityEngine.Events;
 using UnityEngine.Rendering.UI;
 
 public class HeuristicResult
@@ -263,17 +264,38 @@ public class AIManager : MonoBehaviour
                     }
                 }
             }
-            HeuristicResult bestChoice = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).First();
-            m_CurrentAIUnit = bestChoice.m_Unit;
-            GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+            List<HeuristicResult> bestChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
 
-            m_OptimalNode = bestChoice.m_Node;
-            m_CurrentAIUnit.DecreaseCurrentMovement(bestChoice.m_MoveDistance);
-            FindPathToOptimalNode();
+            for (int i = 0; i < bestChoices.Count; ++i)
+            {
+                Unit currentAI = bestChoices[i].m_Unit;
+                List<Node> nodesInMovement = Grid.m_Instance.GetNodesWithinRadius(currentAI.GetCurrentMovement(), Grid.m_Instance.GetNode(currentAI.transform.position));
+                foreach(Node n in nodesInMovement)
+				{
+                    if (n == bestChoices[i].m_Node)
+					{
+                        m_CurrentAIUnit = bestChoices[i].m_Unit;
+                        GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
 
-            print($"{bestChoice.m_Unit} is attempting to move to {bestChoice.m_Node.m_NodeHighlight.name} with a cost of {bestChoice.m_MoveDistance}\n" +
+                        m_OptimalNode = bestChoices[i].m_Node;
+                        m_CurrentAIUnit.DecreaseCurrentMovement(bestChoices[i].m_MoveDistance);
+                        FindPathToOptimalNode();
+                        return;
+                    }
+				}
+            }
+            Debug.LogError("No node found for " + m_CurrentAIUnit + " to move to!");
+                //HeuristicResult bestChoice = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).First();
+                /*m_CurrentAIUnit = bestChoice.m_Unit;
+                GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+
+                m_OptimalNode = bestChoice.m_Node;
+                m_CurrentAIUnit.DecreaseCurrentMovement(bestChoice.m_MoveDistance);*/
+            //FindPathToOptimalNode();
+
+            /*print($"{bestChoice.m_Unit} is attempting to move to {bestChoice.m_Node.m_NodeHighlight.name} with a cost of {bestChoice.m_MoveDistance}\n" +
                 $"Damage: {bestChoice.m_DamageValue}/{bestChoice.m_DamageSkill}\n" +
-                $"Heal: {bestChoice.m_HealingValue}/{bestChoice.m_HealSkill}");
+                $"Heal: {bestChoice.m_HealingValue}/{bestChoice.m_HealSkill}");*/
         }
     }
 
