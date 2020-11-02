@@ -59,10 +59,7 @@ public class AIManager : MonoBehaviour
             GameManager.m_Instance.EndCurrentTurn();
             return;
         }
-
-        // The current AI unit is assigned
-        m_CurrentAIUnit = UnitsManager.m_Instance.m_ActiveEnemyUnits[m_AIIterator];
-        GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+        
         // Make sure the current unit isn't moving.
         if (m_CurrentAIUnit.GetMoving() == false)
         {
@@ -128,8 +125,23 @@ public class AIManager : MonoBehaviour
     {
         m_AIIterator++;
 
+        // Check if we're done with the AI's turn.
+        if (m_AIIterator == UnitsManager.m_Instance.m_ActiveEnemyUnits.Count)
+        {
+            // If iterator is at the end of active AI units, reset iterator and end AI turn.
+            m_AIIterator = 0;
+            //Tell the game manager it is not our turn anymore.
+            GameManager.m_Instance.EndCurrentTurn();
+            // Get out of here.
+            return;
+        }
+
+        // The current AI unit is assigned
+        m_CurrentAIUnit = UnitsManager.m_Instance.m_ActiveEnemyUnits[m_AIIterator];
+        GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+
         // Reset things from the AI unit's turn.
-        foreach(Node node in m_ModifyNodes)
+        foreach (Node node in m_ModifyNodes)
 		{
             node.ResetHeuristic();
 		}
@@ -198,6 +210,13 @@ public class AIManager : MonoBehaviour
             DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
             Debug.Log($"Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
+
+            if (UnitsManager.m_Instance.m_ActiveEnemyUnits[0] != null)
+            {
+                // The current AI unit is assigned
+                m_CurrentAIUnit = UnitsManager.m_Instance.m_ActiveEnemyUnits[0];
+                GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+            }
         }
     }
 
