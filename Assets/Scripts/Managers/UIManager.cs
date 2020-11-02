@@ -163,6 +163,7 @@ public class UIManager : MonoBehaviour
 		m_SkillsBackground.sprite = uiData.m_Panels.m_RightPanel;
 		m_SkillsBackgroundSmall.sprite = uiData.m_Panels.m_RightPanelSmall;
 		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
+		m_UIHealthBar.m_HealthBarBackground.sprite = uiData.m_Healthbar;
 
 		// Update the skin of the skills
 		foreach (SkillButton slot in m_SkillSlots)

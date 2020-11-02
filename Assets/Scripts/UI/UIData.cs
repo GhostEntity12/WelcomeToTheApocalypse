@@ -7,6 +7,7 @@ public class UIData : ScriptableObject
 	public UIPanels m_Panels;
 	public UISkillDiamonds m_SkillDiamonds;
 	public UIIconColors m_IconColors;
+	public Sprite m_Healthbar;
 }
 
 [System.Serializable]
