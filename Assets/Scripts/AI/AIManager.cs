@@ -207,7 +207,7 @@ public class AIManager : MonoBehaviour
                                             if (nodesCastable[j] != null)
                                             {
                                                 Node currentDamageNode = nodesCastable[j];
-                                                AddHeuristics(AIHeuristics.Attack, hValue, nodeWithUnit, unit, damageSkill:ds);
+                                                AddHeuristics(AIHeuristics.Attack, hValue, currentDamageNode, unit, damageSkill:ds);
                                                 currentDamageNode.SetAITarget(nodeWithUnit.unit);
                                                 m_OptimalSkill = skill;
                                             }
@@ -246,7 +246,7 @@ public class AIManager : MonoBehaviour
                                             if (nodesCastable[j] != null)
                                             {
                                                 Node currentHealNode = nodesCastable[j];
-                                                AddHeuristics(AIHeuristics.Heal, newHealH, nodeWithUnit, unit, hs);
+                                                AddHeuristics(AIHeuristics.Heal, newHealH, currentHealNode, unit, hs);
                                                 currentHealNode.SetAITarget(nodeWithUnit.unit);
                                                 m_OptimalSkill = skill;
                                             }
@@ -270,7 +270,6 @@ public class AIManager : MonoBehaviour
             print($"{bestChoice.m_Unit} is attempting to move to {bestChoice.m_Node}\n" +
                 $"Damage: {bestChoice.m_DamageValue}/{bestChoice.m_DamageSkill}\n" +
                 $"Heal: {bestChoice.m_HealingValue}/{bestChoice.m_HealSkill}");
-
         }
     }
 
