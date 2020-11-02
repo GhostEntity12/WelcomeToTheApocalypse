@@ -270,7 +270,7 @@ public class TestAIManager : MonoBehaviour
         }
         else
         {
-            hrs.Add(new HeuristicResult(u, type, value, n, healSkill, damageSkill));
+            //hrs.Add(new HeuristicResult(u, type, value, n, healSkill, damageSkill));
         }
     }
 
