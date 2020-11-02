@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum Allegiance
 {
@@ -156,6 +157,12 @@ public class Unit : MonoBehaviour
 		if (m_Passive)
 		{
 			m_PassiveSkill = Instantiate(m_Passive);
+		}
+
+		// Set all skills to startup stuff, cause scriptable objects don't reset on scene load.
+		foreach(BaseSkill skill in m_LearnedSkills)
+		{
+			skill.Startup();
 		}
 	}
 
@@ -464,6 +471,11 @@ public class Unit : MonoBehaviour
 	{
 		m_Healthbar = healthbar.GetComponent<HealthbarContainer>();
 		m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
+	}
+
+	public HealthbarContainer GetHealthBar()
+	{
+		return m_Healthbar;
 	}
 
 	/// <summary>

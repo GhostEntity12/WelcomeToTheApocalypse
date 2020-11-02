@@ -13,9 +13,18 @@ MonoBehaviour:
   m_Name: EnemyPestilenceUI
   m_EditorClassIdentifier: 
   m_SkillsPortrait: {fileID: 21300000, guid: aaed703df10317d44aef6d737dad8224, type: 3}
-  m_Dark: {r: 0.23529413, g: 0.098039225, b: 0.098039225, a: 1}
-  m_Medium: {r: 0.23529413, g: 0.23529413, b: 0.23529413, a: 1}
-  m_Light: {r: 0.65882355, g: 0.65882355, b: 0.65882355, a: 1}
-  m_SkillBg: {fileID: 21300000, guid: cf5dc985bc299264b88cd8a0d065b992, type: 3}
-  m_IconLight: {r: 1, g: 1, b: 1, a: 1}
-  m_IconDark: {r: 1, g: 1, b: 1, a: 1}
+  m_Panels:
+    m_LeftPanel: {fileID: 21300000, guid: ca3b887162a736a4e8ce0efb0f00f797, type: 3}
+    m_RightPanel: {fileID: 21300000, guid: 6709a12dffb3cae4c9f87e45a6276cea, type: 3}
+    m_RightPanelSmall: {fileID: 21300000, guid: 281aece49e65b334d9246805a7d1dce5,
+      type: 3}
+  m_SkillDiamonds:
+    m_SkillDiamondSides: {fileID: 21300000, guid: 541703617b4ef094388458e82269ec07,
+      type: 3}
+    m_SkillDiamondCenter: {fileID: 21300000, guid: 51d670e381734984dbc230f7ee6c1cc7,
+      type: 3}
+    m_SkillCloudColor: {r: 1, g: 1, b: 1, a: 1}
+  m_IconColors:
+    m_IconLight: {r: 1, g: 1, b: 1, a: 1}
+    m_IconDark: {r: 0, g: 0, b: 0, a: 1}
+  m_Healthbar: {fileID: 21300000, guid: 4b20391a3e982f3458a8a4b45010cfa1, type: 3}

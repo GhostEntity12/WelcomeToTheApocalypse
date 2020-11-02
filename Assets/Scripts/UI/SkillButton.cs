@@ -7,11 +7,15 @@ public class SkillButton : MonoBehaviour
 {
 	public BaseSkill m_Skill;
 
-	public Image m_BgImage;
+	public Image m_SidesImage;
 
-	public Image m_LightImage;
+	public Image m_LightningImage;
 
-	public Image m_DarkImage;
+	public Image m_CenterImage;
+
+	public Image m_LightIcon;
+
+	public Image m_DarkIcon;
 
 	public Image m_TooltipImage;
 
@@ -27,11 +31,12 @@ public class SkillButton : MonoBehaviour
 
 	public Transform m_ApSlots;
 
-	public void TriggerSkill() => GameManager.m_Instance.SkillSelection(m_Skill);
+	public void TriggerSkill() => GameManager.m_Instance.SkillSelection(m_Skill, this);
 
 	void Awake()
 	{
 		m_TooltipImage.gameObject.SetActive(false);
+		m_LightningImage.material = new Material(m_LightningImage.material);
 	}
 
 	public void UpdateTooltip()
@@ -82,9 +87,8 @@ public class SkillButton : MonoBehaviour
 	{
 		if (m_Skill)
 		{
-			print(m_Skill + "/" + (m_Skill.m_Cost > GameManager.m_Instance.GetSelectedUnit().GetActionPoints()));
 			m_Cooldown.fillAmount =
-				m_Skill.m_CurrentCooldown > 0 ? // Partially filled if on cooldown
+				m_Skill.GetCurrentCooldown() > 0 ? // Partially filled if on cooldown
 					(float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength :
 				m_Skill.m_Cost > GameManager.m_Instance.GetSelectedUnit().GetActionPoints() ? // Filled if AP cost is too high
 					1 :

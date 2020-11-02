@@ -40606,7 +40606,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EndTurnButton
       value: 
-      objectReference: {fileID: 1408041044}
+      objectReference: {fileID: 0}
     - target: {fileID: 7313871622852076273, guid: bda3be074f1a18147a9ea72f93a022f2,
         type: 3}
       propertyPath: m_TurnIndicator
@@ -40626,7 +40626,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_UIHealthBar
       value: 
-      objectReference: {fileID: 1459314273}
+      objectReference: {fileID: 0}
     - target: {fileID: 7313871622852076273, guid: bda3be074f1a18147a9ea72f93a022f2,
         type: 3}
       propertyPath: m_PrematureTurnEndScreen
@@ -59491,18 +59491,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1406005564}
   m_Mesh: {fileID: 7228552146785759886, guid: 47118f1cc986c8b45a1c7ced9612bb42, type: 3}
---- !u!114 &1408041044 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7116137122341804601, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
-    type: 3}
-  m_PrefabInstance: {fileID: 838336514}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9441a0cfab655e74f83b962c53b691e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1410654143
 GameObject:
   m_ObjectHideFlags: 0
@@ -61840,18 +61828,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1456664772}
   m_Mesh: {fileID: 7228552146785759886, guid: 47118f1cc986c8b45a1c7ced9612bb42, type: 3}
---- !u!114 &1459314273 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2017353894339507932, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
-    type: 3}
-  m_PrefabInstance: {fileID: 838336514}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c0eb4e12ff5aa2489493a72369a55bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1460569792
 GameObject:
   m_ObjectHideFlags: 0
@@ -78889,6 +78865,17 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1753420418589250735, guid: 734f3d0a4fd966742965513c71b6d058,
+        type: 3}
+      propertyPath: m_WarningMessage
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'Jnt_Hip'\n\tTransform 'Jnt_Shoulder_L'\n\tTransform
+        'Jnt_Knee_R'\n\tTransform 'Jnt_Knee_L'\n\tTransform 'Jnt_Thigh_L'\n\tTransform
+        'Jnt_Spine_1'\n\tTransform 'Jnt_Elbow_L'\n\tTransform 'Jnt_Head'\n\tTransform
+        'Jnt_Ankle_L'\n\tTransform 'Jnt_Wrist_R'\n\tand more ...\n\tFrom animation
+        clip 'HorsemanDeath_Animation_Hit'"
       objectReference: {fileID: 0}
     - target: {fileID: 1992032973273735804, guid: 734f3d0a4fd966742965513c71b6d058,
         type: 3}

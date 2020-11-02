@@ -32,7 +32,7 @@ public class UIManager : MonoBehaviour
 	[Header("Graphical Elements")]
 	public Image m_FaceBackground;
 	public Image m_SkillsBackground;
-	public Image m_TurnBackground;
+	public Image m_SkillsBackgroundSmall;
 	public Image m_PortraitImage;
 	public SkillButton[] m_SkillSlots;
 	public Image m_LeftSpeakerImage;
@@ -152,7 +152,6 @@ public class UIManager : MonoBehaviour
 		LeanTween.move(element.m_RectTransform, element.m_Cache[(int)screenState], m_TweenSpeed).setEase(tweenType).setOnComplete(onComplete);
 	}
 
-
 	#region SkillsTweening
 	/// <summary>
 	/// Loads a skin for the skills UI
@@ -160,16 +159,21 @@ public class UIManager : MonoBehaviour
 	/// <param name="uiData"></param>
 	private void LoadSkillsSkin(UIData uiData, Action onComplete = null)
 	{
+		m_FaceBackground.sprite = uiData.m_Panels.m_LeftPanel;
+		m_SkillsBackground.sprite = uiData.m_Panels.m_RightPanel;
+		m_SkillsBackgroundSmall.sprite = uiData.m_Panels.m_RightPanelSmall;
+		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
+		m_UIHealthBar.m_HealthBarBackground.sprite = uiData.m_Healthbar;
+
+		// Update the skin of the skills
 		foreach (SkillButton slot in m_SkillSlots)
 		{
-			slot.m_BgImage.sprite = uiData.m_SkillBg;
+			slot.m_SidesImage.sprite = uiData.m_SkillDiamonds.m_SkillDiamondSides;
+			slot.m_CenterImage.sprite = uiData.m_SkillDiamonds.m_SkillDiamondCenter;
+			slot.m_LightningImage.material.SetColor("_UICloudTint", uiData.m_SkillDiamonds.m_SkillCloudColor);
 		}
 
-		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
-		m_FaceBackground.color = uiData.m_Medium;
-		m_SkillsBackground.color = uiData.m_Light;
-		m_TurnBackground.color = uiData.m_Dark;
-
+		// Assign the skills
 		for (int i = 0; i < m_SkillSlots.Length; i++)
 		{
 			// TODO: Refactor
@@ -177,10 +181,10 @@ public class UIManager : MonoBehaviour
 			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
 			if (m_SkillSlots[i].m_Skill)
 			{
-				m_SkillSlots[i].m_LightImage.sprite = m_SkillSlots[i].m_Skill.m_LightIcon;
-				m_SkillSlots[i].m_LightImage.color = uiData.m_IconLight;
-				m_SkillSlots[i].m_DarkImage.sprite = m_SkillSlots[i].m_Skill.m_DarkIcon;
-				m_SkillSlots[i].m_DarkImage.color = uiData.m_IconDark;
+				m_SkillSlots[i].m_LightIcon.sprite = m_SkillSlots[i].m_Skill.m_LightIcon;
+				m_SkillSlots[i].m_LightIcon.color = uiData.m_IconColors.m_IconLight;
+				m_SkillSlots[i].m_DarkIcon.sprite = m_SkillSlots[i].m_Skill.m_DarkIcon;
+				m_SkillSlots[i].m_DarkIcon.color = uiData.m_IconColors.m_IconDark;
 			}
 			m_SkillSlots[i].UpdateTooltip();
 		}
