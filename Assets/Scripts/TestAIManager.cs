@@ -5,46 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.UI;
 
-public class HeuristicResult
-{
-    public Unit m_Unit;
-    public float m_movementValue = 0;
-    public float m_damageValue = 0;
-    public float m_healingValue = 0;
-    public float m_statusValue = 0;
-    public Node m_Node;
-
-    public DamageSkill m_DamageSkill;
-    public HealSkill m_HealSkill;
-
-    public HeuristicResult(Unit u, AIHeuristics t, float hv, Node n, HealSkill hs, DamageSkill ds)
-    {
-        switch (t)
-        {
-            case AIHeuristics.Move:
-                m_movementValue += hv;
-                break;
-            case AIHeuristics.Attack:
-                m_damageValue += hv;
-                break;
-            case AIHeuristics.Heal:
-                m_healingValue += hv;
-                break;
-            case AIHeuristics.StatusEffect:
-                m_statusValue += hv;
-                break;
-            default:
-                break;
-        }
-        m_Unit = u;
-        m_Node = n;
-        m_HealSkill = hs;
-        m_DamageSkill = ds;
-    }
-
-    public float SumHeuristics() => m_movementValue + m_damageValue + m_healingValue + m_statusValue;
-}
-
 public class TestAIManager : MonoBehaviour
 {
     //Instance of the AIManager.
@@ -123,7 +83,7 @@ public class TestAIManager : MonoBehaviour
                                             {
                                                 // Try to put a status on the healthiest unit, to get the most value.
                                                 float newStatusH = currentUnit.GetCurrentHealth();
-                                                if (newStatusH < FindHeuristic(nodesCastable[j], unit)?.m_statusValue)
+                                                if (newStatusH < FindHeuristic(nodesCastable[j], unit)?.m_StatusValue)
                                                     continue;
                                                 else
                                                 {
@@ -153,7 +113,7 @@ public class TestAIManager : MonoBehaviour
                                                 {
                                                     // Try to put a status on the healthiest unit, to get the most value.
                                                     float newStatusH = currentUnit.GetCurrentHealth();
-                                                    if (newStatusH < FindHeuristic(nodesCastable[j], unit)?.m_statusValue)
+                                                    if (newStatusH < FindHeuristic(nodesCastable[j], unit)?.m_StatusValue)
                                                         continue;
                                                     else
                                                     {
@@ -187,7 +147,7 @@ public class TestAIManager : MonoBehaviour
                                     {
                                         // Calculate the new damage for the node's damage heuristic.
                                         float hValue = ds.m_DamageAmount * (Vector3.Distance(nodeWithUnit.worldPosition, nodesCastable[j].worldPosition) * 0.1f);
-                                        if (hValue < FindHeuristic(nodesCastable[j], unit)?.m_damageValue)
+                                        if (hValue < FindHeuristic(nodesCastable[j], unit)?.m_DamageValue)
                                         {
                                             continue;
                                         }
@@ -226,7 +186,7 @@ public class TestAIManager : MonoBehaviour
                                     {
                                         // Calculate the new heal for the node's heal heuristic.
                                         float newHealH = hs.m_HealAmount + (currentUnit.GetStartingHealth() - currentUnit.GetCurrentHealth());
-                                        if (newHealH < FindHeuristic(nodesCastable[j], unit)?.m_healingValue)
+                                        if (newHealH < FindHeuristic(nodesCastable[j], unit)?.m_HealingValue)
                                         {
                                             continue;
                                         }
@@ -291,16 +251,16 @@ public class TestAIManager : MonoBehaviour
             switch (type)
             {
                 case AIHeuristics.Move:
-                    hr.m_movementValue += value;
+                    hr.m_MovementValue += value;
                     break;
                 case AIHeuristics.Attack:
-                    hr.m_damageValue += value;
+                    hr.m_DamageValue += value;
                     break;
                 case AIHeuristics.Heal:
-                    hr.m_healingValue += value;
+                    hr.m_HealingValue += value;
                     break;
                 case AIHeuristics.StatusEffect:
-                    hr.m_statusValue += value;
+                    hr.m_StatusValue += value;
                     break;
                 default:
                     break;
