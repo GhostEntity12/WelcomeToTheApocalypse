@@ -63,8 +63,6 @@ public class AIManager : MonoBehaviour
 
     private Node m_OptimalNode = new Node();
 
-    private List<Node> m_ModifyNodes = new List<Node>();
-
     private bool m_AITurn = false;
 
     private BaseSkill m_OptimalSkill = null;
@@ -429,7 +427,14 @@ public class AIManager : MonoBehaviour
     public void EnableUnits(List<Unit> newUnits)
     {
         UnitsManager.m_Instance.m_ActiveEnemyUnits.AddRange(newUnits);
-        // In case of units already added being in the list.
+        foreach (Unit unit in newUnits)
+        {
+            foreach (Transform t in unit.GetComponentsInChildren<Transform>(true))
+            {
+                t.gameObject.layer = 9;
+            }
+        }
+        // In case of units already added being in the list, remove dupes.
         UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Distinct().ToList();
         GameManager.m_Instance.m_DidHealthBonus = false;
     }
