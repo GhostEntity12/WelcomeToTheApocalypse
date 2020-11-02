@@ -158,6 +158,12 @@ public class Unit : MonoBehaviour
 		{
 			m_PassiveSkill = Instantiate(m_Passive);
 		}
+
+		// Set all skills to startup stuff, cause scriptable objects don't reset on scene load.
+		foreach(BaseSkill skill in m_LearnedSkills)
+		{
+			skill.Startup();
+		}
 	}
 
 	void Start()
@@ -196,8 +202,6 @@ public class Unit : MonoBehaviour
 					Grid.m_Instance.SetUnit(gameObject);
 					m_ActionOnFinishPath?.Invoke(this);
 					m_ActionOnFinishPath = null;
-
-					AIManager.m_Instance.IncrementAIUnitIterator();
 				}
 			}
 		}
@@ -359,7 +363,7 @@ public class Unit : MonoBehaviour
 	/// Decrease the character's current amount of movement.
 	/// </summary>
 	/// <param name="decrease"> The amount to decrease the unit's movement pool by. </param>
-	public void DecreaseCurrentMovement(int decrease) { m_CurrentMovement -= decrease; }
+	public void DecreaseCurrentMovement(int decrease) { print($"decreasing {name}'s movement by {decrease}"); m_CurrentMovement -= decrease; }
 
 	/// <summary>
 	/// Reset the unit's current movement.
