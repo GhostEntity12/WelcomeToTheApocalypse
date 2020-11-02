@@ -1046,6 +1046,7 @@ Transform:
   - {fileID: 5213352485655537159}
   - {fileID: 4490674637043435819}
   - {fileID: 3809668273037817702}
+  - {fileID: 9028295956595528105}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1092,6 +1093,7 @@ MonoBehaviour:
   m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
     type: 2}
   m_animator: {fileID: 0}
+  m_SummonParticle: {fileID: 1566134099415813573}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 11400000, guid: 2e8510f334b7c55458d5bfd16fe2ddbe, type: 2}
   m_DeathSound: 
@@ -1385,6 +1387,57 @@ Transform:
   m_Father: {fileID: 5588820146984487332}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1001398009759888887
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 6098521361433019460}
+    m_Modifications:
+    - target: {fileID: 1754618820108695602, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: ShapeModule.m_SkinnedMeshRenderer
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6294122339792339323, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_Name
+      value: AppearSmoke
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 18c5590218b47b544bbd0beb4b5609dd, type: 3}
+--- !u!4 &9028295956595528105 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 1001398009759888887}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &1566134099415813573 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1754618820108695602, guid: 18c5590218b47b544bbd0beb4b5609dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 1001398009759888887}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5184470913348856873
 PrefabInstance:
   m_ObjectHideFlags: 0

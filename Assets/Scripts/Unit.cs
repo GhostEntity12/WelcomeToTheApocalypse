@@ -129,6 +129,8 @@ public class Unit : MonoBehaviour
 
 	public Animator m_animator;
 
+	public ParticleSystem m_SummonParticle;
+
 	private int m_TakeExtraDamage = 0;
 
 	private int m_DealExtraDamage = 0;
@@ -263,9 +265,7 @@ public class Unit : MonoBehaviour
 	{
 		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
 
-		// Plays damage animation
-
-		m_animator.SetTrigger("TriggerDamage");
+		
 
 		SetCurrentHealth(m_CurrentHealth - damage);
 		m_TakeExtraDamage = 0;
@@ -344,6 +344,8 @@ public class Unit : MonoBehaviour
 				FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
 		}
 	}
+
+	public void Despawn() => gameObject.SetActive(false);
 
 	/// <summary>
 	/// Disables the unit and will be called by an Animator Event

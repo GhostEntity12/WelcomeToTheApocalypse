@@ -282,12 +282,13 @@ public class AIManager : MonoBehaviour
                     }
 				}
             }
-            Debug.LogError("No node found for " + m_CurrentAIUnit + " to move to!");
             if (!m_CurrentAIUnit)
             {
                 // Assume no more units left.
                 GameManager.m_Instance.EndCurrentTurn();
+                return;
             }
+            Debug.LogError("No node found for " + m_CurrentAIUnit + " to move to!");
                 //HeuristicResult bestChoice = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).First();
                 /*m_CurrentAIUnit = bestChoice.m_Unit;
                 GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
@@ -432,6 +433,10 @@ public class AIManager : MonoBehaviour
             foreach (Transform t in unit.GetComponentsInChildren<Transform>(true))
             {
                 t.gameObject.layer = 9;
+            }
+            if (unit.m_SummonParticle)
+            {
+                unit.m_SummonParticle.Play();
             }
         }
         // In case of units already added being in the list, remove dupes.
