@@ -363,7 +363,7 @@ public class Unit : MonoBehaviour
 	/// Decrease the character's current amount of movement.
 	/// </summary>
 	/// <param name="decrease"> The amount to decrease the unit's movement pool by. </param>
-	public void DecreaseCurrentMovement(int decrease) { m_CurrentMovement -= decrease; }
+	public void DecreaseCurrentMovement(int decrease) { print($"decreasing {name}'s movement by {decrease}"); m_CurrentMovement -= decrease; }
 
 	/// <summary>
 	/// Reset the unit's current movement.

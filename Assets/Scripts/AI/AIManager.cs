@@ -18,7 +18,9 @@ public class HeuristicResult
     public DamageSkill m_DamageSkill;
     public HealSkill m_HealSkill;
 
-    public HeuristicResult(Unit u, AIHeuristics t, float hv, Node n, HealSkill hs, DamageSkill ds)
+    public int m_MoveDistance;
+
+    public HeuristicResult(Unit u, AIHeuristics t, float hv, Node n, int d, HealSkill hs, DamageSkill ds)
     {
         switch (t)
         {
@@ -39,6 +41,7 @@ public class HeuristicResult
         }
         m_Unit = u;
         m_Node = n;
+        m_MoveDistance = d;
         m_HealSkill = hs;
         m_DamageSkill = ds;
     }
@@ -246,7 +249,7 @@ public class AIManager : MonoBehaviour
                                             if (nodesCastable[j] != null)
                                             {
                                                 Node currentHealNode = nodesCastable[j];
-                                                AddHeuristics(AIHeuristics.Heal, newHealH, currentHealNode, unit, hs);
+                                                AddHeuristics(AIHeuristics.Heal, newHealH, currentHealNode, unit, healSkill: hs);
                                                 currentHealNode.SetAITarget(nodeWithUnit.unit);
                                                 m_OptimalSkill = skill;
                                             }
@@ -265,9 +268,10 @@ public class AIManager : MonoBehaviour
             GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
 
             m_OptimalNode = bestChoice.m_Node;
+            m_CurrentAIUnit.DecreaseCurrentMovement(bestChoice.m_MoveDistance);
             FindPathToOptimalNode();
 
-            print($"{bestChoice.m_Unit} is attempting to move to {bestChoice.m_Node}\n" +
+            print($"{bestChoice.m_Unit} is attempting to move to {bestChoice.m_Node.m_NodeHighlight.name} with a cost of {bestChoice.m_MoveDistance}\n" +
                 $"Damage: {bestChoice.m_DamageValue}/{bestChoice.m_DamageSkill}\n" +
                 $"Heal: {bestChoice.m_HealingValue}/{bestChoice.m_HealSkill}");
         }
@@ -292,17 +296,16 @@ public class AIManager : MonoBehaviour
             for (int j = 0; j < pathLength; ++j)
             {
                 Node n = path.Pop();
-                AddHeuristics(AIHeuristics.Move, (float)j / pathLength, n, unit);
+                AddHeuristics(AIHeuristics.Move, (float)j / pathLength, n, unit, pathLength);
             }
         }
     }
 
-    void AddHeuristics(AIHeuristics type, float value, Node n, Unit u, HealSkill healSkill = null, DamageSkill damageSkill = null)
+    void AddHeuristics(AIHeuristics type, float value, Node n, Unit u, int d = 0, HealSkill healSkill = null, DamageSkill damageSkill = null)
     {
         HeuristicResult hr = FindHeuristic(n, u);
         if (hr != null)
         {
-            print($"Updating {u}'s {n.m_NodeHighlight.name} heuristic: {type}, {value}");
             switch (type)
             {
                 case AIHeuristics.Move:
@@ -310,10 +313,6 @@ public class AIManager : MonoBehaviour
                     break;
                 case AIHeuristics.Attack:
                     hr.m_DamageValue += value;
-                    if (hr.m_DamageValue > 100)
-                    {
-                        Debug.LogWarning($"Uh oh, attack is {hr.m_DamageValue}");
-                    }
                     break;
                 case AIHeuristics.Heal:
                     hr.m_HealingValue += value;
@@ -332,11 +331,14 @@ public class AIManager : MonoBehaviour
             {
                 hr.m_DamageSkill = damageSkill;
             }
+            if (d > 0)
+            {
+                hr.m_MoveDistance += d;
+            }
         }
         else
         {
-            print("Adding new heuristic");
-            m_HeuristicResults.Add(new HeuristicResult(u, type, value, n, healSkill, damageSkill));
+            m_HeuristicResults.Add(new HeuristicResult(u, type, value, n, d, healSkill, damageSkill));
         }
     }
 
@@ -358,9 +360,15 @@ public class AIManager : MonoBehaviour
             m_CurrentAIUnit.SetMovementPath(m_Path);
             print(m_CurrentAIUnit.name + ": " + string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(no => no.m_NodeHighlight.name)));
             // Make sure the AI wants to attack or heal once it reaches it's destination.
-            if (m_OptimalNode.GetDamage() > 0 || m_OptimalNode.GetHealing() > 0)
-                m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
+                m_CurrentAIUnit.m_ActionOnFinishPath = OnFinishMoving;
         }
+    }
+
+    public void OnFinishMoving(Unit u)
+    {
+        if (m_OptimalNode.GetDamage() > 0 || m_OptimalNode.GetHealing() > 0)
+            CheckAttackRange(u);
+        m_CurrentAIUnit = null;
     }
 
     // Checks adjacent nodes of the AI unit to see if they are able to attack and hit the player.
