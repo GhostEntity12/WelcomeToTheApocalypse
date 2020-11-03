@@ -117,5 +117,22 @@ public class NodeHighlight : MonoBehaviour
 	}
 
 	[ContextMenu("Print heuristic value")]
-	void phv() => Debug.Log(FindObjectOfType<Grid>().GetNode(transform.position).GetMinMax());
+	void phv()
+	{
+		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
+		{
+			if (GameManager.m_Instance.GetSelectedUnit() == null)
+			{
+				Debug.LogError("You need to select a unit in order to get this tile's heuristics!");
+			}
+			else
+			{
+				Debug.Log(AIManager.m_Instance.FindHeuristic(Grid.m_Instance.GetNode(transform.position), GameManager.m_Instance.GetSelectedUnit()).SumHeuristics());
+			}
+		}
+		else
+		{
+			Debug.LogWarning("Can't get the heuristic value when it's the player turn!");
+		}
+	}
 }
