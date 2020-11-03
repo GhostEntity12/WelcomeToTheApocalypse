@@ -123,7 +123,7 @@ public class Unit : MonoBehaviour
 	/// </summary>
 	public Transform m_HealthbarPosition = null;
 
-	public Action<Unit> m_ActionOnFinishPath;
+	public Action m_ActionOnFinishPath;
 
 	public AIHeuristicCalculator m_AIHeuristicCalculator = null;
 
@@ -202,7 +202,7 @@ public class Unit : MonoBehaviour
 					//m_animator.SetBool("isWalking", m_IsMoving);
 
 					Grid.m_Instance.SetUnit(gameObject);
-					m_ActionOnFinishPath?.Invoke(this);
+					m_ActionOnFinishPath?.Invoke();
 					m_ActionOnFinishPath = null;
 				}
 			}

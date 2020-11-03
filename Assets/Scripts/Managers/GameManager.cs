@@ -86,11 +86,6 @@ public class GameManager : MonoBehaviour
     private List<Node> m_maxSkillRange = new List<Node>();
 
     /// <summary>
-    /// The dialogue manager, not the Dungeon Master.
-    /// </summary>
-    private DialogueManager dm;
-
-    /// <summary>
     /// Is the mouse hovering over a UI element that will block the player's inputs?
     /// </summary>
     public bool m_MouseOverUIBlockingElements = false;
@@ -116,7 +111,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        dm = DialogueManager.instance;
         m_CameraMovement = m_MainCamera.GetComponentInParent<CameraMovement>();
     }
 
