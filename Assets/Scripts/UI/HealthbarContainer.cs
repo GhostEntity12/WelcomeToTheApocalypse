@@ -72,7 +72,7 @@ public class HealthbarContainer : MonoBehaviour
 
     private void Update()
     {
-        if (m_IsMagnetic)
+        if (m_IsMagnetic && m_HealthbarImage.color != m_NoAlpha) 
         {
             transform.position = m_MainCam.WorldToScreenPoint(m_Transform.position);
         }
