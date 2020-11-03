@@ -499,13 +499,14 @@ public class Grid : MonoBehaviour
 	[ContextMenu("Do Heuristic Heatmap")]
 	private void HeuristicHeatmap()
 	{
-		NodeHighlight[] nodeHighlights = m_NodeArray.GetComponentsInChildren<NodeHighlight>();
-		foreach (var item in nodeHighlights)
-		{
-			item.GetComponent<Renderer>().enabled = true;
-			Node n = GetNode(item.transform.position);
-			item.GetComponent<Renderer>().material.color = new Color(n.GetMovement(), n.GetDamage(), n.GetHealing(), 1);
-		}
+		Debug.LogWarning("Disabled due to change in how heuristics are stored");
+		//NodeHighlight[] nodeHighlights = m_NodeArray.GetComponentsInChildren<NodeHighlight>();
+		//foreach (var item in nodeHighlights)
+		//{
+		//	item.GetComponent<Renderer>().enabled = true;
+		//	Node n = GetNode(item.transform.position);
+		//	item.GetComponent<Renderer>().material.color = new Color(n.GetMovement(), n.GetDamage(), n.GetHealing(), 1);
+		//}
 	}
 
 }
