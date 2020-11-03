@@ -129,6 +129,8 @@ public class Unit : MonoBehaviour
 
 	public Animator m_animator;
 
+	public ParticleSystem m_SummonParticle;
+
 	private int m_TakeExtraDamage = 0;
 
 	private int m_DealExtraDamage = 0;
@@ -202,8 +204,6 @@ public class Unit : MonoBehaviour
 					Grid.m_Instance.SetUnit(gameObject);
 					m_ActionOnFinishPath?.Invoke(this);
 					m_ActionOnFinishPath = null;
-
-					AIManager.m_Instance.IncrementAIUnitIterator();
 				}
 			}
 		}
@@ -265,9 +265,7 @@ public class Unit : MonoBehaviour
 	{
 		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
 
-		// Plays damage animation
-
-		m_animator.SetTrigger("TriggerDamage");
+		
 
 		SetCurrentHealth(m_CurrentHealth - damage);
 		m_TakeExtraDamage = 0;
@@ -347,6 +345,8 @@ public class Unit : MonoBehaviour
 		}
 	}
 
+	public void Despawn() => gameObject.SetActive(false);
+
 	/// <summary>
 	/// Disables the unit and will be called by an Animator Event
 	/// </summary>
@@ -365,7 +365,7 @@ public class Unit : MonoBehaviour
 	/// Decrease the character's current amount of movement.
 	/// </summary>
 	/// <param name="decrease"> The amount to decrease the unit's movement pool by. </param>
-	public void DecreaseCurrentMovement(int decrease) { m_CurrentMovement -= decrease; }
+	public void DecreaseCurrentMovement(int decrease) { print($"decreasing {name}'s movement by {decrease}"); m_CurrentMovement -= decrease; }
 
 	/// <summary>
 	/// Reset the unit's current movement.
