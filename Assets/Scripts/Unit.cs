@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum Allegiance
 {
@@ -122,11 +123,13 @@ public class Unit : MonoBehaviour
 	/// </summary>
 	public Transform m_HealthbarPosition = null;
 
-	public Action<Unit> m_ActionOnFinishPath;
+	public Action m_ActionOnFinishPath;
 
 	public AIHeuristicCalculator m_AIHeuristicCalculator = null;
 
 	public Animator m_animator;
+
+	public ParticleSystem m_SummonParticle;
 
 	private int m_TakeExtraDamage = 0;
 
@@ -156,6 +159,12 @@ public class Unit : MonoBehaviour
 		if (m_Passive)
 		{
 			m_PassiveSkill = Instantiate(m_Passive);
+		}
+
+		// Set all skills to startup stuff, cause scriptable objects don't reset on scene load.
+		foreach(BaseSkill skill in m_LearnedSkills)
+		{
+			skill.Startup();
 		}
 	}
 
@@ -193,10 +202,8 @@ public class Unit : MonoBehaviour
 					//m_animator.SetBool("isWalking", m_IsMoving);
 
 					Grid.m_Instance.SetUnit(gameObject);
-					m_ActionOnFinishPath?.Invoke(this);
+					m_ActionOnFinishPath?.Invoke();
 					m_ActionOnFinishPath = null;
-
-					AIManager.m_Instance.IncrementAIUnitIterator();
 				}
 			}
 		}
@@ -258,9 +265,7 @@ public class Unit : MonoBehaviour
 	{
 		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
 
-		// Plays damage animation
-
-		m_animator.SetTrigger("TriggerDamage");
+		
 
 		SetCurrentHealth(m_CurrentHealth - damage);
 		m_TakeExtraDamage = 0;
@@ -340,6 +345,8 @@ public class Unit : MonoBehaviour
 		}
 	}
 
+	public void Despawn() => gameObject.SetActive(false);
+
 	/// <summary>
 	/// Disables the unit and will be called by an Animator Event
 	/// </summary>
@@ -358,7 +365,7 @@ public class Unit : MonoBehaviour
 	/// Decrease the character's current amount of movement.
 	/// </summary>
 	/// <param name="decrease"> The amount to decrease the unit's movement pool by. </param>
-	public void DecreaseCurrentMovement(int decrease) { m_CurrentMovement -= decrease; }
+	public void DecreaseCurrentMovement(int decrease) { print($"<color=#8440a8>[Movement] </color>Decreasing {name}'s movement by {decrease}"); m_CurrentMovement -= decrease; }
 
 	/// <summary>
 	/// Reset the unit's current movement.
@@ -386,7 +393,6 @@ public class Unit : MonoBehaviour
 		m_animator.SetBool("isWalking", m_IsMoving);
 
 		SetTargetNodePosition(m_MovementPath.Pop());
-		print(string.Join(", ", path.Select(n => n.m_NodeHighlight.name)));
 	}
 
 	/// <summary>
@@ -464,6 +470,11 @@ public class Unit : MonoBehaviour
 	{
 		m_Healthbar = healthbar.GetComponent<HealthbarContainer>();
 		m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
+	}
+
+	public HealthbarContainer GetHealthBar()
+	{
+		return m_Healthbar;
 	}
 
 	/// <summary>
@@ -616,7 +627,7 @@ public class Unit : MonoBehaviour
 			}
 		}
 
-		Debug.LogError("Skill " + skill.name + " couldn't be found in " + gameObject.name + ".");
+		Debug.LogError("Skill " + skill.m_SkillName + " couldn't be found in " + gameObject.name + ".");
 	}
 
 

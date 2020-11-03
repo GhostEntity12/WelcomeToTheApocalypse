@@ -1,9 +1,94 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering.UI;
+
+[Serializable]
+public class DamageSkillTarget
+{
+    public DamageSkill m_Skill;
+    public Node m_TargetNode;
+
+    public DamageSkillTarget(DamageSkill damageSkill, Node node)
+    {
+        m_Skill = damageSkill;
+        m_TargetNode = node;
+    }
+}
+[Serializable]
+public class HealSkillTarget
+{
+    public HealSkill m_Skill;
+    public Node m_TargetNode;
+
+    public HealSkillTarget(HealSkill healSkill, Node node)
+    {
+        m_Skill = healSkill;
+        m_TargetNode = node;
+    }
+}
+[Serializable]
+public class StatusSkillTarget
+{
+    public StatusSkill m_Skill;
+    public Node m_TargetNode;
+
+    public StatusSkillTarget(StatusSkill statusSkill, Node node)
+    {
+        m_Skill = statusSkill;
+        m_TargetNode = node;
+    }
+}
+
+[Serializable]
+public class HeuristicResult
+{
+    public Unit m_Unit;
+    public Node m_Node;
+
+    public float m_MovementValue = 0;
+    public float m_DamageValue = 0;
+    public float m_HealValue = 0;
+    public float m_StatusValue = 0;
+
+    public int m_MoveDistance;
+    public DamageSkillTarget m_DamageSkill;
+    public HealSkillTarget m_HealSkill;
+    public StatusSkillTarget m_StatusSkill;
+
+    // Constructors
+    public HeuristicResult(Unit u, Node n, float hv, int d)
+    {
+        m_MovementValue += hv;
+        m_Unit = u;
+        m_Node = n;
+        m_MoveDistance = d;
+    }
+    public HeuristicResult(Unit u, Node n, float hv, DamageSkillTarget ds)
+    {
+        m_DamageValue = hv;
+        m_Unit = u;
+        m_Node = n;
+        m_DamageSkill = ds;
+    }
+    public HeuristicResult(Unit u, Node n, float hv, HealSkillTarget hs)
+    {
+        m_DamageValue = hv;
+        m_Unit = u;
+        m_Node = n;
+        m_HealSkill = hs;
+    }
+    public HeuristicResult(Unit u, Node n, float hv, StatusSkillTarget ss)
+    {
+        m_DamageValue = hv;
+        m_Unit = u;
+        m_Node = n;
+        m_StatusSkill = ss;
+    }
+
+    public float SumHeuristics() => m_MovementValue + m_DamageValue + m_HealValue + m_StatusValue;
+    public float SumSkillHeuristics() => m_DamageValue + m_HealValue + m_StatusValue;
+}
 
 public class AIManager : MonoBehaviour
 {
@@ -16,20 +101,13 @@ public class AIManager : MonoBehaviour
     //The path for the AI to walk on.
     public Stack<Node> m_Path = new Stack<Node>();
 
-    private Node m_OptimalNode = new Node();
-
-    private List<Node> m_ModifyNodes = new List<Node>();
-
     private bool m_AITurn = false;
 
-    private int m_AIIterator = 0;
+    private List<HeuristicResult> m_HeuristicResults = new List<HeuristicResult>();
 
-    private BaseSkill m_OptimalSkill = null;
+    public HeuristicResult m_BestOption;
 
-    /// <summary>
-    /// List of MinMax scores of all the nodes in the scene.
-    /// </summary>
-    private List<Node> m_NodeHeuristicList = new List<Node>();
+    List<Unit> m_UnitCloseList = new List<Unit>();
 
     //On Awake, initialise the instance of this manager.
     private void Awake()
@@ -50,72 +128,518 @@ public class AIManager : MonoBehaviour
     /// </summary>
     public void TakeAITurn()
     {
-        // Check if we're done with the AI's turn.
-        if (m_AIIterator == UnitsManager.m_Instance.m_ActiveEnemyUnits.Count)
+        if (!m_CurrentAIUnit) // If no AI unit is currently taking their turn
         {
-            // If iterator is at the end of active AI units, reset iterator and end AI turn.
-            m_AIIterator = 0;
-            //Tell the game manager it is not our turn anymore.
-            GameManager.m_Instance.EndCurrentTurn();
-            return;
-        }
-
-        // The current AI unit is assigned
-        m_CurrentAIUnit = UnitsManager.m_Instance.m_ActiveEnemyUnits[m_AIIterator];
-        GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
-        // Make sure the current unit isn't moving.
-        if (m_CurrentAIUnit.GetMoving() == false)
-        {
-            //Calculate the heuristics of the unit and get them.
-            CalculateHeursitics(m_CurrentAIUnit);
-
-            //Find the AI's best choice of move.
-            m_OptimalNode = FindOptimalNode(Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position), true));
-
-            // While there is another unit standing on the current optimal node, get the next best node.
-            while (m_OptimalNode.unit != null)
+            m_HeuristicResults.Clear(); // Get rid of the cached heuristics
+            // Calculate all the new heuristics for each unit
+            foreach (Unit unit in UnitsManager.m_Instance.m_ActiveEnemyUnits)
             {
-                m_OptimalNode = m_NodeHeuristicList.First();
-                // Remove it from the list.
-                m_NodeHeuristicList.RemoveAt(0);
+                // Only calculate movement heuristics if the unit can move
+                if (unit.GetCurrentMovement() > 0)
+                {
+                    // Movement Heuristics
+                    DoMovementHeuristics(unit);
+                }
+
+                // Only calculate skill heuristics if the unit has actions
+                if (unit.GetActionPoints() > 0)
+                {
+                    foreach (BaseSkill skill in unit.GetSkills())
+                    {
+                        // Make sure the skill isn't on cooldown.
+                        if (skill.GetCurrentCooldown() > 0) continue;
+
+                        List<Node> nodesWithUnits = Grid.m_Instance.GetNodesWithinRadius(
+                            skill.m_AffectedRange + skill.m_CastableDistance + unit.GetCurrentMovement(),
+                            Grid.m_Instance.GetNode(unit.transform.position),
+                            true
+                        ).Where(n => n.unit != null).ToList();
+
+                        switch (skill)
+                        {
+                            case StatusSkill ss:
+                                DoStatusHeuristic(nodesWithUnits, ss, unit);
+                                break;
+                            case DamageSkill ds:
+                                DoAttackHeuristic(nodesWithUnits, ds, unit);
+                                break;
+                            case HealSkill hs:
+                                DoHealHeuristic(nodesWithUnits, hs, unit);
+                                break;
+                            default:
+                                Debug.LogError("Bad skill!", skill);
+                                break;
+                        }
+                    }
+                }
             }
 
-            Debug.LogWarning($"{m_CurrentAIUnit.name} travelling to optimal node {m_OptimalNode.m_NodeHighlight.name}", m_OptimalNode.m_NodeHighlight);
+            if (m_HeuristicResults.Count == 0)
+            {
+                // No AI moves left, end your turn.
+                GameManager.m_Instance.EndCurrentTurn();
+                return;
+            }
 
-            FindPathToOptimalNode();
+            #region James
+            
+            // Sort all the moves regardless of whether they're reachable
+            List<HeuristicResult> sortedChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
+
+            foreach (HeuristicResult choice in sortedChoices)
+            {
+                Unit aiUnit = choice.m_Unit;
+
+                // Get all the nodes the unit could move to.
+                List<Node> nodesInMovement = Grid.m_Instance.GetNodesWithinRadius(aiUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(aiUnit.transform.position));
+
+                // Check if the current best node is within the movement range of the unit.
+                if (nodesInMovement.Contains(choice.m_Node))
+                {
+                    m_BestOption = choice;
+                    m_CurrentAIUnit = m_BestOption.m_Unit;
+                    Debug.Log($"========={m_CurrentAIUnit} taking turn=========");
+                    Debug.Log($"<color=#3f5c9e>[Heuristics] </color>Found best option: {m_CurrentAIUnit} moving to {m_BestOption.m_Node.m_NodeHighlight.name}");
+                    GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+                    m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
+                    FindPathToOptimalNode();
+                    return;
+                }
+                else
+                {
+                    Debug.Log($"<color=#6e4747> A better move for {aiUnit} was found outside of the movable area</color>");
+                }
+            }
+
+            if (!m_CurrentAIUnit)
+            {
+                // Assume no more units left.
+                GameManager.m_Instance.EndCurrentTurn();
+                return;
+            }
+            
+            #endregion
+
+            #region Grant
+            /*
+            List<HeuristicResult> sortedChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
+
+            for (int i = 0; i < sortedChoices.Count; ++i)
+            {
+                m_BestOption = sortedChoices[i];
+
+                // Make sure we don't do an AI unit's turn twice.
+                if (m_UnitCloseList.Contains(m_BestOption.m_Unit)) continue;
+
+                Unit currentAI = m_BestOption.m_Unit;
+
+                // Get all the nodes the unit could move to.
+                List<Node> nodesInMovement = Grid.m_Instance.GetNodesWithinRadius(currentAI.GetCurrentMovement(), Grid.m_Instance.GetNode(currentAI.transform.position));
+
+                // Check if the current best node is within the movement range of the unit.
+                if (nodesInMovement.Contains(m_BestOption.m_Node))
+                {
+                    m_CurrentAIUnit = m_BestOption.m_Unit;
+                    GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+                    m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
+                    FindPathToOptimalNode();
+                    m_UnitCloseList.Add(currentAI);
+                    return;
+                }
+            }
+            if (!m_CurrentAIUnit)
+            {
+                // Assume no more units left.
+                GameManager.m_Instance.EndCurrentTurn();
+                return;
+            }
+            */
+            #endregion
         }
+    }
+
+    void DoMovementHeuristics(Unit aiUnit)
+    {
+        switch (aiUnit.GetHeuristicCalculator().m_MovementType)
+        {
+            case MovementType.Chase: // Attempts to move towards player controlled units
+                // Find path to each player character
+                foreach (Unit playerUnit in UnitsManager.m_Instance.m_PlayerUnits)
+                {
+                    if (!Grid.m_Instance.FindPath(aiUnit.transform.position, playerUnit.transform.position, out Stack<Node> path, out int pathCost, allowBlocked: true))
+                    {
+                        Debug.LogError("Pathfinding couldn't find a path between AI unit " + aiUnit.name + " and " + playerUnit.name + ".");
+                        continue;
+                    }
+
+                    // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
+                    // Will favour shortest path.
+
+                    int pathLength = path.Count - 1;
+
+                    for (int j = 0; j < pathLength; ++j)
+                    {
+                        Node n = path.Pop();
+
+                        // If it's beyond the move distance, break
+                        if (j >= aiUnit.GetCurrentMovement()) break;
+
+                        AddOrUpdateHeuristic(
+                            (float)j / pathLength,
+                            n,
+                            aiUnit,
+                            j + 1);
+                    }
+                }
+                break;
+            case MovementType.Guard: // Stays still unless there's an enemy in range
+                break;
+            case MovementType.Group:
+                foreach (Unit enemyUnit in UnitsManager.m_Instance.m_ActiveEnemyUnits)
+                {
+                    if (enemyUnit == aiUnit) continue;
+
+                    if (!Grid.m_Instance.FindPath(aiUnit.transform.position, enemyUnit.transform.position, out Stack<Node> path, out int pathCost, allowBlocked: true))
+                    {
+                        Debug.LogError("Pathfinding couldn't find a path between AI unit " + aiUnit.name + " and " + enemyUnit.name + ".");
+                        continue;
+                    }
+
+                    // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
+                    // Will favour shortest path.
+
+                    int pathLength = path.Count - 1;
+
+                    for (int j = 0; j < pathLength; ++j)
+                    {
+                        Node n = path.Pop();
+
+                        // If it's beyond the move distance, break
+                        if (j >= aiUnit.GetCurrentMovement()) break;
+
+                        AddOrUpdateHeuristic(
+                            (float)j / pathLength,
+                            n,
+                            aiUnit,
+                            j + 1);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    void DoStatusHeuristic(List<Node> nodesWithUnits, StatusSkill ss, Unit aiUnit)
+    {
+        foreach (Node nodeWithUnit in nodesWithUnits)
+        {
+            // Targets AI units.
+            if (ss.targets == SkillTargets.Allies)
+            {
+                // If unit is an AI unit.
+                if (nodeWithUnit.unit.m_Allegiance == aiUnit.GetAllegiance())
+                {
+                    Unit currentUnit = nodeWithUnit.unit;
+
+                    // Get nodes in the area that the AI unit could inflict a status on units from.
+                    List<Node> nodesCastable = Grid.m_Instance.GetNodesWithinRadius(ss.m_CastableDistance, nodeWithUnit);
+
+                    // Go through each of the nodes the AI unit could inflict a status from and add the status heuristic to them.
+                    for (int j = 0; j < nodesCastable.Count; j++)
+                    {
+                        Node castNode = nodesCastable[j];
+
+                        // Try to put a status on the healthiest unit, to get the most value.
+                        float newStatusH = currentUnit.GetCurrentHealth() * aiUnit.GetHeuristicCalculator().m_StatusWeighting;
+                        if (newStatusH < FindHeuristic(castNode, aiUnit)?.m_StatusValue)
+                            continue;
+                        else
+                        {
+                            if (castNode != null)
+                            {
+
+                                AddOrUpdateHeuristic(
+                                    newStatusH * Vector3.Distance(nodeWithUnit.worldPosition, castNode.worldPosition),
+                                    castNode,
+                                    aiUnit,
+                                    new StatusSkillTarget(ss, nodeWithUnit)); ;
+                            }
+                        }
+                    }
+                }
+            }
+            // Targets Player units.
+            else if (ss.targets == SkillTargets.Foes)
+            {
+                // If unit is a Player unit.
+                if (nodeWithUnit.unit.m_Allegiance != aiUnit.GetAllegiance())
+                {
+                    Unit currentUnit = nodeWithUnit.unit;
+
+                    // Get nodes in the area that the AI unit could inflict a status on units from.
+                    List<Node> nodesCastable = Grid.m_Instance.GetNodesWithinRadius(ss.m_CastableDistance, nodeWithUnit);
+
+                    // Go through each of the nodes the AI unit could inflict a status from and add the status heuristic to them.
+                    for (int j = 0; j < nodesCastable.Count; j++)
+                    {
+                        Node castNode = nodesCastable[j];
+
+                        // Try to put a status on the healthiest unit, to get the most value.
+                        float newStatusH = currentUnit.GetCurrentHealth() * aiUnit.GetHeuristicCalculator().m_StatusWeighting;
+                        if (newStatusH < FindHeuristic(castNode, aiUnit)?.m_StatusValue)
+                            continue;
+                        else
+                        {
+                            if (nodesCastable[j] != null)
+                            {
+                                AddOrUpdateHeuristic(
+                                    newStatusH * Vector3.Distance(nodeWithUnit.worldPosition, castNode.worldPosition),
+                                    castNode,
+                                    aiUnit,
+                                    new StatusSkillTarget(ss, nodeWithUnit));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void DoAttackHeuristic(List<Node> nodesWithUnits, DamageSkill ds, Unit aiUnit)
+    {
+        foreach (Node nodeWithUnit in nodesWithUnits)
+        {
+            // Only accept units that are the other allegiance to attack
+            if (nodeWithUnit.unit?.GetAllegiance() != aiUnit.GetAllegiance())
+            {
+                // Get nodes in the area that the AI unit could hit the player unit from.
+                List<Node> nodesCastable = Grid.m_Instance.GetNodesWithinRadius(ds.m_CastableDistance, nodeWithUnit);
+
+                // Go through each of the nodes the AI unit could attack from and add the attack heuristic to them.
+                for (int j = 0; j < nodesCastable.Count; j++)
+                {
+                    Node castNode = nodesCastable[j];
+
+                    // Calculate the new damage for the node's damage heuristic.
+                    float hValue = ds.m_DamageAmount * (Vector3.Distance(nodeWithUnit.worldPosition, castNode.worldPosition) * 0.1f) * aiUnit.GetHeuristicCalculator().m_DamageWeighting;
+
+                    if (castNode != null)
+                    {
+                        AddOrUpdateHeuristic(
+                            hValue,
+                            castNode,
+                            aiUnit,
+                            new DamageSkillTarget(ds, nodeWithUnit));
+                    }
+                }
+
+                // Check for kill heuristic.
+                if (nodeWithUnit.unit.GetCurrentHealth() <= ds.m_DamageAmount)
+                {
+                    AddOrUpdateHeuristic(
+                        aiUnit.m_AIHeuristicCalculator.m_KillPoints,
+                        nodeWithUnit,
+                        aiUnit,
+                        new DamageSkillTarget(ds, nodeWithUnit));
+                }
+            }
+        }
+    }
+
+    void DoHealHeuristic(List<Node> nodesWithUnits, HealSkill hs, Unit aiUnit)
+    {
+        foreach (Node nodeWithUnit in nodesWithUnits)
+        {
+            // Only accept units that are the same allegiance to heal
+            if (nodeWithUnit.unit?.GetAllegiance() == aiUnit.GetAllegiance())
+            {
+                Unit currentUnit = nodeWithUnit.unit;
+                // Get nodes in the area that the AI unit could heal friendly units from.
+                List<Node> nodesCastable = Grid.m_Instance.GetNodesWithinRadius(hs.m_CastableDistance, nodeWithUnit);
+
+                // Go through each of the nodes the AI unit could heal from and add the heal heuristic to them.
+                for (int j = 0; j < nodesCastable.Count; j++)
+                {
+                    Node castNode = nodesCastable[j];
+
+                    // Calculate the value for the node's heal heuristic.
+                    float newHealH = hs.m_HealAmount + (currentUnit.GetStartingHealth() - currentUnit.GetCurrentHealth()) * aiUnit.GetHeuristicCalculator().m_HealWeighting;
+
+                    if (castNode != null)
+                    {
+                        AddOrUpdateHeuristic(
+                            newHealH,
+                            castNode,
+                            aiUnit,
+                            new HealSkillTarget(hs, nodeWithUnit));
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Updates the movement values of a heuristic result or adds one if it doesn't exist
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="n"></param>
+    /// <param name="u"></param>
+    /// <param name="distance"></param>
+    private void AddOrUpdateHeuristic(float value, Node node, Unit unit, int distance)
+    {
+        HeuristicResult hr = FindHeuristic(node, unit);
+
+        if (hr != null) // If the heuristic already exists, update it
+        {
+            // If the existing heuristic already a better score, move on
+            if (hr.m_MovementValue >= value) return;
+
+            // Otherwise set values
+            hr.m_MovementValue = value;
+            hr.m_MoveDistance = distance;
+        }
+        else // Otherwise create a new heuristic with the values
+        {
+            m_HeuristicResults.Add(new HeuristicResult(unit, node, value, distance));
+        }
+    }
+
+    /// <summary>
+    /// Updates the damage values of a heuristic result or adds one if it doesn't exist
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="node"></param>
+    /// <param name="unit"></param>
+    /// <param name="damageSkill"></param>
+    private void AddOrUpdateHeuristic(float value, Node node, Unit unit, DamageSkillTarget damageSkill)
+    {
+        HeuristicResult hr = FindHeuristic(node, unit);
+
+        if (hr != null) // If the heuristic already exists, update it
+        {
+            // If the existing heuristic already a better score, move on
+            if (hr.m_DamageValue >= value) return;
+
+            // Otherwise set values
+            hr.m_DamageValue += value;
+            hr.m_DamageSkill = damageSkill;
+        }
+        else // Otherwise create a new heuristic with the values
+        {
+            m_HeuristicResults.Add(new HeuristicResult(unit, node, value, damageSkill));
+        }
+    }
+
+    /// <summary>
+    /// Updates the heal values of a heuristic result or adds one if it doesn't exist
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="node"></param>
+    /// <param name="unit"></param>
+    /// <param name="healSkill"></param>
+    private void AddOrUpdateHeuristic(float value, Node node, Unit unit, HealSkillTarget healSkill)
+    {
+        HeuristicResult hr = FindHeuristic(node, unit);
+
+        if (hr != null) // If the heuristic already exists, update it
+        {
+            // If the existing heuristic already a better score, move on
+            if (hr.m_HealValue >= value) return;
+
+            // Otherwise set values
+            hr.m_HealValue += value;
+            hr.m_HealSkill = healSkill;
+        }
+        else // Otherwise create a new heuristic with the values
+        {
+            m_HeuristicResults.Add(new HeuristicResult(unit, node, value, healSkill));
+        }
+    }
+
+    /// <summary>
+    /// Updates the skill values of a heuristic result or adds one if it doesn't exist
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="node"></param>
+    /// <param name="unit"></param>
+    /// <param name="statusSkill"></param>
+    private void AddOrUpdateHeuristic(float value, Node node, Unit unit, StatusSkillTarget statusSkill)
+    {
+        HeuristicResult hr = FindHeuristic(node, unit);
+
+        if (hr != null) // If the heuristic already exists, update it
+        {
+            // If the existing heuristic already a better score, move on
+            if (hr.m_StatusValue >= value) return;
+
+            // Otherwise set values
+            hr.m_StatusValue += value;
+            hr.m_StatusSkill = statusSkill;
+        }
+        else  // Otherwise create a new heuristic with the values
+        {
+            m_HeuristicResults.Add(new HeuristicResult(unit, node, value, statusSkill));
+        }
+    }
+
+    public HeuristicResult FindHeuristic(Node n, Unit u)
+    {
+        if (m_HeuristicResults.Exists(e => e.m_Node == n && e.m_Unit == u))
+        {
+            return m_HeuristicResults.Find(e => e.m_Node == n && e.m_Unit == u);
+        }
+        else return null;
     }
 
     //Finds the path from the two units and sets the AI movement path.
     // Could probably be rewritten
     public void FindPathToOptimalNode()
     {
-        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, m_OptimalNode.worldPosition, out m_Path, out int pathCost))
+        if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, m_BestOption.m_Node.worldPosition, out m_Path, out int pathCost))
         {
             m_CurrentAIUnit.SetMovementPath(m_Path);
-            print(m_CurrentAIUnit.name + ": " + string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(no => no.m_NodeHighlight.name)));
-            // Make sure the AI wants to attack or heal once it reaches it's destination.
-            if (m_OptimalNode.GetDamage() > 0 || m_OptimalNode.GetHealing() > 0)
-                m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
+            Debug.Log($"<color=#8440a8>[Movement] </color>{m_CurrentAIUnit.name} moving along {string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(n => n.m_NodeHighlight.name))}");
+            // Have the unit check what to do when it reaches its destination.
+            m_CurrentAIUnit.m_ActionOnFinishPath = OnFinishMoving;
         }
     }
 
-    // Checks adjacent nodes of the AI unit to see if they are able to attack and hit the player.
-    // This is not expandable for other units. consider loking at all the nodes in range like in GameManager.cs - James L
-    public void CheckAttackRange(Unit u)
+    public void OnFinishMoving()
     {
-        Attack(m_OptimalNode);
+        CheckSkills();
+        // TODO move this so it resets when all the unit has *finished* their turn, including damage calcs
+        m_CurrentAIUnit = null;
     }
 
-    /// <summary>
-    /// Triggers the unit's basic attack
-    /// </summary>
-    /// <param name="sourceNode"></param>
-    public void Attack(Node sourceNode)
+    void CheckSkills()
     {
-        Debug.Log(m_OptimalSkill.GetCurrentCooldown());
-        if (m_OptimalSkill.GetCurrentCooldown() <= 0)
-            m_CurrentAIUnit.ActivateSkill(m_OptimalSkill, Grid.m_Instance.GetNode(m_OptimalNode.GetAITarget().transform.position));
+        // If the best option contains a skill
+        if (m_BestOption.SumSkillHeuristics() > 0)
+        {
+            if (m_BestOption.m_HealValue >= m_BestOption.m_DamageValue && m_BestOption.m_HealValue >= m_BestOption.m_StatusValue)
+            {
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_HealSkill.m_Skill.m_SkillName} at {m_BestOption.m_HealSkill.m_TargetNode.unit} ({m_BestOption.m_HealSkill.m_TargetNode.m_NodeHighlight.name})");
+                m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_HealSkill.m_Skill.m_Cost);
+                m_CurrentAIUnit.ActivateSkill(m_BestOption.m_HealSkill.m_Skill, m_BestOption.m_HealSkill.m_TargetNode);
+            }
+            else if (m_BestOption.m_StatusValue >= m_BestOption.m_DamageValue)
+            {
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_StatusSkill.m_Skill.m_SkillName} at {m_BestOption.m_StatusSkill.m_TargetNode.unit} ({m_BestOption.m_StatusSkill.m_TargetNode.m_NodeHighlight.name})");
+                m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_StatusSkill.m_Skill.m_Cost);
+                m_CurrentAIUnit.ActivateSkill(m_BestOption.m_StatusSkill.m_Skill, m_BestOption.m_StatusSkill.m_TargetNode);
+            }
+            else
+            {
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_DamageSkill.m_Skill.m_SkillName} at {m_BestOption.m_DamageSkill.m_TargetNode.unit} ({m_BestOption.m_DamageSkill.m_TargetNode.m_NodeHighlight.name})");
+                m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_DamageSkill.m_Skill.m_Cost);
+                m_CurrentAIUnit.ActivateSkill(m_BestOption.m_DamageSkill.m_Skill, m_BestOption.m_DamageSkill.m_TargetNode);
+            }
+        }
+        else
+        {
+            Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit} can't cast any skills from {m_BestOption.m_Node}</color>");
+        }
     }
 
     /// <summary>
@@ -124,18 +648,6 @@ public class AIManager : MonoBehaviour
     /// <param name="newUnits"></param>
     public void EnableUnits(Unit[] newUnits) => EnableUnits(newUnits.ToList());
 
-    public void IncrementAIUnitIterator()
-    {
-        m_AIIterator++;
-
-        // Reset things from the AI unit's turn.
-        foreach(Node node in m_ModifyNodes)
-		{
-            node.ResetHeuristic();
-		}
-        m_OptimalSkill = null;
-    }
-
     /// <summary>
     /// Adds more units to the active units
     /// </summary>
@@ -143,7 +655,21 @@ public class AIManager : MonoBehaviour
     public void EnableUnits(List<Unit> newUnits)
     {
         UnitsManager.m_Instance.m_ActiveEnemyUnits.AddRange(newUnits);
-        // In case of units already added being in the list.
+
+        // Set them onto the visible layer
+        foreach (Unit unit in newUnits)
+        {
+            foreach (Transform t in unit.GetComponentsInChildren<Transform>(true))
+            {
+                t.gameObject.layer = 9;
+            }
+            if (unit.m_SummonParticle)
+            {
+                unit.m_SummonParticle.Play();
+            }
+        }
+
+        // In case of units already added being in the list, remove dupes.
         UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Distinct().ToList();
         GameManager.m_Instance.m_DidHealthBonus = false;
     }
@@ -159,34 +685,6 @@ public class AIManager : MonoBehaviour
         GameManager.m_Instance.PodClearCheck();
     }
 
-    /// <summary> 
-    /// Returns the node with the highest MinMax score of available nodes the AI Unit can move to.
-    /// </summary>
-    /// <param name="nodes">The nodes from which to select the best node</param>
-    /// <returns>The most optimal node for the AI unit to move to.</returns>
-    public Node FindOptimalNode(List<Node> nodes)
-    {
-        try
-        {
-            for (int i = 0; i < nodes.Count; ++i)
-            {
-                // Get the nodes as a list rather than the most optimal one.
-                // Allows us to keep track of the MinMax scores of other nodes.
-                m_NodeHeuristicList = nodes.OrderByDescending(n => n.GetMinMax()).ToList();
-                m_OptimalNode = m_NodeHeuristicList.First();
-                m_NodeHeuristicList.RemoveAt(0);
-            }
-        }
-        catch (InvalidOperationException)
-        {
-            Debug.LogError("There are no nodes in the list!");
-            m_OptimalNode = null;
-        }
-
-        //Return out with the optimal node.
-        return m_OptimalNode;
-    }
-
     public void SetAITurn(bool aiTurn)
     {
         m_AITurn = aiTurn;
@@ -194,6 +692,9 @@ public class AIManager : MonoBehaviour
         // If the AI's turn is starting, check what AI units are alive.
         if (m_AITurn == true)
         {
+            // Clear the unit closed list, to be able to go through all the units now.
+            m_UnitCloseList.Clear();
+
             // Prune the active units
             DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
@@ -201,249 +702,7 @@ public class AIManager : MonoBehaviour
         }
     }
 
-    void CalculateHeursitics(Unit unit)
-    {
-        AIHeuristicCalculator heuristics = unit.GetHeuristicCalculator();
 
-        if (!heuristics)
-        {
-            Debug.LogError($"Unit {unit.name} was marked as an AI unit but lacks a Heuristics Calculator!");
-            return;
-        }
-
-        m_ModifyNodes.Distinct().ToList().ForEach(n => n.ResetHeuristic());
-        m_ModifyNodes.Clear();
-
-        for (int i = 0; i < heuristics.m_AIActionHeuristics.Count; ++i)
-        {
-            switch (heuristics.m_AIActionHeuristics[i])
-            {
-                // Calculate heuristic for moving to each node.
-                case AIHeuristics.Move:
-                    foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
-                    {
-                        Stack<Node> path = new Stack<Node>();
-                        if (!Grid.m_Instance.FindPath(unit.transform.position, u.transform.position, out path, out int pathCost, allowBlocked: true))
-                        {
-                            Debug.LogError("Pathfinding couldn't find a path between AI unit " + unit.name + " and " + u.name + ".");
-                            continue;
-                        }
-
-                        // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
-                        // Will favour shortest path.
-
-                        int pathLength = path.Count - 1;
-
-                        for (int j = 0; j < pathLength; ++j)
-                        {
-                            Node n = path.Pop();
-                            n.SetMovement((float)j / pathLength);
-                            m_ModifyNodes.Add(n);
-                        }
-                    }
-                    break;
-
-                // Calculate heuristic for attacking.
-                case AIHeuristics.Attack:
-                    // Find the damage skills of the current unit for checking.
-                    List<DamageSkill> damageSkills = unit.GetSkills().OfType<DamageSkill>().ToList();
-
-                    foreach (DamageSkill skill in damageSkills)
-                    {
-                        // Get the nodes within the furthest reaches of what the AI unit could reach with the casting distance, range, and unit's movement.
-                        List<Node> nodesInRange =
-                            Grid.m_Instance.GetNodesWithinRadius(
-                                skill.m_AffectedRange + skill.m_CastableDistance + unit.GetCurrentMovement(),
-                                Grid.m_Instance.GetNode(unit.transform.position),
-                                true
-                                );
-
-                        List<Node> nodesWithUnits = nodesInRange.Where(n => n.unit != null).ToList();
-
-                        // Find a node that has a player unit on it.
-                        foreach (Node node in nodesWithUnits)
-                        {
-                            // If the node has a player unit on it, calculate score for damaging the player unit.
-                            if (node.unit?.GetAllegiance() == Allegiance.Player)
-                            {
-                                // Get nodes in the area that the AI unit could hit the player unit from.
-                                List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
-
-                                // Go through each of the nodes the AI unit could attack from and add the attack heuristic to them.
-                                for (int j = 0; j < nodes.Count; j++)
-                                {
-                                    // Calculate the new damage for the node's damage heuristic.
-                                    float newDamageH = Mathf.Max(node.GetDamage(), skill.m_DamageAmount);
-                                    if (newDamageH < nodes[j].GetDamage())
-                                    {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        if (nodes[j] != null)
-                                        {
-                                            Node currentDamageNode = nodes[j];
-                                            currentDamageNode.SetDamage(newDamageH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition) * 0.1f));
-                                            currentDamageNode.SetAITarget(node.unit);
-                                            m_OptimalSkill = skill;
-                                            m_ModifyNodes.Add(nodes[j]);
-                                        }
-                                    }
-                                }
-
-                                // Check for kill heuristic.
-                                if (node.unit.GetCurrentHealth() <= skill.m_DamageAmount)
-                                {
-                                    node.SetKill(heuristics.m_KillPoints);
-                                    m_ModifyNodes.Add(node);
-                                }
-                            }
-                        }
-                    }
-                    break;
-
-                // Calculate heuristic for healing.                
-                case AIHeuristics.Heal:
-
-                    List<HealSkill> healSkills = unit.GetSkills().OfType<HealSkill>().ToList();
-
-                    foreach (HealSkill skill in healSkills)
-                    {
-                        List<Node> nodesInRange =
-                            Grid.m_Instance.GetNodesWithinRadius(
-                                skill.m_AffectedRange + skill.m_CastableDistance + unit.GetCurrentMovement(),
-                                Grid.m_Instance.GetNode(unit.transform.position),
-                                true
-                                );
-
-                        List<Node> nodesWithUnits = nodesInRange.Where(n => n.unit != null).ToList();
-
-                        foreach (Node node in nodesWithUnits)
-                        {
-                            if (node.unit?.GetAllegiance() == Allegiance.Enemy)
-                            {
-                                Unit currentUnit = node.unit;
-                                // Get nodes in the area that the AI unit could heal friendly units from.
-                                List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
-
-                                // Go through each of the nodes the AI unit could heal from and add the heal heuristic to them.
-                                for (int j = 0; j < nodes.Count; j++)
-                                {
-                                    // Calculate the new heal for the node's heal heuristic.
-                                    float newHealH = skill.m_HealAmount + (currentUnit.GetStartingHealth() - currentUnit.GetCurrentHealth());
-                                    if (newHealH < nodes[j].GetHealing())
-                                    {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        if (nodes[j] != null)
-                                        {
-                                            Node currentHealNode = nodes[j];
-                                            currentHealNode.SetHealing(newHealH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition) * 0.1f));
-                                            currentHealNode.SetAITarget(node.unit);
-                                            m_OptimalSkill = skill;
-                                            m_ModifyNodes.Add(nodes[j]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-
-                case AIHeuristics.StatusEffect:
-                    List<StatusSkill> statusSkills = m_CurrentAIUnit.GetSkills().OfType<StatusSkill>().ToList();
-
-                    foreach(StatusSkill skill in statusSkills)
-					{
-                        // Make sure the skill isn't on cooldown.
-                        if (skill.GetCurrentCooldown() <= 0)
-						{
-                            List<Node> nodesInRange =
-                            Grid.m_Instance.GetNodesWithinRadius(
-                                skill.m_AffectedRange + skill.m_CastableDistance + unit.GetCurrentMovement(),
-                                Grid.m_Instance.GetNode(unit.transform.position),
-                                true
-                                );
-
-                            List<Node> nodesWithUnits = nodesInRange.Where(n => n.unit != null).ToList();
-
-                            foreach (Node node in nodesWithUnits)
-                            {
-                                // Targets AI units.
-                                if (skill.targets == SkillTargets.Foes)
-                                {
-                                    // If unit is an AI unit.
-                                    if (node.unit.m_Allegiance == Allegiance.Enemy)
-                                    {
-                                        Unit currentUnit = node.unit;
-
-                                        // Get nodes in the area that the AI unit could inflict a status on units from.
-                                        List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
-
-                                        // Go through each of the nodes the AI unit could inflict a status from and add the status heuristic to them.
-                                        for (int j = 0; j < nodes.Count; j++)
-                                        {
-                                            // Try to put a status on the healthiest unit, to get the most value.
-                                            float newStatusH = currentUnit.GetCurrentHealth();
-                                            if (newStatusH < nodes[j].GetStatus())
-                                                continue;
-                                            else
-                                            {
-                                                if (nodes[j] != null)
-                                                {
-                                                    Node currentStatusNode = nodes[j];
-                                                    currentStatusNode.SetHealing(newStatusH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition) * 0.1f));
-                                                    currentStatusNode.SetAITarget(node.unit);
-                                                    m_OptimalSkill = skill;
-                                                    m_ModifyNodes.Add(nodes[j]);
-                                                }
-                                            }
-                                        }
-                                    }
-                                    // Targets Player units.
-                                    else if (skill.targets == SkillTargets.Allies)
-                                    {
-                                        // If unit is a Player unit.
-                                        if (node.unit.m_Allegiance == Allegiance.Player)
-                                        {
-                                            Unit currentUnit = node.unit;
-
-                                            // Get nodes in the area that the AI unit could inflict a status on units from.
-                                            List<Node> nodes = Grid.m_Instance.GetNodesWithinRadius(skill.m_CastableDistance, node);
-
-                                            // Go through each of the nodes the AI unit could inflict a status from and add the status heuristic to them.
-                                            for (int j = 0; j < nodes.Count; j++)
-                                            {
-                                                // Try to put a status on the healthiest unit, to get the most value.
-                                                float newStatusH = currentUnit.GetCurrentHealth();
-                                                if (newStatusH < nodes[j].GetStatus())
-                                                    continue;
-                                                else
-                                                {
-                                                    if (nodes[j] != null)
-                                                    {
-                                                        Node currentStatusNode = nodes[j];
-                                                        currentStatusNode.SetHealing(newStatusH * (Vector3.Distance(node.worldPosition, nodes[j].worldPosition) * 0.1f));
-                                                        currentStatusNode.SetAITarget(node.unit);
-                                                        m_OptimalSkill = skill;
-                                                        m_ModifyNodes.Add(nodes[j]);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-					}
-                    break;
-
-                default:
-                    Debug.LogError("Heuristic calculator doesn't have valid heuristic to calculate for.");
-                    break;
-            }
-        }
-    }
+    [ContextMenu("Print Best Node")]
+    void PrintNode() => Debug.Log(m_BestOption.m_Node.m_NodeHighlight.name);
 }

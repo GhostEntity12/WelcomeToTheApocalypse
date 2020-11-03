@@ -66,9 +66,9 @@ public class SkillButton : MonoBehaviour
 
 		m_NameText.text = m_Skill.m_SkillName;
 
-		m_CooldownText.text = $"<b>Cooldown</b>\n{(m_Skill.m_CooldownLength == 0 ? "None" : $"{m_Skill.m_CooldownLength} {(m_Skill.m_CooldownLength == 1 ? "turn" : "turns")}")}";
+		m_CooldownText.text = $"<smallcaps><b>Cooldown</b></smallcaps><size=14>\n{(m_Skill.m_CooldownLength == 0 ? "None" : $"{m_Skill.m_CooldownLength} {(m_Skill.m_CooldownLength == 1 ? "turn" : "turns")}")}";
 
-		m_RangeText.text = $"<b>Range</b>\n{m_Skill.m_CastableDistance} {(m_Skill.m_CastableDistance == 1 ? "tile" : "tiles")}";
+		m_RangeText.text = $"<smallcaps><b>Range</b></smallcaps><size=14>\n{m_Skill.m_CastableDistance} {(m_Skill.m_CastableDistance == 1 ? "tile" : "tiles")}";
 
 		for (int i = 0; i < m_ApSlots.childCount; i++)
 		{
@@ -88,7 +88,7 @@ public class SkillButton : MonoBehaviour
 		if (m_Skill)
 		{
 			m_Cooldown.fillAmount =
-				m_Skill.m_CurrentCooldown > 0 ? // Partially filled if on cooldown
+				m_Skill.GetCurrentCooldown() > 0 ? // Partially filled if on cooldown
 					(float)m_Skill.m_CurrentCooldown / m_Skill.m_CooldownLength :
 				m_Skill.m_Cost > GameManager.m_Instance.GetSelectedUnit().GetActionPoints() ? // Filled if AP cost is too high
 					1 :
