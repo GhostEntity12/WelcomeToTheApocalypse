@@ -182,47 +182,42 @@ public class AIManager : MonoBehaviour
             }
 
             #region James
-            /*
-            // Sort all the moves regardless of whether it's reachable
+            
+            // Sort all the moves regardless of whether they're reachable
             List<HeuristicResult> sortedChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
 
-            // Get all the nodes the unit could move to.
-            List<Node> nodesInMovement = Grid.m_Instance.GetNodesWithinRadius(m_CurrentAIUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position));
-
-            // Filter results to only reachable
-            m_HeuristicResults = m_HeuristicResults.Where(hr => nodesInMovement.Contains(hr.m_Node)).ToList();
-
-            if (m_HeuristicResults.Count == 0)
+            foreach (HeuristicResult choice in sortedChoices)
             {
-                // No AI moves left, end your turn.
-                GameManager.m_Instance.EndCurrentTurn();
-                return;
+                Unit aiUnit = choice.m_Unit;
+
+                // Get all the nodes the unit could move to.
+                List<Node> nodesInMovement = Grid.m_Instance.GetNodesWithinRadius(aiUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(aiUnit.transform.position));
+
+                // Check if the current best node is within the movement range of the unit.
+                if (nodesInMovement.Contains(choice.m_Node))
+                {
+                    m_BestOption = choice;
+                    m_CurrentAIUnit = m_BestOption.m_Unit;
+                    Debug.Log($"========={m_BestOption.m_Unit} taking turn=========");
+                    Debug.Log($"<color=#3f5c9e>[Heuristics]</color>Found best option: {m_CurrentAIUnit} moving to {m_BestOption.m_Node.m_NodeHighlight.name}");
+                    GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+                    m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
+                    FindPathToOptimalNode();
+                    return;
+                }
             }
 
-            m_BestOption = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).First();
-            m_CurrentAIUnit = m_BestOption.m_Unit;
-            GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
-
-            // Check if the current best node is within the movement range of the unit.
-            if (nodesInMovement.Contains(m_BestOption.m_Node))
-            {
-                m_CurrentAIUnit = m_BestOption.m_Unit;
-                GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
-                m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
-                FindPathToOptimalNode();
-                return;
-            }
             if (!m_CurrentAIUnit)
             {
                 // Assume no more units left.
                 GameManager.m_Instance.EndCurrentTurn();
                 return;
             }
-            */
+            
             #endregion
 
             #region Grant
-            
+            /*
             List<HeuristicResult> sortedChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
 
             for (int i = 0; i < sortedChoices.Count; ++i)
@@ -254,7 +249,7 @@ public class AIManager : MonoBehaviour
                 GameManager.m_Instance.EndCurrentTurn();
                 return;
             }
-            
+            */
             #endregion
         }
     }
@@ -275,14 +270,19 @@ public class AIManager : MonoBehaviour
 
             int pathLength = path.Count - 1;
 
+
             for (int j = 0; j < pathLength; ++j)
             {
                 Node n = path.Pop();
+
+                // If it's beyond the move distance, break
+                if (j >= aiUnit.GetCurrentMovement()) break; 
+
                 AddOrUpdateHeuristic(
                     (float)j / pathLength,
                     n,
                     aiUnit,
-                    pathLength);
+                    j + 1);
             }
         }
     }
@@ -453,8 +453,8 @@ public class AIManager : MonoBehaviour
             if (hr.m_MovementValue >= value) return;
 
             // Otherwise set values
-            hr.m_MovementValue += value;
-            hr.m_MoveDistance += distance;
+            hr.m_MovementValue = value;
+            hr.m_MoveDistance = distance;
         }
         else // Otherwise create a new heuristic with the values
         {
@@ -553,11 +553,10 @@ public class AIManager : MonoBehaviour
     // Could probably be rewritten
     public void FindPathToOptimalNode()
     {
-        print("finding path");
         if (Grid.m_Instance.FindPath(m_CurrentAIUnit.transform.position, m_BestOption.m_Node.worldPosition, out m_Path, out int pathCost))
         {
             m_CurrentAIUnit.SetMovementPath(m_Path);
-            Debug.Log(m_CurrentAIUnit.name + ": " + string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(n => n.m_NodeHighlight.name)));
+            Debug.Log($"<color=#8440a8>[Movement] </color>{m_CurrentAIUnit.name} moving along {string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(n => n.m_NodeHighlight.name))}");
             // Have the unit check what to do when it reaches its destination.
             m_CurrentAIUnit.m_ActionOnFinishPath = OnFinishMoving;
         }
@@ -577,16 +576,26 @@ public class AIManager : MonoBehaviour
         {
             if (m_BestOption.m_HealValue >= m_BestOption.m_DamageValue && m_BestOption.m_HealValue >= m_BestOption.m_StatusValue)
             {
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_HealSkill}");
+                m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_HealSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_HealSkill.m_Skill, m_BestOption.m_HealSkill.m_TargetNode);
             }
             else if (m_BestOption.m_StatusValue >= m_BestOption.m_DamageValue)
             {
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_StatusSkill}");
+                m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_StatusSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_StatusSkill.m_Skill, m_BestOption.m_StatusSkill.m_TargetNode);
             }
             else
             {
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_DamageSkill.m_Skill.name}");
+                m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_DamageSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_DamageSkill.m_Skill, m_BestOption.m_DamageSkill.m_TargetNode);
             }
+        }
+        else
+        {
+            Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit} can't cast any skills from {m_BestOption.m_Node}</color>");
         }
     }
 

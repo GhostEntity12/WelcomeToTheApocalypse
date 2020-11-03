@@ -153,7 +153,7 @@ public class GameManager : MonoBehaviour
     {
         UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
 
-        // Player ends turn.
+        // Player ends turn, start enemy turn
         if (m_TeamCurrentTurn == Allegiance.Player)
         {
             m_TeamCurrentTurn = Allegiance.Enemy;
@@ -196,6 +196,8 @@ public class GameManager : MonoBehaviour
             // Check the passives of all the enemy units for any that trigger at the start of their turn.
             foreach (Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
             {
+                u.ResetActionPoints();
+
                 PassiveSkill ps = u.GetPassiveSkill();
                 if (ps != null)
                 {
@@ -215,10 +217,11 @@ public class GameManager : MonoBehaviour
             // Tell the AI Manager to take its turn
             AIManager.m_Instance.SetAITurn(true);
         }
-        // Enemy ends turn.
+        // Enemy ends turn, start player turn
         else
         {
             m_TeamCurrentTurn = Allegiance.Player;
+
             AIManager.m_Instance.SetAITurn(false);
 
             UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
@@ -313,12 +316,30 @@ public class GameManager : MonoBehaviour
             //Check if the player is casting a skill on a unit.
             else if (m_TargetingState == TargetingState.Skill)
             {
+                Node unitNode = Grid.m_Instance.GetNode(rayHitUnit.transform.position);
+                // Display the target area for the skill and it's area of effect.
+                if (unitNode != m_CachedNode)
+                {
+                    // Update the cache
+                    m_CachedNode = unitNode;
+                    // If it's targetable
+                    if (m_CachedNode.m_NodeHighlight.m_IsTargetable)
+                    {
+                        // Display pink area
+                        List<Node> targetableRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode, true);
+                        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = targetableRange.Contains(n));
+                    }
+                    // Otherwise clear the pink area
+                    else
+                    {
+                        m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = false);
+                    }
+                }
                 // Check player input.
                 if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
                     // Cast the skill the player has selected.
                     // If hit unit is in affectable range,
-                    Node unitNode = Grid.m_Instance.GetNode(rayHitUnit.transform.position);
                     if (unitNode.m_NodeHighlight.m_IsTargetable)
                     {
                         if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
@@ -348,10 +369,10 @@ public class GameManager : MonoBehaviour
             if (m_TargetingState == TargetingState.Skill)
             {
                 // Display the target area for the skill and it's area of effect.
-                if (Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position) != m_CachedNode)
+                if (hitNode != m_CachedNode)
                 {
                     // Update the cache
-                    m_CachedNode = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
+                    m_CachedNode = hitNode;
                     // If it's targetable
                     if (m_CachedNode.m_NodeHighlight.m_IsTargetable)
                     {
@@ -440,7 +461,7 @@ public class GameManager : MonoBehaviour
             CancelSkill();
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && GetCurrentTurn() == Allegiance.Player)
         {
             TryEndTurn();
         }
