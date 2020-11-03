@@ -1,16 +1,18 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [CreateAssetMenu(menuName = "UIData")]
 public class UIData : ScriptableObject
 {
 	public Sprite m_SkillsPortrait;
 	public UIPanels m_Panels;
+	public UIDialogue m_Dialogue;
+	public UIBust m_Bust;
 	public UISkillDiamonds m_SkillDiamonds;
 	public UIIconColors m_IconColors;
-	public Sprite m_Healthbar;
 }
 
-[System.Serializable]
+[Serializable]
 public class UIPanels
 {
 	public Sprite m_LeftPanel;
@@ -18,7 +20,23 @@ public class UIPanels
 	public Sprite m_RightPanelSmall;
 }
 
-[System.Serializable]
+[Serializable]
+public class UIDialogue
+{
+	public Sprite m_BodyBox;
+	public Sprite m_NameBox;
+}
+
+[Serializable]
+public class UIBust
+{
+	public Sprite m_BustForeground;
+	public Sprite m_BustBackground;
+	public Sprite m_Healthbar;
+	public Sprite m_PassiveBackground;
+}
+
+[Serializable]
 public class UISkillDiamonds
 {
 	public Sprite m_SkillDiamondSides;
@@ -26,7 +44,7 @@ public class UISkillDiamonds
 	public Color m_SkillCloudColor = Color.white;
 }
 
-[System.Serializable]
+[Serializable]
 public class UIIconColors
 {
 	public Color m_IconLight = Color.white;

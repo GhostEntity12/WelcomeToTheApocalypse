@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
+using UnityEngine.Events;
 using UnityEngine.Rendering.UI;
 
 public class HeuristicResult
@@ -18,7 +19,9 @@ public class HeuristicResult
     public DamageSkill m_DamageSkill;
     public HealSkill m_HealSkill;
 
-    public HeuristicResult(Unit u, AIHeuristics t, float hv, Node n, HealSkill hs, DamageSkill ds)
+    public int m_MoveDistance;
+
+    public HeuristicResult(Unit u, AIHeuristics t, float hv, Node n, int d, HealSkill hs, DamageSkill ds)
     {
         switch (t)
         {
@@ -39,6 +42,7 @@ public class HeuristicResult
         }
         m_Unit = u;
         m_Node = n;
+        m_MoveDistance = d;
         m_HealSkill = hs;
         m_DamageSkill = ds;
     }
@@ -59,13 +63,13 @@ public class AIManager : MonoBehaviour
 
     private Node m_OptimalNode = new Node();
 
-    private List<Node> m_ModifyNodes = new List<Node>();
-
     private bool m_AITurn = false;
 
     private BaseSkill m_OptimalSkill = null;
 
     List<HeuristicResult> m_HeuristicResults = new List<HeuristicResult>();
+
+    List<Unit> m_UnitCloseList = new List<Unit>();
 
     /// <summary>
     /// List of MinMax scores of all the nodes in the scene.
@@ -246,7 +250,7 @@ public class AIManager : MonoBehaviour
                                             if (nodesCastable[j] != null)
                                             {
                                                 Node currentHealNode = nodesCastable[j];
-                                                AddHeuristics(AIHeuristics.Heal, newHealH, currentHealNode, unit, hs);
+                                                AddHeuristics(AIHeuristics.Heal, newHealH, currentHealNode, unit, healSkill: hs);
                                                 currentHealNode.SetAITarget(nodeWithUnit.unit);
                                                 m_OptimalSkill = skill;
                                             }
@@ -260,16 +264,71 @@ public class AIManager : MonoBehaviour
                     }
                 }
             }
-            HeuristicResult bestChoice = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).First();
-            m_CurrentAIUnit = bestChoice.m_Unit;
-            GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+            List<HeuristicResult> bestChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
 
-            m_OptimalNode = bestChoice.m_Node;
-            FindPathToOptimalNode();
+            for (int i = 0; i < bestChoices.Count; ++i)
+            {
+                bool unitInCloseList = false;
+                // Make sure we don't do an AI unit's turn twice.
+                foreach(Unit u in m_UnitCloseList)
+				{
+                    if (u == bestChoices[i].m_Unit)
+					{
+                        unitInCloseList = true;
+                        break;
+					}
+				}
+                if (unitInCloseList == true)
+                    continue;
 
-            print($"{bestChoice.m_Unit} is attempting to move to {bestChoice.m_Node}\n" +
+                Unit currentAI = bestChoices[i].m_Unit;
+                // Get all the nodes the unit could move to.
+                List<Node> nodesInMovement = Grid.m_Instance.GetNodesWithinRadius(currentAI.GetCurrentMovement(), Grid.m_Instance.GetNode(currentAI.transform.position));
+                // Check if the current best node is within the movement range of the unit.
+                foreach(Node n in nodesInMovement)
+				{
+                    if (n == bestChoices[i].m_Node)
+					{
+                        HeuristicResult bestChoice = bestChoices[i];
+                        m_CurrentAIUnit = bestChoice.m_Unit;
+                        GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+
+                        m_OptimalNode = bestChoice.m_Node;
+                        if (bestChoice.m_DamageValue > bestChoice.m_HealingValue)
+                        {
+                            m_OptimalNode.SetDamage(bestChoice.m_DamageValue);
+                            m_OptimalSkill = bestChoice.m_DamageSkill;
+                        }
+                        else
+                        {
+                            m_OptimalNode.SetHealing(bestChoice.m_HealingValue);
+                            m_OptimalSkill = bestChoice.m_HealSkill;
+                        }
+                        m_CurrentAIUnit.DecreaseCurrentMovement(bestChoice.m_MoveDistance);
+                        FindPathToOptimalNode();
+                        m_UnitCloseList.Add(currentAI);
+                        return;
+                    }
+				}
+            }
+            if (!m_CurrentAIUnit)
+            {
+                // Assume no more units left.
+                GameManager.m_Instance.EndCurrentTurn();
+                return;
+            }
+            Debug.LogError("No node found for " + m_CurrentAIUnit + " to move to!");
+                //HeuristicResult bestChoice = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).First();
+                /*m_CurrentAIUnit = bestChoice.m_Unit;
+                GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+
+                m_OptimalNode = bestChoice.m_Node;
+                m_CurrentAIUnit.DecreaseCurrentMovement(bestChoice.m_MoveDistance);*/
+            //FindPathToOptimalNode();
+
+            /*print($"{bestChoice.m_Unit} is attempting to move to {bestChoice.m_Node.m_NodeHighlight.name} with a cost of {bestChoice.m_MoveDistance}\n" +
                 $"Damage: {bestChoice.m_DamageValue}/{bestChoice.m_DamageSkill}\n" +
-                $"Heal: {bestChoice.m_HealingValue}/{bestChoice.m_HealSkill}");
+                $"Heal: {bestChoice.m_HealingValue}/{bestChoice.m_HealSkill}");*/
         }
     }
 
@@ -292,12 +351,12 @@ public class AIManager : MonoBehaviour
             for (int j = 0; j < pathLength; ++j)
             {
                 Node n = path.Pop();
-                AddHeuristics(AIHeuristics.Move, (float)j / pathLength, n, unit);
+                AddHeuristics(AIHeuristics.Move, (float)j / pathLength, n, unit, pathLength);
             }
         }
     }
 
-    void AddHeuristics(AIHeuristics type, float value, Node n, Unit u, HealSkill healSkill = null, DamageSkill damageSkill = null)
+    void AddHeuristics(AIHeuristics type, float value, Node n, Unit u, int d = 0, HealSkill healSkill = null, DamageSkill damageSkill = null)
     {
         HeuristicResult hr = FindHeuristic(n, u);
         if (hr != null)
@@ -327,10 +386,14 @@ public class AIManager : MonoBehaviour
             {
                 hr.m_DamageSkill = damageSkill;
             }
+            if (d > 0)
+            {
+                hr.m_MoveDistance += d;
+            }
         }
         else
         {
-            m_HeuristicResults.Add(new HeuristicResult(u, type, value, n, healSkill, damageSkill));
+            m_HeuristicResults.Add(new HeuristicResult(u, type, value, n, d, healSkill, damageSkill));
         }
     }
 
@@ -352,9 +415,15 @@ public class AIManager : MonoBehaviour
             m_CurrentAIUnit.SetMovementPath(m_Path);
             print(m_CurrentAIUnit.name + ": " + string.Join(", ", m_CurrentAIUnit.GetMovementPath().ToList().Select(no => no.m_NodeHighlight.name)));
             // Make sure the AI wants to attack or heal once it reaches it's destination.
-            if (m_OptimalNode.GetDamage() > 0 || m_OptimalNode.GetHealing() > 0)
-                m_CurrentAIUnit.m_ActionOnFinishPath = CheckAttackRange;
+                m_CurrentAIUnit.m_ActionOnFinishPath = OnFinishMoving;
         }
+    }
+
+    public void OnFinishMoving(Unit u)
+    {
+        if (m_OptimalNode.GetDamage() > 0 || m_OptimalNode.GetHealing() > 0)
+            CheckAttackRange(u);
+        m_CurrentAIUnit = null;
     }
 
     // Checks adjacent nodes of the AI unit to see if they are able to attack and hit the player.
@@ -388,7 +457,18 @@ public class AIManager : MonoBehaviour
     public void EnableUnits(List<Unit> newUnits)
     {
         UnitsManager.m_Instance.m_ActiveEnemyUnits.AddRange(newUnits);
-        // In case of units already added being in the list.
+        foreach (Unit unit in newUnits)
+        {
+            foreach (Transform t in unit.GetComponentsInChildren<Transform>(true))
+            {
+                t.gameObject.layer = 9;
+            }
+            if (unit.m_SummonParticle)
+            {
+                unit.m_SummonParticle.Play();
+            }
+        }
+        // In case of units already added being in the list, remove dupes.
         UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Distinct().ToList();
         GameManager.m_Instance.m_DidHealthBonus = false;
     }
@@ -439,6 +519,9 @@ public class AIManager : MonoBehaviour
         // If the AI's turn is starting, check what AI units are alive.
         if (m_AITurn == true)
         {
+            // Clear the unit closed list, to be able to go through all the units now.
+            m_UnitCloseList.Clear();
+
             // Prune the active units
             DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
