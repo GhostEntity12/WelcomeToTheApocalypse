@@ -69,6 +69,8 @@ public class AIManager : MonoBehaviour
 
     List<HeuristicResult> m_HeuristicResults = new List<HeuristicResult>();
 
+    List<Unit> m_UnitCloseList = new List<Unit>();
+
     /// <summary>
     /// List of MinMax scores of all the nodes in the scene.
     /// </summary>
@@ -266,18 +268,46 @@ public class AIManager : MonoBehaviour
 
             for (int i = 0; i < bestChoices.Count; ++i)
             {
+                bool unitInCloseList = false;
+                // Make sure we don't do an AI unit's turn twice.
+                foreach(Unit u in m_UnitCloseList)
+				{
+                    if (u == bestChoices[i].m_Unit)
+					{
+                        unitInCloseList = true;
+                        break;
+					}
+				}
+                if (unitInCloseList == true)
+                    continue;
+
                 Unit currentAI = bestChoices[i].m_Unit;
+                // Get all the nodes the unit could move to.
                 List<Node> nodesInMovement = Grid.m_Instance.GetNodesWithinRadius(currentAI.GetCurrentMovement(), Grid.m_Instance.GetNode(currentAI.transform.position));
+                // Check if the current best node is within the movement range of the unit.
                 foreach(Node n in nodesInMovement)
 				{
                     if (n == bestChoices[i].m_Node)
 					{
-                        m_CurrentAIUnit = bestChoices[i].m_Unit;
+                        HeuristicResult bestChoice = bestChoices[i];
+                        // Same unit is having it's turn multiple times in a row, need to fix this.
+                        m_CurrentAIUnit = bestChoice.m_Unit;
                         GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
 
-                        m_OptimalNode = bestChoices[i].m_Node;
-                        m_CurrentAIUnit.DecreaseCurrentMovement(bestChoices[i].m_MoveDistance);
+                        m_OptimalNode = bestChoice.m_Node;
+                        if (bestChoice.m_DamageValue > bestChoice.m_HealingValue)
+                        {
+                            m_OptimalNode.SetDamage(bestChoice.m_DamageValue);
+                            m_OptimalSkill = bestChoice.m_DamageSkill;
+                        }
+                        else
+                        {
+                            m_OptimalNode.SetHealing(bestChoice.m_HealingValue);
+                            m_OptimalSkill = bestChoice.m_HealSkill;
+                        }
+                        m_CurrentAIUnit.DecreaseCurrentMovement(bestChoice.m_MoveDistance);
                         FindPathToOptimalNode();
+                        m_UnitCloseList.Add(currentAI);
                         return;
                     }
 				}
@@ -490,6 +520,9 @@ public class AIManager : MonoBehaviour
         // If the AI's turn is starting, check what AI units are alive.
         if (m_AITurn == true)
         {
+            // Clear the unit closed list, to be able to go through all the units now.
+            m_UnitCloseList.Clear();
+
             // Prune the active units
             DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
