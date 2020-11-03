@@ -34,6 +34,8 @@ public class UIManager : MonoBehaviour
 	public Image m_SkillsBackground;
 	public Image m_SkillsBackgroundSmall;
 	public Image m_PortraitImage;
+	public Image m_PortraitBackground;
+	public Image m_PortraitForeground;
 	public SkillButton[] m_SkillSlots;
 	public Image m_LeftSpeakerImage;
 	public Image m_RightSpeakerImage;
@@ -43,6 +45,8 @@ public class UIManager : MonoBehaviour
 	/// </summary>
 	public EndTurnButton m_EndTurnButton = null;
 	public UIHealthBar m_UIHealthBar = null;
+	public Image m_DialogueBody;
+	public Image m_DialogueName;
 
 
 	[Header("Tweening")]
@@ -163,7 +167,9 @@ public class UIManager : MonoBehaviour
 		m_SkillsBackground.sprite = uiData.m_Panels.m_RightPanel;
 		m_SkillsBackgroundSmall.sprite = uiData.m_Panels.m_RightPanelSmall;
 		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
-		m_UIHealthBar.m_HealthBarBackground.sprite = uiData.m_Healthbar;
+		m_PortraitBackground.sprite = uiData.m_Bust.m_BustBackground;
+		m_PortraitForeground.sprite = uiData.m_Bust.m_BustForeground;
+		m_UIHealthBar.m_HealthBarBackground.sprite = uiData.m_Bust.m_Healthbar;
 
 		// Update the skin of the skills
 		foreach (SkillButton slot in m_SkillSlots)
@@ -225,7 +231,9 @@ public class UIManager : MonoBehaviour
 	/// <param name="actionOnFinish"></param>
 	private void LoadDialogueSkin(UIData uiData, Action onComplete = null)
 	{
-		// TODO: implement skin change once UI is decided
+		print(uiData);
+		m_DialogueBody.sprite = uiData.m_Dialogue.m_BodyBox;
+		m_DialogueName.sprite = uiData.m_Dialogue.m_NameBox;
 		DialogueManager.instance.StartDisplaying();
 		onComplete?.Invoke();
 	}

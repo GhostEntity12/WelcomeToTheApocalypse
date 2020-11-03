@@ -123,7 +123,7 @@ public class Unit : MonoBehaviour
 	/// </summary>
 	public Transform m_HealthbarPosition = null;
 
-	public Action<Unit> m_ActionOnFinishPath;
+	public Action m_ActionOnFinishPath;
 
 	public AIHeuristicCalculator m_AIHeuristicCalculator = null;
 
@@ -202,7 +202,7 @@ public class Unit : MonoBehaviour
 					//m_animator.SetBool("isWalking", m_IsMoving);
 
 					Grid.m_Instance.SetUnit(gameObject);
-					m_ActionOnFinishPath?.Invoke(this);
+					m_ActionOnFinishPath?.Invoke();
 					m_ActionOnFinishPath = null;
 				}
 			}
@@ -365,7 +365,7 @@ public class Unit : MonoBehaviour
 	/// Decrease the character's current amount of movement.
 	/// </summary>
 	/// <param name="decrease"> The amount to decrease the unit's movement pool by. </param>
-	public void DecreaseCurrentMovement(int decrease) { print($"decreasing {name}'s movement by {decrease}"); m_CurrentMovement -= decrease; }
+	public void DecreaseCurrentMovement(int decrease) { print($"<color=#8440a8>[Movement] </color>Decreasing {name}'s movement by {decrease}"); m_CurrentMovement -= decrease; }
 
 	/// <summary>
 	/// Reset the unit's current movement.
@@ -393,7 +393,6 @@ public class Unit : MonoBehaviour
 		m_animator.SetBool("isWalking", m_IsMoving);
 
 		SetTargetNodePosition(m_MovementPath.Pop());
-		print(string.Join(", ", path.Select(n => n.m_NodeHighlight.name)));
 	}
 
 	/// <summary>
@@ -628,7 +627,7 @@ public class Unit : MonoBehaviour
 			}
 		}
 
-		Debug.LogError("Skill " + skill.name + " couldn't be found in " + gameObject.name + ".");
+		Debug.LogError("Skill " + skill.m_SkillName + " couldn't be found in " + gameObject.name + ".");
 	}
 
 
