@@ -53,8 +53,10 @@ public class AssetSeeder : MonoBehaviour
                     yHeight,
                     Random.Range(_spawnBounds.min.z, _spawnBounds.max.z)
                 );
-                if (Physics.Raycast(randPoint + Vector3.up * 10, Vector3.down, out RaycastHit hit, 15, layerMask)) 
+                if (Physics.Raycast(randPoint + Vector3.up * 10, Vector3.down, out RaycastHit hit, 15, m_GroundMask)) 
                 {
+                    Debug.DrawLine(randPoint + Vector3.up * 10, hit.point, Color.red, 10);
+                    print("hit something");
                     randPoint = hit.point;
                 }
 
