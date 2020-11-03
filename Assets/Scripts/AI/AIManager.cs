@@ -198,12 +198,16 @@ public class AIManager : MonoBehaviour
                 {
                     m_BestOption = choice;
                     m_CurrentAIUnit = m_BestOption.m_Unit;
-                    Debug.Log($"========={m_BestOption.m_Unit} taking turn=========");
+                    Debug.Log($"========={m_CurrentAIUnit} taking turn=========");
                     Debug.Log($"<color=#3f5c9e>[Heuristics]</color>Found best option: {m_CurrentAIUnit} moving to {m_BestOption.m_Node.m_NodeHighlight.name}");
                     GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
                     m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
                     FindPathToOptimalNode();
                     return;
+                }
+                else
+                {
+                    Debug.Log($"<color=#6e4747> A better move for {aiUnit} was found outside of the movable area</color>");
                 }
             }
 
@@ -256,34 +260,73 @@ public class AIManager : MonoBehaviour
 
     void DoMovementHeuristics(Unit aiUnit)
     {
-        // Find path to each player character
-        foreach (Unit playerUnit in UnitsManager.m_Instance.m_PlayerUnits)
+        switch (aiUnit.GetHeuristicCalculator().m_MovementType)
         {
-            if (!Grid.m_Instance.FindPath(aiUnit.transform.position, playerUnit.transform.position, out Stack<Node> path, out int pathCost, allowBlocked: true))
-            {
-                Debug.LogError("Pathfinding couldn't find a path between AI unit " + aiUnit.name + " and " + playerUnit.name + ".");
-                continue;
-            }
+            case MovementType.Chase: // Attempts to move towards player controlled units
+                // Find path to each player character
+                foreach (Unit playerUnit in UnitsManager.m_Instance.m_PlayerUnits)
+                {
+                    if (!Grid.m_Instance.FindPath(aiUnit.transform.position, playerUnit.transform.position, out Stack<Node> path, out int pathCost, allowBlocked: true))
+                    {
+                        Debug.LogError("Pathfinding couldn't find a path between AI unit " + aiUnit.name + " and " + playerUnit.name + ".");
+                        continue;
+                    }
 
-            // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
-            // Will favour shortest path.
+                    // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
+                    // Will favour shortest path.
 
-            int pathLength = path.Count - 1;
+                    int pathLength = path.Count - 1;
 
+                    for (int j = 0; j < pathLength; ++j)
+                    {
+                        Node n = path.Pop();
 
-            for (int j = 0; j < pathLength; ++j)
-            {
-                Node n = path.Pop();
+                        // If it's beyond the move distance, break
+                        if (j >= aiUnit.GetCurrentMovement()) break;
 
-                // If it's beyond the move distance, break
-                if (j >= aiUnit.GetCurrentMovement()) break; 
+                        AddOrUpdateHeuristic(
+                            (float)j / pathLength,
+                            n,
+                            aiUnit,
+                            j + 1);
+                    }
+                }
+                break;
+            case MovementType.Guard: // Stays still unless there's an enemy in range
+                break;
+            case MovementType.Group:
+                foreach (Unit enemyUnit in UnitsManager.m_Instance.m_ActiveEnemyUnits)
+                {
+                    if (enemyUnit == aiUnit) continue;
 
-                AddOrUpdateHeuristic(
-                    (float)j / pathLength,
-                    n,
-                    aiUnit,
-                    j + 1);
-            }
+                    if (!Grid.m_Instance.FindPath(aiUnit.transform.position, enemyUnit.transform.position, out Stack<Node> path, out int pathCost, allowBlocked: true))
+                    {
+                        Debug.LogError("Pathfinding couldn't find a path between AI unit " + aiUnit.name + " and " + enemyUnit.name + ".");
+                        continue;
+                    }
+
+                    // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
+                    // Will favour shortest path.
+
+                    int pathLength = path.Count - 1;
+
+                    for (int j = 0; j < pathLength; ++j)
+                    {
+                        Node n = path.Pop();
+
+                        // If it's beyond the move distance, break
+                        if (j >= aiUnit.GetCurrentMovement()) break;
+
+                        AddOrUpdateHeuristic(
+                            (float)j / pathLength,
+                            n,
+                            aiUnit,
+                            j + 1);
+                    }
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -308,7 +351,7 @@ public class AIManager : MonoBehaviour
                         Node castNode = nodesCastable[j];
 
                         // Try to put a status on the healthiest unit, to get the most value.
-                        float newStatusH = currentUnit.GetCurrentHealth();
+                        float newStatusH = currentUnit.GetCurrentHealth() * aiUnit.GetHeuristicCalculator().m_StatusWeighting;
                         if (newStatusH < FindHeuristic(castNode, aiUnit)?.m_StatusValue)
                             continue;
                         else
@@ -343,7 +386,7 @@ public class AIManager : MonoBehaviour
                         Node castNode = nodesCastable[j];
 
                         // Try to put a status on the healthiest unit, to get the most value.
-                        float newStatusH = currentUnit.GetCurrentHealth();
+                        float newStatusH = currentUnit.GetCurrentHealth() * aiUnit.GetHeuristicCalculator().m_StatusWeighting;
                         if (newStatusH < FindHeuristic(castNode, aiUnit)?.m_StatusValue)
                             continue;
                         else
@@ -379,7 +422,7 @@ public class AIManager : MonoBehaviour
                     Node castNode = nodesCastable[j];
 
                     // Calculate the new damage for the node's damage heuristic.
-                    float hValue = ds.m_DamageAmount * (Vector3.Distance(nodeWithUnit.worldPosition, castNode.worldPosition) * 0.1f);
+                    float hValue = ds.m_DamageAmount * (Vector3.Distance(nodeWithUnit.worldPosition, castNode.worldPosition) * 0.1f) * aiUnit.GetHeuristicCalculator().m_DamageWeighting;
 
                     if (castNode != null)
                     {
@@ -421,7 +464,7 @@ public class AIManager : MonoBehaviour
                     Node castNode = nodesCastable[j];
 
                     // Calculate the value for the node's heal heuristic.
-                    float newHealH = hs.m_HealAmount + (currentUnit.GetStartingHealth() - currentUnit.GetCurrentHealth());
+                    float newHealH = hs.m_HealAmount + (currentUnit.GetStartingHealth() - currentUnit.GetCurrentHealth()) * aiUnit.GetHeuristicCalculator().m_HealWeighting;
 
                     if (castNode != null)
                     {
@@ -576,19 +619,19 @@ public class AIManager : MonoBehaviour
         {
             if (m_BestOption.m_HealValue >= m_BestOption.m_DamageValue && m_BestOption.m_HealValue >= m_BestOption.m_StatusValue)
             {
-                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_HealSkill}");
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_HealSkill.m_Skill.name} at {m_BestOption.m_HealSkill.m_TargetNode.unit}");
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_HealSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_HealSkill.m_Skill, m_BestOption.m_HealSkill.m_TargetNode);
             }
             else if (m_BestOption.m_StatusValue >= m_BestOption.m_DamageValue)
             {
-                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_StatusSkill}");
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_StatusSkill.m_Skill.name} at {m_BestOption.m_StatusSkill.m_TargetNode.unit}");
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_StatusSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_StatusSkill.m_Skill, m_BestOption.m_StatusSkill.m_TargetNode);
             }
             else
             {
-                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_DamageSkill.m_Skill.name}");
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_DamageSkill.m_Skill.name} at {m_BestOption.m_DamageSkill.m_TargetNode.unit}");
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_DamageSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_DamageSkill.m_Skill, m_BestOption.m_DamageSkill.m_TargetNode);
             }

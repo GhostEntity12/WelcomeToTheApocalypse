@@ -1,18 +1,22 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public enum AIHeuristics
+public enum MovementType
 {
-    Move,
-    Attack,
-    Heal,
-    StatusEffect
+    Chase,
+    Guard,
+    Group
 }
 
 [CreateAssetMenu(menuName = "AI Heuristic Calculator")]
 public class AIHeuristicCalculator : ScriptableObject
 {
-    public List<AIHeuristics> m_AIActionHeuristics = new List<AIHeuristics>();
-
     public float m_KillPoints = 10;
+
+    public MovementType m_MovementType;
+
+    public float m_DamageWeighting = 1;
+    public float m_HealWeighting = 1;
+    public float m_StatusWeighting = 1;
+
 }
