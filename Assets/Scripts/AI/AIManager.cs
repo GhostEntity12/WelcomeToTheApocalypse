@@ -144,6 +144,34 @@ public class AIManager : MonoBehaviour
                 // Only calculate skill heuristics if the unit has actions
                 if (unit.GetActionPoints() > 0)
                 {
+                    #region RabbitHoles
+                    //Update 1 -- (Potential Rework) replace the for loop with a switch statement that calculates all of the heuristics.
+                    /*
+                     * switch (m_Skill)
+                     * {
+                     *      case (DamageSkill damageSkill):
+                     *          CalculateHeuristic();
+                     * }
+                     */
+
+                    //Update 2 -- Let's not do that, it broke badly.
+                    //Update 3 -- Learning LINQ Syntax
+
+                    //BUG: For the Boss, the BaseSkill here will not trigger Status Skills even if assigned in inspector.
+                    /* The boss AI refuses to do anything. [FIXED]
+                     *  1. Created a new AI Heuristics Calculator specifically for the boss.
+                     *  2. Famine is now determined to just flee the scene. [FIXED]
+                     *  3. Famine now gets into advantageous attacking positions but wont attack.
+                     *  4. There seems to be some sort of conflict with the skills assigned in Famine's learned skills and the AI Heuristic Calculator [FIXED]
+                     *  5. Famine will only carry out the damage skill.
+                     *  6. Any additional skills in Famine's list wont pass through this loop. Perhaps they aren't inherited correctly?
+                     *  7. Famine now animates somehow, and appears to cast an invisible skill.
+                     *  8. Help.
+                     *  9. Apparently it attacks and casts skills.
+                     *  10. What even happened here?
+                     */
+                    #endregion
+
                     foreach (BaseSkill skill in unit.GetSkills())
                     {
                         // Make sure the skill isn't on cooldown.
