@@ -290,7 +290,6 @@ public class AIManager : MonoBehaviour
                     if (n == bestChoices[i].m_Node)
 					{
                         HeuristicResult bestChoice = bestChoices[i];
-                        // Same unit is having it's turn multiple times in a row, need to fix this.
                         m_CurrentAIUnit = bestChoice.m_Unit;
                         GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
 
