@@ -34,6 +34,8 @@ public class UIManager : MonoBehaviour
 	public Image m_SkillsBackground;
 	public Image m_SkillsBackgroundSmall;
 	public Image m_PortraitImage;
+	public Image m_PortraitBackground;
+	public Image m_PortraitForeground;
 	public SkillButton[] m_SkillSlots;
 	public Image m_LeftSpeakerImage;
 	public Image m_RightSpeakerImage;
@@ -165,6 +167,8 @@ public class UIManager : MonoBehaviour
 		m_SkillsBackground.sprite = uiData.m_Panels.m_RightPanel;
 		m_SkillsBackgroundSmall.sprite = uiData.m_Panels.m_RightPanelSmall;
 		m_PortraitImage.sprite = uiData.m_SkillsPortrait;
+		m_PortraitBackground.sprite = uiData.m_Bust.m_BustBackground;
+		m_PortraitForeground.sprite = uiData.m_Bust.m_BustForeground;
 		m_UIHealthBar.m_HealthBarBackground.sprite = uiData.m_Bust.m_Healthbar;
 
 		// Update the skin of the skills
