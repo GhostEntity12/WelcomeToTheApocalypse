@@ -627,7 +627,7 @@ public class Unit : MonoBehaviour
 			}
 		}
 
-		Debug.LogError("Skill " + skill.name + " couldn't be found in " + gameObject.name + ".");
+		Debug.LogError("Skill " + skill.m_SkillName + " couldn't be found in " + gameObject.name + ".");
 	}
 
 

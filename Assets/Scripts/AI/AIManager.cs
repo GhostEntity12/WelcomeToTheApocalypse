@@ -199,7 +199,7 @@ public class AIManager : MonoBehaviour
                     m_BestOption = choice;
                     m_CurrentAIUnit = m_BestOption.m_Unit;
                     Debug.Log($"========={m_CurrentAIUnit} taking turn=========");
-                    Debug.Log($"<color=#3f5c9e>[Heuristics]</color>Found best option: {m_CurrentAIUnit} moving to {m_BestOption.m_Node.m_NodeHighlight.name}");
+                    Debug.Log($"<color=#3f5c9e>[Heuristics] </color>Found best option: {m_CurrentAIUnit} moving to {m_BestOption.m_Node.m_NodeHighlight.name}");
                     GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
                     m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
                     FindPathToOptimalNode();
@@ -619,19 +619,19 @@ public class AIManager : MonoBehaviour
         {
             if (m_BestOption.m_HealValue >= m_BestOption.m_DamageValue && m_BestOption.m_HealValue >= m_BestOption.m_StatusValue)
             {
-                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_HealSkill.m_Skill.name} at {m_BestOption.m_HealSkill.m_TargetNode.unit}");
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_HealSkill.m_Skill.m_SkillName} at {m_BestOption.m_HealSkill.m_TargetNode.unit} ({m_BestOption.m_HealSkill.m_TargetNode.m_NodeHighlight.name})");
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_HealSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_HealSkill.m_Skill, m_BestOption.m_HealSkill.m_TargetNode);
             }
             else if (m_BestOption.m_StatusValue >= m_BestOption.m_DamageValue)
             {
-                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_StatusSkill.m_Skill.name} at {m_BestOption.m_StatusSkill.m_TargetNode.unit}");
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_StatusSkill.m_Skill.m_SkillName} at {m_BestOption.m_StatusSkill.m_TargetNode.unit} ({m_BestOption.m_StatusSkill.m_TargetNode.m_NodeHighlight.name})");
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_StatusSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_StatusSkill.m_Skill, m_BestOption.m_StatusSkill.m_TargetNode);
             }
             else
             {
-                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_DamageSkill.m_Skill.name} at {m_BestOption.m_DamageSkill.m_TargetNode.unit}");
+                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_DamageSkill.m_Skill.m_SkillName} at {m_BestOption.m_DamageSkill.m_TargetNode.unit} ({m_BestOption.m_DamageSkill.m_TargetNode.m_NodeHighlight.name})");
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_DamageSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_DamageSkill.m_Skill, m_BestOption.m_DamageSkill.m_TargetNode);
             }
