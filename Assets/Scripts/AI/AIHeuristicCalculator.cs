@@ -5,7 +5,8 @@ public enum MovementType
 {
     Chase,
     Guard,
-    Group
+    Group,
+    Mixed
 }
 
 [CreateAssetMenu(menuName = "AI Heuristic Calculator")]
