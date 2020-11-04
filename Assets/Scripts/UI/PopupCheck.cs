@@ -11,13 +11,13 @@ public class PopupCheck : MonoBehaviour
 
 	public void OpenPopup(Action action, string actionName, string bodyText)
 	{
-		LeanTween.scale(gameObject, Vector2.one, 0.03f);
+		LeanTween.scale(gameObject, Vector2.one, 0.03f).setEaseOutCubic();
 		m_ConfirmAction = action;
 		m_Confirmation.text = actionName;
 		m_BodyText.text = bodyText;
 	}
 
-	public void ClosePopup() => LeanTween.scale(gameObject, Vector2.zero, 0.03f);
+	public void ClosePopup() => LeanTween.scale(gameObject, Vector2.zero, 0.03f).setEaseInCubic();
 
 	public void DoAction() => m_ConfirmAction.Invoke();
 }

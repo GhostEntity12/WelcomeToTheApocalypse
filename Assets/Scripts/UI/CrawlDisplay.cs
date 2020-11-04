@@ -19,7 +19,7 @@ public class CrawlDisplay : MonoBehaviour
 	public TextMeshProUGUI m_Display;
 
 	int m_CurrentScreen = 0;
-	bool m_AcceptingInput = true;
+	bool m_AcceptingInput = false;
 	string[] m_ScriptLines;
 	List<List<string>> m_LinesByScreen = new List<List<string>>();
 

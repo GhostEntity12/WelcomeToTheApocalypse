@@ -132,7 +132,7 @@ public class UIManager : MonoBehaviour
 
 	public void TogglePause()
 	{
-		LeanTween.scale(m_PauseScreen.gameObject, m_Paused ? Vector2.zero : Vector2.one, 0.03f);
+		LeanTween.scale(m_PauseScreen.gameObject, m_Paused ? Vector2.zero : Vector2.one, 0.03f).setEaseInOutCubic();
 		m_ActiveUI = m_PauseScreen.gameObject.activeSelf;
 		m_Paused = !m_Paused;
 	}

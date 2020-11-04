@@ -11,11 +11,14 @@ public class FrameCounter : MonoBehaviour
 	bool m_WarmingUp = true;
 
 	public float m_Smoothing = 1;
+	private Color m_DefaultColor;
+
 	// Start is called before the first frame update
 	void Start()
 	{
 		frameRates = new float[Mathf.FloorToInt(m_Smoothing * 60)];
 		m_Text = GetComponent<TextMeshProUGUI>();
+		m_DefaultColor = m_Text.color;
 		m_Text.color = Color.red;
 	}
 
@@ -24,7 +27,7 @@ public class FrameCounter : MonoBehaviour
 	{
 		if (m_WarmingUp && counter == frameRates.Length - 1)
 		{
-			m_Text.color = Color.white;
+			m_Text.color = m_DefaultColor;
 			m_WarmingUp = false;
 		}
 		frameRates[counter] = 1 / Time.deltaTime;

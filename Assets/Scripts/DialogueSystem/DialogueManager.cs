@@ -199,14 +199,13 @@ public class DialogueManager : MonoBehaviour
 		LeanTween.color(otherBust.rectTransform, Color.gray, 0.1f);
 		LeanTween.color(bust.rectTransform, Color.white, 0.1f);
 
-		// Grow the active speaker
-		LeanTween.size(otherBust.rectTransform, defaultPortraitSize, 0.1f);
-		LeanTween.size(bust.rectTransform, defaultPortraitSize * 1.1f, 0.1f);
-
 		// Swap portraits
 		if (character == currentCharacter)
 		{
 			bust.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
+			// Grow the active speaker
+			LeanTween.size(otherBust.rectTransform, defaultPortraitSize, 0.1f);
+			LeanTween.size(bust.rectTransform, defaultPortraitSize * 1.1f, 0.1f);
 		}
 		else
 		{
@@ -217,6 +216,9 @@ public class DialogueManager : MonoBehaviour
 			{
 				bust.sprite = GetCharacterPortrait(currentCharacter, characterExpression);
 				UIManager.m_Instance.SlideElement(speaker, UIManager.ScreenState.Onscreen);
+				// Grow the active speaker
+				LeanTween.size(otherBust.rectTransform, defaultPortraitSize, 0.1f);
+				LeanTween.size(bust.rectTransform, defaultPortraitSize * 1.1f, 0.1f);
 			});
 		}
 	}
