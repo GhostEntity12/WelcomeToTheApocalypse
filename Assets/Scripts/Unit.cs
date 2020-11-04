@@ -456,6 +456,15 @@ public class Unit : MonoBehaviour
 		m_CurrentActionPoints = m_StartingActionPoints;
 	}
 
+	void AddStatusEffectFromSkill(InflictableStatus effect)
+	{
+		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
+		{
+			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
+		}
+		AddStatusEffect(effect);
+	}
+
 	/// <summary>
 	/// Add a status effect to the unit.
 	/// </summary>
