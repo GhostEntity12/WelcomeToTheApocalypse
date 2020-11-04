@@ -196,11 +196,13 @@ public class GameManager : MonoBehaviour
             if (ps)
                 ps.CheckPrecondition(TriggerType.OnTurnStart);
 
+            // Reduce cooldowns
             foreach (BaseSkill s in unit.GetSkills())
             {
                 s.DecrementCooldown();
             }
 
+            // Deal with infliceted statuses
             foreach (InflictableStatus status in unit.GetInflictableStatuses())
             {
                 // If returns true, status effect's duration has reached 0, remove the status effect.
@@ -208,6 +210,7 @@ public class GameManager : MonoBehaviour
                 {
                     unit.RemoveStatusEffect(status);
                 }
+                // Otherwise do the effect
                 else if (status.CheckPrecondition(TriggerType.OnTurnStart) == true)
                 {
                     status.TakeEffect(unit);
