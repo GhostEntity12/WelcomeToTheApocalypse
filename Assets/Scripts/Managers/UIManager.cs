@@ -70,10 +70,6 @@ public class UIManager : MonoBehaviour
 	public ActionPointCounter m_ActionPointCounter = null;
 
 	[Header("Additional Screens")]
-	/// <summary>
-	/// The screen for when the player loses.
-	/// </summary>
-	public Canvas m_LoseScreen = null;
 	public PrematureTurnEndDisplay m_PrematureTurnEndScreen = null;
 	private InputBlockingUI m_EndTurnBlocker;
 	public GameObject m_PauseScreen = null;
@@ -286,14 +282,14 @@ public class UIManager : MonoBehaviour
 
 	public void HideTurnIndicator(Action onComplete = null)
 	{
-		SlideElement(m_TurnIndicatorUI, ScreenState.Offscreen);
-		onComplete?.Invoke();
+		Debug.Log("<color=#a85132>[Tweening] </color> Moving TI offscreen");
+		SlideElement(m_TurnIndicatorUI, ScreenState.Offscreen, onComplete);
 	}
 
 	public void ShowTurnIndicator(Action onComplete = null)
 	{
-		SlideElement(m_TurnIndicatorUI, ScreenState.Onscreen);
-		onComplete?.Invoke();
+		Debug.Log("<color=#a85132>[Tweening] </color> Moving TI onscreen");
+		SlideElement(m_TurnIndicatorUI, ScreenState.Onscreen, onComplete);
 	}
 	#endregion
 
