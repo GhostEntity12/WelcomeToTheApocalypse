@@ -25,6 +25,7 @@ public class CrawlDisplay : MonoBehaviour
 
 	public void LoadCrawl(Outcome outcome)
 	{
+		UIManager.m_Instance.m_ActiveUI = true;
 		m_Display.text = string.Empty;
 		m_ScriptLines = (outcome == Outcome.Win ? m_WinScript : m_FailScript).text.Split(
 			new[] { "\r\n", "\r", "\n", Environment.NewLine },
@@ -47,6 +48,7 @@ public class CrawlDisplay : MonoBehaviour
 			}
 		}
 		LeanTween.alphaCanvas(UIManager.m_Instance.m_BlackScreen, 1, 2);
+		LeanTween.delayedCall(2, () => StartCoroutine(DisplayScreen(m_CurrentScreen)));
 	}
 
 	public IEnumerator DisplayScreen(int screen)
@@ -102,7 +104,7 @@ public class CrawlDisplay : MonoBehaviour
 			else
 			{
 				// TODO: Load next scene I guess
-				Debug.Log("Finished Intro");
+				Debug.Log($"Finished crawl");
 			}
 		}
 	}

@@ -81,7 +81,6 @@ public class BaseSkill : ScriptableObject
         m_CurrentCooldown = m_CooldownLength;
 
         // Update the cooldowns
-        // TODO: do this properly
         foreach (SkillButton button in UIManager.m_Instance.m_SkillSlots)
         {
             button.UpdateCooldownDisplay();
