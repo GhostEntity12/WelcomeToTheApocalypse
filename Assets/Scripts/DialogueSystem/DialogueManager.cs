@@ -119,6 +119,7 @@ public class DialogueManager : MonoBehaviour
     }
     public void StartDisplaying()
     {
+        isDisplayingText = true; // Marks the system as typing out letters. Used to determine what happens when pressing enter
         // Set the portrait
         try
         {
@@ -251,8 +252,6 @@ public class DialogueManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator DisplayDialogue(string text)
     {
-        isDisplayingText = true; // Marks the system as typing out letters. Used to determine what happens when pressing enter
-
         for (int i = 0; i < text.Length; i++) // Adds a letter to the textbox then waits the delay time
         {
             if (text[i] == '<') // If the letter is an opening tag character, autofill the rest of the tag
@@ -284,7 +283,7 @@ public class DialogueManager : MonoBehaviour
             return;
         }
         if (skipDialogueDisplay.activeInHierarchy) return;
-        if (GetAnyKey(ProgressionKeys) && dialogueActive) // If enter is pressed and the textboxes are visible
+        if (GetAnyKeyDown(ProgressionKeys) && dialogueActive) // If enter is pressed and the textboxes are visible
         {
             if (isDisplayingText) // If the system is currently typing out, finish and return
             {
@@ -382,7 +381,7 @@ public class DialogueManager : MonoBehaviour
         LoadNewLine();
     }
 
-    bool GetAnyKey(params KeyCode[] aKeys)
+    bool GetAnyKeyDown(params KeyCode[] aKeys)
     {
         foreach (var key in aKeys)
             if (Input.GetKeyDown(key))
