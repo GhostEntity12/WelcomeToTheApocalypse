@@ -288,9 +288,8 @@ public class GameManager : MonoBehaviour
                 if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
                     m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
-                    // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
-                    // Select that unit.
-                    if (rayHitUnit != m_SelectedUnit)
+                    // If the unit the player is hovering over isn't the selected unit and the unit is alive, select that unit.
+                    if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAlive() == true)
                     {
                         // Reset the nodes highlights before selecting the new unit
                         m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
