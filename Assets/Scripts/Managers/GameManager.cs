@@ -291,7 +291,11 @@ public class GameManager : MonoBehaviour
                 // Check player input.
                 if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
-                    m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
+                    // Don't autofocus if the unit is dead
+                    if (rayHitUnit.GetCurrentHealth() > 0)
+                    {
+                        m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
+                    }
                     // If the unit the player is hovering over isn't the selected unit and the unit is alive, select that unit.
                     if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAlive() == true)
                     {
@@ -434,9 +438,9 @@ public class GameManager : MonoBehaviour
                                 m_SelectedUnit.SetMovementPath(path);
                                 // Decrease the unit's movement by the cost.
                                 m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
-
-                                m_SelectedUnit.m_ActionOnFinishPath = () => m_SelectedUnit.HighlightMovableNodes(hitNode);
-                            }                            
+                            }
+                            // Should we do this after the unit has finished moving? - James L
+                            m_SelectedUnit.HighlightMovableNodes(hitNode);
                         }
                     }
                 }

@@ -183,6 +183,10 @@ public class AIManager : MonoBehaviour
                 }
             }
 
+
+            // Remove all the empty choices made by setting the movement costs
+            m_HeuristicResults = m_HeuristicResults.Where(c => c.SumHeuristics() != 0).ToList();
+
             if (m_HeuristicResults.Count == 0)
             {
                 // No AI moves left, end your turn.
@@ -629,12 +633,12 @@ public class AIManager : MonoBehaviour
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_DamageSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_DamageSkill.m_Skill, m_BestOption.m_DamageSkill.m_TargetNode);
             }
-            m_MakingAction = false;
         }
         else
         {
             Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit.name} can't cast any skills from {m_BestOption.m_Node.m_NodeHighlight.name}</color>");
         }
+        m_MakingAction = false;
     }
 
     /// <summary>
