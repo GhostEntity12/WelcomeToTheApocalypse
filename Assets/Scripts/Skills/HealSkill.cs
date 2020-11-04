@@ -18,7 +18,7 @@ public class HealSkill : BaseSkill
 		foreach (Unit unit in affectedUnits)
 		{
 			//Increase the targets health by 3.
-			unit.IncreaseCurrentHealth(m_HealAmount);
+			unit.AddHealingFromSkill(m_HealAmount);
 		}
 	}
 }

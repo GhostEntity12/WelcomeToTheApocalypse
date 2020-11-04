@@ -190,8 +190,6 @@ public class AIManager : MonoBehaviour
                 return;
             }
 
-            #region James
-            
             // Sort all the moves regardless of whether they're reachable
             List<HeuristicResult> sortedChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
 
@@ -230,44 +228,6 @@ public class AIManager : MonoBehaviour
                 GameManager.m_Instance.EndCurrentTurn();
                 return;
             }
-            
-            #endregion
-
-            #region Grant
-            /*
-            List<HeuristicResult> sortedChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
-
-            for (int i = 0; i < sortedChoices.Count; ++i)
-            {
-                m_BestOption = sortedChoices[i];
-
-                // Make sure we don't do an AI unit's turn twice.
-                if (m_UnitCloseList.Contains(m_BestOption.m_Unit)) continue;
-
-                Unit currentAI = m_BestOption.m_Unit;
-
-                // Get all the nodes the unit could move to.
-                List<Node> nodesInMovement = Grid.m_Instance.GetNodesWithinRadius(currentAI.GetCurrentMovement(), Grid.m_Instance.GetNode(currentAI.transform.position));
-
-                // Check if the current best node is within the movement range of the unit.
-                if (nodesInMovement.Contains(m_BestOption.m_Node))
-                {
-                    m_CurrentAIUnit = m_BestOption.m_Unit;
-                    GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
-                    m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
-                    FindPathToOptimalNode();
-                    m_UnitCloseList.Add(currentAI);
-                    return;
-                }
-            }
-            if (!m_CurrentAIUnit)
-            {
-                // Assume no more units left.
-                GameManager.m_Instance.EndCurrentTurn();
-                return;
-            }
-            */
-            #endregion
         }
         if (m_AwaitingUnits.Count == 0 && !m_MakingAction)
         {
