@@ -79,11 +79,14 @@ public class UIManager : MonoBehaviour
 	public GameObject m_PauseScreen = null;
 	private bool m_Paused = false;
 
+	public CrawlDisplay m_CrawlDisplay;
+
 	private void Awake()
 	{
 		m_Instance = this;
 
 		m_InputBlockingUIElements = FindObjectsOfType<InputBlockingUI>().ToList();
+		m_CrawlDisplay = GetComponent<CrawlDisplay>();
 		m_EndTurnBlocker = m_PrematureTurnEndScreen.GetComponent<InputBlockingUI>();
 
 		// Creates an EventSystem if it can't find one
@@ -231,19 +234,18 @@ public class UIManager : MonoBehaviour
 	/// <param name="actionOnFinish"></param>
 	private void LoadDialogueSkin(UIData uiData, Action onComplete = null)
 	{
-		print(uiData);
 		m_DialogueBody.sprite = uiData.m_Dialogue.m_BodyBox;
 		m_DialogueName.sprite = uiData.m_Dialogue.m_NameBox;
 		DialogueManager.instance.StartDisplaying();
 		onComplete?.Invoke();
 	}
 
-	public void SwapToDialogue(TextAsset sourceFile)
+	public void SwapToDialogue(TextAsset sourceFile, Action onDialogueEndAction = null)
 	{
 		if (sourceFile)
 		{
 			SlideSkills(ScreenState.Offscreen,
-				() => DialogueManager.instance.TriggerDialogue(sourceFile));
+				() => DialogueManager.instance.QueueDialogue(sourceFile, onDialogueEndAction));
 		}
 		else
 		{

@@ -57,12 +57,17 @@ public class HeuristicResult
     public StatusSkillTarget m_StatusSkill;
 
     // Constructors
-    public HeuristicResult(Unit u, Node n, float hv, int d)
+    public HeuristicResult(Unit u, Node n, int d)
+    {
+        m_Unit = u;
+        m_Node = n;
+        m_MoveDistance = d;
+    }
+    public HeuristicResult(Unit u, Node n, float hv)
     {
         m_MovementValue += hv;
         m_Unit = u;
         m_Node = n;
-        m_MoveDistance = d;
     }
     public HeuristicResult(Unit u, Node n, float hv, DamageSkillTarget ds)
     {
@@ -188,6 +193,8 @@ public class AIManager : MonoBehaviour
 
             foreach (HeuristicResult choice in sortedChoices)
             {
+                if (choice.SumHeuristics() == 0) continue;
+
                 Unit aiUnit = choice.m_Unit;
 
                 // Get all the nodes the unit could move to.
@@ -199,7 +206,8 @@ public class AIManager : MonoBehaviour
                     m_BestOption = choice;
                     m_CurrentAIUnit = m_BestOption.m_Unit;
                     Debug.Log($"========={m_CurrentAIUnit} taking turn=========");
-                    Debug.Log($"<color=#3f5c9e>[Heuristics] </color>Found best option: {m_CurrentAIUnit} moving to {m_BestOption.m_Node.m_NodeHighlight.name}");
+                    Debug.Log(PrintHeuristic(m_BestOption));
+                    Debug.Log($"<color=#3f5c9e>[Heuristics] </color>Found best option: {m_CurrentAIUnit.name} moving to {m_BestOption.m_Node.m_NodeHighlight.name} from {Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position).m_NodeHighlight.name}");
                     GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
                     m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
                     FindPathToOptimalNode();
@@ -260,73 +268,64 @@ public class AIManager : MonoBehaviour
 
     void DoMovementHeuristics(Unit aiUnit)
     {
+        AssignMovementCosts(aiUnit);
         switch (aiUnit.GetHeuristicCalculator().m_MovementType)
         {
             case MovementType.Chase: // Attempts to move towards player controlled units
                 // Find path to each player character
-                foreach (Unit playerUnit in UnitsManager.m_Instance.m_PlayerUnits)
-                {
-                    if (!Grid.m_Instance.FindPath(aiUnit.transform.position, playerUnit.transform.position, out Stack<Node> path, out int pathCost, allowBlocked: true))
-                    {
-                        Debug.LogError("Pathfinding couldn't find a path between AI unit " + aiUnit.name + " and " + playerUnit.name + ".");
-                        continue;
-                    }
-
-                    // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
-                    // Will favour shortest path.
-
-                    int pathLength = path.Count - 1;
-
-                    for (int j = 0; j < pathLength; ++j)
-                    {
-                        Node n = path.Pop();
-
-                        // If it's beyond the move distance, break
-                        if (j >= aiUnit.GetCurrentMovement()) break;
-
-                        AddOrUpdateHeuristic(
-                            (float)j / pathLength,
-                            n,
-                            aiUnit,
-                            j + 1);
-                    }
-                }
+                AssignMovementHeuristic(aiUnit, UnitsManager.m_Instance.m_PlayerUnits);
                 break;
             case MovementType.Guard: // Stays still unless there's an enemy in range
                 break;
             case MovementType.Group:
-                foreach (Unit enemyUnit in UnitsManager.m_Instance.m_ActiveEnemyUnits)
-                {
-                    if (enemyUnit == aiUnit) continue;
-
-                    if (!Grid.m_Instance.FindPath(aiUnit.transform.position, enemyUnit.transform.position, out Stack<Node> path, out int pathCost, allowBlocked: true))
-                    {
-                        Debug.LogError("Pathfinding couldn't find a path between AI unit " + aiUnit.name + " and " + enemyUnit.name + ".");
-                        continue;
-                    }
-
-                    // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
-                    // Will favour shortest path.
-
-                    int pathLength = path.Count - 1;
-
-                    for (int j = 0; j < pathLength; ++j)
-                    {
-                        Node n = path.Pop();
-
-                        // If it's beyond the move distance, break
-                        if (j >= aiUnit.GetCurrentMovement()) break;
-
-                        AddOrUpdateHeuristic(
-                            (float)j / pathLength,
-                            n,
-                            aiUnit,
-                            j + 1);
-                    }
-                }
+                AssignMovementHeuristic(aiUnit, UnitsManager.m_Instance.m_ActiveEnemyUnits);
+                break;
+            case MovementType.Mixed:
+                AssignMovementHeuristic(aiUnit, UnitsManager.m_Instance.m_AllUnits.ToList());
                 break;
             default:
                 break;
+        }
+    }
+
+    void AssignMovementCosts(Unit aiUnit)
+    {
+        Node startNode = Grid.m_Instance.GetNode(aiUnit.transform.position);
+        foreach (Node node in Grid.m_Instance.GetNodesWithinRadius(aiUnit.GetCurrentMovement(), startNode))
+        {
+            int distance = Mathf.Abs(startNode.x - node.x) + Mathf.Abs(startNode.z - node.z);
+            AddOrUpdateHeuristic(distance, node, aiUnit);
+        }
+    }
+
+    void AssignMovementHeuristic(Unit activeUnit, List<Unit> unitsToCheck)
+    {
+        foreach (Unit targetUnit in unitsToCheck)
+        {
+            if (activeUnit == targetUnit) continue;
+
+            if (!Grid.m_Instance.FindPath(activeUnit.transform.position, targetUnit.transform.position, out Stack<Node> path, out int pathCost, allowBlocked: true))
+            {
+                Debug.LogError("Pathfinding couldn't find a path between AI unit " + activeUnit.name + " and " + targetUnit.name + ".");
+                continue;
+            }
+            // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
+            // Will favour shortest path.
+
+            int pathLength = path.Count - 1;
+
+            for (int j = 0; j < pathLength; ++j)
+            {
+                Node n = path.Pop();
+
+                // If it's beyond the move distance, break
+                if (j >= activeUnit.GetCurrentMovement()) break;
+
+                AddOrUpdateHeuristic(
+                    (float)j / pathLength,
+                    n,
+                    activeUnit);
+            }
         }
     }
 
@@ -486,7 +485,32 @@ public class AIManager : MonoBehaviour
     /// <param name="n"></param>
     /// <param name="u"></param>
     /// <param name="distance"></param>
-    private void AddOrUpdateHeuristic(float value, Node node, Unit unit, int distance)
+    private void AddOrUpdateHeuristic(int distance, Node node, Unit unit)
+    {
+        HeuristicResult hr = FindHeuristic(node, unit);
+
+        if (hr != null) // If the heuristic already exists, update it
+        {
+            // If the existing heuristic already a lower distance score
+            if (hr.m_MoveDistance < distance) return;
+
+            // Otherwise set values
+            hr.m_MoveDistance = distance;
+        }
+        else // Otherwise create a new heuristic with the values
+        {
+            m_HeuristicResults.Add(new HeuristicResult(unit, node, distance));
+        }
+    }
+
+    /// <summary>
+    /// Updates the movement values of a heuristic result or adds one if it doesn't exist
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="n"></param>
+    /// <param name="u"></param>
+    /// <param name="distance"></param>
+    private void AddOrUpdateHeuristic(float value, Node node, Unit unit)
     {
         HeuristicResult hr = FindHeuristic(node, unit);
 
@@ -497,11 +521,10 @@ public class AIManager : MonoBehaviour
 
             // Otherwise set values
             hr.m_MovementValue = value;
-            hr.m_MoveDistance = distance;
         }
         else // Otherwise create a new heuristic with the values
         {
-            m_HeuristicResults.Add(new HeuristicResult(unit, node, value, distance));
+            m_HeuristicResults.Add(new HeuristicResult(unit, node, value));
         }
     }
 
@@ -705,4 +728,26 @@ public class AIManager : MonoBehaviour
 
     [ContextMenu("Print Best Node")]
     void PrintNode() => Debug.Log(m_BestOption.m_Node.m_NodeHighlight.name);
+
+    string PrintHeuristic(HeuristicResult hr)
+    {
+        System.Reflection.FieldInfo[] fieldInfos = hr.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+
+        string output = "======" + hr.m_Unit + "'s " + hr.m_Node.m_NodeHighlight.name + "======\n";
+
+        foreach (var item in fieldInfos)
+        {
+            try
+            {
+                output += $"{item.Name}: {item.GetValue(hr)}\n";
+            }
+            catch (ArgumentException)
+            {
+                output += $"{item.Name}: unobtainable\n";
+            }
+
+        }
+
+        return output;
+    }
 }
