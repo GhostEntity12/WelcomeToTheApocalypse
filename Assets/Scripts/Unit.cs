@@ -456,6 +456,27 @@ public class Unit : MonoBehaviour
 		m_CurrentActionPoints = m_StartingActionPoints;
 	}
 
+	public void AddStatusEffectFromSkill(InflictableStatus effect)
+	{
+		// Check if it is currently the AI's turn.
+		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
+		{
+			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
+		}
+		AddStatusEffect(effect);
+	}
+
+	public void AddHealingFromSkill(int heal)
+	{
+		// Check if it is currently the AI's turn.
+		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
+		{
+			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
+		}
+
+		IncreaseCurrentHealth(heal);
+	}
+
 	/// <summary>
 	/// Add a status effect to the unit.
 	/// </summary>

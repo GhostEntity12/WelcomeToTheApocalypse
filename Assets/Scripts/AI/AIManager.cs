@@ -114,6 +114,10 @@ public class AIManager : MonoBehaviour
 
     List<Unit> m_UnitCloseList = new List<Unit>();
 
+    public List<Unit> m_AwaitingUnits = new List<Unit>();
+
+    bool m_MakingAction;
+
     //On Awake, initialise the instance of this manager.
     private void Awake()
     {
@@ -186,8 +190,6 @@ public class AIManager : MonoBehaviour
                 return;
             }
 
-            #region James
-            
             // Sort all the moves regardless of whether they're reachable
             List<HeuristicResult> sortedChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
 
@@ -208,6 +210,7 @@ public class AIManager : MonoBehaviour
                     Debug.Log($"========={m_CurrentAIUnit} taking turn=========");
                     Debug.Log(PrintHeuristic(m_BestOption));
                     Debug.Log($"<color=#3f5c9e>[Heuristics] </color>Found best option: {m_CurrentAIUnit.name} moving to {m_BestOption.m_Node.m_NodeHighlight.name} from {Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position).m_NodeHighlight.name}");
+                    m_MakingAction = true;
                     GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
                     m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
                     FindPathToOptimalNode();
@@ -225,44 +228,10 @@ public class AIManager : MonoBehaviour
                 GameManager.m_Instance.EndCurrentTurn();
                 return;
             }
-            
-            #endregion
-
-            #region Grant
-            /*
-            List<HeuristicResult> sortedChoices = m_HeuristicResults.OrderByDescending(hr => hr.SumHeuristics()).ToList();
-
-            for (int i = 0; i < sortedChoices.Count; ++i)
-            {
-                m_BestOption = sortedChoices[i];
-
-                // Make sure we don't do an AI unit's turn twice.
-                if (m_UnitCloseList.Contains(m_BestOption.m_Unit)) continue;
-
-                Unit currentAI = m_BestOption.m_Unit;
-
-                // Get all the nodes the unit could move to.
-                List<Node> nodesInMovement = Grid.m_Instance.GetNodesWithinRadius(currentAI.GetCurrentMovement(), Grid.m_Instance.GetNode(currentAI.transform.position));
-
-                // Check if the current best node is within the movement range of the unit.
-                if (nodesInMovement.Contains(m_BestOption.m_Node))
-                {
-                    m_CurrentAIUnit = m_BestOption.m_Unit;
-                    GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
-                    m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
-                    FindPathToOptimalNode();
-                    m_UnitCloseList.Add(currentAI);
-                    return;
-                }
-            }
-            if (!m_CurrentAIUnit)
-            {
-                // Assume no more units left.
-                GameManager.m_Instance.EndCurrentTurn();
-                return;
-            }
-            */
-            #endregion
+        }
+        if (m_AwaitingUnits.Count == 0 && !m_MakingAction)
+        {
+            m_CurrentAIUnit = null;
         }
     }
 
@@ -658,6 +627,7 @@ public class AIManager : MonoBehaviour
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_DamageSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_DamageSkill.m_Skill, m_BestOption.m_DamageSkill.m_TargetNode);
             }
+            m_MakingAction = false;
         }
         else
         {
