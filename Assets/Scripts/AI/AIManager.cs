@@ -207,18 +207,24 @@ public class AIManager : MonoBehaviour
                 {
                     m_BestOption = choice;
                     m_CurrentAIUnit = m_BestOption.m_Unit;
-                    Debug.Log($"========={m_CurrentAIUnit} taking turn=========");
-                    Debug.Log(PrintHeuristic(m_BestOption));
+                    Debug.Log($"===={m_CurrentAIUnit.name} taking turn====");
                     Debug.Log($"<color=#3f5c9e>[Heuristics] </color>Found best option: {m_CurrentAIUnit.name} moving to {m_BestOption.m_Node.m_NodeHighlight.name} from {Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position).m_NodeHighlight.name}");
                     m_MakingAction = true;
                     GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
-                    m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
-                    FindPathToOptimalNode();
+                    if (m_BestOption.m_MoveDistance != 0)
+                    {
+                        m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
+                        FindPathToOptimalNode();
+                    }
+                    else
+                    {
+                        OnFinishMoving();
+                    }
                     return;
                 }
                 else
                 {
-                    Debug.Log($"<color=#6e4747> A better move for {aiUnit} was found outside of the movable area</color>");
+                    Debug.Log($"<color=#6e4747> A better move for {aiUnit.name} was found outside of the movable area</color>");
                 }
             }
 
@@ -275,7 +281,7 @@ public class AIManager : MonoBehaviour
 
             if (!Grid.m_Instance.FindPath(activeUnit.transform.position, targetUnit.transform.position, out Stack<Node> path, out int pathCost, allowBlocked: true))
             {
-                Debug.LogError("Pathfinding couldn't find a path between AI unit " + activeUnit.name + " and " + targetUnit.name + ".");
+                Debug.LogError($"<color=#8440a8>[Movement] </color><color=#4f1212>Pathfinding couldn't find a path between AI unit {activeUnit.name} and {targetUnit.name}.</color>");
                 continue;
             }
             // Go through path to closest unit, assign movement heuristic to normalized position on the stack of the path.
@@ -600,8 +606,6 @@ public class AIManager : MonoBehaviour
     public void OnFinishMoving()
     {
         CheckSkills();
-        // TODO move this so it resets when all the unit has *finished* their turn, including damage calcs
-        m_CurrentAIUnit = null;
     }
 
     void CheckSkills()
@@ -611,19 +615,17 @@ public class AIManager : MonoBehaviour
         {
             if (m_BestOption.m_HealValue >= m_BestOption.m_DamageValue && m_BestOption.m_HealValue >= m_BestOption.m_StatusValue)
             {
-                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_HealSkill.m_Skill.m_SkillName} at {m_BestOption.m_HealSkill.m_TargetNode.unit} ({m_BestOption.m_HealSkill.m_TargetNode.m_NodeHighlight.name})");
+               
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_HealSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_HealSkill.m_Skill, m_BestOption.m_HealSkill.m_TargetNode);
             }
             else if (m_BestOption.m_StatusValue >= m_BestOption.m_DamageValue)
             {
-                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_StatusSkill.m_Skill.m_SkillName} at {m_BestOption.m_StatusSkill.m_TargetNode.unit} ({m_BestOption.m_StatusSkill.m_TargetNode.m_NodeHighlight.name})");
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_StatusSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_StatusSkill.m_Skill, m_BestOption.m_StatusSkill.m_TargetNode);
             }
             else
             {
-                Debug.Log($"<color=#9c4141>[Skill] </color>{m_BestOption.m_Unit} casts {m_BestOption.m_DamageSkill.m_Skill.m_SkillName} at {m_BestOption.m_DamageSkill.m_TargetNode.unit} ({m_BestOption.m_DamageSkill.m_TargetNode.m_NodeHighlight.name})");
                 m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_DamageSkill.m_Skill.m_Cost);
                 m_CurrentAIUnit.ActivateSkill(m_BestOption.m_DamageSkill.m_Skill, m_BestOption.m_DamageSkill.m_TargetNode);
             }
@@ -631,7 +633,7 @@ public class AIManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit} can't cast any skills from {m_BestOption.m_Node}</color>");
+            Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit.name} can't cast any skills from {m_BestOption.m_Node.m_NodeHighlight.name}</color>");
         }
     }
 
@@ -674,6 +676,17 @@ public class AIManager : MonoBehaviour
     public void DisableUnits(List<Unit> deadUnits)
     {
         UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Except(deadUnits).ToList();
+
+        GameManager.m_Instance.PodClearCheck();
+    }
+
+    /// <summary>
+    /// Removes units from the active units
+    /// </summary>
+    /// <param name="deadUnits"></param>
+    public void DisableUnits(Unit deadUnit)
+    {
+        UnitsManager.m_Instance.m_ActiveEnemyUnits.Remove(deadUnit);
 
         GameManager.m_Instance.PodClearCheck();
     }

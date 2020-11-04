@@ -27,7 +27,6 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Unit the player has selected.
     /// </summary>
-    // TODO: set back to private
     public Unit m_SelectedUnit = null;
 
     /// <summary>
@@ -340,8 +339,8 @@ public class GameManager : MonoBehaviour
                     }
                 }
                 // Check player input.
-                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
-                {
+                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
+                    {
                     // Cast the skill the player has selected.
                     // If hit unit is in affectable range,
                     if (unitNode.m_NodeHighlight.m_IsTargetable)
@@ -350,7 +349,6 @@ public class GameManager : MonoBehaviour
                         {
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
-                            Debug.Log(m_SelectedUnit.GetActionPoints(), m_SelectedUnit);
 
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
 
@@ -392,16 +390,16 @@ public class GameManager : MonoBehaviour
                 }
 
                 // Check player input.
-                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
-                {
+                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
+                    {
                     // Cast the skill the player has selected.
                     // If hit tile is in affectable range,
                     if (hitNode.m_NodeHighlight.m_IsTargetable)
                     {
                         if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
                         {
-                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
+                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
 
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
                             // Now deselect the skill and clear the targeting highlights.
@@ -421,7 +419,7 @@ public class GameManager : MonoBehaviour
                 if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player && m_SelectedUnit.GetMoving() == false)
                 {
                     // Check input.
-                    if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
+                    if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
                     {
                         if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
                         {
@@ -436,9 +434,9 @@ public class GameManager : MonoBehaviour
                                 m_SelectedUnit.SetMovementPath(path);
                                 // Decrease the unit's movement by the cost.
                                 m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
-                            }
-                            // Should we do this after the unit has finished moving? - James L
-                            m_SelectedUnit.HighlightMovableNodes(hitNode);
+
+                                m_SelectedUnit.m_ActionOnFinishPath = () => m_SelectedUnit.HighlightMovableNodes(hitNode);
+                            }                            
                         }
                     }
                 }

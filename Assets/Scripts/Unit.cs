@@ -314,7 +314,7 @@ public class Unit : MonoBehaviour
 	{
 		if (m_CurrentHealth <= 0)
 		{
-			Debug.Log($"{name} died");
+			Debug.Log($"<color=#a87932>[Death] </color>{name} died");
 			m_IsAlive = false;
 
 			// Check if the unit has the "DefeatEnemyWinCondition" script on it.
@@ -326,6 +326,10 @@ public class Unit : MonoBehaviour
 			{
 				UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
 				UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
+			}
+			else
+			{
+				AIManager.m_Instance.DisableUnits(this);
 			}
 
 			if (m_KillDialogue)
@@ -563,6 +567,8 @@ public class Unit : MonoBehaviour
 	/// <param name="skill"> The skill to activate. </param>
 	public void ActivateSkill(BaseSkill skill, Node castLocation)
 	{
+		Debug.Log($"<color=#9c4141>[Skill] </color>{GameManager.m_Instance.GetSelectedUnit().name} casts {skill.m_SkillName}" +
+			$" {(castLocation.unit ? $"at {castLocation.unit.name}" : "")} ({castLocation.m_NodeHighlight.name})");
 		// Doing my own search cause List.Find is gross.
 		for (int i = 0; i < m_Skills.Count; ++i)
 		{

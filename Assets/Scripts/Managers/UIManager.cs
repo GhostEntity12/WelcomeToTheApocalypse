@@ -129,6 +129,7 @@ public class UIManager : MonoBehaviour
 				return;
 			}
 			m_PauseScreen.gameObject.SetActive(!m_Paused);
+			m_ActiveUI = m_PauseScreen.gameObject.activeSelf;
 			m_Paused = !m_Paused;
 		}
 	}
@@ -174,34 +175,30 @@ public class UIManager : MonoBehaviour
 		m_PortraitForeground.sprite = uiData.m_Bust.m_BustForeground;
 		m_UIHealthBar.m_HealthBarBackground.sprite = uiData.m_Bust.m_Healthbar;
 
-		// Update the skin of the skills
+		// Assign the skills
+		for (int i = 0; i < m_SkillSlots.Length; i++)
+		{
+			SkillButton slot = m_SkillSlots[i];
+			m_SkillSlots[i].transform.parent.gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
+			slot.m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
+			if (slot.m_Skill)
+			{
+				slot.m_LightIcon.sprite = slot.m_Skill.m_LightIcon;
+				slot.m_LightIcon.color = uiData.m_IconColors.m_IconLight;
+				slot.m_DarkIcon.sprite = slot.m_Skill.m_DarkIcon;
+				slot.m_DarkIcon.color = uiData.m_IconColors.m_IconDark;
+			}
+			slot.UpdateTooltip();
+		}
+
+
+		// Update the skin and cooldown of the skills
 		foreach (SkillButton slot in m_SkillSlots)
 		{
 			slot.m_SidesImage.sprite = uiData.m_SkillDiamonds.m_SkillDiamondSides;
 			slot.m_CenterImage.sprite = uiData.m_SkillDiamonds.m_SkillDiamondCenter;
 			slot.m_LightningImage.material.SetColor("_UICloudTint", uiData.m_SkillDiamonds.m_SkillCloudColor);
-		}
-
-		// Assign the skills
-		for (int i = 0; i < m_SkillSlots.Length; i++)
-		{
-			// TODO: Refactor
-			m_SkillSlots[i].transform.parent.gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
-			m_SkillSlots[i].m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
-			if (m_SkillSlots[i].m_Skill)
-			{
-				m_SkillSlots[i].m_LightIcon.sprite = m_SkillSlots[i].m_Skill.m_LightIcon;
-				m_SkillSlots[i].m_LightIcon.color = uiData.m_IconColors.m_IconLight;
-				m_SkillSlots[i].m_DarkIcon.sprite = m_SkillSlots[i].m_Skill.m_DarkIcon;
-				m_SkillSlots[i].m_DarkIcon.color = uiData.m_IconColors.m_IconDark;
-			}
-			m_SkillSlots[i].UpdateTooltip();
-		}
-
-		// Update the cooldowns
-		foreach (SkillButton button in m_SkillSlots)
-		{
-			button.UpdateCooldownDisplay();
+			slot.UpdateCooldownDisplay();
 		}
 
 		onComplete?.Invoke();
@@ -310,8 +307,7 @@ public class UIManager : MonoBehaviour
 			{
 				return true;
 			}
-
-			else if (u.GetActionPoints() > 0)
+			else if (u.GetActionPoints() > 0 && UnitsManager.m_Instance.m_ActiveEnemyUnits.Count != 0)
 			{
 				return true;
 			}

@@ -57,6 +57,7 @@ public class CameraMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (UIManager.m_Instance.m_ActiveUI) return;
         // Get player input this frame.
         m_MovementInput += transform.right * Input.GetAxis("Horizontal");
         m_MovementInput += transform.forward * Input.GetAxis("Vertical");
