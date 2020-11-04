@@ -73,6 +73,8 @@ public class BaseSkill : ScriptableObject
     {
         FindAffectedUnits();
 
+        AIManager.m_Instance.m_AwaitingUnits.AddRange(affectedUnits);
+
         // Set the cooldown when the skill is used.
         m_CurrentCooldown = m_CooldownLength;
 
