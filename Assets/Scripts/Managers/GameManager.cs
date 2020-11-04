@@ -602,7 +602,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Check the player's units to see if they're alive.
     /// </summary>
-    public void CheckPlayerUnitsAlive()
+    public bool CheckIfAnyPlayerUnitsAlive()
     {
         // If true, all player units are dead.
         if (UnitsManager.m_Instance.m_PlayerUnits.Where(u => u.GetAlive()).Count() == 0)
@@ -610,10 +610,9 @@ public class GameManager : MonoBehaviour
             // All the player's units are dead, the player lost.
             // Pause the game and display the lose screen for the player.
             Debug.Log("Everybody's dead, everybody's dead Dave!");
-
-            Time.timeScale = 0.0f;
-            UIManager.m_Instance.m_LoseScreen.gameObject.SetActive(true);
+            return false;
         }
+        return true;
     }
 
     /// <summary>
