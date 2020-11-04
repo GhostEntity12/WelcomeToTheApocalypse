@@ -109,13 +109,14 @@ public class ParticlesManager : MonoBehaviour
 	/// Move ranged particle to desired destination
 	/// </summary>
 
-	public void OnRanged(Vector3 unitPos, Vector3 targetPos)
+	public void OnRanged(GameObject caster, Vector3 targetPos)
 	{
-		m_rangedPool[m_rangedIndex].transform.position = unitPos;
+		m_rangedPool[m_rangedIndex].transform.position = caster.transform.position;
+		m_rangedPool[m_rangedIndex].gameObject.GetComponent<RangedParticle>().m_caster = caster;
 		m_rangedPool[m_rangedIndex].Play();
 		m_activeRangedParticle.Add(m_rangedPool[m_rangedIndex]);
 		m_endPosition.Add(targetPos);
-		print(Vector3.Distance(unitPos, targetPos));
+		print(Vector3.Distance(caster.transform.position, targetPos));
 		++m_rangedIndex;
 		//activeParticle[0].transform.position = Vector3.MoveTowards(m_unitPos, m_endPosition[0], 5.0f);
 	}

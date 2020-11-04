@@ -263,9 +263,13 @@ public class Unit : MonoBehaviour
 	/// <param name="decrease"> The amount to decrease the unit's health by. </param>
 	public void DecreaseCurrentHealth()
 	{
-		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
+		// Check if it is currently the AI's turn.
+		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
+		{
+			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
+		}
 
-		
+		int damage = (int)m_DealingDamage + m_TakeExtraDamage;		
 
 		SetCurrentHealth(m_CurrentHealth - damage);
 		m_TakeExtraDamage = 0;
@@ -314,7 +318,7 @@ public class Unit : MonoBehaviour
 	{
 		if (m_CurrentHealth <= 0)
 		{
-			Debug.Log($"{name} died");
+			Debug.Log($"<color=#a87932>[Death] </color>{name} died");
 			m_IsAlive = false;
 
 			// Check if the unit has the "DefeatEnemyWinCondition" script on it.
@@ -324,14 +328,22 @@ public class Unit : MonoBehaviour
 			// If this is a player unit, check if the player has any units remaining.
 			if (m_Allegiance == Allegiance.Player)
 			{
-				GameManager.m_Instance.CheckPlayerUnitsAlive();
 				UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
 				UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
+			}
+			else
+			{
+				AIManager.m_Instance.DisableUnits(this);
 			}
 
 			if (m_KillDialogue)
 			{
-				DialogueManager.instance.TriggerDialogue(m_KillDialogue);
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, 
+					GetComponent<DefeatEnemyWinCondition>() ?
+						(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win)) :
+					!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive() ? 
+						(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss)) :
+						(Action)null);
 			}
 
 			Node currentNode = Grid.m_Instance.GetNode(transform.position);
@@ -345,8 +357,6 @@ public class Unit : MonoBehaviour
 		}
 	}
 
-	public void Despawn() => gameObject.SetActive(false);
-
 	/// <summary>
 	/// Disables the unit and will be called by an Animator Event
 	/// </summary>
@@ -359,24 +369,24 @@ public class Unit : MonoBehaviour
 	/// Get the current amount of movement of the character.
 	/// </summary>
 	/// <returns> The unit's current movement. </summary>
-	public int GetCurrentMovement() { return m_CurrentMovement; }
+	public int GetCurrentMovement() => m_CurrentMovement; 
 
 	/// <summary>
 	/// Decrease the character's current amount of movement.
 	/// </summary>
 	/// <param name="decrease"> The amount to decrease the unit's movement pool by. </param>
-	public void DecreaseCurrentMovement(int decrease) { print($"<color=#8440a8>[Movement] </color>Decreasing {name}'s movement by {decrease}"); m_CurrentMovement -= decrease; }
+	public void DecreaseCurrentMovement(int decrease) => m_CurrentMovement -= decrease;
 
 	/// <summary>
 	/// Reset the unit's current movement.
 	/// </summary>
-	public void ResetCurrentMovement() { m_CurrentMovement = m_StartingMovement; }
+	public void ResetCurrentMovement() => m_CurrentMovement = m_StartingMovement;
 
 	/// <summary>
 	/// Get the list of skills of the unit.
 	/// </summary>
 	/// <returns> List of skills the unit has. </returns>
-	public List<BaseSkill> GetSkills() { return m_Skills; }
+	public List<BaseSkill> GetSkills() => m_Skills; 
 
 	/// <summary>
 	/// Get a specific skill.
@@ -450,6 +460,27 @@ public class Unit : MonoBehaviour
 	public void ResetActionPoints()
 	{
 		m_CurrentActionPoints = m_StartingActionPoints;
+	}
+
+	public void AddStatusEffectFromSkill(InflictableStatus effect)
+	{
+		// Check if it is currently the AI's turn.
+		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
+		{
+			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
+		}
+		AddStatusEffect(effect);
+	}
+
+	public void AddHealingFromSkill(int heal)
+	{
+		// Check if it is currently the AI's turn.
+		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
+		{
+			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
+		}
+
+		IncreaseCurrentHealth(heal);
 	}
 
 	/// <summary>
@@ -538,6 +569,8 @@ public class Unit : MonoBehaviour
 	/// <param name="skill"> The skill to activate. </param>
 	public void ActivateSkill(BaseSkill skill, Node castLocation)
 	{
+		Debug.Log($"<color=#9c4141>[Skill] </color>{GameManager.m_Instance.GetSelectedUnit().name} casts {skill.m_SkillName}" +
+			$" {(castLocation.unit ? $"at {castLocation.unit.name}" : "")} ({castLocation.m_NodeHighlight.name})");
 		// Doing my own search cause List.Find is gross.
 		for (int i = 0; i < m_Skills.Count; ++i)
 		{

@@ -27,7 +27,6 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Unit the player has selected.
     /// </summary>
-    // TODO: set back to private
     public Unit m_SelectedUnit = null;
 
     /// <summary>
@@ -98,10 +97,15 @@ public class GameManager : MonoBehaviour
     [FMODUnity.EventRef]
     public string m_TurnEndSound = "";
 
+	[FMODUnity.EventRef]
+	public string m_GameMusic = "";
+
     // On startup.
     private void Awake()
     {
         m_MainCamera = Camera.main;
+		FMODUnity.RuntimeManager.PlayOneShot(m_GameMusic, m_MainCamera.transform.position);
+
         m_MouseRay.origin = m_MainCamera.transform.position;
 
         m_Instance = this;
@@ -151,125 +155,76 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void EndCurrentTurn()
     {
+        m_TeamCurrentTurn = m_TeamCurrentTurn == Allegiance.Enemy ? Allegiance.Player : Allegiance.Enemy;
+
         UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
 
-        // Player ends turn, start enemy turn
-        if (m_TeamCurrentTurn == Allegiance.Player)
+        UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
+
+        // Play the end turn sound on the camera.
+        FMODUnity.RuntimeManager.PlayOneShot(m_TurnEndSound, Camera.main.transform.position);
+
+
+        // Remove all the highlights
+        if (m_SelectedUnit)
         {
-            m_TeamCurrentTurn = Allegiance.Enemy;
-
-            UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
-
-            foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+            foreach (Node n in m_SelectedUnit.m_MovableNodes)
             {
-                u.SetDealExtraDamage(0);
-                foreach (InflictableStatus IS in u.GetInflictableStatuses())
-                {
-                    // If returns true, status effect's duration has reached 0, remove the status effect.
-                    if (IS.DecrementDuration() == true)
-                    {
-                        u.RemoveStatusEffect(IS);
-                    }
-                }
-            }
-
-            // Stop highlighting node's the player can move to.
-            if (m_SelectedUnit)
-            {
-                foreach (Node n in m_SelectedUnit.m_MovableNodes)
-                {
-                    n.m_NodeHighlight.ChangeHighlight(TileState.None);
-                }
-            }
-            // Clear the skill targeting highlights.
-            foreach (Node n in m_maxSkillRange)
-            {
-                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
-                m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
                 n.m_NodeHighlight.ChangeHighlight(TileState.None);
             }
-            // Reset stuff.
-            m_SelectedUnit = null;
-            m_SelectedSkill = null;
-            m_TargetingState = TargetingState.Move;
+        }
+        foreach (Node n in m_maxSkillRange)
+        {
+            m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+            m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+            n.m_NodeHighlight.ChangeHighlight(TileState.None);
+        }
 
-            // Check the passives of all the enemy units for any that trigger at the start of their turn.
-            foreach (Unit u in UnitsManager.m_Instance.m_ActiveEnemyUnits)
+        // Reset stuff.
+        m_SelectedUnit = null;
+        m_SelectedSkill = null;
+        m_TargetingState = TargetingState.Move;
+
+        foreach (Unit unit in m_TeamCurrentTurn == Allegiance.Player ? UnitsManager.m_Instance.m_PlayerUnits : UnitsManager.m_Instance.m_ActiveEnemyUnits)
+        {
+            unit.SetDealExtraDamage(0);
+            unit.ResetActionPoints();
+            unit.ResetCurrentMovement();
+
+            // Check the passives of all the player units for any that trigger at the start of their turn.
+            PassiveSkill ps = unit.GetPassiveSkill();
+            if (ps)
+                ps.CheckPrecondition(TriggerType.OnTurnStart);
+
+            // Reduce cooldowns
+            foreach (BaseSkill s in unit.GetSkills())
             {
-                u.ResetActionPoints();
-
-                PassiveSkill ps = u.GetPassiveSkill();
-                if (ps != null)
-                {
-                    if (ps.CheckPrecondition(TriggerType.OnTurnStart, u) || ps.CheckPrecondition(TriggerType.OnTurnStart))
-                    {
-                        if (ps.GetAffectSelf() == true)
-                            ps.TakeEffect(u);
-                        else
-                            ps.TakeEffect();
-                    }
-                }
+                s.DecrementCooldown();
             }
 
-            // Play the end turn sound on the camera.
-            FMODUnity.RuntimeManager.PlayOneShot(m_TurnEndSound, Camera.main.transform.position);
-
-            // Tell the AI Manager to take its turn
-            AIManager.m_Instance.SetAITurn(true);
-        }
-        // Enemy ends turn, start player turn
-        else
-        {
-            m_TeamCurrentTurn = Allegiance.Player;
-
-            AIManager.m_Instance.SetAITurn(false);
-
-            UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
-
-            // Deselect unit.
-            m_SelectedUnit = null;
-
-            // Reset the player's units.
-            foreach (Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+            // Deal with infliceted statuses
+            foreach (InflictableStatus status in unit.GetInflictableStatuses())
             {
-                u.ResetActionPoints();
-
-                // Check the passives of all the player units for any that trigger at the start of their turn.
-                PassiveSkill ps = u.GetPassiveSkill();
-
-                if (ps != null)
-                    ps.CheckPrecondition(TriggerType.OnTurnStart);
-
-                foreach (BaseSkill s in u.GetSkills())
+                // If returns true, status effect's duration has reached 0, remove the status effect.
+                if (status.DecrementDuration())
                 {
-                    s.DecrementCooldown();
+                    unit.RemoveStatusEffect(status);
                 }
-
-                foreach (InflictableStatus status in u.GetInflictableStatuses())
+                // Otherwise do the effect
+                else if (status.CheckPrecondition(TriggerType.OnTurnStart) == true)
                 {
-                    if (status.CheckPrecondition(TriggerType.OnTurnStart) == true)
-                    {
-                        status.TakeEffect(u);
-                    }
+                    status.TakeEffect(unit);
                 }
             }
         }
 
-        // Reset the movement of the units whos turn it now is.
-        foreach (Unit u in UnitsManager.m_Instance.m_AllUnits)
-        {
-            if (u.GetAllegiance() == m_TeamCurrentTurn)
-                u.ResetCurrentMovement();
-        }
-
-        // Tell end turn button who's turn it currently is.
-        UIManager.m_Instance.m_EndTurnButton.UpdateCurrentTeamTurn(m_TeamCurrentTurn);
+        AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
     }
 
-    /// <summary>
-    /// Get's the player's inputs.
-    /// </summary>
-    public void PlayerInputs()
+	/// <summary>
+	/// Get's the player's inputs.
+	/// </summary>
+	public void PlayerInputs()
     {
         m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -287,10 +242,13 @@ public class GameManager : MonoBehaviour
                 // Check player input.
                 if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
                 {
-                    m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
-                    // If the unit the player is hovering over isn't the selected unit and the unit is on the player's side.
-                    // Select that unit.
-                    if (rayHitUnit != m_SelectedUnit)
+                    // Don't autofocus if the unit is dead
+                    if (rayHitUnit.GetCurrentHealth() > 0)
+                    {
+                        m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
+                    }
+                    // If the unit the player is hovering over isn't the selected unit and the unit is alive, select that unit.
+                    if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAlive() == true)
                     {
                         // Reset the nodes highlights before selecting the new unit
                         m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
@@ -336,8 +294,8 @@ public class GameManager : MonoBehaviour
                     }
                 }
                 // Check player input.
-                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
-                {
+                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
+                    {
                     // Cast the skill the player has selected.
                     // If hit unit is in affectable range,
                     if (unitNode.m_NodeHighlight.m_IsTargetable)
@@ -346,7 +304,6 @@ public class GameManager : MonoBehaviour
                         {
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
                             m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
-                            Debug.Log(m_SelectedUnit.GetActionPoints(), m_SelectedUnit);
 
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
 
@@ -388,16 +345,16 @@ public class GameManager : MonoBehaviour
                 }
 
                 // Check player input.
-                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
-                {
+                if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
+                    {
                     // Cast the skill the player has selected.
                     // If hit tile is in affectable range,
                     if (hitNode.m_NodeHighlight.m_IsTargetable)
                     {
                         if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
                         {
-                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
                             m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
+                            m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
 
                             UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
                             // Now deselect the skill and clear the targeting highlights.
@@ -417,7 +374,7 @@ public class GameManager : MonoBehaviour
                 if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player && m_SelectedUnit.GetMoving() == false)
                 {
                     // Check input.
-                    if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
+                    if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
                     {
                         if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
                         {
@@ -602,7 +559,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Check the player's units to see if they're alive.
     /// </summary>
-    public void CheckPlayerUnitsAlive()
+    public bool CheckIfAnyPlayerUnitsAlive()
     {
         // If true, all player units are dead.
         if (UnitsManager.m_Instance.m_PlayerUnits.Where(u => u.GetAlive()).Count() == 0)
@@ -610,10 +567,9 @@ public class GameManager : MonoBehaviour
             // All the player's units are dead, the player lost.
             // Pause the game and display the lose screen for the player.
             Debug.Log("Everybody's dead, everybody's dead Dave!");
-
-            Time.timeScale = 0.0f;
-            UIManager.m_Instance.m_LoseScreen.gameObject.SetActive(true);
+            return false;
         }
+        return true;
     }
 
     /// <summary>

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: B_Ranged
   m_EditorClassIdentifier: 
   m_SkillName: Basic Ranged Attack
-  m_LightIcon: {fileID: 0}
-  m_DarkIcon: {fileID: 0}
+  m_LightIcon: {fileID: 21300000, guid: e364b941bbfd02f4eb7dd42561ab8ab7, type: 3}
+  m_DarkIcon: {fileID: 21300000, guid: 2a84321fa7348bf4b8e51f0e2618c0d0, type: 3}
   m_Description: Make a basic ranged attack at a foe within {distance} tiles. Deal
     {damage} damage.
   targets: 2
@@ -23,7 +23,7 @@ MonoBehaviour:
   m_SkillType: 1
   m_CooldownLength: 0
   m_CurrentCooldown: 0
-  m_CastableDistance: 4
+  m_CastableDistance: 5
   m_AffectedRange: 0
   m_Cost: 1
   m_CastEvent: event:/Enemies/Ranged Attack

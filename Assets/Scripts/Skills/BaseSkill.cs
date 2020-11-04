@@ -73,11 +73,14 @@ public class BaseSkill : ScriptableObject
     {
         FindAffectedUnits();
 
+		// If it is the AI's turn, add to AI manager's list.
+		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
+			AIManager.m_Instance.m_AwaitingUnits.AddRange(affectedUnits);
+
         // Set the cooldown when the skill is used.
         m_CurrentCooldown = m_CooldownLength;
 
         // Update the cooldowns
-        // TODO: do this properly
         foreach (SkillButton button in UIManager.m_Instance.m_SkillSlots)
         {
             button.UpdateCooldownDisplay();

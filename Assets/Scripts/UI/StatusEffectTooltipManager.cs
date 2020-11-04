@@ -58,7 +58,6 @@ public class StatusEffectTooltipManager : MonoBehaviour
 	public void UpdatePassive()
 	{
 		PassiveSkill passive = GameManager.m_Instance.GetSelectedUnit().GetPassiveSkill();
-		print(passive);
 		if (passive)
 		{
 			m_PassiveName.text = passive.m_StatusName;

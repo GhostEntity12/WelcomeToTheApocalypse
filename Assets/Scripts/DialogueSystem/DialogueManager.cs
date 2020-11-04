@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
@@ -39,6 +40,8 @@ public class DialogueManager : MonoBehaviour
     [Header("File")]
     [Tooltip("The scene to load")]
     public TextAsset sceneName;
+    public Queue<TextAsset> sceneQueue = new Queue<TextAsset>();
+    public Queue<Action> onFinishDialogueActions = new Queue<Action>();
     [Tooltip("Whether to clear the scene after it has run")]
     public bool clearAfterScene;
     private string[] parsedText;
@@ -116,6 +119,7 @@ public class DialogueManager : MonoBehaviour
     }
     public void StartDisplaying()
     {
+        isDisplayingText = true; // Marks the system as typing out letters. Used to determine what happens when pressing enter
         // Set the portrait
         try
         {
@@ -248,8 +252,6 @@ public class DialogueManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator DisplayDialogue(string text)
     {
-        isDisplayingText = true; // Marks the system as typing out letters. Used to determine what happens when pressing enter
-
         for (int i = 0; i < text.Length; i++) // Adds a letter to the textbox then waits the delay time
         {
             if (text[i] == '<') // If the letter is an opening tag character, autofill the rest of the tag
@@ -281,7 +283,7 @@ public class DialogueManager : MonoBehaviour
             return;
         }
         if (skipDialogueDisplay.activeInHierarchy) return;
-        if (GetAnyKey(ProgressionKeys) && dialogueActive) // If enter is pressed and the textboxes are visible
+        if (GetAnyKeyDown(ProgressionKeys) && dialogueActive) // If enter is pressed and the textboxes are visible
         {
             if (isDisplayingText) // If the system is currently typing out, finish and return
             {
@@ -303,6 +305,7 @@ public class DialogueManager : MonoBehaviour
 
     public void EndScene()
     {
+        Debug.Log($"<color=#5cd3e0>[Dialogue]</color> Finished dialogue {sceneName.name}");
         LeanTween.alphaCanvas(darkenedBackground, 0.0f, 0.2f);
         StopCoroutine(displayDialogueCoroutine); // Stops the typing out
         dialogueBox.text = characterDialogue; // Fills the textbox with the entirety of the character's line
@@ -314,19 +317,33 @@ public class DialogueManager : MonoBehaviour
         {
             sceneName = null;
         }
-
         UIManager.m_Instance.SwapFromDialogue();
+        leftCharacter = null;
+        rightCharacter = null;
+        UIManager.m_Instance.ShowTurnIndicator();
+        UIManager.m_Instance.m_ActiveUI = false;
         dialogueActive = false;
         LeanTween.size(bustL.rectTransform, defaultPortraitSize, 0.1f);
         LeanTween.size(bustR.rectTransform, defaultPortraitSize, 0.1f);
         UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_LeftSpeaker, UIManager.ScreenState.Offscreen, ClearDialogueBox);
         UIManager.m_Instance.SlideElement(UIManager.m_Instance.m_RightSpeaker, UIManager.ScreenState.Offscreen);
-        leftCharacter = null;
-        rightCharacter = null;
-        sceneName = null;
-        UIManager.m_Instance.ShowTurnIndicator();
-        UIManager.m_Instance.m_ActiveUI = false;
-        return;
+
+        onFinishDialogueActions.Dequeue()?.Invoke();
+        if (sceneQueue.Count > 0)
+        {
+            TriggerDialogue(sceneQueue.Dequeue());
+        }
+    }
+
+    public void QueueDialogue(TextAsset _sceneName, Action onEndAction = null)
+    {
+        Debug.Log($"<color=#5cd3e0>[Dialogue]</color> Queuing dialogue {_sceneName.name}");
+        sceneQueue.Enqueue(_sceneName);
+        onFinishDialogueActions.Enqueue(onEndAction);
+        if (!dialogueActive)
+        {
+            TriggerDialogue(sceneQueue.Dequeue());
+        }
     }
 
     public void TriggerDialogue(TextAsset _sceneName)
@@ -337,6 +354,7 @@ public class DialogueManager : MonoBehaviour
         dialogueActive = true;
         ClearDialogueBox();
         sceneName = _sceneName;
+        Debug.Log($"<color=#5cd3e0>[Dialogue]</color> Starting dialogue {sceneName.name}");
 
         // Loads the file into memory
         TextAsset file = sceneName;
@@ -363,7 +381,7 @@ public class DialogueManager : MonoBehaviour
         LoadNewLine();
     }
 
-    bool GetAnyKey(params KeyCode[] aKeys)
+    bool GetAnyKeyDown(params KeyCode[] aKeys)
     {
         foreach (var key in aKeys)
             if (Input.GetKeyDown(key))
