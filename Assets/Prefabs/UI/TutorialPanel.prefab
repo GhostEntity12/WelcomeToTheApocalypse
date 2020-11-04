@@ -815,6 +815,7 @@ GameObject:
   - component: {fileID: 8393648016324777942}
   - component: {fileID: 5237767653438990240}
   - component: {fileID: 8176329067188906619}
+  - component: {fileID: 2449868310905481344}
   m_Layer: 5
   m_Name: TutorialPanel
   m_TagString: Untagged
@@ -909,3 +910,18 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &2449868310905481344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8313331567613478248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 026297ee0a1747b419118c1d66805c87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_LeftButton: {fileID: 8020290915854759455}
+  m_RightButton: {fileID: 5612704910221377382}
+  m_CloseButton: {fileID: 5378208615886953206}

@@ -90,7 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7f04fdba6917b64fa5f587030be3d84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PanSpeed: 0.3
+  m_AllowCloseOnFinalOnly: 0
+  m_PanSpeed: 0.15
 --- !u!1001 &5847713576070841782
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -98,6 +99,46 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4761732775616997118}
     m_Modifications:
+    - target: {fileID: 53107156391439646, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_Delegates.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 53107156391439646, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 53107156391439646, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].eventID
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 53107156391439646, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1915810607521910949}
+    - target: {fileID: 53107156391439646, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CloseTutorial
+      objectReference: {fileID: 0}
+    - target: {fileID: 53107156391439646, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 53107156391439646, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 53107156391439646, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 628960984995650823, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -292,6 +333,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8176329067188906619, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_Spacing
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 8176329067188906619, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
+        type: 3}
+      propertyPath: m_ChildAlignment
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8313331567613478248, guid: 6444afbc0d6a7db40b3578c2dd0287a1,
         type: 3}
