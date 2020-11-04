@@ -324,14 +324,18 @@ public class Unit : MonoBehaviour
 			// If this is a player unit, check if the player has any units remaining.
 			if (m_Allegiance == Allegiance.Player)
 			{
-				GameManager.m_Instance.CheckPlayerUnitsAlive();
 				UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
 				UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
 			}
 
 			if (m_KillDialogue)
 			{
-				DialogueManager.instance.TriggerDialogue(m_KillDialogue);
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, 
+					GetComponent<DefeatEnemyWinCondition>() ?
+						(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win)) :
+					!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive() ? 
+						(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss)) :
+						(Action)null);
 			}
 
 			Node currentNode = Grid.m_Instance.GetNode(transform.position);
