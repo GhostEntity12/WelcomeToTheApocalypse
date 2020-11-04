@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public enum Allegiance
 {
@@ -162,7 +161,7 @@ public class Unit : MonoBehaviour
 		}
 
 		// Set all skills to startup stuff, cause scriptable objects don't reset on scene load.
-		foreach(BaseSkill skill in m_LearnedSkills)
+		foreach (BaseSkill skill in m_LearnedSkills)
 		{
 			skill.Startup();
 		}
@@ -269,7 +268,7 @@ public class Unit : MonoBehaviour
 			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
 		}
 
-		int damage = (int)m_DealingDamage + m_TakeExtraDamage;		
+		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
 
 		SetCurrentHealth(m_CurrentHealth - damage);
 		m_TakeExtraDamage = 0;
@@ -338,10 +337,10 @@ public class Unit : MonoBehaviour
 
 			if (m_KillDialogue)
 			{
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, 
+				DialogueManager.instance.QueueDialogue(m_KillDialogue,
 					GetComponent<DefeatEnemyWinCondition>() ?
 						(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win)) :
-					!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive() ? 
+					!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive() ?
 						(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss)) :
 						(Action)null);
 			}
@@ -369,7 +368,7 @@ public class Unit : MonoBehaviour
 	/// Get the current amount of movement of the character.
 	/// </summary>
 	/// <returns> The unit's current movement. </summary>
-	public int GetCurrentMovement() => m_CurrentMovement; 
+	public int GetCurrentMovement() => m_CurrentMovement;
 
 	/// <summary>
 	/// Decrease the character's current amount of movement.
@@ -386,7 +385,7 @@ public class Unit : MonoBehaviour
 	/// Get the list of skills of the unit.
 	/// </summary>
 	/// <returns> List of skills the unit has. </returns>
-	public List<BaseSkill> GetSkills() => m_Skills; 
+	public List<BaseSkill> GetSkills() => m_Skills;
 
 	/// <summary>
 	/// Get a specific skill.
