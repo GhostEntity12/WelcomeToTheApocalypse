@@ -122,12 +122,19 @@ public class UIManager : MonoBehaviour
 			if (m_PrematureTurnEndScreen.m_Active)
 			{
 				m_PrematureTurnEndScreen.DisplayPrematureEndScreen(false);
-				return;
 			}
-			m_PauseScreen.gameObject.SetActive(!m_Paused);
-			m_ActiveUI = m_PauseScreen.gameObject.activeSelf;
-			m_Paused = !m_Paused;
+			else
+			{
+				TogglePause();
+			}
 		}
+	}
+
+	public void TogglePause()
+	{
+		LeanTween.scale(m_PauseScreen.gameObject, m_Paused ? Vector2.zero : Vector2.one, 0.03f).setEaseInOutCubic();
+		m_Paused = !m_Paused;
+		m_ActiveUI = m_Paused;
 	}
 
 	public InputBlockingUI EndTurnBlocker() => m_EndTurnBlocker;
@@ -282,13 +289,11 @@ public class UIManager : MonoBehaviour
 
 	public void HideTurnIndicator(Action onComplete = null)
 	{
-		Debug.Log("<color=#a85132>[Tweening] </color> Moving TI offscreen");
 		SlideElement(m_TurnIndicatorUI, ScreenState.Offscreen, onComplete);
 	}
 
 	public void ShowTurnIndicator(Action onComplete = null)
 	{
-		Debug.Log("<color=#a85132>[Tweening] </color> Moving TI onscreen");
 		SlideElement(m_TurnIndicatorUI, ScreenState.Onscreen, onComplete);
 	}
 	#endregion
