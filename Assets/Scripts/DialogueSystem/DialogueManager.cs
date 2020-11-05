@@ -63,7 +63,7 @@ public class DialogueManager : MonoBehaviour
 	private void Awake()
 	{
 		instance = this;
-		foreach (CharacterPortraitContainer characterPortraits in Resources.LoadAll<CharacterPortraitContainer>("Characters")) // Creates the dictionary
+		foreach (CharacterPortraitContainer characterPortraits in Resources.LoadAll<CharacterPortraitContainer>("CharacterDialogueSprites")) // Creates the dictionary
 		{
 			characterDictionary.Add(characterPortraits.name, characterPortraits);
 		}
