@@ -37,6 +37,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 			m_RagsToRichesDescription.text = effect.m_StatusDescription.Replace("{increase}", effect.m_AttackIncrease.ToString()).Replace("{duration}", effect.m_RemainingDuration.ToString());
 			m_RagsToRichesEffect.m_StatusImageLight.sprite = effect.m_StatusIconLight;
 			m_RagsToRichesEffect.m_StatusImageDark.sprite = effect.m_StatusIconDark;
+			m_RagsToRichesEffect.m_Background.sprite = selectedUnit.m_UIData.m_Bust.m_PassiveBackground;
 		}
 		else m_RagsToRichesEffect.gameObject.SetActive(false);
 
@@ -47,6 +48,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 			m_FaminesHungerDescription.text = effect.m_StatusDescription.Replace("{decrease}", effect.m_AttackDecrease.ToString()).Replace("{duration}", effect.m_RemainingDuration.ToString());
 			m_FaminesHungerEffect.m_StatusImageLight.sprite = effect.m_StatusIconLight;
 			m_FaminesHungerEffect.m_StatusImageDark.sprite = effect.m_StatusIconDark;
+			m_FaminesHungerEffect.m_Background.sprite = selectedUnit.m_UIData.m_Bust.m_PassiveBackground;
 		}
 		else m_FaminesHungerEffect.gameObject.SetActive(false);
 
@@ -57,6 +59,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 			m_PestilencesMarkDescription.text = effect.m_StatusDescription.Replace("{damage}", effect.m_DamageOverTime.ToString()).Replace("{duration}", effect.m_RemainingDuration.ToString());
 			m_PestilencesMarkEffect.m_StatusImageLight.sprite = effect.m_StatusIconLight;
 			m_PestilencesMarkEffect.m_StatusImageDark.sprite = effect.m_StatusIconDark;
+			m_PestilencesMarkEffect.m_Background.sprite = selectedUnit.m_UIData.m_Bust.m_PassiveBackground;
 		}
 		else m_PestilencesMarkEffect.gameObject.SetActive(false);
 	}
@@ -90,6 +93,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 
 			m_PassiveEffect.m_StatusImageLight.sprite = passive.m_StatusIconLight;
 			m_PassiveEffect.m_StatusImageDark.sprite = passive.m_StatusIconDark;
+			m_PassiveEffect.m_Background.sprite = GameManager.m_Instance.GetSelectedUnit().m_UIData.m_Bust.m_PassiveBackground;
 		}
 		m_PassiveEffect.gameObject.SetActive(passive);
 	}
