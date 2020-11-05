@@ -11,14 +11,20 @@ public class CombatTrigger : MonoBehaviour
 	private void Awake()
 	{
 		// Remove empty slots
-		m_EnemiesToActivate = m_EnemyGroupToActivate.GetComponentsInChildren<Unit>();
+		if (m_EnemyGroupToActivate)
+		{
+			m_EnemiesToActivate = m_EnemyGroupToActivate.GetComponentsInChildren<Unit>();
+		}
 	}
 
 	private void OnTriggerEnter(Collider other)
 	{
 		if (other.GetComponent<Unit>()?.GetAllegiance() == Allegiance.Player)
 		{
-			AIManager.m_Instance.EnableUnits(m_EnemiesToActivate);
+			if (m_EnemyGroupToActivate)
+			{
+				AIManager.m_Instance.EnableUnits(m_EnemiesToActivate);
+			}
 
 			if (scene)
 			{
