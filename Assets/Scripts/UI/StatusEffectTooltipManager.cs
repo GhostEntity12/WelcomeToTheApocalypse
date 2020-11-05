@@ -88,6 +88,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 					m_PassiveStatus.text = $"Pestilence has {charges} {(charges == 1 ? "charge" : "charges")} of Benign Infection remaining";
 					break;
 				default:
+					m_PassiveStatus.text = string.Empty;
 					break;
 			}
 
