@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 9194930049929285604}
   - component: {fileID: 3125597893794770359}
   - component: {fileID: 4776955163535566443}
-  - component: {fileID: 7910662582477985113}
-  - component: {fileID: 7403191469187058711}
+  - component: {fileID: -374279004523209510}
+  - component: {fileID: 5574735590128299170}
   m_Layer: 0
   m_Name: 1x1_Lamp
   m_TagString: Untagged
@@ -81,8 +81,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &7910662582477985113
-BoxCollider:
+--- !u!136 &-374279004523209510
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -91,10 +91,11 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.9485228, y: 5.311194, z: 1.1174057}
-  m_Center: {x: 0.011034086, y: 2.646917, z: -0.12073319}
---- !u!114 &7403191469187058711
+  m_Radius: 0.5587028
+  m_Height: 5.3083363
+  m_Direction: 1
+  m_Center: {x: 0.011034086, y: 2.648346, z: -0.12073319}
+--- !u!114 &5574735590128299170
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
