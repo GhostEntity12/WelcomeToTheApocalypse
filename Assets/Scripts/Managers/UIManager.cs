@@ -74,6 +74,7 @@ public class UIManager : MonoBehaviour
 	private InputBlockingUI m_EndTurnBlocker;
 	public GameObject m_PauseScreen = null;
 	private bool m_Paused = false;
+	public TutorialPanner m_Tutorial;
 
 	public CrawlDisplay m_CrawlDisplay;
 
@@ -91,7 +92,6 @@ public class UIManager : MonoBehaviour
 			GameObject eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 			eventSystem.transform.SetSiblingIndex(transform.GetSiblingIndex() + 1);
 		}
-
 	}
 
 	/// <summary>
