@@ -18,7 +18,8 @@ public abstract class StatusEffect : ScriptableObject
 	public TriggerType m_TriggerType;
 
 	// Icon for the status effect.
-	public Sprite m_StatusIcon;
+	public Sprite m_StatusIconLight;
+	public Sprite m_StatusIconDark;
 
 	// Description of the status effect.
 	[TextArea(1, 5)]
