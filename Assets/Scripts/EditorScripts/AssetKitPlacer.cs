@@ -2,24 +2,27 @@
 using UnityEditor;
 using UnityEngine;
 
-public class AssetKitPlacer : MonoBehaviour
+namespace Ghost
 {
-	public int m_Count;
-	public Vector3 m_Spacing;
-
-	[ContextMenu("Place")]
-	public void PlaceAssets()
+	public class AssetKitPlacer : MonoBehaviour
 	{
-		Vector3 position = transform.position;
-		Quaternion rotation = transform.rotation;
-		for (int i = 1; i < m_Count; i++)
+		public int m_Count;
+		public Vector3 m_Spacing;
+
+		[ContextMenu("Place")]
+		public void PlaceAssets()
 		{
-			GameObject newObject = PrefabUtility.InstantiatePrefab(PrefabUtility.GetCorrespondingObjectFromSource(gameObject), transform.parent) as GameObject;
+			Vector3 position = transform.position;
+			Quaternion rotation = transform.rotation;
+			for (int i = 1; i < m_Count; i++)
+			{
+				GameObject newObject = PrefabUtility.InstantiatePrefab(PrefabUtility.GetCorrespondingObjectFromSource(gameObject), transform.parent) as GameObject;
 
-			newObject.transform.position = position + m_Spacing;
-			newObject.transform.rotation = rotation;
+				newObject.transform.position = position + m_Spacing;
+				newObject.transform.rotation = rotation;
 
-			position = newObject.transform.position;
+				position = newObject.transform.position;
+			}
 		}
 	}
 }
