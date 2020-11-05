@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7555347552109289738}
   - component: {fileID: 8167741358106153434}
   - component: {fileID: -5656903154288380337}
+  - component: {fileID: 8022477900591405160}
   m_Layer: 0
   m_Name: 3x3_Tree_Leaves_1
   m_TagString: Untagged
@@ -109,3 +110,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isWalkable: 0
+--- !u!136 &8022477900591405160
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5721616331767071130}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.71
+  m_Height: 4.63
+  m_Direction: 2
+  m_Center: {x: -0.04, y: 0, z: 0}
