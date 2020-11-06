@@ -24,6 +24,15 @@ public class StatusEffectTooltipManager : MonoBehaviour
 		m_Instance = this;
 	}
 
+	void SetupSkin(StatusHolder holder, StatusEffect status, Unit unit)
+	{
+		holder.m_StatusImageLight.sprite = status.m_StatusIconLight;
+		holder.m_StatusImageDark.sprite = status.m_StatusIconDark;
+		holder.m_StatusImageLight.color = unit.m_UIData.m_IconColors.m_IconLight;
+		holder.m_StatusImageDark.color = unit.m_UIData.m_IconColors.m_IconDark;
+		holder.m_Background.sprite = unit.m_UIData.m_Bust.m_PassiveBackground;
+	}
+
 	public void UpdateActiveEffects()
 	{
 		Unit selectedUnit = GameManager.m_Instance.GetSelectedUnit();
@@ -35,9 +44,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 			m_RagsToRichesEffect.gameObject.SetActive(true);
 			AttackBuffEffect effect = selectedUnit.GetInflictableStatuses().OfType<AttackBuffEffect>().First();
 			m_RagsToRichesDescription.text = effect.m_StatusDescription.Replace("{increase}", effect.m_AttackIncrease.ToString()).Replace("{duration}", effect.m_RemainingDuration.ToString());
-			m_RagsToRichesEffect.m_StatusImageLight.sprite = effect.m_StatusIconLight;
-			m_RagsToRichesEffect.m_StatusImageDark.sprite = effect.m_StatusIconDark;
-			m_RagsToRichesEffect.m_Background.sprite = selectedUnit.m_UIData.m_Bust.m_PassiveBackground;
+			SetupSkin(m_RagsToRichesEffect, effect, selectedUnit);
 		}
 		else m_RagsToRichesEffect.gameObject.SetActive(false);
 
@@ -46,9 +53,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 			m_FaminesHungerEffect.gameObject.SetActive(true);
 			AttackDebuffEffect effect = selectedUnit.GetInflictableStatuses().OfType<AttackDebuffEffect>().First();
 			m_FaminesHungerDescription.text = effect.m_StatusDescription.Replace("{decrease}", effect.m_AttackDecrease.ToString()).Replace("{duration}", effect.m_RemainingDuration.ToString());
-			m_FaminesHungerEffect.m_StatusImageLight.sprite = effect.m_StatusIconLight;
-			m_FaminesHungerEffect.m_StatusImageDark.sprite = effect.m_StatusIconDark;
-			m_FaminesHungerEffect.m_Background.sprite = selectedUnit.m_UIData.m_Bust.m_PassiveBackground;
+			SetupSkin(m_FaminesHungerEffect, effect, selectedUnit);
 		}
 		else m_FaminesHungerEffect.gameObject.SetActive(false);
 
@@ -57,13 +62,10 @@ public class StatusEffectTooltipManager : MonoBehaviour
 			m_PestilencesMarkEffect.gameObject.SetActive(true);
 			DamageOverTimeEffect effect = selectedUnit.GetInflictableStatuses().OfType<DamageOverTimeEffect>().First();
 			m_PestilencesMarkDescription.text = effect.m_StatusDescription.Replace("{damage}", effect.m_DamageOverTime.ToString()).Replace("{duration}", effect.m_RemainingDuration.ToString());
-			m_PestilencesMarkEffect.m_StatusImageLight.sprite = effect.m_StatusIconLight;
-			m_PestilencesMarkEffect.m_StatusImageDark.sprite = effect.m_StatusIconDark;
-			m_PestilencesMarkEffect.m_Background.sprite = selectedUnit.m_UIData.m_Bust.m_PassiveBackground;
+			SetupSkin(m_PestilencesMarkEffect, effect, selectedUnit);
 		}
 		else m_PestilencesMarkEffect.gameObject.SetActive(false);
 	}
-
 	public void UpdatePassive()
 	{
 		PassiveSkill passive = GameManager.m_Instance.GetSelectedUnit().GetPassiveSkill();
@@ -92,9 +94,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 					break;
 			}
 
-			m_PassiveEffect.m_StatusImageLight.sprite = passive.m_StatusIconLight;
-			m_PassiveEffect.m_StatusImageDark.sprite = passive.m_StatusIconDark;
-			m_PassiveEffect.m_Background.sprite = GameManager.m_Instance.GetSelectedUnit().m_UIData.m_Bust.m_PassiveBackground;
+			SetupSkin(m_PassiveEffect, passive, GameManager.m_Instance.GetSelectedUnit());
 		}
 		m_PassiveEffect.gameObject.SetActive(passive);
 	}
