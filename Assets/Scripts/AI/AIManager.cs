@@ -645,7 +645,10 @@ public class AIManager : MonoBehaviour
 	/// Adds more units to the active units
 	/// </summary>
 	/// <param name="newUnits"></param>
-	public void EnableUnits(Unit[] newUnits) => EnableUnits(newUnits.ToList());
+	public void EnableUnits(Unit[] newUnits)
+	{
+		EnableUnits(newUnits.ToList());
+	}
 
 	/// <summary>
 	/// Adds more units to the active units
@@ -653,18 +656,20 @@ public class AIManager : MonoBehaviour
 	/// <param name="newUnits"></param>
 	public void EnableUnits(List<Unit> newUnits)
 	{
-		UnitsManager.m_Instance.m_ActiveEnemyUnits.AddRange(newUnits);
-
 		// Set them onto the visible layer
 		foreach (Unit unit in newUnits)
 		{
-			foreach (Transform t in unit.GetComponentsInChildren<Transform>(true))
+			if (Grid.m_Instance.SetUnitInitial(unit))
 			{
-				t.gameObject.layer = 9;
-			}
-			if (unit.m_SummonParticle)
-			{
-				unit.m_SummonParticle.Play();
+				foreach (Transform t in unit.GetComponentsInChildren<Transform>(true))
+				{
+					t.gameObject.layer = 9;
+				}
+				if (unit.m_SummonParticle)
+				{
+					unit.m_SummonParticle.Play();
+				}
+				UnitsManager.m_Instance.m_ActiveEnemyUnits.Add(unit);
 			}
 		}
 

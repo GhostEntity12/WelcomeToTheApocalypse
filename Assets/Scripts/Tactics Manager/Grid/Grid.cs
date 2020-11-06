@@ -254,11 +254,52 @@ public class Grid : MonoBehaviour
 		return m_Grid[a_x, a_z];
 	}
 
-	public void SetUnit(GameObject unit)
+	public void SetUnit(Unit unit)
 	{
 		Node n = GetNode(unit.transform.position);
 		n.unit = unit.GetComponent<Unit>();
 		n.m_isBlocked = true;
+	}
+
+	public bool SetUnitInitial(Unit unit)
+	{
+		Node n = GetNode(unit.transform.position);
+		Node safeNode = null;
+		if (n.unit)
+		{
+			int i = 1;
+			while (safeNode == null)
+			{
+				List<Node> searchArea = GetNodesWithinRadius(i, n);
+				foreach (Node node in searchArea)
+				{
+					if (node.unit)
+					{
+						continue;
+					}
+					else
+					{
+						safeNode = node;
+						break;
+					}
+				}
+				i++;
+				if (i > 10)
+				{
+					Debug.LogError($"All nodes within 10 nodes of {n.m_NodeHighlight.name} are populated!");
+					return false;
+				}
+			}
+		}
+		else
+		{
+			safeNode = n;
+		}
+		unit.transform.position = safeNode.worldPosition;
+		safeNode.unit = unit.GetComponent<Unit>();
+		safeNode.m_isBlocked = true;
+		safeNode.unit.SetTargetNodePosition(n, true);
+		return true;
 	}
 
 	public Unit GetUnit(Vector3 mousePos)

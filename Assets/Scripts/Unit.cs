@@ -169,8 +169,6 @@ public class Unit : MonoBehaviour
 
 	void Start()
 	{
-		Grid.m_Instance.SetUnit(gameObject);
-		m_CurrentTargetNode = Grid.m_Instance.GetNode(transform.position);
 		m_animator = GetComponent<Animator>();
 	}
 
@@ -200,7 +198,7 @@ public class Unit : MonoBehaviour
 
 					//m_animator.SetBool("isWalking", m_IsMoving);
 
-					Grid.m_Instance.SetUnit(gameObject);
+					Grid.m_Instance.SetUnit(this);
 					m_ActionOnFinishPath?.Invoke();
 					m_ActionOnFinishPath = null;
 				}
@@ -408,14 +406,17 @@ public class Unit : MonoBehaviour
 	/// Set the target node of the unit.
 	/// </summary>
 	/// <param name="target"> The node to set as the target. </param>
-	public void SetTargetNodePosition(Node target)
+	public void SetTargetNodePosition(Node target, bool onlySetNode = false)
 	{
 
 		// Unassign the unit on the current node.
-
 		// Before setting the new target node.
 
-		Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
+		// Had to add a hack around this. sorry - James L
+		if (!onlySetNode)
+		{
+			Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
+		}
 		m_CurrentTargetNode = target;
 		transform.LookAt(m_CurrentTargetNode.worldPosition);
 	}
