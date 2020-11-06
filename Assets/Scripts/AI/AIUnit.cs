@@ -54,7 +54,7 @@ public class AIUnit : Unit
 
 	private void Start()
 	{
-		Grid.m_Instance.SetUnit(gameObject);
+		Grid.m_Instance.SetUnit(this);
 		m_currentTargetNode = Grid.m_Instance.GetNode(transform.position);
 	}
 
