@@ -20,15 +20,10 @@ public class PestilencePassive : PassiveSkill
 		m_CurrentHealResource = m_StartingHealResource;
 	}
 
-	public override bool CheckPrecondition(TriggerType trigger)
-	{
-		if (base.CheckPrecondition(trigger) == true)
-		{
-			return true;
-		}
-
-		return false;
-	}
+    public override bool CheckPrecondition(TriggerType trigger)
+    {
+        return base.CheckPrecondition(trigger);
+    }
 
 	public override void TakeEffect()
 	{

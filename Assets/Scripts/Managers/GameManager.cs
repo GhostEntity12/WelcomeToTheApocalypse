@@ -180,10 +180,25 @@ public class GameManager : MonoBehaviour
 			n.m_NodeHighlight.ChangeHighlight(TileState.None);
 		}
 
-		// Reset stuff.
-		m_SelectedUnit = null;
-		m_SelectedSkill = null;
-		m_TargetingState = TargetingState.Move;
+                PassiveSkill ps = u.GetPassiveSkill();
+                if (ps != null)
+                {
+                    if (ps.CheckPrecondition(TriggerType.OnTurnStart, u))
+                    {
+                        if (ps.GetAffectSelf() == true)
+                            ps.TakeEffect(u);
+                        else
+                            ps.TakeEffect();
+                    }
+					if (ps.CheckPrecondition(TriggerType.OnTurnStart))
+					{
+						if (ps.GetAffectSelf() == true)
+							ps.TakeEffect(u);
+						else
+							ps.TakeEffect();
+					}
+                }
+            }
 
 		foreach (Unit unit in m_TeamCurrentTurn == Allegiance.Player ? UnitsManager.m_Instance.m_PlayerUnits : UnitsManager.m_Instance.m_ActiveEnemyUnits)
 		{
@@ -230,7 +245,9 @@ public class GameManager : MonoBehaviour
 
 		m_LeftMouseDown = Input.GetMouseButtonDown(0);
 
-		m_MouseOverUIBlockingElements = UIManager.m_Instance.CheckUIBlocking();
+				if (ps != null)
+					if (ps.CheckPrecondition(TriggerType.OnTurnStart))
+						ps.TakeEffect(u);
 
 		// Mouse is over a unit.
 		if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
