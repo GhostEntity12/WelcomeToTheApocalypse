@@ -87,7 +87,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 					break;
 				case PestilencePassive pp:
 					int charges = Mathf.FloorToInt((float)pp.m_CurrentHealResource / pp.m_HealResourceCastCost);
-					m_PassiveStatus.text = $"Pestilence has {charges} {(charges == 1 ? "charge" : "charges")} of Benign Infection remaining";
+					m_PassiveStatus.text = $"{charges} {(charges == 1 ? "charge" : "charges")} of Benign Infection remaining";
 					break;
 				default:
 					m_PassiveStatus.text = string.Empty;
