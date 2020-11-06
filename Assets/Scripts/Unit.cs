@@ -368,7 +368,9 @@ public class Unit : MonoBehaviour
 		{
 			Vector3 targetPos = ParticlesManager.m_Instance.m_ActiveSkill.m_Targets[0].transform.position;
 			ParticlesManager.m_Instance.OnRanged(gameObject, new Vector3(targetPos.x, 1, targetPos.z));
+			return;
 		}
+		// Spawn the particle
 	}
 
 	/// <summary>
@@ -397,12 +399,19 @@ public class Unit : MonoBehaviour
 
 		if (m_KillDialogue)
 		{
-			DialogueManager.instance.QueueDialogue(m_KillDialogue,
-				GetComponent<DefeatEnemyWinCondition>() ?
-					(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win)) :
-				!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive() ?
-					(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss)) :
-					(Action)KillUnit);
+			if (GetComponent<DefeatEnemyWinCondition>())
+			{
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win));
+			}
+			else if (!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive())
+			{
+				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = UIManager.m_Instance.ShowCrawlButtons;
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss));
+			}
+			else
+			{
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, KillUnit);
+			}					
 		}
 
 		Node currentNode = Grid.m_Instance.GetNode(transform.position);

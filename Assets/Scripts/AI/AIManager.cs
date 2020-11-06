@@ -120,6 +120,7 @@ public class AIManager : MonoBehaviour
 	private void Awake()
 	{
 		m_Instance = this;
+		ParticlesManager.m_Instance.m_ListEmptied += ListEmpty;
 	}
 
 	void Update()
@@ -264,10 +265,15 @@ public class AIManager : MonoBehaviour
 	void AssignMovementCosts(Unit aiUnit)
 	{
 		Node startNode = Grid.m_Instance.GetNode(aiUnit.transform.position);
-		foreach (Node node in Grid.m_Instance.GetNodesWithinRadius(aiUnit.GetCurrentMovement(), startNode))
+		List<Node> nodesInRange = Grid.m_Instance.GetNodesWithinRadius(aiUnit.GetCurrentMovement(), startNode);
+		nodesInRange.Remove(startNode);
+		foreach (Node node in nodesInRange)
 		{
-			int distance = Mathf.Abs(startNode.x - node.x) + Mathf.Abs(startNode.z - node.z);
-			AddOrUpdateHeuristic(distance, node, aiUnit);
+			if (Grid.m_Instance.FindPath(startNode, node, out Stack<Node> path, out _, allowBlocked: true))
+			{
+				int distance = path.Count;
+				AddOrUpdateHeuristic(distance, node, aiUnit);
+			}
 		}
 	}
 
@@ -627,7 +633,6 @@ public class AIManager : MonoBehaviour
 				m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_DamageSkill.m_Skill.m_Cost);
 				m_CurrentAIUnit.ActivateSkill(m_BestOption.m_DamageSkill.m_Skill, m_BestOption.m_DamageSkill.m_TargetNode);
 			}
-			ParticlesManager.m_Instance.m_ListEmptied += ListEmpty;
 		}
 		else
 		{
