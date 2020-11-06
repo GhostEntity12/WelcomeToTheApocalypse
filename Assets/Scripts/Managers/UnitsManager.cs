@@ -21,4 +21,12 @@ public class UnitsManager : MonoBehaviour
 		m_PlayerUnits = m_AllUnits.Where(u => u.GetAllegiance() == Allegiance.Player).ToList();
 		m_EnemyUnits = m_AllUnits.Where(u => u.GetAllegiance() == Allegiance.Enemy).ToList();
 	}
+
+	private void Start()
+	{
+		foreach (Unit playerUnit in m_PlayerUnits)
+		{
+			Grid.m_Instance.SetUnitInitial(playerUnit);
+		}
+	}
 }
