@@ -40,6 +40,7 @@ public class TutorialPanner : MonoBehaviour
 
 	public void CloseTutorial()
 	{
+		UIManager.m_Instance.m_ActiveUI = false;
 		LeanTween.move(m_RectTransform, new Vector2(m_RectTransform.anchoredPosition.x, -1080), m_PanSpeed).setEaseInCubic().setOnComplete(() => m_RectTransform.anchoredPosition = new Vector2(0, -1080));
 		m_CurrentPanel = 0;
 	}
@@ -47,6 +48,7 @@ public class TutorialPanner : MonoBehaviour
 	[ContextMenu("Open Tutorial")]
 	public void OpenTutorial()
 	{
+		UIManager.m_Instance.m_ActiveUI = true;
 		LeanTween.move(m_RectTransform, Vector2.zero, m_PanSpeed).setEaseInCubic();
 	}
 }

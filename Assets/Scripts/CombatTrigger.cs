@@ -28,12 +28,14 @@ public class CombatTrigger : MonoBehaviour
 
 			if (scene)
 			{
-				if (DialogueManager.instance.dialogueActive)
+				if (scene.name.Contains("Start"))
 				{
-					Debug.LogError($"Dialogue manager is already displaying {DialogueManager.instance.sceneName}, can't start {scene}!");
-					return;
+					UIManager.m_Instance.SwapToDialogue(scene, () => UIManager.m_Instance.m_Tutorial.OpenTutorial());
 				}
-				UIManager.m_Instance.SwapToDialogue(scene);
+				else
+				{
+					UIManager.m_Instance.SwapToDialogue(scene);
+				}
 			}
 
 			gameObject.SetActive(false);

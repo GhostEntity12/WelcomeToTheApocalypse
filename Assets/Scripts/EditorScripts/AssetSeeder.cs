@@ -56,7 +56,6 @@ public class AssetSeeder : MonoBehaviour
 				if (Physics.Raycast(randPoint + Vector3.up * 10, Vector3.down, out RaycastHit hit, 15, m_GroundMask))
 				{
 					Debug.DrawLine(randPoint + Vector3.up * 10, hit.point, Color.red, 10);
-					print("hit something");
 					randPoint = hit.point;
 				}
 

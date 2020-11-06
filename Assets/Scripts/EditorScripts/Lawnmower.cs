@@ -1,36 +1,43 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class Lawnmower : MonoBehaviour
+namespace Ghost
 {
-	public LayerMask m_MowArea;
-	[Range(0, 1)]
-	public float m_MowSensitivity = 0.05f;
 
-	[ContextMenu("Mow The Lawn")]
-	void Mow()
+	public class Lawnmower : MonoBehaviour
 	{
-		List<GameObject> markedForDestroy = new List<GameObject>();
-		foreach (Transform item in transform)
+		public LayerMask m_MowArea;
+		[Range(0, 1)]
+		public float m_MowSensitivity = 0.05f;
+
+		[ContextMenu("Mow The Lawn")]
+		void Mow()
 		{
-			if (Physics.OverlapSphere(item.position, m_MowSensitivity, m_MowArea).Length > 0)
+			List<GameObject> markedForDestroy = new List<GameObject>();
+			foreach (Transform item in transform)
 			{
-				markedForDestroy.Add(item.gameObject);
+				Collider[] overlapColliders = Physics.OverlapSphere(item.position, m_MowSensitivity, m_MowArea);
+				if (overlapColliders.Count() == 1 && overlapColliders[0].gameObject == item.gameObject) continue; // Don't remove if it's only overlapping itself
+				if (overlapColliders.Length > 0)
+				{
+					markedForDestroy.Add(item.gameObject);
+				}
 			}
+
+			Debug.Log($"Mowing {markedForDestroy.Count} items");
+
+			foreach (GameObject markedItem in markedForDestroy)
+			{
+				DestroyImmediate(markedItem);
+			}
+
 		}
 
-		Debug.Log($"Mowing {markedForDestroy.Count} items");
-
-		foreach (GameObject markedItem in markedForDestroy)
+		[ContextMenu("ChildCount")]
+		void GetChildren()
 		{
-			DestroyImmediate(markedItem);
+			print(transform.childCount);
 		}
-
-	}
-
-	[ContextMenu("ChildCount")]
-	void GetChildren()
-	{
-		print(transform.childCount);
 	}
 }
