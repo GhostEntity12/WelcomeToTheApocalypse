@@ -273,7 +273,14 @@ public class Unit : MonoBehaviour
 
 		if (m_PassiveSkill != null)
 		{
-			if (m_PassiveSkill.CheckPrecondition(TriggerType.OnTakeDamage, this) || m_PassiveSkill.CheckPrecondition(TriggerType.OnTakeDamage))
+			if (m_PassiveSkill.CheckPrecondition(TriggerType.OnTakeDamage, this))
+			{
+				if (m_PassiveSkill.GetAffectSelf() == true)
+					m_PassiveSkill.TakeEffect(this);
+				else
+					m_PassiveSkill.TakeEffect();
+			}
+			if (m_PassiveSkill.CheckPrecondition(TriggerType.OnTakeDamage))
 			{
 				if (m_PassiveSkill.GetAffectSelf() == true)
 					m_PassiveSkill.TakeEffect(this);
@@ -595,7 +602,6 @@ public class Unit : MonoBehaviour
 							// Check which units meet the prerequisits for the unit's passive.
 							foreach (Unit u in hitUnits)
 							{
-
 								foreach (InflictableStatus status in m_StatusEffects)
 								{
 									if (status.CheckPrecondition(TriggerType.OnDealDamage) == true)
@@ -610,18 +616,20 @@ public class Unit : MonoBehaviour
 									ds.AddExtraDamage(m_DealExtraDamage);
 								}
 
-								if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
-								{
+								if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, u))
 									m_PassiveSkill.TakeEffect(u);
-								}
+								if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
+									m_PassiveSkill.TakeEffect();
 							}
 						}
 						else
 						{
-							if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, this) || m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
+							if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage, this))
 							{
 								m_PassiveSkill.TakeEffect(this);
 							}
+							if (m_PassiveSkill.CheckPrecondition(TriggerType.OnDealDamage))
+								m_PassiveSkill.TakeEffect(this);
 						}
 					}
 
@@ -638,7 +646,6 @@ public class Unit : MonoBehaviour
 							{
 								pesPassive.UseHealResource();
 							}
-
 							// If there is no heal resource remaining, output warning about it and leave function.
 							else
 							{

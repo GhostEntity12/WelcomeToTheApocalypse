@@ -164,7 +164,6 @@ public class GameManager : MonoBehaviour
 		// Play the end turn sound on the camera.
 		FMODUnity.RuntimeManager.PlayOneShot(m_TurnEndSound, Camera.main.transform.position);
 
-
 		// Remove all the highlights
 		if (m_SelectedUnit)
 		{
@@ -179,11 +178,6 @@ public class GameManager : MonoBehaviour
 			m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
 			n.m_NodeHighlight.ChangeHighlight(TileState.None);
 		}
-
-		// Reset stuff.
-		m_SelectedUnit = null;
-		m_SelectedSkill = null;
-		m_TargetingState = TargetingState.Move;
 
 		foreach (Unit unit in m_TeamCurrentTurn == Allegiance.Player ? UnitsManager.m_Instance.m_PlayerUnits : UnitsManager.m_Instance.m_ActiveEnemyUnits)
 		{
@@ -216,9 +210,9 @@ public class GameManager : MonoBehaviour
 					status.TakeEffect(unit);
 				}
 			}
-		}
 
-		AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
+			AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
+		}
 	}
 
 	/// <summary>
@@ -229,8 +223,6 @@ public class GameManager : MonoBehaviour
 		m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
 
 		m_LeftMouseDown = Input.GetMouseButtonDown(0);
-
-		m_MouseOverUIBlockingElements = UIManager.m_Instance.CheckUIBlocking();
 
 		// Mouse is over a unit.
 		if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))

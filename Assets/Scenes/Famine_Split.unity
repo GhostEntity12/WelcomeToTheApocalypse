@@ -38333,12 +38333,28 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: "Each Horseman has a Passive ability which enhances the way they play.
-        \nPassive abilities are listed under character portraits.\r\n"
+        \nPassive abilities are listed under character portraits.\r\nMinions of the
+        Apocalypse do not have a passive ability.\n"
       objectReference: {fileID: 0}
     - target: {fileID: 2908985730890165386, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 127
+      value: 185
+      objectReference: {fileID: 0}
+    - target: {fileID: 2908985730890165386, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
+        type: 3}
+      propertyPath: m_textInfo.spaceCount
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2908985730890165386, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2908985730890165386, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 2908985731634233628, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
@@ -38366,29 +38382,29 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: "Units have a certain amount of action points that dictate what they
-        can do in a turn. \nThe Horsemen have 2 Action Points, enemies only have
-        1.\nWhen a unit is out of Action Points, they can\u2019t take any further
-        actions on their turn.\r\n"
+        can do in a turn. \nThe Horsemen have 2 Action Points, and Minions of the
+        Apocalypse only have 1.\nWhen a unit is out of Action Points, they can\u2019t
+        take any further actions on their turn.\r\n"
       objectReference: {fileID: 0}
     - target: {fileID: 2908985731907712943, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 232
+      value: 254
       objectReference: {fileID: 0}
     - target: {fileID: 2908985731907712943, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 44
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 2908985731907712943, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 45
+      value: 49
       objectReference: {fileID: 0}
     - target: {fileID: 2908985731907712943, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_textInfo.lineCount
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3119332008413488471, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
@@ -38410,6 +38426,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3178448865168518629, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
+        type: 3}
+      propertyPath: m_Texture
+      value: 
+      objectReference: {fileID: 2800000, guid: c5cbc56c39d572742adae62c425b0136, type: 3}
     - target: {fileID: 3178448866164242112, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_Texture
