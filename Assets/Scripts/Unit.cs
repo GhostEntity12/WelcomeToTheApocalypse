@@ -362,6 +362,15 @@ public class Unit : MonoBehaviour
 		ParticlesManager.m_Instance.TakeSkillEffects();
 	}
 
+	public void PlaySkillParticleSystem()
+	{
+		if (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
+		{
+			Vector3 targetPos = ParticlesManager.m_Instance.m_ActiveSkill.m_Targets[0].transform.position;
+			ParticlesManager.m_Instance.OnRanged(gameObject, new Vector3(targetPos.x, 1, targetPos.z));
+		}
+	}
+
 	/// <summary>
 	/// Check if the unit's health is above 0.
 	/// If equal to or below, the unit is not alive.
@@ -393,7 +402,7 @@ public class Unit : MonoBehaviour
 					(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win)) :
 				!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive() ?
 					(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss)) :
-					(Action)null);
+					(Action)KillUnit);
 		}
 
 		Node currentNode = Grid.m_Instance.GetNode(transform.position);
@@ -452,7 +461,6 @@ public class Unit : MonoBehaviour
 	/// <param name="target"> The node to set as the target. </param>
 	public void SetTargetNodePosition(Node target, bool onlySetNode = false)
 	{
-
 		// Unassign the unit on the current node.
 		// Before setting the new target node.
 
@@ -469,52 +477,46 @@ public class Unit : MonoBehaviour
 	/// Get the unit's path.
 	/// </summary>
 	/// <returns> Stack of the unit's movement path. </returns>
-	public Stack<Node> GetMovementPath() { return m_MovementPath; }
+	public Stack<Node> GetMovementPath() => m_MovementPath; 
 
 	/// <summary>
 	/// Get the unit's allegiance.
 	/// </summary>
 	/// <returns> The allegiance of the unit. </returns>
-	public Allegiance GetAllegiance() { return m_Allegiance; }
+	public Allegiance GetAllegiance() => m_Allegiance; 
 
 	/// <summary>
 	/// Get if the unit is alive.
 	/// </summary>
 	/// <returns>If the unit is alive.</returns>
-	public bool GetAlive() { return m_IsAlive; }
+	public bool GetAlive() => m_IsAlive; 
 
 	/// <summary>
 	/// Get the unit's action points.
 	/// </summary>
 	/// <returns>The current amount of action points the unit has.</returns>
-	public int GetActionPoints() { return m_CurrentActionPoints; }
+	public int GetActionPoints() => m_CurrentActionPoints; 
 
 	/// <summary>
 	/// Decrease the amount of action points the unit has.
 	/// </summary>
 	/// <param name="decrease">The amount to decrease the unit's action points by.</param>
-	public void DecreaseActionPoints(int decrease)
-	{
-		m_CurrentActionPoints -= decrease;
-	}
+	public void DecreaseActionPoints(int decrease)=> m_CurrentActionPoints -= decrease;
 
 	/// <summary>
 	/// Reset the unit's action points.
 	/// </summary>
-	public void ResetActionPoints()
-	{
-		m_CurrentActionPoints = m_StartingActionPoints;
-	}
+	public void ResetActionPoints() => m_CurrentActionPoints = m_StartingActionPoints;
 
 	/// <summary>
 	/// Add a status effect to the unit.
 	/// </summary>
 	/// <param name="effect"> The status effect to add to the unit. </param>
-	public void AddStatusEffect(InflictableStatus effect) { m_StatusEffects.Add(effect); }
+	public void AddStatusEffect(InflictableStatus effect) => m_StatusEffects.Add(effect); 
 
-	public void RemoveStatusEffect(InflictableStatus effect) { m_StatusEffects.Remove(effect); }
+	public void RemoveStatusEffect(InflictableStatus effect) => m_StatusEffects.Remove(effect); 
 
-	public List<InflictableStatus> GetInflictableStatuses() { return m_StatusEffects; }
+	public List<InflictableStatus> GetInflictableStatuses() => m_StatusEffects; 
 
 	/// <summary>
 	/// Set the healthbar of the unit.
@@ -526,51 +528,39 @@ public class Unit : MonoBehaviour
 		m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
 	}
 
-	public HealthbarContainer GetHealthBar()
-	{
-		return m_Healthbar;
-	}
+	public HealthbarContainer GetHealthBar() => m_Healthbar;
 
 	/// <summary>
 	/// Get the heuristic calculator on the unit.
 	/// </summary>
 	/// <returns>The unit's heuristic calculator.</returns>
-	public AIHeuristicCalculator GetHeuristicCalculator() { return m_AIHeuristicCalculator; }
+	public AIHeuristicCalculator GetHeuristicCalculator() => m_AIHeuristicCalculator; 
 
 	/// <summary>
 	/// Get the passive skill on the unit.
 	/// </summary>
 	/// <returns>The unit's passive skill, null if it doesn't have one.</returns>
-	public PassiveSkill GetPassiveSkill() { return m_PassiveSkill; }
+	public PassiveSkill GetPassiveSkill() => m_PassiveSkill; 
 
 	/// <summary>
 	/// Add extra damage for the unit to take when damaged.
 	/// </summary>
 	/// <param name="extra">The amount of extra damage to take.</param>
-	public void AddTakeExtraDamage(int extra)
-	{
-		m_TakeExtraDamage += extra;
-	}
+	public void AddTakeExtraDamage(int extra) => m_TakeExtraDamage += extra;
 
 	/// <summary>
 	/// Add extra damage for the unit to deal when attacking.
 	/// </summary>
 	/// <param name="extra">The amount of extra damage to deal.</param>
-	public void AddDealExtraDamage(int extra)
-	{
-		m_DealExtraDamage += extra;
-	}
+	public void AddDealExtraDamage(int extra) => m_DealExtraDamage += extra;
 
-	public void SetDealExtraDamage(int extra)
-	{
-		m_DealExtraDamage = extra;
-	}
+	public void SetDealExtraDamage(int extra) => m_DealExtraDamage = extra;
 
 	/// <summary>
 	/// Check if the unit is moving.
 	/// </summary>
 	/// <returns>If the unit is moving or not.</returns>
-	public bool GetMoving() { return m_IsMoving; }
+	public bool GetMoving() => m_IsMoving;
 
 	/// <summary>
 	/// Gets the nodes the unit can move to, stores them and highlights them.

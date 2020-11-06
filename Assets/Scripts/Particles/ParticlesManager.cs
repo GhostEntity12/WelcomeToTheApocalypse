@@ -47,6 +47,7 @@ public class ParticlesManager : MonoBehaviour
 
 	[Header("Ranged Particle")]
 	public int m_numberOfRanged;
+	public float m_ZDistanceSpawn = 0.2f;
 
 	public float m_rangedSpeed = 0.1f;
 
@@ -132,7 +133,7 @@ public class ParticlesManager : MonoBehaviour
 
 	public void OnRanged(GameObject caster, Vector3 targetPos)
 	{
-		m_rangedPool[m_rangedIndex].transform.position = caster.transform.position;
+		m_rangedPool[m_rangedIndex].transform.position = caster.transform.position + Vector3.up + (caster.transform.forward * m_ZDistanceSpawn);
 		m_rangedPool[m_rangedIndex].gameObject.GetComponent<RangedParticle>().m_caster = caster;
 		m_rangedPool[m_rangedIndex].Play();
 		m_activeRangedParticle.Add(m_rangedPool[m_rangedIndex]);
