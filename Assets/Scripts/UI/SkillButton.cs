@@ -94,5 +94,13 @@ public class SkillButton : MonoBehaviour
 					1 :
 				0; // Empty otherwise
 		}
+
+		PassiveSkill passive = GameManager.m_Instance.GetSelectedUnit().GetPassiveSkill();
+		if (m_Skill.m_SkillName == "Benign Infection" &&
+			passive is PestilencePassive &&
+			(passive as PestilencePassive).m_CurrentHealResource == 0)
+		{
+			m_Cooldown.fillAmount = 1;
+		}
 	}
 }

@@ -1,9 +1,28 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class SkillWithTargets
+{
+	public List<Unit> m_Targets;
+	public BaseSkill m_Skill;
+
+	public SkillWithTargets(List<Unit> targets, BaseSkill skill)
+	{
+		m_Targets = targets;
+		m_Skill = skill;
+	}
+}
+
+public delegate void Notification();
+
 public class ParticlesManager : MonoBehaviour
 {
+	public event Notification m_ListEmptied;
+
 	public static ParticlesManager m_Instance = null;
+
+	public SkillWithTargets m_ActiveSkill = new SkillWithTargets(null, null);
 
 	//Zeroed
 	[Header("Melee Particle")]
@@ -83,6 +102,8 @@ public class ParticlesManager : MonoBehaviour
 	void Awake()
 	{
 		m_Instance = this;
+
+		m_ActiveSkill = null;
 
 		for (int i = 0; i < m_numberOfRanged; ++i)
 		{
@@ -230,5 +251,28 @@ public class ParticlesManager : MonoBehaviour
 		//}
 	}
 
+	public void TakeSkillEffects()
+	{
+		foreach (Unit affectedUnit in m_ActiveSkill.m_Targets)
+		{
+			affectedUnit.IncomingSkill(m_ActiveSkill.m_Skill);
+		}
+		if (m_ActiveSkill.m_Skill is DamageSkill)
+		{
+			(m_ActiveSkill.m_Skill as DamageSkill).m_ExtraDamage = 0;
+		}
+	}
+
+	public void RemoveUnitFromTarget(Unit u)
+	{
+		m_ActiveSkill.m_Targets.Remove(u);
+		if (m_ActiveSkill.m_Targets.Count == 0)
+		{
+			m_ActiveSkill = null;
+			ListEmptied();
+		}
+	}
+
+	protected virtual void ListEmptied() => m_ListEmptied?.Invoke();
 
 }
