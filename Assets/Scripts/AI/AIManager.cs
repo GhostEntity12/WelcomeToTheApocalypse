@@ -114,8 +114,6 @@ public class AIManager : MonoBehaviour
 
 	List<Unit> m_UnitCloseList = new List<Unit>();
 
-	public List<Unit> m_AwaitingUnits = new List<Unit>();
-
 	bool m_MakingAction;
 
 	//On Awake, initialise the instance of this manager.
@@ -238,10 +236,6 @@ public class AIManager : MonoBehaviour
 				GameManager.m_Instance.EndCurrentTurn();
 				return;
 			}
-		}
-		if (m_AwaitingUnits.Count == 0 && !m_MakingAction)
-		{
-			m_CurrentAIUnit = null;
 		}
 	}
 
@@ -633,12 +627,21 @@ public class AIManager : MonoBehaviour
 				m_CurrentAIUnit.DecreaseActionPoints(m_BestOption.m_DamageSkill.m_Skill.m_Cost);
 				m_CurrentAIUnit.ActivateSkill(m_BestOption.m_DamageSkill.m_Skill, m_BestOption.m_DamageSkill.m_TargetNode);
 			}
+			ParticlesManager.m_Instance.m_ListEmptied += ListEmpty;
 		}
 		else
 		{
 			Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit.name} can't cast any skills from {m_BestOption.m_Node.m_NodeHighlight.name}</color>");
 		}
 		m_MakingAction = false;
+	}
+
+	public void ListEmpty()
+	{
+		if (!m_MakingAction && m_AITurn)
+		{
+			m_CurrentAIUnit = null;
+		}
 	}
 
 	/// <summary>

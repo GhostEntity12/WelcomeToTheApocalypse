@@ -468,6 +468,10 @@ public class GameManager : MonoBehaviour
 	/// <param name="skill"> The skill being selected. </param>
 	public void SkillSelection(BaseSkill skill, SkillButton button)
 	{
+		if (ParticlesManager.m_Instance.m_ActiveSkill != null)
+		{
+			return;
+		}
 		// Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
 		if (m_SelectedUnit.GetAllegiance() == Allegiance.Enemy) return;
 

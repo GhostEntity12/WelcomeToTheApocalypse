@@ -57,12 +57,14 @@ public class BaseSkill : ScriptableObject
 	public int m_AffectedRange;
 	// The cost of using the skill
 	public int m_Cost;
+	// Whether to play the additional casting particle
+	public bool m_IsMagic;
 
 	[FMODUnity.EventRef]
 	public string m_CastEvent = "";
 
-	protected Unit[] affectedUnits;
-	public List<Node> affectedNodes;
+	protected List<Unit> m_AffectedUnits;
+	public List<Node> m_AffectedNodes;
 
 	public void Startup()
 	{
@@ -71,11 +73,9 @@ public class BaseSkill : ScriptableObject
 
 	public virtual void CastSkill()
 	{
-		FindAffectedUnits();
+		m_AffectedUnits = FindAffectedUnits();
 
-		// If it is the AI's turn, add to AI manager's list.
-		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
-			AIManager.m_Instance.m_AwaitingUnits.AddRange(affectedUnits);
+		ParticlesManager.m_Instance.m_ActiveSkill = new SkillWithTargets(m_AffectedUnits, this);
 
 		// Set the cooldown when the skill is used.
 		m_CurrentCooldown = m_CooldownLength;
@@ -102,16 +102,16 @@ public class BaseSkill : ScriptableObject
 	/// Get the current cooldown on the skill.
 	/// </summary>
 	/// <returns>The current cooldown of the skill.</returns>
-	public virtual int GetCurrentCooldown() { return m_CurrentCooldown; }
+	public virtual int GetCurrentCooldown() => m_CurrentCooldown; 
 
-	public Unit[] GetAffectedUnits() { return affectedUnits; }
+	public List<Unit> GetAffectedUnits() => m_AffectedUnits; 
 
-	public void FindAffectedUnits()
+	public List<Unit> FindAffectedUnits()
 	{
-		affectedUnits = affectedNodes.Select(t => t.unit)
+		return m_AffectedNodes.Select(t => t.unit)
 			.Where(c => GameManager.IsTargetable(GameManager.m_Instance.GetSelectedUnit(), c, this))
 			.Distinct() // Had to add this - for some reason, it grabbed the same character multiple times somehow
-			.ToArray();
+			.ToList();
 
 		/* Equivalent (mostly) non-LINQ version
 
