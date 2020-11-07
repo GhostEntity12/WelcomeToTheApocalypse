@@ -23,6 +23,7 @@ public enum Allegiance
 
 public class Unit : MonoBehaviour
 {
+	public string m_CharacterName;
 	/// <summary>
 	/// The starting health of the character.
 	/// </summary>
@@ -355,6 +356,7 @@ public class Unit : MonoBehaviour
 
 	public void CallSkillEffects()
 	{
+		print(ParticlesManager.m_Instance.m_ActiveSkill);
 		if (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
 		{
 			return;
@@ -367,7 +369,7 @@ public class Unit : MonoBehaviour
 		if (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
 		{
 			Vector3 targetPos = ParticlesManager.m_Instance.m_ActiveSkill.m_Targets[0].transform.position;
-			ParticlesManager.m_Instance.OnRanged(gameObject, new Vector3(targetPos.x, 1, targetPos.z));
+			ParticlesManager.m_Instance.OnRanged(this, new Vector3(targetPos.x, 1, targetPos.z), ParticlesManager.m_Instance.m_ActiveSkill.m_Targets[0]);
 			return;
 		}
 		// Spawn the particle

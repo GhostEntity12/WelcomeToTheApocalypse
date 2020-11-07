@@ -120,6 +120,10 @@ public class AIManager : MonoBehaviour
 	private void Awake()
 	{
 		m_Instance = this;
+	}
+
+	private void Start()
+	{
 		ParticlesManager.m_Instance.m_ListEmptied += ListEmpty;
 	}
 
@@ -145,6 +149,7 @@ public class AIManager : MonoBehaviour
 				// Only calculate movement heuristics if the unit can move
 				if (unit.GetCurrentMovement() > 0)
 				{
+					print($"{unit} has {unit.GetCurrentMovement()} movement");
 					// Movement Heuristics
 					DoMovementHeuristics(unit);
 				}
@@ -637,6 +642,8 @@ public class AIManager : MonoBehaviour
 		else
 		{
 			Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit.name} can't cast any skills from {m_BestOption.m_Node.m_NodeHighlight.name}</color>");
+			m_CurrentAIUnit = null;
+			ParticlesManager.m_Instance.m_ActiveSkill = null;
 		}
 		m_MakingAction = false;
 	}
