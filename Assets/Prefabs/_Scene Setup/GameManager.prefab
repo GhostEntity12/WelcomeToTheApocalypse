@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3666209059968287102
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3361279697047234249}
+  m_Layer: 0
+  m_Name: RangedParticles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3361279697047234249
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3666209059968287102}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -9, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4699451742828439357}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5059553532039120980
 GameObject:
   m_ObjectHideFlags: 0
@@ -30,7 +60,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 3361279697047234249}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -51,6 +82,8 @@ MonoBehaviour:
   m_MouseOverUIBlockingElements: 0
   m_PodClearBonus: 5
   m_DidHealthBonus: 0
+  m_TurnEndSound: 
+  m_GameMusic: 
 --- !u!114 &8310066432886493436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,6 +96,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e24fe1517013634dab8faf2edf93623, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BestOption:
+    m_Unit: {fileID: 0}
+    m_MovementValue: 0
+    m_DamageValue: 0
+    m_HealValue: 0
+    m_StatusValue: 0
+    m_MoveDistance: 0
+    m_DamageSkill:
+      m_Skill: {fileID: 0}
+    m_HealSkill:
+      m_Skill: {fileID: 0}
+    m_StatusSkill:
+      m_Skill: {fileID: 0}
 --- !u!114 &7741018153900168037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,12 +138,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd5c325cb3ef9174b8a5fa8c98d76402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_ActiveSkill:
+    m_Targets: []
+    m_Skill: {fileID: 0}
   m_melee: {fileID: 0}
   m_heal: {fileID: 0}
+  m_PestilenceRanged:
+    m_InnerOrbColor: {r: 0.04500001, g: 0.45, b: 0.04500001, a: 1}
+    m_OuterOrbColor: {r: 0.5882353, g: 0.90588236, b: 0.59607846, a: 1}
+    m_ParticleColor: {r: 0, g: 1, b: 0.049999952, a: 1}
+  m_FamineRanged:
+    m_InnerOrbColor: {r: 0.3185, g: 0.38424164, b: 0.49, a: 1}
+    m_OuterOrbColor: {r: 0, g: 0.14901961, b: 1, a: 1}
+    m_ParticleColor: {r: 0.035300255, g: 0, b: 1, a: 1}
+  m_EnemyRanged:
+    m_InnerOrbColor: {r: 0.33958328, g: 0.225, b: 0.5, a: 1}
+    m_OuterOrbColor: {r: 0.85882354, g: 0.6627451, b: 0.90588236, a: 1}
+    m_ParticleColor: {r: 0.84440595, g: 0.504717, b: 1, a: 1}
   m_numberOfRanged: 0
+  m_ZDistanceSpawn: 0.2
   m_rangedSpeed: 0.1
-  m_rangedParent: {fileID: 0}
-  m_rangedParticle: {fileID: 0}
+  m_rangedParent: {fileID: 3666209059968287102}
+  m_rangedParticle: {fileID: 4601306609599102078, guid: 6c2c26abd465c914fa8d4a5a8c5640c5,
+    type: 3}
   m_numberOfDeath: 0
   m_deathParent: {fileID: 0}
   m_deathParticle: {fileID: 0}
