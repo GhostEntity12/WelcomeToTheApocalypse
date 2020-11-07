@@ -114,14 +114,13 @@ public class AIManager : MonoBehaviour
 
 	List<Unit> m_UnitCloseList = new List<Unit>();
 
-	public List<Unit> m_AwaitingUnits = new List<Unit>();
-
 	bool m_MakingAction;
 
 	//On Awake, initialise the instance of this manager.
 	private void Awake()
 	{
 		m_Instance = this;
+		ParticlesManager.m_Instance.m_ListEmptied += ListEmpty;
 	}
 
 	void Update()
@@ -239,10 +238,6 @@ public class AIManager : MonoBehaviour
 				return;
 			}
 		}
-		if (m_AwaitingUnits.Count == 0 && !m_MakingAction)
-		{
-			m_CurrentAIUnit = null;
-		}
 	}
 
 	void DoMovementHeuristics(Unit aiUnit)
@@ -270,10 +265,15 @@ public class AIManager : MonoBehaviour
 	void AssignMovementCosts(Unit aiUnit)
 	{
 		Node startNode = Grid.m_Instance.GetNode(aiUnit.transform.position);
-		foreach (Node node in Grid.m_Instance.GetNodesWithinRadius(aiUnit.GetCurrentMovement(), startNode))
+		List<Node> nodesInRange = Grid.m_Instance.GetNodesWithinRadius(aiUnit.GetCurrentMovement(), startNode);
+		nodesInRange.Remove(startNode);
+		foreach (Node node in nodesInRange)
 		{
-			int distance = Mathf.Abs(startNode.x - node.x) + Mathf.Abs(startNode.z - node.z);
-			AddOrUpdateHeuristic(distance, node, aiUnit);
+			if (Grid.m_Instance.FindPath(startNode, node, out Stack<Node> path, out _, allowBlocked: true))
+			{
+				int distance = path.Count;
+				AddOrUpdateHeuristic(distance, node, aiUnit);
+			}
 		}
 	}
 
@@ -639,6 +639,14 @@ public class AIManager : MonoBehaviour
 			Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit.name} can't cast any skills from {m_BestOption.m_Node.m_NodeHighlight.name}</color>");
 		}
 		m_MakingAction = false;
+	}
+
+	public void ListEmpty()
+	{
+		if (!m_MakingAction && m_AITurn)
+		{
+			m_CurrentAIUnit = null;
+		}
 	}
 
 	/// <summary>

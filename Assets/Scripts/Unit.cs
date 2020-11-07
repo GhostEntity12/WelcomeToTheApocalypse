@@ -213,7 +213,6 @@ public class Unit : MonoBehaviour
 	public void SetCurrentHealth(int health)
 	{
 		m_CurrentHealth = health;
-		CheckAlive();
 
 		// Don't go over that max starting health.
 		if (m_CurrentHealth > m_StartingHealth)
@@ -261,10 +260,7 @@ public class Unit : MonoBehaviour
 	public void DecreaseCurrentHealth()
 	{
 		// Check if it is currently the AI's turn.
-		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
-		{
-			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
-		}
+		ParticlesManager.m_Instance.RemoveUnitFromTarget(this);
 
 		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
 
@@ -304,68 +300,127 @@ public class Unit : MonoBehaviour
 		}
 	}
 
-	/// <summary>
-	/// Reset the unit's current health.
-	/// </summary>
-	public void ResetCurrentHealth() { m_CurrentHealth = m_StartingHealth; }
+	private void AddStatusEffectFromSkill(InflictableStatus effect)
+	{
+		ParticlesManager.m_Instance.RemoveUnitFromTarget(this);
+		AddStatusEffect(effect);
+	}
 
-	/// <summary>
-	/// Sets the amount of damage that will be taken
-	/// </summary>
-	public void SetDealingDamage(int dealingDamage) { m_DealingDamage = dealingDamage; }
+	private void AddHealingFromSkill(int heal)
+	{
+		ParticlesManager.m_Instance.RemoveUnitFromTarget(this);
+		IncreaseCurrentHealth(heal);
+	}
+
+	public void IncomingSkill(BaseSkill skill)
+	{
+		switch (skill)
+		{
+			case StatusSkill ss:
+				AddStatusEffectFromSkill(ss.m_Effect);
+				break;
+			case DamageSkill ds:
+				m_DealingDamage = ds.m_DamageAmount + ds.m_ExtraDamage;
+				if (m_CurrentHealth - m_DealingDamage <= 0)
+				{
+					m_animator.SetTrigger("TriggerDeath");
+				}
+				else
+				{
+					m_animator.SetTrigger("TriggerDamage");
+					// Trigger Death Particle
+				}
+				break;
+			case HealSkill hs:
+				AddHealingFromSkill(hs.m_HealAmount);
+				break;
+			default:
+				break;
+		}
+	}
+
+	public void IncomingNonSkillDamage(int damage)
+	{
+		m_DealingDamage = damage;
+		if (m_CurrentHealth - m_DealingDamage <= 0)
+		{
+			m_animator.SetTrigger("TriggerDeath");
+		}
+		else
+		{
+			m_animator.SetTrigger("TriggerDamage");
+			// Trigger Death Particle
+		}
+	}
+
+	public void CallSkillEffects()
+	{
+		if (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
+		{
+			return;
+		}
+		ParticlesManager.m_Instance.TakeSkillEffects();
+	}
+
+	public void PlaySkillParticleSystem()
+	{
+		if (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
+		{
+			Vector3 targetPos = ParticlesManager.m_Instance.m_ActiveSkill.m_Targets[0].transform.position;
+			ParticlesManager.m_Instance.OnRanged(gameObject, new Vector3(targetPos.x, 1, targetPos.z));
+			return;
+		}
+		// Spawn the particle
+	}
 
 	/// <summary>
 	/// Check if the unit's health is above 0.
 	/// If equal to or below, the unit is not alive.
 	/// </summary>
-	private void CheckAlive()
+	public void KillUnit()
 	{
-		if (m_CurrentHealth <= 0)
+		Debug.Log($"<color=#a87932>[Death] </color>{name} died");
+		m_IsAlive = false;
+
+		// Check if the unit has the "DefeatEnemyWinCondition" script on it.
+		// If it does, the player has won the level by defeating the boss.
+		GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
+
+		// If this is a player unit, check if the player has any units remaining.
+		if (m_Allegiance == Allegiance.Player)
 		{
-			Debug.Log($"<color=#a87932>[Death] </color>{name} died");
-			m_IsAlive = false;
+			UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
+			UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
+		}
+		else
+		{
+			AIManager.m_Instance.DisableUnits(this);
+		}
 
-			// Check if the unit has the "DefeatEnemyWinCondition" script on it.
-			// If it does, the player has won the level by defeating the boss.
-			GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
-
-			// If this is a player unit, check if the player has any units remaining.
-			if (m_Allegiance == Allegiance.Player)
+		if (m_KillDialogue)
+		{
+			if (GetComponent<DefeatEnemyWinCondition>())
 			{
-				UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
-				UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win));
+			}
+			else if (!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive())
+			{
+				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = UIManager.m_Instance.ShowCrawlButtons;
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss));
 			}
 			else
 			{
-				AIManager.m_Instance.DisableUnits(this);
-			}
-
-			if (m_KillDialogue)
-			{
-				DialogueManager.instance.QueueDialogue(m_KillDialogue,
-					GetComponent<DefeatEnemyWinCondition>() ?
-						(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win)) :
-					!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive() ?
-						(() => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss)) :
-						(Action)null);
-			}
-
-			Node currentNode = Grid.m_Instance.GetNode(transform.position);
-			currentNode.unit = null;
-			currentNode.m_isBlocked = false;
-			// Play death animation
-			m_animator.SetTrigger("TriggerDeath");
-
-			if (m_DeathSound != "")
-				FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, KillUnit);
+			}					
 		}
-	}
 
-	/// <summary>
-	/// Disables the unit and will be called by an Animator Event
-	/// </summary>
-	public void DisableUnit()
-	{
+		Node currentNode = Grid.m_Instance.GetNode(transform.position);
+		currentNode.unit = null;
+		currentNode.m_isBlocked = false;
+
+		if (m_DeathSound != "")
+			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+
 		gameObject.SetActive(false);
 	}
 
@@ -415,7 +470,6 @@ public class Unit : MonoBehaviour
 	/// <param name="target"> The node to set as the target. </param>
 	public void SetTargetNodePosition(Node target, bool onlySetNode = false)
 	{
-
 		// Unassign the unit on the current node.
 		// Before setting the new target node.
 
@@ -432,73 +486,46 @@ public class Unit : MonoBehaviour
 	/// Get the unit's path.
 	/// </summary>
 	/// <returns> Stack of the unit's movement path. </returns>
-	public Stack<Node> GetMovementPath() { return m_MovementPath; }
+	public Stack<Node> GetMovementPath() => m_MovementPath; 
 
 	/// <summary>
 	/// Get the unit's allegiance.
 	/// </summary>
 	/// <returns> The allegiance of the unit. </returns>
-	public Allegiance GetAllegiance() { return m_Allegiance; }
+	public Allegiance GetAllegiance() => m_Allegiance; 
 
 	/// <summary>
 	/// Get if the unit is alive.
 	/// </summary>
 	/// <returns>If the unit is alive.</returns>
-	public bool GetAlive() { return m_IsAlive; }
+	public bool GetAlive() => m_IsAlive; 
 
 	/// <summary>
 	/// Get the unit's action points.
 	/// </summary>
 	/// <returns>The current amount of action points the unit has.</returns>
-	public int GetActionPoints() { return m_CurrentActionPoints; }
+	public int GetActionPoints() => m_CurrentActionPoints; 
 
 	/// <summary>
 	/// Decrease the amount of action points the unit has.
 	/// </summary>
 	/// <param name="decrease">The amount to decrease the unit's action points by.</param>
-	public void DecreaseActionPoints(int decrease)
-	{
-		m_CurrentActionPoints -= decrease;
-	}
+	public void DecreaseActionPoints(int decrease)=> m_CurrentActionPoints -= decrease;
 
 	/// <summary>
 	/// Reset the unit's action points.
 	/// </summary>
-	public void ResetActionPoints()
-	{
-		m_CurrentActionPoints = m_StartingActionPoints;
-	}
-
-	public void AddStatusEffectFromSkill(InflictableStatus effect)
-	{
-		// Check if it is currently the AI's turn.
-		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
-		{
-			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
-		}
-		AddStatusEffect(effect);
-	}
-
-	public void AddHealingFromSkill(int heal)
-	{
-		// Check if it is currently the AI's turn.
-		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
-		{
-			AIManager.m_Instance.m_AwaitingUnits.Remove(this);
-		}
-
-		IncreaseCurrentHealth(heal);
-	}
+	public void ResetActionPoints() => m_CurrentActionPoints = m_StartingActionPoints;
 
 	/// <summary>
 	/// Add a status effect to the unit.
 	/// </summary>
 	/// <param name="effect"> The status effect to add to the unit. </param>
-	public void AddStatusEffect(InflictableStatus effect) { m_StatusEffects.Add(effect); }
+	public void AddStatusEffect(InflictableStatus effect) => m_StatusEffects.Add(effect); 
 
-	public void RemoveStatusEffect(InflictableStatus effect) { m_StatusEffects.Remove(effect); }
+	public void RemoveStatusEffect(InflictableStatus effect) => m_StatusEffects.Remove(effect); 
 
-	public List<InflictableStatus> GetInflictableStatuses() { return m_StatusEffects; }
+	public List<InflictableStatus> GetInflictableStatuses() => m_StatusEffects; 
 
 	/// <summary>
 	/// Set the healthbar of the unit.
@@ -510,51 +537,39 @@ public class Unit : MonoBehaviour
 		m_HealthChangeIndicatorScript = healthbar.m_HealthChangeIndicator.GetComponent<HealthChangeIndicator>();
 	}
 
-	public HealthbarContainer GetHealthBar()
-	{
-		return m_Healthbar;
-	}
+	public HealthbarContainer GetHealthBar() => m_Healthbar;
 
 	/// <summary>
 	/// Get the heuristic calculator on the unit.
 	/// </summary>
 	/// <returns>The unit's heuristic calculator.</returns>
-	public AIHeuristicCalculator GetHeuristicCalculator() { return m_AIHeuristicCalculator; }
+	public AIHeuristicCalculator GetHeuristicCalculator() => m_AIHeuristicCalculator; 
 
 	/// <summary>
 	/// Get the passive skill on the unit.
 	/// </summary>
 	/// <returns>The unit's passive skill, null if it doesn't have one.</returns>
-	public PassiveSkill GetPassiveSkill() { return m_PassiveSkill; }
+	public PassiveSkill GetPassiveSkill() => m_PassiveSkill; 
 
 	/// <summary>
 	/// Add extra damage for the unit to take when damaged.
 	/// </summary>
 	/// <param name="extra">The amount of extra damage to take.</param>
-	public void AddTakeExtraDamage(int extra)
-	{
-		m_TakeExtraDamage += extra;
-	}
+	public void AddTakeExtraDamage(int extra) => m_TakeExtraDamage += extra;
 
 	/// <summary>
 	/// Add extra damage for the unit to deal when attacking.
 	/// </summary>
 	/// <param name="extra">The amount of extra damage to deal.</param>
-	public void AddDealExtraDamage(int extra)
-	{
-		m_DealExtraDamage += extra;
-	}
+	public void AddDealExtraDamage(int extra) => m_DealExtraDamage += extra;
 
-	public void SetDealExtraDamage(int extra)
-	{
-		m_DealExtraDamage = extra;
-	}
+	public void SetDealExtraDamage(int extra) => m_DealExtraDamage = extra;
 
 	/// <summary>
 	/// Check if the unit is moving.
 	/// </summary>
 	/// <returns>If the unit is moving or not.</returns>
-	public bool GetMoving() { return m_IsMoving; }
+	public bool GetMoving() => m_IsMoving;
 
 	/// <summary>
 	/// Gets the nodes the unit can move to, stores them and highlights them.
@@ -584,7 +599,7 @@ public class Unit : MonoBehaviour
 			// Check if the unit has the skill being cast.
 			if (m_Skills[i].m_SkillName == skill.m_SkillName)
 			{
-				skill.affectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
+				skill.m_AffectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
 				if (m_PassiveSkill != null)
 				{
 					DamageSkill ds = skill as DamageSkill;
@@ -593,9 +608,7 @@ public class Unit : MonoBehaviour
 					if (ds != null)
 					{
 						// Make sure the skill knows what units it will affect, so we can check them for the passive.
-						ds.FindAffectedUnits();
-
-						Unit[] hitUnits = ds.GetAffectedUnits();
+						List<Unit> hitUnits = ds.FindAffectedUnits();
 
 						if (m_PassiveSkill.GetAffectSelf() == false)
 						{
@@ -654,6 +667,10 @@ public class Unit : MonoBehaviour
 							}
 						}
 					}
+				}
+				if (skill.m_IsMagic)
+				{
+					// TODO Play cast system
 				}
 				skill.CastSkill();
 				transform.LookAt(castLocation.worldPosition);

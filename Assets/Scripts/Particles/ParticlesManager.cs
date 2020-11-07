@@ -1,9 +1,39 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class SkillWithTargets
+{
+	public List<Unit> m_Targets;
+	public BaseSkill m_Skill;
+
+	public SkillWithTargets(List<Unit> targets, BaseSkill skill)
+	{
+		m_Targets = targets;
+		m_Skill = skill;
+	}
+}
+
+[System.Serializable]
+public class RangedColor
+{
+	[ColorUsage(true, true)]
+	public Color m_InnerOrbColor = Color.black;
+	public Color m_OuterOrbColor = Color.black;
+	[ColorUsage(true, true)]
+	public Color m_ParticleColor = Color.white;
+}
+
+
+public delegate void Notification();
+
 public class ParticlesManager : MonoBehaviour
 {
+	public event Notification m_ListEmptied;
+
 	public static ParticlesManager m_Instance = null;
+
+	public SkillWithTargets m_ActiveSkill = new SkillWithTargets(null, null);
 
 	//Zeroed
 	[Header("Melee Particle")]
@@ -27,7 +57,13 @@ public class ParticlesManager : MonoBehaviour
 
 
 	[Header("Ranged Particle")]
-	public int m_numberOfRanged;
+	public RangedColor m_PestilenceRanged;
+	public RangedColor m_FamineRanged;
+	public RangedColor m_EnemyRanged;
+
+	public float m_ZDistanceSpawn = 0.2f;
+
+	public int m_RangedPoolSize;
 
 	public float m_rangedSpeed = 0.1f;
 
@@ -36,10 +72,9 @@ public class ParticlesManager : MonoBehaviour
 	public GameObject m_rangedParticle;
 
 	//instantiate, slerp
-	private List<ParticleSystem> m_rangedPool = new List<ParticleSystem>();
+	private List<RangedParticle> m_rangedPool = new List<RangedParticle>();
 
-	private List<ParticleSystem> m_activeRangedParticle = new List<ParticleSystem>();
-
+	private List<RangedParticle> m_activeRangedParticle = new List<RangedParticle>();
 	private int m_rangedIndex;
 
 
@@ -84,9 +119,11 @@ public class ParticlesManager : MonoBehaviour
 	{
 		m_Instance = this;
 
-		for (int i = 0; i < m_numberOfRanged; ++i)
+		m_ActiveSkill = null;
+
+		for (int i = 0; i < m_RangedPoolSize; ++i)
 		{
-			m_rangedPool.Add(Instantiate(m_rangedParticle, m_rangedParent.transform).GetComponent<ParticleSystem>());
+			m_rangedPool.Add(Instantiate(m_rangedParticle, m_rangedParent.transform).GetComponent<RangedParticle>());
 		}
 
 		for (int i = 0; i < m_numberOfDeath; ++i)
@@ -111,10 +148,11 @@ public class ParticlesManager : MonoBehaviour
 
 	public void OnRanged(GameObject caster, Vector3 targetPos)
 	{
-		m_rangedPool[m_rangedIndex].transform.position = caster.transform.position;
-		m_rangedPool[m_rangedIndex].gameObject.GetComponent<RangedParticle>().m_caster = caster;
-		m_rangedPool[m_rangedIndex].Play();
-		m_activeRangedParticle.Add(m_rangedPool[m_rangedIndex]);
+		RangedParticle systemToUse = m_rangedPool[m_rangedIndex];
+		systemToUse.transform.position = caster.transform.position + Vector3.up + (caster.transform.forward * m_ZDistanceSpawn);
+		systemToUse.gameObject.GetComponent<RangedParticle>().m_caster = caster;
+		systemToUse.Play();
+		m_activeRangedParticle.Add(systemToUse);
 		m_endPosition.Add(targetPos);
 		print(Vector3.Distance(caster.transform.position, targetPos));
 		++m_rangedIndex;
@@ -230,5 +268,28 @@ public class ParticlesManager : MonoBehaviour
 		//}
 	}
 
+	public void TakeSkillEffects()
+	{
+		foreach (Unit affectedUnit in m_ActiveSkill.m_Targets)
+		{
+			affectedUnit.IncomingSkill(m_ActiveSkill.m_Skill);
+		}
+		if (m_ActiveSkill.m_Skill is DamageSkill)
+		{
+			(m_ActiveSkill.m_Skill as DamageSkill).m_ExtraDamage = 0;
+		}
+	}
+
+	public void RemoveUnitFromTarget(Unit u)
+	{
+		m_ActiveSkill.m_Targets.Remove(u);
+		if (m_ActiveSkill.m_Targets.Count == 0)
+		{
+			m_ActiveSkill = null;
+			ListEmptied();
+		}
+	}
+
+	protected virtual void ListEmptied() => m_ListEmptied?.Invoke();
 
 }
