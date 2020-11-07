@@ -72,10 +72,9 @@ public class ParticlesManager : MonoBehaviour
 	public GameObject m_rangedParticle;
 
 	//instantiate, slerp
-	private List<ParticleSystem> m_rangedPool = new List<ParticleSystem>();
+	private List<RangedParticle> m_rangedPool = new List<RangedParticle>();
 
-	private List<ParticleSystem> m_activeRangedParticle = new List<ParticleSystem>();
-
+	private List<RangedParticle> m_activeRangedParticle = new List<RangedParticle>();
 	private int m_rangedIndex;
 
 
@@ -124,7 +123,7 @@ public class ParticlesManager : MonoBehaviour
 
 		for (int i = 0; i < m_RangedPoolSize; ++i)
 		{
-			m_rangedPool.Add(Instantiate(m_rangedParticle, m_rangedParent.transform).GetComponent<ParticleSystem>());
+			m_rangedPool.Add(Instantiate(m_rangedParticle, m_rangedParent.transform).GetComponent<RangedParticle>());
 		}
 
 		for (int i = 0; i < m_numberOfDeath; ++i)
@@ -149,7 +148,7 @@ public class ParticlesManager : MonoBehaviour
 
 	public void OnRanged(GameObject caster, Vector3 targetPos)
 	{
-		ParticleSystem systemToUse = m_rangedPool[m_rangedIndex];
+		RangedParticle systemToUse = m_rangedPool[m_rangedIndex];
 		systemToUse.transform.position = caster.transform.position + Vector3.up + (caster.transform.forward * m_ZDistanceSpawn);
 		systemToUse.gameObject.GetComponent<RangedParticle>().m_caster = caster;
 		systemToUse.Play();

@@ -5,6 +5,8 @@ public class ParticleObject
 {
 	public GameObject m_Particle;
 	[HideInInspector]
+	public ParticleSystem m_ParticleSystem;
+	[HideInInspector]
 	public Material m_BaseMaterial;
 	[HideInInspector]
 	public Material m_TrailMaterial;
@@ -40,17 +42,27 @@ public class RangedParticle : MonoBehaviour
 		innerOrbRenderer.material = new Material(innerOrbRenderer.material);
 		m_MatInnerOrb = innerOrbRenderer.material;
 
-		MaterialSetup(m_Crackle);
-		MaterialSetup(m_Swirl);
-		MaterialSetup(m_LightTrail);
-		MaterialSetup(m_DarkTrail);
-		MaterialSetup(m_Head);
-		MaterialSetup(m_Sparks);
+		Setup(m_Crackle);
+		Setup(m_Swirl);
+		Setup(m_LightTrail);
+		Setup(m_DarkTrail);
+		Setup(m_Head);
+		Setup(m_Sparks);
 	}
 
 	private void Start()
 	{
 		SetColor(ParticlesManager.m_Instance.m_FamineRanged);
+	}
+
+	public void Play()
+	{
+		m_Crackle.m_ParticleSystem.Play();
+		m_Swirl.m_ParticleSystem.Play();
+		m_LightTrail.m_ParticleSystem.Play();
+		m_DarkTrail.m_ParticleSystem.Play();
+		m_Head.m_ParticleSystem.Play();
+		m_Sparks.m_ParticleSystem.Play();
 	}
 
 	public void SetColor(RangedColor colors)
@@ -66,13 +78,15 @@ public class RangedParticle : MonoBehaviour
 		SetMaterialColor(m_Sparks, colors.m_ParticleColor);
 	}
 
-	void MaterialSetup(ParticleObject particle)
+	void Setup(ParticleObject particle)
 	{
 		ParticleSystemRenderer particleRenderer = particle.m_Particle.GetComponent<ParticleSystemRenderer>();
 		particleRenderer.material = new Material(particleRenderer.material);
 		particleRenderer.trailMaterial = new Material(particleRenderer.trailMaterial);
 		particle.m_BaseMaterial = particleRenderer.material;
 		particle.m_TrailMaterial = particleRenderer.trailMaterial;
+
+		particle.m_ParticleSystem = particle.m_Particle.GetComponent<ParticleSystem>();
 	}
 
 	void SetMaterialColor(ParticleObject particle, Color color)
