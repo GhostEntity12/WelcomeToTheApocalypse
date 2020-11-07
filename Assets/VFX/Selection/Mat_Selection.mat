@@ -24,11 +24,18 @@ Material:
         m_Texture: {fileID: 2800000, guid: 1e506da8da63ea6489ffe32765b8362c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SelectionTexture:
+        m_Texture: {fileID: 2800000, guid: 1e506da8da63ea6489ffe32765b8362c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_4E8FA4B: 0.3
     - Vector1_835ABD0: 0.005
+    - _SelectionAlphaClip: 0.263
+    - _SelectionDistortion: 0.19
     m_Colors:
     - Color_45BB2D1F: {r: 0.9786752, g: 6.064233, b: 7.684413, a: 0}
+    - _SelectionColor: {r: 0.40980273, g: 2.2246435, b: 2.79544, a: 0}
 --- !u!114 &8010834800579272253
 MonoBehaviour:
   m_ObjectHideFlags: 11
