@@ -14,6 +14,17 @@ public class SkillWithTargets
 	}
 }
 
+[System.Serializable]
+public class RangedColor
+{
+	[ColorUsage(true, true)]
+	public Color m_InnerOrbColor = Color.black;
+	public Color m_OuterOrbColor = Color.black;
+	[ColorUsage(true, true)]
+	public Color m_ParticleColor = Color.white;
+}
+
+
 public delegate void Notification();
 
 public class ParticlesManager : MonoBehaviour
@@ -46,8 +57,13 @@ public class ParticlesManager : MonoBehaviour
 
 
 	[Header("Ranged Particle")]
-	public int m_numberOfRanged;
+	public RangedColor m_PestilenceRanged;
+	public RangedColor m_FamineRanged;
+	public RangedColor m_EnemyRanged;
+
 	public float m_ZDistanceSpawn = 0.2f;
+
+	public int m_RangedPoolSize;
 
 	public float m_rangedSpeed = 0.1f;
 
@@ -106,7 +122,7 @@ public class ParticlesManager : MonoBehaviour
 
 		m_ActiveSkill = null;
 
-		for (int i = 0; i < m_numberOfRanged; ++i)
+		for (int i = 0; i < m_RangedPoolSize; ++i)
 		{
 			m_rangedPool.Add(Instantiate(m_rangedParticle, m_rangedParent.transform).GetComponent<ParticleSystem>());
 		}
@@ -133,10 +149,11 @@ public class ParticlesManager : MonoBehaviour
 
 	public void OnRanged(GameObject caster, Vector3 targetPos)
 	{
-		m_rangedPool[m_rangedIndex].transform.position = caster.transform.position + Vector3.up + (caster.transform.forward * m_ZDistanceSpawn);
-		m_rangedPool[m_rangedIndex].gameObject.GetComponent<RangedParticle>().m_caster = caster;
-		m_rangedPool[m_rangedIndex].Play();
-		m_activeRangedParticle.Add(m_rangedPool[m_rangedIndex]);
+		ParticleSystem systemToUse = m_rangedPool[m_rangedIndex];
+		systemToUse.transform.position = caster.transform.position + Vector3.up + (caster.transform.forward * m_ZDistanceSpawn);
+		systemToUse.gameObject.GetComponent<RangedParticle>().m_caster = caster;
+		systemToUse.Play();
+		m_activeRangedParticle.Add(systemToUse);
 		m_endPosition.Add(targetPos);
 		print(Vector3.Distance(caster.transform.position, targetPos));
 		++m_rangedIndex;
