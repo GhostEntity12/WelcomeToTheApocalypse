@@ -140,6 +140,12 @@ public class AIManager : MonoBehaviour
 	/// </summary>
 	public void TakeAITurn()
 	{
+		if (UnitsManager.m_Instance.m_ActiveEnemyUnits.Count == 0)
+		{
+			GameManager.m_Instance.EndCurrentTurn();
+			return;
+		}
+
 		if (!m_CurrentAIUnit) // If no AI unit is currently taking their turn
 		{
 			m_HeuristicResults.Clear(); // Get rid of the cached heuristics

@@ -16,6 +16,9 @@ MonoBehaviour:
   m_LightIcon: {fileID: 21300000, guid: c5e72f9ce20845743b93376093ab01b6, type: 3}
   m_DarkIcon: {fileID: 21300000, guid: c5e72f9ce20845743b93376093ab01b6, type: 3}
   m_Description: Target an ally within {distance} tiles, heal {heal} damage.
+  m_ParticlePrefab: {fileID: 8626830852951995749, guid: 6cdc964925673334ebc8551c351f7b26,
+    type: 3}
+  m_ParticleSystem: {fileID: 0}
   targets: 1
   targetType: 0
   excludeCaster: 0
@@ -25,6 +28,8 @@ MonoBehaviour:
   m_CastableDistance: 2
   m_AffectedRange: 0
   m_Cost: 1
+  m_IsMagic: 1
+  m_SpawnLocation: 0
   m_CastEvent: event:/Enemies/Support Heal
   m_HealAmount: 4
   chosenTarget: {fileID: 0}

@@ -162,6 +162,7 @@ public class Unit : MonoBehaviour
 		}
 
 		// Set all skills to startup stuff, cause scriptable objects don't reset on scene load.
+		// @Grant - this is because you're only meant to use the instantiated versions!
 		foreach (BaseSkill skill in m_LearnedSkills)
 		{
 			skill.Startup();
@@ -171,6 +172,11 @@ public class Unit : MonoBehaviour
 	void Start()
 	{
 		m_animator = GetComponent<Animator>();
+
+		foreach (BaseSkill skill in m_Skills)
+		{
+			skill.CreatePrefab();
+		}
 	}
 
 	void Update()
@@ -260,8 +266,7 @@ public class Unit : MonoBehaviour
 	/// <param name="decrease"> The amount to decrease the unit's health by. </param>
 	public void DecreaseCurrentHealth()
 	{
-		// Check if it is currently the AI's turn.
-		ParticlesManager.m_Instance.RemoveUnitFromTarget(this);
+		ParticlesManager.m_Instance.RemoveUnitFromTarget();
 
 		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
 
@@ -303,13 +308,13 @@ public class Unit : MonoBehaviour
 
 	private void AddStatusEffectFromSkill(InflictableStatus effect)
 	{
-		ParticlesManager.m_Instance.RemoveUnitFromTarget(this);
+		ParticlesManager.m_Instance.RemoveUnitFromTarget();
 		AddStatusEffect(effect);
 	}
 
 	private void AddHealingFromSkill(int heal)
 	{
-		ParticlesManager.m_Instance.RemoveUnitFromTarget(this);
+		ParticlesManager.m_Instance.RemoveUnitFromTarget();
 		IncreaseCurrentHealth(heal);
 	}
 
@@ -318,7 +323,25 @@ public class Unit : MonoBehaviour
 		switch (skill)
 		{
 			case StatusSkill ss:
-				AddStatusEffectFromSkill(ss.m_Effect);
+
+				if (ss.m_DamageAmount > 0)
+				{
+					m_DealingDamage = ss.m_DamageAmount + ss.m_ExtraDamage;
+					if (m_CurrentHealth - m_DealingDamage <= 0)
+					{
+						m_animator.SetTrigger("TriggerDeath");
+					}
+					else
+					{
+						m_animator.SetTrigger("TriggerDamage");
+						// Trigger Death Particle
+					}
+					AddStatusEffect(ss.m_Effect);
+				}
+				else
+				{
+					AddStatusEffectFromSkill(ss.m_Effect);
+				}
 				break;
 			case DamageSkill ds:
 				m_DealingDamage = ds.m_DamageAmount + ds.m_ExtraDamage;
@@ -356,7 +379,14 @@ public class Unit : MonoBehaviour
 
 	public void CallSkillEffects()
 	{
-		print(ParticlesManager.m_Instance.m_ActiveSkill);
+		/* 
+		 *  This is mostly error handling for casting a point blank basic ranged attack.
+		 *  When this happens, the orb is applying the effects of the skill and clearing
+		 *  the current skill before the second animation trigger which then attempts to
+		 *  apply the effects. - James L
+		 */
+		if (ParticlesManager.m_Instance.m_ActiveSkill == null) return;
+
 		if (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
 		{
 			return;
@@ -366,13 +396,29 @@ public class Unit : MonoBehaviour
 
 	public void PlaySkillParticleSystem()
 	{
-		if (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
+		SkillWithTargets activeSkill = ParticlesManager.m_Instance.m_ActiveSkill;
+		if (activeSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
 		{
-			Vector3 targetPos = ParticlesManager.m_Instance.m_ActiveSkill.m_Targets[0].transform.position;
-			ParticlesManager.m_Instance.OnRanged(this, new Vector3(targetPos.x, 1, targetPos.z), ParticlesManager.m_Instance.m_ActiveSkill.m_Targets[0]);
+			Vector3 targetPos = activeSkill.m_Targets[0].transform.position;
+			ParticlesManager.m_Instance.OnRanged(this, new Vector3(targetPos.x, 1, targetPos.z), activeSkill.m_Targets[0]);
 			return;
 		}
-		// Spawn the particle
+		switch (activeSkill.m_Skill.m_SpawnLocation)
+		{
+			case ParticleSpawnType.Target:
+				activeSkill.m_Skill.PlayEffect(activeSkill.m_Targets[0].transform.position);
+				break;
+			case ParticleSpawnType.Caster:
+				activeSkill.m_Skill.PlayEffect(GameManager.m_Instance.m_SelectedUnit.transform.position);
+				break;
+			case ParticleSpawnType.Tile:
+				activeSkill.m_Skill.PlayEffect(activeSkill.m_Skill.m_CastNode.worldPosition);
+				break;
+			case ParticleSpawnType.Other:
+				break;
+			default:
+				break;
+		}
 	}
 
 	/// <summary>
@@ -602,6 +648,7 @@ public class Unit : MonoBehaviour
 			if (m_Skills[i].m_SkillName == skill.m_SkillName)
 			{
 				skill.m_AffectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
+				skill.m_CastNode = castLocation;
 				if (m_PassiveSkill != null)
 				{
 					DamageSkill ds = skill as DamageSkill;

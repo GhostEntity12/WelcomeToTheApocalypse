@@ -401,7 +401,7 @@ public class GameManager : MonoBehaviour
 			if (Input.GetKeyDown(m_AbilityHotkeys[i]))
 			{
 				// Make sure the player can use the skill before selecting it.
-				if (m_SelectedUnit.m_LearnedSkills[i].GetCurrentCooldown() == 0 && m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.m_LearnedSkills[i].m_Cost)
+				if (m_SelectedUnit.GetSkill(i).GetCurrentCooldown() == 0 && m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.GetSkill(i).m_Cost)
 				{
 					SkillSelection(i);
 					break;
@@ -533,7 +533,7 @@ public class GameManager : MonoBehaviour
 	/// <param name="skillNumber"> Index of the skill being selected. </param>
 	public void SkillSelection(int skillNumber)
 	{
-		SkillSelection(m_SelectedUnit.m_LearnedSkills[skillNumber], UIManager.m_Instance.m_SkillSlots[skillNumber]);
+		SkillSelection(m_SelectedUnit.GetSkill(skillNumber), UIManager.m_Instance.m_SkillSlots[skillNumber]);
 	}
 
 	/// <summary>

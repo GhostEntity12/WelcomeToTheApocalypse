@@ -6,11 +6,13 @@ public class SkillWithTargets
 {
 	public List<Unit> m_Targets;
 	public BaseSkill m_Skill;
+	public int m_Responses;
 
 	public SkillWithTargets(List<Unit> targets, BaseSkill skill)
 	{
 		m_Targets = targets;
 		m_Skill = skill;
+		m_Responses = 0;
 	}
 }
 
@@ -33,7 +35,21 @@ public class ParticlesManager : MonoBehaviour
 
 	public static ParticlesManager m_Instance = null;
 
-	public SkillWithTargets m_ActiveSkill = new SkillWithTargets(null, null);
+	public SkillWithTargets m_ActiveSkill 
+	{ 
+		get
+		{
+			Debug.Log($"Current value of m_ActiveSkill is {(_m_ActiveSkill == null ? "null" : _m_ActiveSkill.ToString())}, {(_m_ActiveSkill == null ? null : _m_ActiveSkill.m_Skill)}");
+			return _m_ActiveSkill;
+		}
+		set
+		{
+			Debug.Log($"Setting m_ActiveSkill to {value}");
+			_m_ActiveSkill = value;
+		} 
+	} 
+
+	private SkillWithTargets _m_ActiveSkill = new SkillWithTargets(null, null);
 
 	//Zeroed
 	[Header("Melee Particle")]
@@ -295,17 +311,17 @@ public class ParticlesManager : MonoBehaviour
 		{
 			affectedUnit.IncomingSkill(m_ActiveSkill.m_Skill);
 		}
-		if (m_ActiveSkill.m_Skill is DamageSkill)
-		{
-			(m_ActiveSkill.m_Skill as DamageSkill).m_ExtraDamage = 0;
-		}
 	}
 
-	public void RemoveUnitFromTarget(Unit u)
+	public void RemoveUnitFromTarget()
 	{
-		m_ActiveSkill.m_Targets.Remove(u);
-		if (m_ActiveSkill.m_Targets.Count == 0)
+		m_ActiveSkill.m_Responses++;
+		if (m_ActiveSkill.m_Targets.Count == m_ActiveSkill.m_Responses)
 		{
+			if (m_ActiveSkill.m_Skill is DamageSkill)
+			{
+				(m_ActiveSkill.m_Skill as DamageSkill).m_ExtraDamage = 0;
+			}
 			m_ActiveSkill = null;
 			ListEmptied();
 		}
