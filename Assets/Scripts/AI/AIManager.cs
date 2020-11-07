@@ -142,6 +142,7 @@ public class AIManager : MonoBehaviour
 	{
 		if (UnitsManager.m_Instance.m_ActiveEnemyUnits.Count == 0)
 		{
+			Debug.Log("No enemies. Ending turn");
 			GameManager.m_Instance.EndCurrentTurn();
 			return;
 		}
@@ -232,6 +233,7 @@ public class AIManager : MonoBehaviour
 					}
 					else
 					{
+						// There's no movement, so just run the function that runs at the end of moving
 						OnFinishMoving();
 					}
 					return;

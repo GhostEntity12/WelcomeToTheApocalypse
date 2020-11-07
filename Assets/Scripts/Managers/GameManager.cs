@@ -212,9 +212,8 @@ public class GameManager : MonoBehaviour
 					status.TakeEffect(unit);
 				}
 			}
-
-			AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
 		}
+		AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
 	}
 
 	/// <summary>

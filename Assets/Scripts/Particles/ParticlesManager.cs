@@ -39,15 +39,23 @@ public class ParticlesManager : MonoBehaviour
 	{ 
 		get
 		{
-			Debug.Log($"Current value of m_ActiveSkill is {(_m_ActiveSkill == null ? "null" : _m_ActiveSkill.ToString())}, {(_m_ActiveSkill == null ? null : _m_ActiveSkill.m_Skill)}");
+			//Debug.Log($"Current value of m_ActiveSkill is {(_m_ActiveSkill == null ? "null" : _m_ActiveSkill.ToString())}, {(_m_ActiveSkill == null ? null : _m_ActiveSkill.m_Skill)}");
+
+			/* 
+			 * Some serious black magic is going on here. Grant, if you're reading this it's the
+			 * weird null behaviour where setting the class as null set it as a new (null, null).
+			 * Using a property to intercept the (null, null) class and just return the expected
+			 * null instead.
+			 */
+
+			if (_m_ActiveSkill != null && _m_ActiveSkill.m_Skill == null && _m_ActiveSkill.m_Targets == null)
+			{
+				return null;
+			}
 			return _m_ActiveSkill;
 		}
-		set
-		{
-			Debug.Log($"Setting m_ActiveSkill to {value}");
-			_m_ActiveSkill = value;
-		} 
-	} 
+		set => _m_ActiveSkill = value;
+	}
 
 	private SkillWithTargets _m_ActiveSkill = new SkillWithTargets(null, null);
 
