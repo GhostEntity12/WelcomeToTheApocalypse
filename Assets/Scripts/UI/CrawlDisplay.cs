@@ -23,8 +23,11 @@ public class CrawlDisplay : MonoBehaviour
 	string[] m_ScriptLines;
 	List<List<string>> m_LinesByScreen = new List<List<string>>();
 
+	public Action m_OnEndCrawlEvent;
+
 	public void LoadCrawl(Outcome outcome)
 	{
+
 		UIManager.m_Instance.m_ActiveUI = true;
 		m_Display.text = string.Empty;
 		m_ScriptLines = (outcome == Outcome.Win ? m_WinScript : m_FailScript).text.Split(
@@ -104,6 +107,8 @@ public class CrawlDisplay : MonoBehaviour
 			else
 			{
 				// TODO: Load next scene I guess
+				m_OnEndCrawlEvent?.Invoke();
+				m_OnEndCrawlEvent = null;
 				Debug.Log($"Finished crawl");
 			}
 		}

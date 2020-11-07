@@ -331,4 +331,9 @@ public class UIManager : MonoBehaviour
 		}
 		return false;
 	}
+
+	public void ShowCrawlButtons()
+	{
+
+	}
 }
