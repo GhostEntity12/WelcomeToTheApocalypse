@@ -643,6 +643,7 @@ public class AIManager : MonoBehaviour
 		{
 			Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit.name} can't cast any skills from {m_BestOption.m_Node.m_NodeHighlight.name}</color>");
 			m_CurrentAIUnit = null;
+			ParticlesManager.m_Instance.m_ActiveSkill = null;
 		}
 		m_MakingAction = false;
 	}

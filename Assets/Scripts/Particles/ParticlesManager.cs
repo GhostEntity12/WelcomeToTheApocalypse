@@ -120,8 +120,6 @@ public class ParticlesManager : MonoBehaviour
 	{
 		m_Instance = this;
 
-		m_ActiveSkill = null;
-
 		for (int i = 0; i < m_RangedPoolSize; ++i)
 		{
 			m_rangedPool.Add(Instantiate(m_rangedParticle, m_rangedParent.transform).GetComponent<RangedParticle>());
@@ -141,6 +139,11 @@ public class ParticlesManager : MonoBehaviour
 		//{
 		//	m_healPool.Add(Instantiate(m_healParticle, m_healParent.transform).GetComponent<ParticleSystem>());
 		//}
+	}
+
+	private void Start()
+	{ 
+		m_ActiveSkill = null;
 	}
 
 	/// <summary>

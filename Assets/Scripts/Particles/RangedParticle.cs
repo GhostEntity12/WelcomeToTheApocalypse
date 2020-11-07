@@ -66,6 +66,8 @@ public class RangedParticle : MonoBehaviour
 
 	public void Play()
 	{
+		m_InnerOrb.SetActive(true);
+		m_OuterOrb.SetActive(true);
 		m_Crackle.m_ParticleSystem.Play();
 		m_Swirl.m_ParticleSystem.Play();
 		m_LightTrail.m_ParticleSystem.Play();
@@ -75,6 +77,8 @@ public class RangedParticle : MonoBehaviour
 	}
 	public void Stop()
 	{
+		m_InnerOrb.SetActive(false);
+		m_OuterOrb.SetActive(false);
 		m_Crackle.m_ParticleSystem.Stop();
 		m_Swirl.m_ParticleSystem.Stop();
 		m_LightTrail.m_ParticleSystem.Stop();
