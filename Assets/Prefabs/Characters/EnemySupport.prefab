@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3002659849248337561}
   - component: {fileID: 8604211359484295078}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: EnemySupport_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6062282289607032693}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Foot_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1460790809020335492}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Knee_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,7 +181,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 626008511189928426}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Knee_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +212,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 887869225691778223}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,7 +242,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8716332603324684885}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: HealthBarPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +272,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4620327312238116027}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Mit_3_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -302,7 +302,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1170572315514855083}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Toe_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -332,7 +332,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8283752834152710043}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Mit_2_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -363,7 +363,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7339441922869778462}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Elbow_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -394,7 +394,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5699749342389359643}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Elbow_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -427,7 +427,7 @@ GameObject:
   - component: {fileID: 4709433506946863538}
   - component: {fileID: 1086897473715511050}
   - component: {fileID: 9183889187603585683}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Rib Swirl -Attach to spine (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1016,7 +1016,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 1000
+    maxNumParticles: 20
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -1281,7 +1281,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 45
+      scalar: 9
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -5188,7 +5188,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4202616768345328817}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Mit_1_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5221,7 +5221,7 @@ GameObject:
   - component: {fileID: 6246561324898599002}
   - component: {fileID: 2233708786925107268}
   - component: {fileID: 7043815658438447191}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Smoke -Place at Feet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9984,7 +9984,7 @@ GameObject:
   - component: {fileID: 484415432958677061}
   - component: {fileID: 6366707662789805678}
   - component: {fileID: 8847836198499051681}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Swirl - Attach to body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10573,7 +10573,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 1000
+    maxNumParticles: 5
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -14745,7 +14745,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1047611251149224377}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Thigh_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14776,7 +14776,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 473505511921649932}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Thumb_3_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14806,7 +14806,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8957455342098387138}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Spine_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14838,7 +14838,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7282260379511677209}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Ankle_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14869,7 +14869,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7405507850715393936}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Thigh_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14900,7 +14900,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4473717241074896374}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Shoulder_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14931,7 +14931,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1854217453240849385}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Hip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14964,7 +14964,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6299973278898976980}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: locator1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14996,7 +14996,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6964928645288662434}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Wrist_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15028,7 +15028,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7473190412556176935}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Thumb_3_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15060,7 +15060,7 @@ GameObject:
   - component: {fileID: 8298093075966950765}
   - component: {fileID: 1041379421198239579}
   - component: {fileID: 6723646076213509026}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: baseplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15137,7 +15137,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3821279773887013342}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Mit_3_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15167,7 +15167,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4656571053965589576}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Thumb_1_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15198,7 +15198,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5664149833424780844}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Shoulder_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15229,7 +15229,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5169010232552711144}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Thumb_2_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15260,7 +15260,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7910569201694310090}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Wrist_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15292,7 +15292,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 174654071011589734}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Toe_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15324,7 +15324,7 @@ GameObject:
   - component: {fileID: 6112101988391816678}
   - component: {fileID: 6112101988391816676}
   - component: {fileID: 6112101988391816679}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Swirl - Attach to body (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15913,7 +15913,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 1000
+    maxNumParticles: 6
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -20087,7 +20087,7 @@ GameObject:
   - component: {fileID: 6112101988699682352}
   - component: {fileID: 6112101988699682382}
   - component: {fileID: 6112101988699682353}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Rib Swirl -Attach to spine (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20676,7 +20676,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 1000
+    maxNumParticles: 5
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -24850,7 +24850,7 @@ GameObject:
   - component: {fileID: 6112101990207082700}
   - component: {fileID: 6112101990207082698}
   - component: {fileID: 6112101990207082701}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Rib Swirl -Attach to spine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25439,7 +25439,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 1000
+    maxNumParticles: 3
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -29611,7 +29611,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1479688199108346600}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Clav_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29642,7 +29642,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3637626354841141585}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Mit_1_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29678,7 +29678,7 @@ GameObject:
   - component: {fileID: 4890577196982342505}
   - component: {fileID: 5503797152080917563}
   - component: {fileID: -5776083441418456511}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: EnemySupport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29703,6 +29703,7 @@ Transform:
   - {fileID: 6299973278898976980}
   - {fileID: 8716332603324684885}
   - {fileID: 8298093075966950765}
+  - {fileID: 6164224555491230811}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -29741,15 +29742,15 @@ MonoBehaviour:
   m_StartingMovement: 5
   m_MoveSpeed: 5
   m_LearnedSkills:
-  - {fileID: 11400000, guid: 24fb0ac64e5d27a4d86b838f80512fcb, type: 2}
+  - {fileID: 11400000, guid: bf288053408c5914f89f7a964469d057, type: 2}
   m_Passive: {fileID: 0}
   m_Allegiance: 1
   m_StartingActionPoints: 1
-  m_HealthbarPosition: {fileID: 0}
-  m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
+  m_HealthbarPosition: {fileID: 8716332603324684885}
+  m_AIHeuristicCalculator: {fileID: 11400000, guid: acb2549c551ec3e4581e0e6e2d76c5bb,
     type: 2}
   m_animator: {fileID: 0}
-  m_SummonParticle: {fileID: 0}
+  m_SummonParticle: {fileID: 4430781644277618743}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 11400000, guid: 6f56fcc96de94e9498893a35f515614f, type: 2}
   m_DeathSound: 
@@ -29802,7 +29803,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1256910589349382895}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Mit_2_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29835,7 +29836,7 @@ GameObject:
   - component: {fileID: 4034324583113278715}
   - component: {fileID: 1363206152224151468}
   - component: {fileID: 2718807704302693571}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Support Smoke -Attach to mesh - shape
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30424,7 +30425,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 1000
+    maxNumParticles: 20
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -30689,7 +30690,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 30
+      scalar: 7
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -34596,7 +34597,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4464459750826264483}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Foot_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34627,7 +34628,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4067112680650032454}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Spine_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34662,7 +34663,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1056894637703347323}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Clav_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34693,7 +34694,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4775056046861394619}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Ankle_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34724,7 +34725,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1607188357378604492}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Thumb_1_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34755,7 +34756,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4299858501716901140}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Neck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34786,7 +34787,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5828379600891304877}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Jnt_Thumb_2_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34808,3 +34809,84 @@ Transform:
   m_Father: {fileID: 1607188357378604492}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2676515778155913221
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 5819082106585600415}
+    m_Modifications:
+    - target: {fileID: 6294122339792339323, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_Name
+      value: AppearSmoke
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 8.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -9.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 18c5590218b47b544bbd0beb4b5609dd, type: 3}
+--- !u!4 &6164224555491230811 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 2676515778155913221}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &4430781644277618743 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1754618820108695602, guid: 18c5590218b47b544bbd0beb4b5609dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 2676515778155913221}
+  m_PrefabAsset: {fileID: 0}

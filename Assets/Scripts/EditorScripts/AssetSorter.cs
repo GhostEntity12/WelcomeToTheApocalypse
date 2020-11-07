@@ -19,9 +19,18 @@ namespace Ghost
 
 		public SortType m_SortType;
 
+		public bool m_AlsoFixNames;
+
+		public string m_NameCulling;
+
 		[ContextMenu("Sort Children")]
 		public void SortChildren()
 		{
+			if (m_AlsoFixNames)
+			{
+				FixNames();
+			}
+
 			// Get the index of this object
 			int startingIndex = transform.GetSiblingIndex() + 1;
 
@@ -70,6 +79,21 @@ namespace Ghost
 			}
 
 			Debug.Log($"AssetSorter on GameObject <b>{gameObject.name}</b> sorted <b>{assetsToSort.Count}</b> children by sort type <b>{m_SortType}</b>");
+		}
+
+		void FixNames()
+		{
+			foreach (Transform child in transform)
+			{
+				if (child.name.Contains("(") && child.name.Contains(")"))
+				{
+					child.name = child.name.Substring(0, child.name.IndexOf("(") - 1).Trim();
+				}
+				if (!string.IsNullOrWhiteSpace(m_NameCulling))
+				{
+					child.name = child.name.Replace(m_NameCulling, "");
+				}
+			}
 		}
 	}
 }

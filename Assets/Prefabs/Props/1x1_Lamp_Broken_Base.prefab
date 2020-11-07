@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 7904682993243400677}
   - component: {fileID: 2395869353678916224}
   - component: {fileID: 5736055399656624361}
-  - component: {fileID: 5498949589985314279}
-  - component: {fileID: 1817131826382496193}
-  m_Layer: 0
+  - component: {fileID: -7844816320346789223}
+  - component: {fileID: 5167288211590739765}
+  m_Layer: 30
   m_Name: 1x1_Lamp_Broken_Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -81,8 +81,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &5498949589985314279
-BoxCollider:
+--- !u!136 &-7844816320346789223
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -91,10 +91,11 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.92192507, y: 2.777346, z: 0.8768029}
-  m_Center: {x: -0.00044761598, y: 1.388673, z: -0.000053346157}
---- !u!114 &1817131826382496193
+  m_Radius: 0.46096253
+  m_Height: 2.774488
+  m_Direction: 1
+  m_Center: {x: -0.00044761598, y: 1.3901019, z: -0.000053346157}
+--- !u!114 &5167288211590739765
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
