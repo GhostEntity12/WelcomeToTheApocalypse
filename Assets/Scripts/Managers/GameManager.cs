@@ -224,166 +224,169 @@ public class GameManager : MonoBehaviour
 
 		m_LeftMouseDown = Input.GetMouseButtonDown(0);
 
-		// Mouse is over a unit.
-		if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
+		if (!UIManager.m_Instance.CheckUIBlocking())
 		{
-			Unit rayHitUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
-			// Check if the player is selecting another character.
-			if (m_TargetingState == TargetingState.Move)
+			// Mouse is over a unit.
+			if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
 			{
-				// Check player input.
-				if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
+				Unit rayHitUnit = m_MouseWorldRayHit.transform.GetComponent<Unit>();
+				// Check if the player is selecting another character.
+				if (m_TargetingState == TargetingState.Move)
 				{
-					// Don't autofocus if the unit is dead
-					if (rayHitUnit.GetCurrentHealth() > 0)
+					// Check player input.
+					if (m_LeftMouseDown && !m_MouseOverUIBlockingElements)
 					{
-						m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
-					}
-					// If the unit the player is hovering over isn't the selected unit and the unit is alive, select that unit.
-					if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAlive() == true)
-					{
-						// Reset the nodes highlights before selecting the new unit
-						m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
-						m_SelectedUnit?.m_MovableNodes.ForEach(u => u.m_NodeHighlight.ChangeHighlight(TileState.None));
-
-						// Store the new unit
-						m_SelectedUnit = rayHitUnit;
-						UIManager.m_Instance.SwapSkillsUI(m_SelectedUnit.m_UIData);
-						UIManager.m_Instance.m_UIHealthBar.SetHealthAmount((float)m_SelectedUnit.GetCurrentHealth() / m_SelectedUnit.GetStartingHealth());
-
-						// Highlight the appropriate tiles
-						m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-						m_SelectedUnit.HighlightMovableNodes();
-
-						StatusEffectTooltipManager.m_Instance.UpdateActiveEffects();
-
-						// Update the UI's action point counter to display the newly selected unit's action points.
-						UIManager.m_Instance.m_ActionPointCounter.ResetActionPointCounter();
-						UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
-					}
-				}
-			}
-			//Check if the player is casting a skill on a unit.
-			else if (m_TargetingState == TargetingState.Skill)
-			{
-				Node unitNode = Grid.m_Instance.GetNode(rayHitUnit.transform.position);
-				// Display the target area for the skill and it's area of effect.
-				if (unitNode != m_CachedNode)
-				{
-					// Update the cache
-					m_CachedNode = unitNode;
-					// If it's targetable
-					if (m_CachedNode.m_NodeHighlight.m_IsTargetable)
-					{
-						// Display pink area
-						List<Node> targetableRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode, true);
-						m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = targetableRange.Contains(n));
-					}
-					// Otherwise clear the pink area
-					else
-					{
-						m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = false);
-					}
-				}
-				// Check player input.
-				if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
-				{
-					// Cast the skill the player has selected.
-					// If hit unit is in affectable range,
-					if (unitNode.m_NodeHighlight.m_IsTargetable)
-					{
-						if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
+						// Don't autofocus if the unit is dead
+						if (rayHitUnit.GetCurrentHealth() > 0)
 						{
-							m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
-							m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
-
-							UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
-
-							// Now deselect the skill and clear the targeting highlights.
-							CancelSkill();
+							m_CameraMovement.m_AutoMoveDestination = new Vector3(rayHitUnit.transform.position.x, 0, rayHitUnit.transform.position.z);
 						}
+						// If the unit the player is hovering over isn't the selected unit and the unit is alive, select that unit.
+						if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAlive() == true)
+						{
+							// Reset the nodes highlights before selecting the new unit
+							m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
+							m_SelectedUnit?.m_MovableNodes.ForEach(u => u.m_NodeHighlight.ChangeHighlight(TileState.None));
+
+							// Store the new unit
+							m_SelectedUnit = rayHitUnit;
+							UIManager.m_Instance.SwapSkillsUI(m_SelectedUnit.m_UIData);
+							UIManager.m_Instance.m_UIHealthBar.SetHealthAmount((float)m_SelectedUnit.GetCurrentHealth() / m_SelectedUnit.GetStartingHealth());
+
+							// Highlight the appropriate tiles
+							m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+							m_SelectedUnit.HighlightMovableNodes();
+
+							StatusEffectTooltipManager.m_Instance.UpdateActiveEffects();
+
+							// Update the UI's action point counter to display the newly selected unit's action points.
+							UIManager.m_Instance.m_ActionPointCounter.ResetActionPointCounter();
+							UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
+						}
+					}
+				}
+				//Check if the player is casting a skill on a unit.
+				else if (m_TargetingState == TargetingState.Skill)
+				{
+					Node unitNode = Grid.m_Instance.GetNode(rayHitUnit.transform.position);
+					// Display the target area for the skill and it's area of effect.
+					if (unitNode != m_CachedNode)
+					{
+						// Update the cache
+						m_CachedNode = unitNode;
+						// If it's targetable
+						if (m_CachedNode.m_NodeHighlight.m_IsTargetable)
+						{
+							// Display pink area
+							List<Node> targetableRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode, true);
+							m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = targetableRange.Contains(n));
+						}
+						// Otherwise clear the pink area
 						else
 						{
-							Debug.Log("Not enough action points!", m_SelectedUnit);
+							m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = false);
 						}
 					}
-				}
-			}
-		}
-		// Mouse is over a tile.
-		else if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 8))
-		{
-			Node hitNode = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
-			// The player is currently targeting for a skill.
-			if (m_TargetingState == TargetingState.Skill)
-			{
-				// Display the target area for the skill and it's area of effect.
-				if (hitNode != m_CachedNode)
-				{
-					// Update the cache
-					m_CachedNode = hitNode;
-					// If it's targetable
-					if (m_CachedNode.m_NodeHighlight.m_IsTargetable)
-					{
-						// Display pink area
-						List<Node> targetableRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode, true);
-						m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = targetableRange.Contains(n));
-					}
-					// Otherwise clear the pink area
-					else
-					{
-						m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = false);
-					}
-				}
-
-				// Check player input.
-				if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
-				{
-					// Cast the skill the player has selected.
-					// If hit tile is in affectable range,
-					if (hitNode.m_NodeHighlight.m_IsTargetable)
-					{
-						if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
-						{
-							m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
-							m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
-
-							UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
-							// Now deselect the skill and clear the targeting highlights.
-							CancelSkill();
-						}
-						else
-						{
-							Debug.Log("Not enough action points!");
-						}
-					}
-				}
-			}
-			// The player is choosing a tile to move a unit to.
-			else if (m_TargetingState == TargetingState.Move)
-			{
-				// Make sure a unit is selected.
-				if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player && m_SelectedUnit.GetMoving() == false)
-				{
-					// Check input.
+					// Check player input.
 					if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
 					{
-						if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
+						// Cast the skill the player has selected.
+						// If hit unit is in affectable range,
+						if (unitNode.m_NodeHighlight.m_IsTargetable)
 						{
-							// Clear the previously highlighted tiles
-							foreach (Node n in m_SelectedUnit.m_MovableNodes)
+							if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
 							{
-								n.m_NodeHighlight.ChangeHighlight(TileState.None);
+								m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
+								m_SelectedUnit.ActivateSkill(m_SelectedSkill, unitNode);
+
+								UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
+
+								// Now deselect the skill and clear the targeting highlights.
+								CancelSkill();
 							}
-							Stack<Node> path = new Stack<Node>();
-							if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out path, out m_MovementCost, true))
+							else
 							{
-								m_SelectedUnit.SetMovementPath(path);
-								// Decrease the unit's movement by the cost.
-								m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
+								Debug.Log("Not enough action points!", m_SelectedUnit);
 							}
-							// Should we do this after the unit has finished moving? - James L
-							m_SelectedUnit.HighlightMovableNodes(hitNode);
+						}
+					}
+				}
+			}
+			// Mouse is over a tile.
+			else if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 8))
+			{
+				Node hitNode = Grid.m_Instance.GetNode(m_MouseWorldRayHit.transform.position);
+				// The player is currently targeting for a skill.
+				if (m_TargetingState == TargetingState.Skill)
+				{
+					// Display the target area for the skill and it's area of effect.
+					if (hitNode != m_CachedNode)
+					{
+						// Update the cache
+						m_CachedNode = hitNode;
+						// If it's targetable
+						if (m_CachedNode.m_NodeHighlight.m_IsTargetable)
+						{
+							// Display pink area
+							List<Node> targetableRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode, true);
+							m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = targetableRange.Contains(n));
+						}
+						// Otherwise clear the pink area
+						else
+						{
+							m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = false);
+						}
+					}
+
+					// Check player input.
+					if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
+					{
+						// Cast the skill the player has selected.
+						// If hit tile is in affectable range,
+						if (hitNode.m_NodeHighlight.m_IsTargetable)
+						{
+							if (m_SelectedUnit.GetActionPoints() >= m_SelectedSkill.m_Cost)
+							{
+								m_SelectedUnit.DecreaseActionPoints(m_SelectedSkill.m_Cost);
+								m_SelectedUnit.ActivateSkill(m_SelectedSkill, hitNode);
+
+								UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
+								// Now deselect the skill and clear the targeting highlights.
+								CancelSkill();
+							}
+							else
+							{
+								Debug.Log("Not enough action points!");
+							}
+						}
+					}
+				}
+				// The player is choosing a tile to move a unit to.
+				else if (m_TargetingState == TargetingState.Move)
+				{
+					// Make sure a unit is selected.
+					if (m_SelectedUnit != null && m_SelectedUnit.GetAllegiance() == Allegiance.Player && m_SelectedUnit.GetMoving() == false)
+					{
+						// Check input.
+						if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
+						{
+							if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
+							{
+								// Clear the previously highlighted tiles
+								foreach (Node n in m_SelectedUnit.m_MovableNodes)
+								{
+									n.m_NodeHighlight.ChangeHighlight(TileState.None);
+								}
+								Stack<Node> path = new Stack<Node>();
+								if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out path, out m_MovementCost, true))
+								{
+									m_SelectedUnit.SetMovementPath(path);
+									// Decrease the unit's movement by the cost.
+									m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
+								}
+								// Should we do this after the unit has finished moving? - James L
+								m_SelectedUnit.HighlightMovableNodes(hitNode);
+							}
 						}
 					}
 				}
