@@ -17,6 +17,9 @@ MonoBehaviour:
   m_DarkIcon: {fileID: 21300000, guid: fe5cc63adbec964418653d2224db4b76, type: 3}
   m_Description: Target an adjacent foe with a high damage attack, dealing {damage}
     damage.
+  m_ParticlePrefab: {fileID: 6347129818612238557, guid: 6ae338c97a9f7e64a92019b172c84a30,
+    type: 3}
+  m_ParticleSystem: {fileID: 0}
   targets: 2
   targetType: 0
   excludeCaster: 0
@@ -27,6 +30,7 @@ MonoBehaviour:
   m_AffectedRange: 0
   m_Cost: 2
   m_IsMagic: 0
+  m_SpawnLocation: 1
   m_CastEvent: event:/Death/Death's Embrace (Single Target)
   m_DamageAmount: 14
   m_ExtraDamage: 0

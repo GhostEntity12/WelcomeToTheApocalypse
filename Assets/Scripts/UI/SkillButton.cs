@@ -93,14 +93,13 @@ public class SkillButton : MonoBehaviour
 				m_Skill.m_Cost > GameManager.m_Instance.GetSelectedUnit().GetActionPoints() ? // Filled if AP cost is too high
 					1 :
 				0; // Empty otherwise
-		}
-
-		PassiveSkill passive = GameManager.m_Instance.GetSelectedUnit().GetPassiveSkill();
-		if (m_Skill.m_SkillName == "Benign Infection" &&
-			passive is PestilencePassive &&
-			(passive as PestilencePassive).m_CurrentHealResource == 0)
-		{
-			m_Cooldown.fillAmount = 1;
+			PassiveSkill passive = GameManager.m_Instance.GetSelectedUnit().GetPassiveSkill();
+			if (m_Skill.m_SkillName == "Benign Infection" &&
+				passive is PestilencePassive &&
+				(passive as PestilencePassive).m_CurrentHealResource == 0)
+			{
+				m_Cooldown.fillAmount = 1;
+			}
 		}
 	}
 }
