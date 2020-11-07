@@ -57,13 +57,14 @@ public class ParticlesManager : MonoBehaviour
 
 
 	[Header("Ranged Particle")]
+	public RangedColor m_DefaultRanged;
 	public RangedColor m_PestilenceRanged;
 	public RangedColor m_FamineRanged;
 	public RangedColor m_EnemyRanged;
 
 	public float m_ZDistanceSpawn = 0.2f;
 
-	public int m_RangedPoolSize;
+	public int m_RangedPoolSize = 2;
 
 	public float m_rangedSpeed = 0.1f;
 
@@ -146,15 +147,29 @@ public class ParticlesManager : MonoBehaviour
 	/// Move ranged particle to desired destination
 	/// </summary>
 
-	public void OnRanged(GameObject caster, Vector3 targetPos)
+	public void OnRanged(Unit caster, Vector3 targetPos, Unit targetUnit)
 	{
 		RangedParticle systemToUse = m_rangedPool[m_rangedIndex];
+		switch (caster.m_CharacterName)
+		{
+			case "Famine":
+				systemToUse.SetColor(m_FamineRanged);
+				break;
+			case "Pestilence":
+				systemToUse.SetColor(m_PestilenceRanged);
+				break;
+			case "Ranged Enemy":
+				systemToUse.SetColor(m_EnemyRanged);
+				break;
+			default:
+				break;
+		}
+		systemToUse.m_Target = targetUnit;
 		systemToUse.transform.position = caster.transform.position + Vector3.up + (caster.transform.forward * m_ZDistanceSpawn);
-		systemToUse.gameObject.GetComponent<RangedParticle>().m_caster = caster;
+		systemToUse.transform.LookAt(targetPos);
 		systemToUse.Play();
 		m_activeRangedParticle.Add(systemToUse);
 		m_endPosition.Add(targetPos);
-		print(Vector3.Distance(caster.transform.position, targetPos));
 		++m_rangedIndex;
 		//activeParticle[0].transform.position = Vector3.MoveTowards(m_unitPos, m_endPosition[0], 5.0f);
 	}
@@ -205,18 +220,23 @@ public class ParticlesManager : MonoBehaviour
 			//Goes through the active ranged partcles to move from an unit to another
 			for (int i = 0; i < m_activeRangedParticle.Count; ++i)
 			{
-				//m_activeRangedParticle[i].transform.position = Vector3.MoveTowards(m_activeRangedParticle[i].transform.position, m_endPosition[i], m_rangedSpeed);
-				m_activeRangedParticle[i].transform.position = Vector3.MoveTowards(m_activeRangedParticle[i].transform.position, m_endPosition[i], m_rangedSpeed);
+				RangedParticle particleToCheck = m_activeRangedParticle[i];
+				//particleToCheck = Vector3.MoveTowards(particleToCheck, m_endPosition[i], m_rangedSpeed);
+				particleToCheck.transform.position = Vector3.MoveTowards(particleToCheck.transform.position, m_endPosition[i], m_rangedSpeed);
 				travelTime += Time.deltaTime;
 				//Checks if the particle has reached its destination
 				//Removes the particle from active and the endposition for the particle
 				//Removes one from the ranged index
-				if (m_activeRangedParticle[i].transform.position == m_endPosition[i])
+				if (particleToCheck.transform.position == m_endPosition[i])
 				{
-					m_activeRangedParticle[i].time = m_activeRangedParticle[i].main.duration;
+					//m_activeRangedParticle[i].time = m_activeRangedParticle[i].main.duration;
 
-					m_activeRangedParticle.Remove(m_activeRangedParticle[i]);
+					m_activeRangedParticle.Remove(particleToCheck);
 					m_endPosition.Remove(m_endPosition[i]);
+
+					particleToCheck.Stop();
+
+					particleToCheck.transform.position = m_rangedParent.transform.position;
 
 					if (m_rangedIndex <= 0)
 					{
@@ -226,8 +246,6 @@ public class ParticlesManager : MonoBehaviour
 					{
 						--m_rangedIndex;
 					}
-
-					print(travelTime);
 					travelTime = 0.0f;
 				}
 			}
