@@ -141,6 +141,8 @@ public class Unit : MonoBehaviour
 
 	public UIData m_UIData;
 
+	public List<Transform> m_ParentedParticleSystems = new List<Transform>();
+
 	[FMODUnity.EventRef]
 	public string m_DeathSound = "";
 
@@ -406,10 +408,10 @@ public class Unit : MonoBehaviour
 		switch (activeSkill.m_Skill.m_SpawnLocation)
 		{
 			case ParticleSpawnType.Target:
-				activeSkill.m_Skill.PlayEffect(activeSkill.m_Targets[0].transform.position);
+				activeSkill.m_Skill.PlayEffect(activeSkill.m_Targets[0]);
 				break;
 			case ParticleSpawnType.Caster:
-				activeSkill.m_Skill.PlayEffect(GameManager.m_Instance.m_SelectedUnit.transform.position);
+				activeSkill.m_Skill.PlayEffect(GameManager.m_Instance.m_SelectedUnit);
 				break;
 			case ParticleSpawnType.Tile:
 				activeSkill.m_Skill.PlayEffect(activeSkill.m_Skill.m_CastNode.worldPosition);
@@ -430,6 +432,11 @@ public class Unit : MonoBehaviour
 		Debug.Log($"<color=#a87932>[Death] </color>{name} died");
 		m_IsAlive = false;
 
+		while (m_ParentedParticleSystems.Count > 0)
+		{
+			m_ParentedParticleSystems[0].parent = null;
+		}
+
 		// Check if the unit has the "DefeatEnemyWinCondition" script on it.
 		// If it does, the player has won the level by defeating the boss.
 		GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
@@ -445,6 +452,48 @@ public class Unit : MonoBehaviour
 			AIManager.m_Instance.DisableUnits(this);
 		}
 
+		Node currentNode = Grid.m_Instance.GetNode(transform.position);
+		currentNode.unit = null;
+		currentNode.m_isBlocked = false;
+
+		if (m_DeathSound != "")
+			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+
+		gameObject.SetActive(false);
+	}
+
+	public void PlayerDeath()
+	{
+		Debug.Log($"<color=#a87932>[Death] </color>{name} died");
+		m_IsAlive = false;
+
+		while (m_ParentedParticleSystems.Count > 0)
+		{
+			m_ParentedParticleSystems[0].parent = null;
+		}
+
+		// Check if the unit has the "DefeatEnemyWinCondition" script on it.
+		// If it does, the player has won the level by defeating the boss.
+		GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
+
+		// If this is a player unit, check if the player has any units remaining.
+		if (m_Allegiance == Allegiance.Player)
+		{
+			UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
+			UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
+		}
+		else
+		{
+			AIManager.m_Instance.DisableUnits(this);
+		}
+
+		Node currentNode = Grid.m_Instance.GetNode(transform.position);
+		currentNode.unit = null;
+		currentNode.m_isBlocked = false;
+
+		if (m_DeathSound != "")
+			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+
 		if (m_KillDialogue)
 		{
 			if (GetComponent<DefeatEnemyWinCondition>())
@@ -459,17 +508,8 @@ public class Unit : MonoBehaviour
 			else
 			{
 				DialogueManager.instance.QueueDialogue(m_KillDialogue, KillUnit);
-			}					
+			}
 		}
-
-		Node currentNode = Grid.m_Instance.GetNode(transform.position);
-		currentNode.unit = null;
-		currentNode.m_isBlocked = false;
-
-		if (m_DeathSound != "")
-			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
-
-		gameObject.SetActive(false);
 	}
 
 	/// <summary>
@@ -611,7 +651,10 @@ public class Unit : MonoBehaviour
 	/// <param name="extra">The amount of extra damage to deal.</param>
 	public void AddDealExtraDamage(int extra) => m_DealExtraDamage += extra;
 
-	public void SetDealExtraDamage(int extra) => m_DealExtraDamage = extra;
+	public void SetDealExtraDamage(int extra)
+	{
+		m_DealExtraDamage = extra;
+	}
 
 	/// <summary>
 	/// Check if the unit is moving.
@@ -668,7 +711,7 @@ public class Unit : MonoBehaviour
 								{
 									if (status.CheckPrecondition(TriggerType.OnDealDamage) == true)
 									{
-										status.TakeEffect(u);
+										status.TakeEffect(this);
 									}
 								}
 

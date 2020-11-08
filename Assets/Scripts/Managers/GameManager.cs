@@ -123,10 +123,12 @@ public class GameManager : MonoBehaviour
 	{
 		// If it's currently the player's turn, check their inputs.
 		// Commented out for debugging.
-		//if (m_CurrentTurn == Allegiance.Player)
-		if (!UIManager.m_Instance.m_ActiveUI)
+		if (m_TeamCurrentTurn == Allegiance.Player)
 		{
-			PlayerInputs();
+			if (!UIManager.m_Instance.m_ActiveUI)
+			{
+				PlayerInputs();
+			}
 		}
 
 		Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
@@ -190,7 +192,11 @@ public class GameManager : MonoBehaviour
 			// Check the passives of all the player units for any that trigger at the start of their turn.
 			PassiveSkill ps = unit.GetPassiveSkill();
 			if (ps)
-				ps.CheckPrecondition(TriggerType.OnTurnStart);
+			{
+				if (ps.CheckPrecondition(TriggerType.OnTurnStart))
+					ps.TakeEffect(unit);
+			}
+
 
 			// Reduce cooldowns
 			foreach (BaseSkill s in unit.GetSkills())
@@ -213,6 +219,8 @@ public class GameManager : MonoBehaviour
 				}
 			}
 		}
+
+		m_SelectedUnit = null;
 		AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
 	}
 
