@@ -406,10 +406,10 @@ public class Unit : MonoBehaviour
 		switch (activeSkill.m_Skill.m_SpawnLocation)
 		{
 			case ParticleSpawnType.Target:
-				activeSkill.m_Skill.PlayEffect(activeSkill.m_Targets[0].transform.position);
+				activeSkill.m_Skill.PlayEffect(activeSkill.m_Targets[0].transform);
 				break;
 			case ParticleSpawnType.Caster:
-				activeSkill.m_Skill.PlayEffect(GameManager.m_Instance.m_SelectedUnit.transform.position);
+				activeSkill.m_Skill.PlayEffect(GameManager.m_Instance.m_SelectedUnit.transform);
 				break;
 			case ParticleSpawnType.Tile:
 				activeSkill.m_Skill.PlayEffect(activeSkill.m_Skill.m_CastNode.worldPosition);

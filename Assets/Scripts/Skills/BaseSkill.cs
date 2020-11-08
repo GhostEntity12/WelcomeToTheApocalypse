@@ -95,6 +95,14 @@ public class BaseSkill : ScriptableObject
 		m_ParticleSystem.Play();
 	}
 
+	public void PlayEffect(Transform parent)
+	{
+		m_ParticleSystem.transform.parent = parent;
+		m_ParticleSystem.transform.position = Vector3.zero;
+		m_ParticleSystem.transform.rotation = Quaternion.identity;
+		m_ParticleSystem.Play();
+	}
+
 	public void Startup()
 	{
 		m_CurrentCooldown = 0;

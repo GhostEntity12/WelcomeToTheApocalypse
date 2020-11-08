@@ -78,14 +78,14 @@ public class HeuristicResult
 	}
 	public HeuristicResult(Unit u, Node n, float hv, HealSkillTarget hs)
 	{
-		m_DamageValue = hv;
+		m_HealValue = hv;
 		m_Unit = u;
 		m_Node = n;
 		m_HealSkill = hs;
 	}
 	public HeuristicResult(Unit u, Node n, float hv, StatusSkillTarget ss)
 	{
-		m_DamageValue = hv;
+		m_StatusValue = hv;
 		m_Unit = u;
 		m_Node = n;
 		m_StatusSkill = ss;
@@ -446,14 +446,14 @@ public class AIManager : MonoBehaviour
 			if (nodeWithUnit.unit?.GetAllegiance() == aiUnit.GetAllegiance())
 			{
 				Unit currentUnit = nodeWithUnit.unit;
-				// Get nodes in the area that the AI unit could heal friendly units from.
-				List<Node> nodesCastable = Grid.m_Instance.GetNodesWithinRadius(hs.m_CastableDistance, nodeWithUnit);
 
-				// Go through each of the nodes the AI unit could heal from and add the heal heuristic to them.
-				for (int j = 0; j < nodesCastable.Count; j++)
+				// Skip if at full health
+				if (currentUnit.GetCurrentHealth() == currentUnit.GetStartingHealth()) continue;
+
+				if (currentUnit == aiUnit)
 				{
-					Node castNode = nodesCastable[j];
-
+					// Edge case when healing self. Don't move;
+					Node castNode = nodeWithUnit;
 					// Calculate the value for the node's heal heuristic.
 					float newHealH = hs.m_HealAmount + (currentUnit.GetStartingHealth() - currentUnit.GetCurrentHealth()) * aiUnit.GetHeuristicCalculator().m_HealWeighting;
 
@@ -464,6 +464,29 @@ public class AIManager : MonoBehaviour
 							castNode,
 							aiUnit,
 							new HealSkillTarget(hs, nodeWithUnit));
+					}
+				}
+				else
+				{
+					// Get nodes in the area that the AI unit could heal friendly units from.
+					List<Node> nodesCastable = Grid.m_Instance.GetNodesWithinRadius(hs.m_CastableDistance, nodeWithUnit);
+
+					// Go through each of the nodes the AI unit could heal from and add the heal heuristic to them.
+					for (int j = 0; j < nodesCastable.Count; j++)
+					{
+						Node castNode = nodesCastable[j];
+
+						// Calculate the value for the node's heal heuristic.
+						float newHealH = hs.m_HealAmount + (currentUnit.GetStartingHealth() - currentUnit.GetCurrentHealth()) * aiUnit.GetHeuristicCalculator().m_HealWeighting;
+
+						if (castNode != null)
+						{
+							AddOrUpdateHeuristic(
+								newHealH,
+								castNode,
+								aiUnit,
+								new HealSkillTarget(hs, nodeWithUnit));
+						}
 					}
 				}
 			}
@@ -537,7 +560,7 @@ public class AIManager : MonoBehaviour
 			if (hr.m_DamageValue >= value) return;
 
 			// Otherwise set values
-			hr.m_DamageValue += value;
+			hr.m_DamageValue = value;
 			hr.m_DamageSkill = damageSkill;
 		}
 		else // Otherwise create a new heuristic with the values
@@ -563,7 +586,7 @@ public class AIManager : MonoBehaviour
 			if (hr.m_HealValue >= value) return;
 
 			// Otherwise set values
-			hr.m_HealValue += value;
+			hr.m_HealValue = value;
 			hr.m_HealSkill = healSkill;
 		}
 		else // Otherwise create a new heuristic with the values
@@ -589,7 +612,7 @@ public class AIManager : MonoBehaviour
 			if (hr.m_StatusValue >= value) return;
 
 			// Otherwise set values
-			hr.m_StatusValue += value;
+			hr.m_StatusValue = value;
 			hr.m_StatusSkill = statusSkill;
 		}
 		else  // Otherwise create a new heuristic with the values
