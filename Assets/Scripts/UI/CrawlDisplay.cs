@@ -25,6 +25,8 @@ public class CrawlDisplay : MonoBehaviour
 
 	public Action m_OnEndCrawlEvent;
 
+	public RectTransform m_CrawlButtons;
+
 	public void LoadCrawl(Outcome outcome)
 	{
 
