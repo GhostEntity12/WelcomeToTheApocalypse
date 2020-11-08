@@ -22,7 +22,9 @@ public class PrematureTurnEndDisplay : MonoBehaviour
 	{
 		string unitsWithActions = string.Empty;
 
-		foreach (Unit unit in UnitsManager.m_Instance.m_PlayerUnits.Where(u => u.GetActionPoints() > 0 || u.GetCurrentMovement() > 0))
+		bool skipExtraAP = UnitsManager.m_Instance.m_ActiveEnemyUnits.Count == 0;
+
+		foreach (Unit unit in UnitsManager.m_Instance.m_PlayerUnits.Where(u => (u.GetActionPoints() > 0 && !skipExtraAP) || u.GetCurrentMovement() > 0))
 		{
 			unitsWithActions += unit.name + "\n";
 		}

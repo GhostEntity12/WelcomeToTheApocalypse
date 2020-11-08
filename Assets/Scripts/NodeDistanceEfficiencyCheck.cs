@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.ShaderGraph.Internal;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class NodeDistanceEfficiencyCheck : MonoBehaviour
@@ -61,6 +59,6 @@ public class NodeDistanceEfficiencyCheck : MonoBehaviour
 			total2 += t2;
 			totalTime += t1 / t2 * 100;
 		}
-		Debug.Log($"Pure maths (average: {total1/100}) took {totalTime / 100}% of the time of pathfinding ((average: {total2 / 100})for {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
+		Debug.Log($"Pure maths (average: {total1 / 100}) took {totalTime / 100}% of the time of pathfinding ((average: {total2 / 100})for {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
 	}
 }
