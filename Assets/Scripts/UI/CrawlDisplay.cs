@@ -50,8 +50,7 @@ public class CrawlDisplay : MonoBehaviour
 				m_LinesByScreen[screen].Add(line);
 			}
 		}
-		LeanTween.alphaCanvas(UIManager.m_Instance.m_BlackScreen, 1, 2);
-		LeanTween.delayedCall(2, () => StartCoroutine(DisplayScreen(m_CurrentScreen)));
+		LeanTween.alphaCanvas(UIManager.m_Instance.m_BlackScreen, 1, 2).setOnComplete(StartDisplay);
 	}
 
 	public IEnumerator DisplayScreen(int screen)
@@ -102,7 +101,7 @@ public class CrawlDisplay : MonoBehaviour
 			if (m_CurrentScreen < m_LinesByScreen.Count)
 			{
 				m_AcceptingInput = false;
-				StartCoroutine(DisplayScreen(m_CurrentScreen));
+				StartDisplay();
 			}
 			else
 			{
@@ -112,5 +111,10 @@ public class CrawlDisplay : MonoBehaviour
 				Debug.Log($"Finished crawl");
 			}
 		}
+	}
+
+	void StartDisplay()
+	{
+		StartCoroutine(DisplayScreen(m_CurrentScreen));
 	}
 }

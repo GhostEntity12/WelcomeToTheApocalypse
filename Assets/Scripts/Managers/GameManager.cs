@@ -157,9 +157,11 @@ public class GameManager : MonoBehaviour
 	{
 		m_TeamCurrentTurn = m_TeamCurrentTurn == Allegiance.Enemy ? Allegiance.Player : Allegiance.Enemy;
 
-		UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
+		Debug.Log($"============{m_TeamCurrentTurn} turn============");
 
 		UIManager.m_Instance.SwapTurnIndicator(m_TeamCurrentTurn);
+
+		UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
 
 		// Play the end turn sound on the camera.
 		FMODUnity.RuntimeManager.PlayOneShot(m_TurnEndSound, Camera.main.transform.position);
@@ -210,9 +212,8 @@ public class GameManager : MonoBehaviour
 					status.TakeEffect(unit);
 				}
 			}
-
-			AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
 		}
+		AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
 	}
 
 	/// <summary>
@@ -399,7 +400,7 @@ public class GameManager : MonoBehaviour
 			if (Input.GetKeyDown(m_AbilityHotkeys[i]))
 			{
 				// Make sure the player can use the skill before selecting it.
-				if (m_SelectedUnit.m_LearnedSkills[i].GetCurrentCooldown() == 0 && m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.m_LearnedSkills[i].m_Cost)
+				if (m_SelectedUnit.GetSkill(i).GetCurrentCooldown() == 0 && m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.GetSkill(i).m_Cost)
 				{
 					SkillSelection(i);
 					break;
@@ -463,8 +464,9 @@ public class GameManager : MonoBehaviour
 	/// <param name="skill"> The skill being selected. </param>
 	public void SkillSelection(BaseSkill skill, SkillButton button)
 	{
-		if (ParticlesManager.m_Instance.m_ActiveSkill != null)
+		if (ParticlesManager.m_Instance.m_ActiveSkill != null)// || (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill != null && ParticlesManager.m_Instance.m_ActiveSkill.m_Targets != null))
 		{
+			Debug.LogWarning($"{ParticlesManager.m_Instance.m_ActiveSkill.m_Skill} is currently active!");
 			return;
 		}
 		// Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
@@ -530,7 +532,7 @@ public class GameManager : MonoBehaviour
 	/// <param name="skillNumber"> Index of the skill being selected. </param>
 	public void SkillSelection(int skillNumber)
 	{
-		SkillSelection(m_SelectedUnit.m_LearnedSkills[skillNumber], UIManager.m_Instance.m_SkillSlots[skillNumber]);
+		SkillSelection(m_SelectedUnit.GetSkill(skillNumber), UIManager.m_Instance.m_SkillSlots[skillNumber]);
 	}
 
 	/// <summary>

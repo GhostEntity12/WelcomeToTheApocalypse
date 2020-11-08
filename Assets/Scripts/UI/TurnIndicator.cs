@@ -26,12 +26,10 @@ public class TurnIndicator : MonoBehaviour
 
 		if (m_CurrentTeamTurn == Allegiance.Player)
 		{
-			Debug.Log("============Player turn============");
 			m_TMPText.text = "Player turn";
 		}
 		else if (m_CurrentTeamTurn == Allegiance.Enemy)
 		{
-			Debug.Log("============Enemy turn============");
 			m_TMPText.text = "Enemy turn";
 		}
 	}

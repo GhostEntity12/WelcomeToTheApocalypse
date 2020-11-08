@@ -118,7 +118,7 @@ public class Grid : MonoBehaviour
 
 				if (n.m_isOnMap)
 				{
-					n.m_tile = Instantiate(m_Tile, new Vector3(n.worldPosition.x, n.worldPosition.y + 0.01f, n.worldPosition.z), Quaternion.identity, m_NodeArray.transform);
+					n.m_tile = Instantiate(m_Tile, new Vector3(n.worldPosition.x, n.worldPosition.y, n.worldPosition.z), Quaternion.identity, m_NodeArray.transform);
 					n.m_NodeHighlight = n.m_tile.GetComponent<NodeHighlight>();
 					n.m_NodeHighlight.name = $"Node {n.x}/{n.z}";
 					n.m_NodeHighlight.ChangeHighlight(TileState.None);
