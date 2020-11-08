@@ -17,6 +17,9 @@ MonoBehaviour:
   m_DarkIcon: {fileID: 21300000, guid: 1d2938d5a51a3bf44b7d4cf185402690, type: 3}
   m_Description: Infect a foe within {distance} tiles, dealing {damage} damage immediately,
     and {effectDamage} damage for {duration} turns.
+  m_ParticlePrefab: {fileID: 3741891332592707788, guid: 7d23950018f312c469329dbc5db7cd5c,
+    type: 3}
+  m_ParticleSystem: {fileID: 0}
   targets: 2
   targetType: 0
   excludeCaster: 0
@@ -26,6 +29,9 @@ MonoBehaviour:
   m_CastableDistance: 5
   m_AffectedRange: 0
   m_Cost: 2
+  m_IsMagic: 1
+  m_SpawnLocation: 0
   m_CastEvent: event:/Pestilence/Pestilence's Mark (Damage)
   m_DamageAmount: 7
+  m_ExtraDamage: 0
   m_Effect: {fileID: 11400000, guid: f03f2842c01f13a4da79a7b579b0446e, type: 2}

@@ -29,8 +29,10 @@ public class MainMenuFunctions : MonoBehaviour
 	{
 		m_Anim.SetTrigger("isMainGame");
 		LeanTween.alphaCanvas(m_BlackScreen, 1.0f, 1.5f);
-		LeanTween.delayedCall(1.5f, () => SceneManager.LoadScene("Famine_Split"));
+		LeanTween.delayedCall(1.5f, LoadMainScene);
 	}
+
+	void LoadMainScene() => SceneManager.LoadScene("Famine_Split");
 
 	/// <summary>
 	/// Fade to black and quit the game.

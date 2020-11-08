@@ -124,17 +124,19 @@ public class CameraMovement : MonoBehaviour
 
 	void SwapToFromIsoCam()
 	{
-		LeanTween.delayedCall(0.15f, () =>
-			{
-				m_Camera.orthographic = !m_Camera.orthographic;
-				if ((int)m_LookDirection % 2 == 0 && m_Camera.orthographic)
-					RotateLeft(0.05f);
-				if (!m_Camera.orthographic && m_PixelScreen.alpha == 1)
-					SwapPixMode();
-				LeanTween.alphaCanvas(m_BlackScreen, 0, 0.15f);
-				m_IsSwapping = false;
-			});
+		LeanTween.delayedCall(0.15f, IsoSwap);
 		LeanTween.alphaCanvas(m_BlackScreen, 1, 0.15f);
+	}
+
+	void IsoSwap()
+	{
+		m_Camera.orthographic = !m_Camera.orthographic;
+		if ((int)m_LookDirection % 2 == 0 && m_Camera.orthographic)
+			RotateLeft(0.05f);
+		if (!m_Camera.orthographic && m_PixelScreen.alpha == 1)
+			SwapPixMode();
+		LeanTween.alphaCanvas(m_BlackScreen, 0, 0.15f);
+		m_IsSwapping = false;
 	}
 
 	void SwapPixMode()

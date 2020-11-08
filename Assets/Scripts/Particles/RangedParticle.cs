@@ -10,13 +10,27 @@ public class ParticleObject
 	public Material m_BaseMaterial;
 	[HideInInspector]
 	public Material m_TrailMaterial;
+
+	public void Setup()
+	{
+		ParticleSystemRenderer particleRenderer = m_Particle.GetComponent<ParticleSystemRenderer>();
+		particleRenderer.material = new Material(particleRenderer.material);
+		particleRenderer.trailMaterial = new Material(particleRenderer.trailMaterial);
+		m_BaseMaterial = particleRenderer.material;
+		m_TrailMaterial = particleRenderer.trailMaterial;
+
+		m_ParticleSystem = m_Particle.GetComponent<ParticleSystem>();
+	}
+
+	public void SetColor(Color color)
+	{
+		m_BaseMaterial.SetColor("_EmissionColor", color);
+		m_TrailMaterial.SetColor("_EmissionColor", color);
+	}
 }
 
 public class RangedParticle : MonoBehaviour
 {
-	[HideInInspector]
-	public GameObject m_caster;
-
 	public Unit m_Target;
 
 	[Header("Parts")]
@@ -42,21 +56,18 @@ public class RangedParticle : MonoBehaviour
 		innerOrbRenderer.material = new Material(innerOrbRenderer.material);
 		m_MatInnerOrb = innerOrbRenderer.material;
 
-		Setup(m_Crackle);
-		Setup(m_Swirl);
-		Setup(m_LightTrail);
-		Setup(m_DarkTrail);
-		Setup(m_Head);
-		Setup(m_Sparks);
-	}
-
-	private void Start()
-	{
-		SetColor(ParticlesManager.m_Instance.m_FamineRanged);
+		m_Crackle.Setup();
+		m_Swirl.Setup();
+		m_DarkTrail.Setup();
+		m_LightTrail.Setup();
+		m_Head.Setup();
+		m_Sparks.Setup();
 	}
 
 	public void Play()
 	{
+		m_InnerOrb.SetActive(true);
+		m_OuterOrb.SetActive(true);
 		m_Crackle.m_ParticleSystem.Play();
 		m_Swirl.m_ParticleSystem.Play();
 		m_LightTrail.m_ParticleSystem.Play();
@@ -64,42 +75,36 @@ public class RangedParticle : MonoBehaviour
 		m_Head.m_ParticleSystem.Play();
 		m_Sparks.m_ParticleSystem.Play();
 	}
+	public void Stop()
+	{
+		m_InnerOrb.SetActive(false);
+		m_OuterOrb.SetActive(false);
+		m_Crackle.m_ParticleSystem.Stop();
+		m_Swirl.m_ParticleSystem.Stop();
+		m_LightTrail.m_ParticleSystem.Stop();
+		m_DarkTrail.m_ParticleSystem.Stop();
+		m_Head.m_ParticleSystem.Stop();
+		m_Sparks.m_ParticleSystem.Stop();
+	}
 
 	public void SetColor(RangedColor colors)
 	{
 		m_MatOuterOrb.SetColor("_Color", colors.m_OuterOrbColor);
 		m_MatInnerOrb.SetColor("_FringeColor", colors.m_InnerOrbColor);
 
-		SetMaterialColor(m_Crackle, colors.m_ParticleColor);
-		SetMaterialColor(m_Swirl, colors.m_ParticleColor);
-		SetMaterialColor(m_LightTrail, colors.m_ParticleColor);
-		SetMaterialColor(m_DarkTrail, colors.m_ParticleColor);
-		SetMaterialColor(m_Head, colors.m_ParticleColor);
-		SetMaterialColor(m_Sparks, colors.m_ParticleColor);
-	}
-
-	void Setup(ParticleObject particle)
-	{
-		ParticleSystemRenderer particleRenderer = particle.m_Particle.GetComponent<ParticleSystemRenderer>();
-		particleRenderer.material = new Material(particleRenderer.material);
-		particleRenderer.trailMaterial = new Material(particleRenderer.trailMaterial);
-		particle.m_BaseMaterial = particleRenderer.material;
-		particle.m_TrailMaterial = particleRenderer.trailMaterial;
-
-		particle.m_ParticleSystem = particle.m_Particle.GetComponent<ParticleSystem>();
-	}
-
-	void SetMaterialColor(ParticleObject particle, Color color)
-	{
-		particle.m_BaseMaterial.SetColor("_EmissionColor", color);
-		particle.m_TrailMaterial.SetColor("_EmissionColor", color);
+		m_Crackle.SetColor(colors.m_ParticleColor);
+		m_Swirl.SetColor(colors.m_ParticleColor);
+		m_LightTrail.SetColor(colors.m_ParticleColor);
+		m_DarkTrail.SetColor(colors.m_ParticleColor);
+		m_Head.SetColor(colors.m_ParticleColor);
+		m_Sparks.SetColor(colors.m_ParticleColor);
 	}
 
 	void OnTriggerEnter(Collider other)
 	{
 		Unit hitUnit = other.GetComponent<Unit>();
 		//Check if the collider is not its self
-		if (!hitUnit)
+		if (hitUnit)
 		{
 			if (hitUnit == m_Target)
 			{
