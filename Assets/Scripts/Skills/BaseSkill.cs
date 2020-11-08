@@ -98,8 +98,8 @@ public class BaseSkill : ScriptableObject
 	public void PlayEffect(Transform parent)
 	{
 		m_ParticleSystem.transform.parent = parent;
-		m_ParticleSystem.transform.position = Vector3.zero;
-		m_ParticleSystem.transform.rotation = Quaternion.identity;
+		m_ParticleSystem.transform.position = parent.transform.position;
+		m_ParticleSystem.transform.rotation = parent.transform.rotation;
 		m_ParticleSystem.Play();
 	}
 
