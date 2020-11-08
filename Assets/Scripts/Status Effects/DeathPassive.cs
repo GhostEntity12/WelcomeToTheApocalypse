@@ -34,6 +34,7 @@ public class DeathPassive : PassiveSkill
 
     public override void TakeEffect(Unit affected)
     {
+		m_PassiveStatusEffect.m_RemainingDuration = m_PassiveStatusEffect.m_StartingDuration;
 		affected.AddStatusEffect(m_PassiveStatusEffect);
 	}
 }
