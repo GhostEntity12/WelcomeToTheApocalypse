@@ -611,7 +611,10 @@ public class Unit : MonoBehaviour
 	/// <param name="extra">The amount of extra damage to deal.</param>
 	public void AddDealExtraDamage(int extra) => m_DealExtraDamage += extra;
 
-	public void SetDealExtraDamage(int extra) => m_DealExtraDamage = extra;
+	public void SetDealExtraDamage(int extra)
+	{
+		m_DealExtraDamage = extra;
+	}
 
 	/// <summary>
 	/// Check if the unit is moving.
@@ -668,7 +671,7 @@ public class Unit : MonoBehaviour
 								{
 									if (status.CheckPrecondition(TriggerType.OnDealDamage) == true)
 									{
-										status.TakeEffect(u);
+										status.TakeEffect(this);
 									}
 								}
 
