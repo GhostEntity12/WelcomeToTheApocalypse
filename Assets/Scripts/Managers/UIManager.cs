@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -334,6 +335,8 @@ public class UIManager : MonoBehaviour
 
 	public void ShowCrawlButtons()
 	{
-
+		LeanTween.move(m_CrawlDisplay.m_CrawlButtons, Vector3.zero, 2f);
 	}
+
+	public void LoadSceneIndex(int index) => SceneManager.LoadScene(index);
 }
