@@ -80,11 +80,12 @@ public class BaseSkill : ScriptableObject
 	public List<Node> m_AffectedNodes;
 	public Node m_CastNode;
 
-	public void CreatePrefab()//Vector3 spawnPosition)
+	public void CreatePrefab(Unit unit)
 	{
 		if (m_ParticlePrefab)
 		{
 			m_ParticleSystem = Instantiate(m_ParticlePrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+			m_ParticleSystem.name = $"{m_SkillName} ({unit.name})";
 			Debug.Log(m_ParticleSystem);
 		}
 	}

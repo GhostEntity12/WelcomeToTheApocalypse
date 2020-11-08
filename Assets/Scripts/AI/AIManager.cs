@@ -333,13 +333,10 @@ public class AIManager : MonoBehaviour
 				{
 					Unit currentUnit = nodeWithUnit.unit;
 
-					// Get nodes in the area that the AI unit could inflict a status on units from.
-					List<Node> nodesCastable = Grid.m_Instance.GetNodesWithinRadius(ss.m_CastableDistance, nodeWithUnit);
-
-					// Go through each of the nodes the AI unit could inflict a status from and add the status heuristic to them.
-					for (int j = 0; j < nodesCastable.Count; j++)
+					if (currentUnit == aiUnit)
 					{
-						Node castNode = nodesCastable[j];
+						// Edge case when healing self. Don't move;
+						Node castNode = nodeWithUnit;
 
 						// Try to put a status on the healthiest unit, to get the most value.
 						float newStatusH = currentUnit.GetCurrentHealth() * aiUnit.GetHeuristicCalculator().m_StatusWeighting;
@@ -349,12 +346,39 @@ public class AIManager : MonoBehaviour
 						{
 							if (castNode != null)
 							{
-
 								AddOrUpdateHeuristic(
-									newStatusH * Vector3.Distance(nodeWithUnit.worldPosition, castNode.worldPosition),
+									newStatusH * ss.m_CastableDistance,
 									castNode,
 									aiUnit,
 									new StatusSkillTarget(ss, nodeWithUnit)); ;
+							}
+						}
+					}
+					else
+					{
+
+						// Get nodes in the area that the AI unit could inflict a status on units from.
+						List<Node> nodesCastable = Grid.m_Instance.GetNodesWithinRadius(ss.m_CastableDistance, nodeWithUnit);
+
+						// Go through each of the nodes the AI unit could inflict a status from and add the status heuristic to them.
+						for (int j = 0; j < nodesCastable.Count; j++)
+						{
+							Node castNode = nodesCastable[j];
+
+							// Try to put a status on the healthiest unit, to get the most value.
+							float newStatusH = currentUnit.GetCurrentHealth() * aiUnit.GetHeuristicCalculator().m_StatusWeighting;
+							if (newStatusH < FindHeuristic(castNode, aiUnit)?.m_StatusValue)
+								continue;
+							else
+							{
+								if (castNode != null)
+								{
+									AddOrUpdateHeuristic(
+										newStatusH * Vector3.Distance(nodeWithUnit.worldPosition, castNode.worldPosition),
+										castNode,
+										aiUnit,
+										new StatusSkillTarget(ss, nodeWithUnit)); ;
+								}
 							}
 						}
 					}
@@ -382,6 +406,7 @@ public class AIManager : MonoBehaviour
 							continue;
 						else
 						{
+							print(currentUnit + " " + castNode.m_NodeHighlight.name);
 							if (nodesCastable[j] != null)
 							{
 								AddOrUpdateHeuristic(
