@@ -435,6 +435,7 @@ public class Unit : MonoBehaviour
 		while (m_ParentedParticleSystems.Count > 0)
 		{
 			m_ParentedParticleSystems[0].parent = null;
+			m_ParentedParticleSystems.RemoveAt(0);
 		}
 
 		// Check if the unit has the "DefeatEnemyWinCondition" script on it.
