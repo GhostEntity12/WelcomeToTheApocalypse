@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -16309,7 +16309,7 @@ PrefabInstance:
     - target: {fileID: 3168276877827644859, guid: 42afbb0be760816458169968da1f64af,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3168276877827644859, guid: 42afbb0be760816458169968da1f64af,
         type: 3}
@@ -16324,7 +16324,7 @@ PrefabInstance:
     - target: {fileID: 3168276877827644859, guid: 42afbb0be760816458169968da1f64af,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3168276877827644859, guid: 42afbb0be760816458169968da1f64af,
         type: 3}
@@ -16334,7 +16334,7 @@ PrefabInstance:
     - target: {fileID: 3168276877827644859, guid: 42afbb0be760816458169968da1f64af,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3168276877827644859, guid: 42afbb0be760816458169968da1f64af,
         type: 3}
@@ -16349,13 +16349,8 @@ PrefabInstance:
     - target: {fileID: 5463780933316482689, guid: 42afbb0be760816458169968da1f64af,
         type: 3}
       propertyPath: m_Name
-      value: Death Basic Overhead
+      value: Basic Swing Overhead
       objectReference: {fileID: 0}
-    - target: {fileID: 7632473119501760564, guid: 42afbb0be760816458169968da1f64af,
-        type: 3}
-      propertyPath: m_Materials.Array.data[1]
-      value: 
-      objectReference: {fileID: 2100000, guid: 80cf5b29c43594148b0355b82b0cb0f4, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 42afbb0be760816458169968da1f64af, type: 3}
 --- !u!1001 &7645640363776924809
