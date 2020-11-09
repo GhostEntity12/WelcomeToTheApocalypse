@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: F_Passive
   m_EditorClassIdentifier: 
   m_StatusName: "What\u2019s Yours is Mine"
-  m_TriggerType: 0
+  m_TriggerType: 1
   m_StatusIconLight: {fileID: 21300000, guid: b202529a04b0fcd42b741af1b9600fef, type: 3}
   m_StatusIconDark: {fileID: 21300000, guid: 935defbe763d5124194cb5c3e2e72230, type: 3}
-  m_StatusDescription: Famine regenerates a small amount of health upon damaging
-    an enemy.
+  m_StatusDescription: When Famine attacks, he saps his targets' health, regenerating
+    a small amount of health whenever he damages an enemy.
   m_AffectSelf: 0
-  m_HealthRegeneration: 0
+  m_HealthRegeneration: 1
