@@ -1,10 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(GridObject), typeof(BoxCollider))]
 public class Grid : MonoBehaviour
 {
+	public enum HighlightType
+	{ 
+		Movement,
+		SkillRange,
+		SkillAffect
+	}
+
 	public static Grid m_Instance = null;
 
 	Node[,] m_Grid;
@@ -550,4 +558,78 @@ public class Grid : MonoBehaviour
 		//}
 	}
 
+	/// <summary>
+	/// Gets the nodes the unit can move to, stores them and highlights them.
+	/// </summary>
+	/// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
+	public void HighlightNodes(HighlightType ht, List<Node> highlightNodes, Node hitNode = null, Unit unit = null)
+	{
+		// Reset the nodes highlights.
+		GameManager.m_Instance.m_maxSkillRange.ForEach(s => s.m_NodeHighlight.m_IsInTargetArea = false);
+		unit?.m_MovableNodes.ForEach(u => u.m_NodeHighlight.ChangeHighlight(TileState.None));
+
+		// Clear the previously highlighted tiles
+		foreach (Node n in unit.m_MovableNodes)
+		{
+			n.m_NodeHighlight.ChangeHighlight(TileState.None);
+		}
+		List<Node> previousSkillHighlights = GameManager.m_Instance.m_maxSkillRange;
+
+		// Clear the skill targeting highlights.
+		foreach (Node n in previousSkillHighlights)
+		{
+			previousSkillHighlights.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
+			previousSkillHighlights.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
+			n.m_NodeHighlight.ChangeHighlight(TileState.None);
+		}
+
+		// Highlight the nodes depending on what the nodes are being highlighted for.
+		switch (ht)
+		{
+			case HighlightType.Movement:
+
+				foreach (Node node in highlightNodes)
+				{
+					node.m_NodeHighlight.ChangeHighlight(TileState.MovementRange);
+				}
+				break;
+
+			case HighlightType.SkillRange:
+				BaseSkill selectedSkill = GameManager.m_Instance.GetSelectedSkill();
+
+				// Tell the appropriate nodes in distance (red) that they're in distance
+				foreach (Node node in GetNodesWithinRadius(selectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(unit.transform.position), true))
+				{
+					highlightNodes.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = true);
+					switch (selectedSkill.targetType)
+					{
+						case TargetType.SingleTarget:
+							node.m_NodeHighlight.m_IsTargetable = GameManager.IsTargetable(unit, node.unit, selectedSkill);
+							break;
+						case TargetType.Line:
+							Debug.LogError("Line target type not supported");
+							break;
+						case TargetType.Terrain:
+							// Display pink area.
+							List<Node> targetableRange = GetNodesWithinRadius(selectedSkill.m_AffectedRange, hitNode, true);
+							node.m_NodeHighlight.m_IsTargetable = true;
+							if (hitNode.m_NodeHighlight.m_IsTargetable)
+							{
+								highlightNodes.ForEach(n => n.m_NodeHighlight.m_IsAffected = targetableRange.Contains(n));
+							}
+							break;
+						default:
+							break;
+					}
+				}
+				break;
+
+			case HighlightType.SkillAffect:
+				break;
+
+			default:
+				Debug.LogError("Highlight type invalid!", this);
+				break;
+		}
+	}
 }
