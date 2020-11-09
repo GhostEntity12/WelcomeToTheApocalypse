@@ -398,6 +398,8 @@ public class Unit : MonoBehaviour
 
 	public void PlaySkillParticleSystem()
 	{
+		if (ParticlesManager.m_Instance.m_ActiveSkill == null) return;
+
 		SkillWithTargets activeSkill = ParticlesManager.m_Instance.m_ActiveSkill;
 		if (activeSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
 		{
