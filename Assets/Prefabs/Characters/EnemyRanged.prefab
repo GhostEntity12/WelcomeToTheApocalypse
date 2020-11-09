@@ -10684,6 +10684,7 @@ MonoBehaviour:
   m_SummonParticle: {fileID: 1566134099415813573}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 11400000, guid: 2e8510f334b7c55458d5bfd16fe2ddbe, type: 2}
+  m_ParentedParticleSystems: []
   m_DeathSound: 
 --- !u!65 &6643607444910914829
 BoxCollider:
@@ -11379,6 +11380,16 @@ PrefabInstance:
       propertyPath: ShapeModule.m_SkinnedMeshRenderer
       value: 
       objectReference: {fileID: 496339844431287841}
+    - target: {fileID: 1888948770272470549, guid: d3bff1c1491a2d8419a865fc473f2d73,
+        type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1888948770272470549, guid: d3bff1c1491a2d8419a865fc473f2d73,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3bff1c1491a2d8419a865fc473f2d73, type: 3}
 --- !u!4 &2817990789869142769 stripped
@@ -11654,6 +11665,11 @@ PrefabInstance:
       propertyPath: ShapeModule.m_SkinnedMeshRenderer
       value: 
       objectReference: {fileID: 496339844431287841}
+    - target: {fileID: 2224219715481255993, guid: 9e07049bffbb05a4189c861ec797393f,
+        type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2224219715481255994, guid: 9e07049bffbb05a4189c861ec797393f,
         type: 3}
       propertyPath: m_Name
