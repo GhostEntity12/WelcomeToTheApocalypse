@@ -177,7 +177,7 @@ public class Unit : MonoBehaviour
 
 		foreach (BaseSkill skill in m_Skills)
 		{
-			skill.CreatePrefab();
+			skill.CreatePrefab(this);
 		}
 	}
 

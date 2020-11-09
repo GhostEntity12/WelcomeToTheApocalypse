@@ -33,7 +33,7 @@ public class CameraMovement : MonoBehaviour
 		North, NorthEast, East, SouthEast, South, SouthWest, West, NorthWest
 	}
 
-	private void Awake()
+	private void Start()
 	{
 		m_CanPixel = m_PixelScreen != null;
 		m_BlackScreen = UIManager.m_Instance.m_BlackScreen;
