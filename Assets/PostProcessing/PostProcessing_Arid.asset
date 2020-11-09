@@ -1,5 +1,24 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5499944244984484829
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81180773991d8724ab7f2d216912b564, type: 3}
+  m_Name: ChromaticAberration
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.032
+    min: 0
+    max: 1
 --- !u!114 &-5491031728998511218
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -42,12 +61,12 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.469
     min: 0
     max: 1
   smoothness:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.151
     min: 0.01
     max: 1
   rounded:
@@ -72,6 +91,31 @@ MonoBehaviour:
   - {fileID: 8446657202707939586}
   - {fileID: 4952713060483373580}
   - {fileID: -1886817802528570237}
+  - {fileID: 878368474847919196}
+  - {fileID: -5499944244984484829}
+--- !u!114 &878368474847919196
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5485954d14dfb9a4c8ead8edb0ded5b1, type: 3}
+  m_Name: LiftGammaGain
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  lift:
+    m_OverrideState: 1
+    m_Value: {x: 0.9958606, y: 1, z: 0.9785243, w: 0}
+  gamma:
+    m_OverrideState: 0
+    m_Value: {x: 0.961936, y: 1, z: 0.90437967, w: 0}
+  gain:
+    m_OverrideState: 0
+    m_Value: {x: 1, y: 1, z: 1, w: 0}
 --- !u!114 &3442919721260690979
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -88,11 +132,11 @@ MonoBehaviour:
   m_AdvancedMode: 0
   threshold:
     m_OverrideState: 1
-    m_Value: 0.75
+    m_Value: 1.13
     min: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 0.8
+    m_Value: 1.7
     min: 0
   scatter:
     m_OverrideState: 0
@@ -200,7 +244,7 @@ MonoBehaviour:
     m_Value: 0.39
   contrast:
     m_OverrideState: 1
-    m_Value: 20
+    m_Value: 25.7
     min: -100
     max: 100
   colorFilter:
@@ -216,7 +260,7 @@ MonoBehaviour:
     max: 180
   saturation:
     m_OverrideState: 1
-    m_Value: -17
+    m_Value: -33.2
     min: -100
     max: 100
 --- !u!114 &8446657202707939586
@@ -235,7 +279,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   temperature:
     m_OverrideState: 1
-    m_Value: 10
+    m_Value: 50.3
     min: -100
     max: 100
   tint:

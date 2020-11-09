@@ -462,6 +462,8 @@ public class Unit : MonoBehaviour
 		if (m_DeathSound != "")
 			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
 
+		GameManager.m_Instance.RefreshHighlights();
+
 		gameObject.SetActive(false);
 	}
 
