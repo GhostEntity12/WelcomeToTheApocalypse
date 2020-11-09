@@ -82,7 +82,8 @@ public class GameManager : MonoBehaviour
 	/// <summary>
 	/// The max range of a skill on the pathfinding grid.
 	/// </summary>
-	private List<Node> m_maxSkillRange = new List<Node>();
+	[HideInInspector]
+	public List<Node> m_maxSkillRange = new List<Node>();
 
 	/// <summary>
 	/// Is the mouse hovering over a UI element that will block the player's inputs?
@@ -97,14 +98,10 @@ public class GameManager : MonoBehaviour
 	[FMODUnity.EventRef]
 	public string m_TurnEndSound = "";
 
-	[FMODUnity.EventRef]
-	public string m_GameMusic = "";
-
 	// On startup.
 	private void Awake()
 	{
 		m_MainCamera = Camera.main;
-		FMODUnity.RuntimeManager.PlayOneShot(m_GameMusic, m_MainCamera.transform.position);
 
 		m_MouseRay.origin = m_MainCamera.transform.position;
 
@@ -139,6 +136,8 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	/// <returns> The unit the player has selected. </returns>
 	public Unit GetSelectedUnit() { return m_SelectedUnit; }
+
+	public BaseSkill GetSelectedSkill() { return m_SelectedSkill; }
 
 	public void TryEndTurn()
 	{
@@ -264,7 +263,7 @@ public class GameManager : MonoBehaviour
 
 							// Highlight the appropriate tiles
 							m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-							m_SelectedUnit.HighlightMovableNodes();
+							Grid.m_Instance.HighlightNodes(Grid.HighlightType.Movement, m_SelectedUnit.m_MovableNodes, unit:m_SelectedUnit);
 
 							StatusEffectTooltipManager.m_Instance.UpdateActiveEffects();
 
@@ -336,14 +335,9 @@ public class GameManager : MonoBehaviour
 						// If it's targetable
 						if (m_CachedNode.m_NodeHighlight.m_IsTargetable)
 						{
-							// Display pink area
 							List<Node> targetableRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode, true);
-							m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = targetableRange.Contains(n));
-						}
-						// Otherwise clear the pink area
-						else
-						{
-							m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsAffected = false);
+							// Display pink area
+							Grid.m_Instance.HighlightNodes(Grid.HighlightType.SkillAffect, targetableRange, m_CachedNode);
 						}
 					}
 
@@ -380,12 +374,7 @@ public class GameManager : MonoBehaviour
 						if (m_LeftMouseDown && !m_MouseOverUIBlockingElements && GetCurrentTurn() == Allegiance.Player)
 						{
 							if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
-							{
-								// Clear the previously highlighted tiles
-								foreach (Node n in m_SelectedUnit.m_MovableNodes)
-								{
-									n.m_NodeHighlight.ChangeHighlight(TileState.None);
-								}
+							{								
 								Stack<Node> path = new Stack<Node>();
 								if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out path, out m_MovementCost, true))
 								{
@@ -393,8 +382,10 @@ public class GameManager : MonoBehaviour
 									// Decrease the unit's movement by the cost.
 									m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
 								}
+
+								List<Node> moveableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), hitNode);
 								// Should we do this after the unit has finished moving? - James L
-								m_SelectedUnit.HighlightMovableNodes(hitNode);
+								Grid.m_Instance.HighlightNodes(Grid.HighlightType.Movement, moveableNodes, unit:m_SelectedUnit);
 							}
 						}
 					}
@@ -452,15 +443,7 @@ public class GameManager : MonoBehaviour
 
 			m_TargetingState = TargetingState.Move;
 
-			// Clear the skill targeting highlights.
-			foreach (Node n in m_maxSkillRange)
-			{
-				m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
-				m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
-				n.m_NodeHighlight.ChangeHighlight(TileState.None);
-			}
-
-			m_SelectedUnit.HighlightMovableNodes();
+			Grid.m_Instance.HighlightNodes(Grid.HighlightType.Movement, m_maxSkillRange, unit: m_SelectedUnit);
 
 			m_SelectedSkill = null;
 		}
@@ -492,44 +475,15 @@ public class GameManager : MonoBehaviour
 					b.m_LightningImage.materialForRendering.SetFloat("_UIVerticalPan", 0);
 				}
 				button.m_LightningImage.materialForRendering.SetFloat("_UIVerticalPan", 1);
-				// Reset the nodes in the old target range
-				foreach (Node n in m_maxSkillRange)
-				{
-					m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsAffected = false);
-					m_maxSkillRange.ForEach(m => m.m_NodeHighlight.m_IsInTargetArea = false);
-					n.m_NodeHighlight.ChangeHighlight(TileState.None);
-				}
 
 				// Update the GameManager's fields
 				m_SelectedSkill = skill;
 				m_TargetingState = TargetingState.Skill;
 
-				// Get the new affectable area
+				// Get the new affectable area.
 				m_maxSkillRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance + m_SelectedSkill.m_AffectedRange, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
 
-				// Reset the highlight of movement nodes
-				m_SelectedUnit.m_MovableNodes.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.None));
-
-				// Tell the new nodes they're in range
-				m_maxSkillRange.ForEach(n => n.m_NodeHighlight.m_IsInTargetArea = true);
-
-				// Tell the appropriate nodes in distance (red) that they're in distance
-				foreach (Node node in Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true))
-				{
-					switch (m_SelectedSkill.targetType)
-					{
-						case TargetType.SingleTarget:
-							node.m_NodeHighlight.m_IsTargetable = IsTargetable(m_SelectedUnit, node.unit, m_SelectedSkill);
-							break;
-						case TargetType.Line:
-							throw new NotImplementedException("Line target type not supported");
-						case TargetType.Terrain:
-							node.m_NodeHighlight.m_IsTargetable = true;
-							break;
-						default:
-							break;
-					}
-				}
+				Grid.m_Instance.HighlightNodes(Grid.HighlightType.SkillRange, m_maxSkillRange, unit:m_SelectedUnit);
 			}
 		}
 	}

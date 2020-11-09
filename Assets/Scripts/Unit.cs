@@ -398,6 +398,8 @@ public class Unit : MonoBehaviour
 
 	public void PlaySkillParticleSystem()
 	{
+		if (ParticlesManager.m_Instance.m_ActiveSkill == null) return;
+
 		SkillWithTargets activeSkill = ParticlesManager.m_Instance.m_ActiveSkill;
 		if (activeSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
 		{
@@ -471,6 +473,7 @@ public class Unit : MonoBehaviour
 		while (m_ParentedParticleSystems.Count > 0)
 		{
 			m_ParentedParticleSystems[0].parent = null;
+			m_ParentedParticleSystems.RemoveAt(0);
 		}
 
 		// Check if the unit has the "DefeatEnemyWinCondition" script on it.
@@ -662,20 +665,6 @@ public class Unit : MonoBehaviour
 	/// </summary>
 	/// <returns>If the unit is moving or not.</returns>
 	public bool GetMoving() => m_IsMoving;
-
-	/// <summary>
-	/// Gets the nodes the unit can move to, stores them and highlights them.
-	/// </summary>
-	/// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
-	public void HighlightMovableNodes(Node startingNode = null)
-	{
-		m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
-
-		foreach (Node node in m_MovableNodes)
-		{
-			node.m_NodeHighlight.ChangeHighlight(TileState.MovementRange);
-		}
-	}
 
 	/// <summary>
 	/// Activate one of the unit's skills.
