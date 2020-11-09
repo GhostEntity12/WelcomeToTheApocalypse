@@ -98,14 +98,10 @@ public class GameManager : MonoBehaviour
 	[FMODUnity.EventRef]
 	public string m_TurnEndSound = "";
 
-	[FMODUnity.EventRef]
-	public string m_GameMusic = "";
-
 	// On startup.
 	private void Awake()
 	{
 		m_MainCamera = Camera.main;
-		FMODUnity.RuntimeManager.PlayOneShot(m_GameMusic, m_MainCamera.transform.position);
 
 		m_MouseRay.origin = m_MainCamera.transform.position;
 
