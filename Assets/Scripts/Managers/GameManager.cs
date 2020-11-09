@@ -123,10 +123,12 @@ public class GameManager : MonoBehaviour
 	{
 		// If it's currently the player's turn, check their inputs.
 		// Commented out for debugging.
-		//if (m_CurrentTurn == Allegiance.Player)
-		if (!UIManager.m_Instance.m_ActiveUI)
+		if (m_TeamCurrentTurn == Allegiance.Player)
 		{
-			PlayerInputs();
+			if (!UIManager.m_Instance.m_ActiveUI)
+			{
+				PlayerInputs();
+			}
 		}
 
 		Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point);
@@ -190,7 +192,11 @@ public class GameManager : MonoBehaviour
 			// Check the passives of all the player units for any that trigger at the start of their turn.
 			PassiveSkill ps = unit.GetPassiveSkill();
 			if (ps)
-				ps.CheckPrecondition(TriggerType.OnTurnStart);
+			{
+				if (ps.CheckPrecondition(TriggerType.OnTurnStart))
+					ps.TakeEffect(unit);
+			}
+
 
 			// Reduce cooldowns
 			foreach (BaseSkill s in unit.GetSkills())
@@ -212,9 +218,10 @@ public class GameManager : MonoBehaviour
 					status.TakeEffect(unit);
 				}
 			}
-
-			AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
 		}
+
+		m_SelectedUnit = null;
+		AIManager.m_Instance.SetAITurn(m_TeamCurrentTurn == Allegiance.Enemy);
 	}
 
 	/// <summary>
@@ -401,7 +408,7 @@ public class GameManager : MonoBehaviour
 			if (Input.GetKeyDown(m_AbilityHotkeys[i]))
 			{
 				// Make sure the player can use the skill before selecting it.
-				if (m_SelectedUnit.m_LearnedSkills[i].GetCurrentCooldown() == 0 && m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.m_LearnedSkills[i].m_Cost)
+				if (m_SelectedUnit.GetSkill(i).GetCurrentCooldown() == 0 && m_SelectedUnit.GetActionPoints() >= m_SelectedUnit.GetSkill(i).m_Cost)
 				{
 					SkillSelection(i);
 					break;
@@ -533,7 +540,7 @@ public class GameManager : MonoBehaviour
 	/// <param name="skillNumber"> Index of the skill being selected. </param>
 	public void SkillSelection(int skillNumber)
 	{
-		SkillSelection(m_SelectedUnit.m_LearnedSkills[skillNumber], UIManager.m_Instance.m_SkillSlots[skillNumber]);
+		SkillSelection(m_SelectedUnit.GetSkill(skillNumber), UIManager.m_Instance.m_SkillSlots[skillNumber]);
 	}
 
 	/// <summary>

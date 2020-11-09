@@ -141,6 +141,8 @@ public class Unit : MonoBehaviour
 
 	public UIData m_UIData;
 
+	public List<Transform> m_ParentedParticleSystems = new List<Transform>();
+
 	[FMODUnity.EventRef]
 	public string m_DeathSound = "";
 
@@ -162,6 +164,7 @@ public class Unit : MonoBehaviour
 		}
 
 		// Set all skills to startup stuff, cause scriptable objects don't reset on scene load.
+		// @Grant - this is because you're only meant to use the instantiated versions!
 		foreach (BaseSkill skill in m_LearnedSkills)
 		{
 			skill.Startup();
@@ -171,6 +174,11 @@ public class Unit : MonoBehaviour
 	void Start()
 	{
 		m_animator = GetComponent<Animator>();
+
+		foreach (BaseSkill skill in m_Skills)
+		{
+			skill.CreatePrefab(this);
+		}
 	}
 
 	void Update()
@@ -260,8 +268,7 @@ public class Unit : MonoBehaviour
 	/// <param name="decrease"> The amount to decrease the unit's health by. </param>
 	public void DecreaseCurrentHealth()
 	{
-		// Check if it is currently the AI's turn.
-		ParticlesManager.m_Instance.RemoveUnitFromTarget(this);
+		ParticlesManager.m_Instance.RemoveUnitFromTarget();
 
 		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
 
@@ -303,13 +310,13 @@ public class Unit : MonoBehaviour
 
 	private void AddStatusEffectFromSkill(InflictableStatus effect)
 	{
-		ParticlesManager.m_Instance.RemoveUnitFromTarget(this);
+		ParticlesManager.m_Instance.RemoveUnitFromTarget();
 		AddStatusEffect(effect);
 	}
 
 	private void AddHealingFromSkill(int heal)
 	{
-		ParticlesManager.m_Instance.RemoveUnitFromTarget(this);
+		ParticlesManager.m_Instance.RemoveUnitFromTarget();
 		IncreaseCurrentHealth(heal);
 	}
 
@@ -318,7 +325,25 @@ public class Unit : MonoBehaviour
 		switch (skill)
 		{
 			case StatusSkill ss:
-				AddStatusEffectFromSkill(ss.m_Effect);
+
+				if (ss.m_DamageAmount > 0)
+				{
+					m_DealingDamage = ss.m_DamageAmount + ss.m_ExtraDamage;
+					if (m_CurrentHealth - m_DealingDamage <= 0)
+					{
+						m_animator.SetTrigger("TriggerDeath");
+					}
+					else
+					{
+						m_animator.SetTrigger("TriggerDamage");
+						// Trigger Death Particle
+					}
+					AddStatusEffect(ss.m_Effect);
+				}
+				else
+				{
+					AddStatusEffectFromSkill(ss.m_Effect);
+				}
 				break;
 			case DamageSkill ds:
 				m_DealingDamage = ds.m_DamageAmount + ds.m_ExtraDamage;
@@ -356,7 +381,14 @@ public class Unit : MonoBehaviour
 
 	public void CallSkillEffects()
 	{
-		print(ParticlesManager.m_Instance.m_ActiveSkill);
+		/* 
+		 *  This is mostly error handling for casting a point blank basic ranged attack.
+		 *  When this happens, the orb is applying the effects of the skill and clearing
+		 *  the current skill before the second animation trigger which then attempts to
+		 *  apply the effects. - James L
+		 */
+		if (ParticlesManager.m_Instance.m_ActiveSkill == null) return;
+
 		if (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
 		{
 			return;
@@ -366,13 +398,29 @@ public class Unit : MonoBehaviour
 
 	public void PlaySkillParticleSystem()
 	{
-		if (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
+		SkillWithTargets activeSkill = ParticlesManager.m_Instance.m_ActiveSkill;
+		if (activeSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
 		{
-			Vector3 targetPos = ParticlesManager.m_Instance.m_ActiveSkill.m_Targets[0].transform.position;
-			ParticlesManager.m_Instance.OnRanged(this, new Vector3(targetPos.x, 1, targetPos.z), ParticlesManager.m_Instance.m_ActiveSkill.m_Targets[0]);
+			Vector3 targetPos = activeSkill.m_Targets[0].transform.position;
+			ParticlesManager.m_Instance.OnRanged(this, new Vector3(targetPos.x, 1, targetPos.z), activeSkill.m_Targets[0]);
 			return;
 		}
-		// Spawn the particle
+		switch (activeSkill.m_Skill.m_SpawnLocation)
+		{
+			case ParticleSpawnType.Target:
+				activeSkill.m_Skill.PlayEffect(activeSkill.m_Targets[0]);
+				break;
+			case ParticleSpawnType.Caster:
+				activeSkill.m_Skill.PlayEffect(GameManager.m_Instance.m_SelectedUnit);
+				break;
+			case ParticleSpawnType.Tile:
+				activeSkill.m_Skill.PlayEffect(activeSkill.m_Skill.m_CastNode.worldPosition);
+				break;
+			case ParticleSpawnType.Other:
+				break;
+			default:
+				break;
+		}
 	}
 
 	/// <summary>
@@ -383,6 +431,12 @@ public class Unit : MonoBehaviour
 	{
 		Debug.Log($"<color=#a87932>[Death] </color>{name} died");
 		m_IsAlive = false;
+
+		while (m_ParentedParticleSystems.Count > 0)
+		{
+			m_ParentedParticleSystems[0].parent = null;
+			m_ParentedParticleSystems.RemoveAt(0);
+		}
 
 		// Check if the unit has the "DefeatEnemyWinCondition" script on it.
 		// If it does, the player has won the level by defeating the boss.
@@ -399,6 +453,48 @@ public class Unit : MonoBehaviour
 			AIManager.m_Instance.DisableUnits(this);
 		}
 
+		Node currentNode = Grid.m_Instance.GetNode(transform.position);
+		currentNode.unit = null;
+		currentNode.m_isBlocked = false;
+
+		if (m_DeathSound != "")
+			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+
+		gameObject.SetActive(false);
+	}
+
+	public void PlayerDeath()
+	{
+		Debug.Log($"<color=#a87932>[Death] </color>{name} died");
+		m_IsAlive = false;
+
+		while (m_ParentedParticleSystems.Count > 0)
+		{
+			m_ParentedParticleSystems[0].parent = null;
+		}
+
+		// Check if the unit has the "DefeatEnemyWinCondition" script on it.
+		// If it does, the player has won the level by defeating the boss.
+		GetComponent<DefeatEnemyWinCondition>()?.EnemyDefeated();
+
+		// If this is a player unit, check if the player has any units remaining.
+		if (m_Allegiance == Allegiance.Player)
+		{
+			UnitsManager.m_Instance.m_DeadPlayerUnits.Add(this);
+			UnitsManager.m_Instance.m_PlayerUnits.Remove(this);
+		}
+		else
+		{
+			AIManager.m_Instance.DisableUnits(this);
+		}
+
+		Node currentNode = Grid.m_Instance.GetNode(transform.position);
+		currentNode.unit = null;
+		currentNode.m_isBlocked = false;
+
+		if (m_DeathSound != "")
+			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+
 		if (m_KillDialogue)
 		{
 			if (GetComponent<DefeatEnemyWinCondition>())
@@ -413,17 +509,8 @@ public class Unit : MonoBehaviour
 			else
 			{
 				DialogueManager.instance.QueueDialogue(m_KillDialogue, KillUnit);
-			}					
+			}
 		}
-
-		Node currentNode = Grid.m_Instance.GetNode(transform.position);
-		currentNode.unit = null;
-		currentNode.m_isBlocked = false;
-
-		if (m_DeathSound != "")
-			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
-
-		gameObject.SetActive(false);
 	}
 
 	/// <summary>
@@ -565,7 +652,10 @@ public class Unit : MonoBehaviour
 	/// <param name="extra">The amount of extra damage to deal.</param>
 	public void AddDealExtraDamage(int extra) => m_DealExtraDamage += extra;
 
-	public void SetDealExtraDamage(int extra) => m_DealExtraDamage = extra;
+	public void SetDealExtraDamage(int extra)
+	{
+		m_DealExtraDamage = extra;
+	}
 
 	/// <summary>
 	/// Check if the unit is moving.
@@ -602,6 +692,7 @@ public class Unit : MonoBehaviour
 			if (m_Skills[i].m_SkillName == skill.m_SkillName)
 			{
 				skill.m_AffectedNodes = Grid.m_Instance.GetNodesWithinRadius(m_Skills[i].m_AffectedRange, castLocation, true);
+				skill.m_CastNode = castLocation;
 				if (m_PassiveSkill != null)
 				{
 					DamageSkill ds = skill as DamageSkill;
@@ -621,7 +712,7 @@ public class Unit : MonoBehaviour
 								{
 									if (status.CheckPrecondition(TriggerType.OnDealDamage) == true)
 									{
-										status.TakeEffect(u);
+										status.TakeEffect(this);
 									}
 								}
 

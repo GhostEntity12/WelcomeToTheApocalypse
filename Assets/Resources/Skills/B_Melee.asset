@@ -16,6 +16,9 @@ MonoBehaviour:
   m_LightIcon: {fileID: 21300000, guid: 6d1d67d365331eb449224eee95680187, type: 3}
   m_DarkIcon: {fileID: 21300000, guid: acef595071e59b140b8a72a46f68e898, type: 3}
   m_Description: Make a standard melee attack at an adjacent foe. Deal {damage} damage.
+  m_ParticlePrefab: {fileID: 6347129818612238557, guid: 6ae338c97a9f7e64a92019b172c84a30,
+    type: 3}
+  m_ParticleSystem: {fileID: 0}
   targets: 2
   targetType: 0
   excludeCaster: 0
@@ -26,6 +29,7 @@ MonoBehaviour:
   m_AffectedRange: 0
   m_Cost: 1
   m_IsMagic: 0
+  m_SpawnLocation: 1
   m_CastEvent: event:/Enemies/Melee Attack
   m_DamageAmount: 8
   m_ExtraDamage: 0

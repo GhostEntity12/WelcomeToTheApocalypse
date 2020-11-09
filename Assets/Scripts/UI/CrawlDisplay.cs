@@ -25,6 +25,8 @@ public class CrawlDisplay : MonoBehaviour
 
 	public Action m_OnEndCrawlEvent;
 
+	public RectTransform m_CrawlButtons;
+
 	public void LoadCrawl(Outcome outcome)
 	{
 
@@ -77,6 +79,11 @@ public class CrawlDisplay : MonoBehaviour
 		// Load in lines sequentially
 		foreach (string line in m_LinesByScreen[screen])
 		{
+			if (line == "<sprite=\"ProgressArrow\" index=0>")
+			{
+				oldString += line + "\n";
+				m_Display.text = oldString; // Update the textbox
+			}
 			int alpha = 0;
 
 			// Fade to 100% alpha

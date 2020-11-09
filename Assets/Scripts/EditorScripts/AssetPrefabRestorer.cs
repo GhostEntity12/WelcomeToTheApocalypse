@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Ghost
@@ -28,12 +26,15 @@ namespace Ghost
 
 				if (matchingPrefab.Length > 0)
 				{
+#if UNITY_EDITOR
+
 					successCount++;
 					GameObject obj = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(matchingPrefab[0], fixedAssets.transform);
 					obj.transform.position = child.position;
 					obj.transform.rotation = child.rotation;
 					obj.transform.localScale = child.localScale;
 					obj.name = child.name;
+#endif
 				}
 				else
 				{

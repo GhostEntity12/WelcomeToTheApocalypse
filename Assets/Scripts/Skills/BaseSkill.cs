@@ -22,6 +22,14 @@ public enum TargetType
 	Terrain
 }
 
+public enum ParticleSpawnType
+{
+	Target,
+	Caster,
+	Tile,
+	Other
+}
+
 public class BaseSkill : ScriptableObject
 {
 	[Header("Display")]
@@ -34,6 +42,9 @@ public class BaseSkill : ScriptableObject
 	//The skill's description
 	[TextArea(1, 5)]
 	public string m_Description;
+	public GameObject m_ParticlePrefab;
+	[HideInInspector]
+	public ParticleSystem m_ParticleSystem;
 
 	[Header("Targeting")]
 	// Who the skill can hit
@@ -57,14 +68,43 @@ public class BaseSkill : ScriptableObject
 	public int m_AffectedRange;
 	// The cost of using the skill
 	public int m_Cost;
-	// Whether to play the additional casting particle
+	// Whether to play the additional cast effect
 	public bool m_IsMagic;
+	// Where to spawn the particle system
+	public ParticleSpawnType m_SpawnLocation;
 
 	[FMODUnity.EventRef]
 	public string m_CastEvent = "";
 
 	protected List<Unit> m_AffectedUnits;
 	public List<Node> m_AffectedNodes;
+	public Node m_CastNode;
+
+	public void CreatePrefab(Unit unit)
+	{
+		if (m_ParticlePrefab)
+		{
+			m_ParticleSystem = Instantiate(m_ParticlePrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+			m_ParticleSystem.name = $"{m_SkillName} ({unit.name})";
+			Debug.Log(m_ParticleSystem);
+		}
+	}
+
+	public void PlayEffect(Vector3 targetPosition)
+	{
+		m_ParticleSystem.transform.position = targetPosition;
+		m_ParticleSystem.Play();
+	}
+
+	public void PlayEffect(Unit target)
+	{
+		Transform parent = target.transform;
+		target.m_ParentedParticleSystems.Add(m_ParticleSystem.transform);
+		m_ParticleSystem.transform.parent = parent;
+		m_ParticleSystem.transform.position = parent.transform.position;
+		m_ParticleSystem.transform.rotation = parent.transform.rotation;
+		m_ParticleSystem.Play();
+	}
 
 	public void Startup()
 	{

@@ -6,11 +6,13 @@ public class SkillWithTargets
 {
 	public List<Unit> m_Targets;
 	public BaseSkill m_Skill;
+	public int m_Responses;
 
 	public SkillWithTargets(List<Unit> targets, BaseSkill skill)
 	{
 		m_Targets = targets;
 		m_Skill = skill;
+		m_Responses = 0;
 	}
 }
 
@@ -33,7 +35,29 @@ public class ParticlesManager : MonoBehaviour
 
 	public static ParticlesManager m_Instance = null;
 
-	public SkillWithTargets m_ActiveSkill = new SkillWithTargets(null, null);
+	public SkillWithTargets m_ActiveSkill 
+	{ 
+		get
+		{
+			//Debug.Log($"Current value of m_ActiveSkill is {(_m_ActiveSkill == null ? "null" : _m_ActiveSkill.ToString())}, {(_m_ActiveSkill == null ? null : _m_ActiveSkill.m_Skill)}");
+
+			/* 
+			 * Some serious black magic is going on here. Grant, if you're reading this it's the
+			 * weird null behaviour where setting the class as null set it as a new (null, null).
+			 * Using a property to intercept the (null, null) class and just return the expected
+			 * null instead.
+			 */
+
+			if (_m_ActiveSkill != null && _m_ActiveSkill.m_Skill == null && _m_ActiveSkill.m_Targets == null)
+			{
+				return null;
+			}
+			return _m_ActiveSkill;
+		}
+		set => _m_ActiveSkill = value;
+	}
+
+	private SkillWithTargets _m_ActiveSkill = new SkillWithTargets(null, null);
 
 	//Zeroed
 	[Header("Melee Particle")]
@@ -295,17 +319,17 @@ public class ParticlesManager : MonoBehaviour
 		{
 			affectedUnit.IncomingSkill(m_ActiveSkill.m_Skill);
 		}
-		if (m_ActiveSkill.m_Skill is DamageSkill)
-		{
-			(m_ActiveSkill.m_Skill as DamageSkill).m_ExtraDamage = 0;
-		}
 	}
 
-	public void RemoveUnitFromTarget(Unit u)
+	public void RemoveUnitFromTarget()
 	{
-		m_ActiveSkill.m_Targets.Remove(u);
-		if (m_ActiveSkill.m_Targets.Count == 0)
+		m_ActiveSkill.m_Responses++;
+		if (m_ActiveSkill.m_Targets.Count == m_ActiveSkill.m_Responses)
 		{
+			if (m_ActiveSkill.m_Skill is DamageSkill)
+			{
+				(m_ActiveSkill.m_Skill as DamageSkill).m_ExtraDamage = 0;
+			}
 			m_ActiveSkill = null;
 			ListEmptied();
 		}
