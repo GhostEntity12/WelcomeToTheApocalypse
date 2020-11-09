@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="ParameterPreset" id="{7fdc1b18-588a-467c-97ae-5a7e7cd6ddc1}">
+		<property name="name">
+			<value>HorsemenNum</value>
+		</property>
+		<relationship name="folder">
+			<destination>{7b2ddc56-e4e7-43e6-bf68-560955e66184}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{7b7ca2bd-765e-4448-aa6f-b5c3b9b9878c}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{7b7ca2bd-765e-4448-aa6f-b5c3b9b9878c}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>16</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>None</value>
+			<value>Dea</value>
+			<value>Pes</value>
+			<value>Dea + Pes</value>
+			<value>Fam</value>
+			<value>Dea + Fam</value>
+			<value>Pes + Fam</value>
+			<value>Dea + Pes + Fam</value>
+			<value>War</value>
+			<value>Dea + War</value>
+			<value>Pes + War</value>
+			<value>Dea + Pes + War</value>
+			<value>Fam + War</value>
+			<value>Dea + Fam + War</value>
+			<value>Pes + Fam + War</value>
+			<value>Dea + Pes + Fam + War</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
