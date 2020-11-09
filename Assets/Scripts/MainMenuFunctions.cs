@@ -133,6 +133,7 @@ public class MainMenuFunctions : MonoBehaviour
 		m_Anim.SetBool("isArtists", false);
 		m_Anim.SetBool("isDesigners", false);
 		m_Anim.SetBool("isProgrammers", false);
+		m_Anim.SetBool("isExtra", false);
 		LeanTween.alphaCanvas(m_Prompt, 0, 0.5f);
 	}
 }
