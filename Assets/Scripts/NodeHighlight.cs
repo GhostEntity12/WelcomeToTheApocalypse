@@ -62,30 +62,6 @@ public class NodeHighlight : MonoBehaviour
 		m_Renderer.material = m_Highlights[(int)state];
 	}
 
-	private void Update()
-	{
-		if (m_IsInTargetArea)
-		{
-			if (m_IsAffected)
-			{
-				ChangeHighlight(TileState.EffectRange);
-			}
-			else if (m_IsTargetable)
-			{
-				ChangeHighlight(TileState.TargetRange);
-			}
-			else
-			{
-				ChangeHighlight(TileState.None);
-			}
-		}
-		else if (m_IsAffected || m_IsTargetable)
-		{
-			m_IsAffected = false;
-			m_IsTargetable = false;
-		}
-	}
-
 	[ContextMenu("Read Node Data")]
 	void ReadData()
 	{
@@ -113,26 +89,6 @@ public class NodeHighlight : MonoBehaviour
 			}
 
 			Debug.Log(output, n.m_NodeHighlight);
-		}
-	}
-
-	[ContextMenu("Print heuristic value")]
-	void phv()
-	{
-		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
-		{
-			if (GameManager.m_Instance.GetSelectedUnit() == null)
-			{
-				Debug.LogError("You need to select a unit in order to get this tile's heuristics!");
-			}
-			else
-			{
-				Debug.Log(AIManager.m_Instance.FindHeuristic(Grid.m_Instance.GetNode(transform.position), GameManager.m_Instance.GetSelectedUnit()).SumHeuristics());
-			}
-		}
-		else
-		{
-			Debug.LogWarning("Can't get the heuristic value when it's the player turn!");
 		}
 	}
 }

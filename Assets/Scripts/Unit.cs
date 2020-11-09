@@ -462,6 +462,8 @@ public class Unit : MonoBehaviour
 		if (m_DeathSound != "")
 			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
 
+		GameManager.m_Instance.RefreshHighlights();
+
 		gameObject.SetActive(false);
 	}
 
@@ -665,20 +667,6 @@ public class Unit : MonoBehaviour
 	/// </summary>
 	/// <returns>If the unit is moving or not.</returns>
 	public bool GetMoving() => m_IsMoving;
-
-	/// <summary>
-	/// Gets the nodes the unit can move to, stores them and highlights them.
-	/// </summary>
-	/// <param name="startingNode"> The node to search from, can find it's own position if it can't be provided. </param>
-	public void HighlightMovableNodes(Node startingNode = null)
-	{
-		m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(GetCurrentMovement(), startingNode ?? Grid.m_Instance.GetNode(transform.position)); // Returns the current node by default, but can be overridden
-
-		foreach (Node node in m_MovableNodes)
-		{
-			node.m_NodeHighlight.ChangeHighlight(TileState.MovementRange);
-		}
-	}
 
 	/// <summary>
 	/// Activate one of the unit's skills.

@@ -1,10 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(GridObject), typeof(BoxCollider))]
 public class Grid : MonoBehaviour
 {
+	public enum HighlightType
+	{ 
+		Movement,
+		Skills,
+	}
+
 	public static Grid m_Instance = null;
 
 	Node[,] m_Grid;
@@ -536,18 +543,4 @@ public class Grid : MonoBehaviour
 
 		return 19 * Mathf.Max(dx, dz) + 10 * Mathf.Abs(dx - dz);
 	}
-
-	[ContextMenu("Do Heuristic Heatmap")]
-	private void HeuristicHeatmap()
-	{
-		Debug.LogWarning("Disabled due to change in how heuristics are stored");
-		//NodeHighlight[] nodeHighlights = m_NodeArray.GetComponentsInChildren<NodeHighlight>();
-		//foreach (var item in nodeHighlights)
-		//{
-		//	item.GetComponent<Renderer>().enabled = true;
-		//	Node n = GetNode(item.transform.position);
-		//	item.GetComponent<Renderer>().material.color = new Color(n.GetMovement(), n.GetDamage(), n.GetHealing(), 1);
-		//}
-	}
-
 }
