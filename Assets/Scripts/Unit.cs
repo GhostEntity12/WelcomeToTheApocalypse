@@ -398,6 +398,8 @@ public class Unit : MonoBehaviour
 
 	public void PlaySkillParticleSystem()
 	{
+		if (ParticlesManager.m_Instance.m_ActiveSkill == null) return;
+
 		SkillWithTargets activeSkill = ParticlesManager.m_Instance.m_ActiveSkill;
 		if (activeSkill.m_Skill.m_SkillName == "Basic Ranged Attack")
 		{
@@ -471,6 +473,7 @@ public class Unit : MonoBehaviour
 		while (m_ParentedParticleSystems.Count > 0)
 		{
 			m_ParentedParticleSystems[0].parent = null;
+			m_ParentedParticleSystems.RemoveAt(0);
 		}
 
 		// Check if the unit has the "DefeatEnemyWinCondition" script on it.
