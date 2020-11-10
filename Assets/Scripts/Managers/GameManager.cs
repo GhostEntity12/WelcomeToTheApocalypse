@@ -404,6 +404,7 @@ public class GameManager : MonoBehaviour
 	{
 		if (GetSelectedUnit())
 		{
+			m_ClearRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
 			switch (m_TargetingState)
 			{
 				case TargetingState.Move:
