@@ -84,6 +84,7 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	[HideInInspector]
 	public List<Node> m_maxSkillRange = new List<Node>();
+	List<Node> m_ClearRange = new List<Node>();
 
 	/// <summary>
 	/// Is the mouse hovering over a UI element that will block the player's inputs?
@@ -387,6 +388,9 @@ public class GameManager : MonoBehaviour
 		// Update the UI's action point counter to display the newly selected unit's action points.
 		UIManager.m_Instance.m_ActionPointCounter.ResetActionPointCounter();
 		UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
+
+		// Store all the reachable nodes so they can be easily cleared
+		m_ClearRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
 	}
 
 	public void RefreshHighlights()
@@ -453,7 +457,7 @@ public class GameManager : MonoBehaviour
 	{
 		if (hitNode != null && hitNode == m_CachedNode) return;
 
-		List<Node> nodesToClear = m_maxSkillRange.Concat(Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.m_StartingMovement, centerNode, true)).ToList();
+		List<Node> nodesToClear = m_ClearRange;
 		List<Node> nodesWalkable = m_SelectedUnit.m_MovableNodes;
 
 		nodesToClear = nodesToClear.Except(nodesWalkable).ToList();
