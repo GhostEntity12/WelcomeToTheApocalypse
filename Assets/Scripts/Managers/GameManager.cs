@@ -243,6 +243,10 @@ public class GameManager : MonoBehaviour
 			switch (m_TargetingState)
 			{
 				case TargetingState.Move:
+					if (m_SelectedUnit && !m_SelectedUnit.GetMoving())
+					{
+						UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+					}
 					// Selecting new unit
 					if (m_LeftMouseDown)
 					{
@@ -250,6 +254,7 @@ public class GameManager : MonoBehaviour
 						if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAlive())
 						{
 							SelectUnit(rayHitUnit);
+							UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
 						}
 					}
 					break;
@@ -273,24 +278,34 @@ public class GameManager : MonoBehaviour
 			switch (m_TargetingState)
 			{
 				case TargetingState.Move:
-					// On click, make sure a unit is selected.
-					if (m_LeftMouseDown && m_SelectedUnit)
+					if (m_SelectedUnit && !m_SelectedUnit.GetMoving())
 					{
 						// The player is choosing a tile to move a unit to.
 						if (m_SelectedUnit.GetAllegiance() == Allegiance.Player &&
-							m_SelectedUnit.GetMoving() == false &&
 							m_SelectedUnit.m_MovableNodes.Contains(hitNode))
 						{
-							if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out Stack<Node> path, out m_MovementCost, true))
+							// On click, make sure a unit is selected.
+							if (m_LeftMouseDown)
 							{
-								// Set the unit's path
-								m_SelectedUnit.SetMovementPath(path);
-								m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
-							}
+								if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out Stack<Node> path, out m_MovementCost, true))
+								{
+									// Set the unit's path
+									m_SelectedUnit.SetMovementPath(path);
+									m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
+								}
 
-							List<Node> moveableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), hitNode);
-							// Should we do this after the unit has finished moving? - James L
-							HighlightMoveable(hitNode);
+								m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), hitNode);
+								// Should we do this after the unit has finished moving? - James L
+								UpdateMoveablePreview(null, hitNode);
+							}
+							else
+							{
+								UpdateMoveablePreview(hitNode, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+							}
+						}
+						else
+						{
+							UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
 						}
 					}
 					break;
@@ -365,7 +380,7 @@ public class GameManager : MonoBehaviour
 
 		// Highlight the appropriate tiles
 		m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-		HighlightMoveable(Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+		UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
 
 		StatusEffectTooltipManager.m_Instance.UpdateActiveEffects();
 
@@ -381,7 +396,7 @@ public class GameManager : MonoBehaviour
 			switch (m_TargetingState)
 			{
 				case TargetingState.Move:
-					HighlightMoveable(Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+					UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
 					break;
 				case TargetingState.Skill:
 					UpdateSkillPreview(null);
@@ -398,7 +413,6 @@ public class GameManager : MonoBehaviour
 		{
 			// Update the cache
 			m_CachedNode = hitNode;
-
 		}
 
 		List<Node> nodesToClear = m_maxSkillRange.Concat(m_SelectedUnit.m_MovableNodes).ToList();
@@ -435,14 +449,21 @@ public class GameManager : MonoBehaviour
 		nodesTargetable.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.TargetRange));
 	}
 
-	void HighlightMoveable(Node destinationNode)
+	void UpdateMoveablePreview(Node hitNode, Node centerNode)
 	{
-		List<Node> nodesToClear = m_maxSkillRange.Concat(m_SelectedUnit.m_MovableNodes).ToList();
-		List<Node> nodesWalkable = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), destinationNode, false);
+		if (hitNode != null && hitNode == m_CachedNode) return;
+
+		List<Node> nodesToClear = m_maxSkillRange.Concat(Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.m_StartingMovement, centerNode, true)).ToList();
+		List<Node> nodesWalkable = m_SelectedUnit.m_MovableNodes;
 
 		nodesToClear = nodesToClear.Except(nodesWalkable).ToList();
 		nodesToClear.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.None));
 		nodesWalkable.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.MovementRange));
+
+		if (m_SelectedUnit.m_MovableNodes.Contains(hitNode))
+		{
+			hitNode.m_NodeHighlight.ChangeHighlight(TileState.TargetMovement);
+		}
 	}
 
 	void SkillSelection(Node castNode)
@@ -495,7 +516,7 @@ public class GameManager : MonoBehaviour
 
 			m_TargetingState = TargetingState.Move;
 
-			HighlightMoveable(Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+			UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
 
 			m_SelectedSkill = null;
 		}

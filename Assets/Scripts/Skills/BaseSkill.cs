@@ -86,7 +86,6 @@ public class BaseSkill : ScriptableObject
 		{
 			m_ParticleSystem = Instantiate(m_ParticlePrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
 			m_ParticleSystem.name = $"{m_SkillName} ({unit.name})";
-			Debug.Log(m_ParticleSystem);
 		}
 	}
 
