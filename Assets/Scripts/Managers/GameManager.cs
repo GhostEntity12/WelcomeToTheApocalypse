@@ -84,7 +84,10 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	[HideInInspector]
 	public List<Node> m_maxSkillRange = new List<Node>();
+
 	List<Node> m_ClearRange = new List<Node>();
+
+	List<Unit> m_AffectedUnits = new List<Unit>();
 
 	/// <summary>
 	/// Is the mouse hovering over a UI element that will block the player's inputs?
@@ -94,6 +97,7 @@ public class GameManager : MonoBehaviour
 	private CameraMovement m_CameraMovement;
 
 	public int m_PodClearBonus = 5;
+
 	public bool m_DidHealthBonus;
 
 	[FMODUnity.EventRef]
@@ -416,12 +420,6 @@ public class GameManager : MonoBehaviour
 
 	void UpdateSkillPreview(Node hitNode)
 	{
-		if (hitNode != null)
-		{
-			// Update the cache
-			m_CachedNode = hitNode;
-		}
-
 		List<Node> nodesToClear = m_maxSkillRange.Concat(m_SelectedUnit.m_MovableNodes).ToList();
 		List<Node> nodesTargetable = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
 
@@ -430,6 +428,9 @@ public class GameManager : MonoBehaviour
 
 		if (hitNode != null)
 		{
+			// Update the cache
+			m_CachedNode = hitNode;
+
 			bool canCastOnNode;
 			switch (m_SelectedSkill.targetType)
 			{
@@ -450,6 +451,43 @@ public class GameManager : MonoBehaviour
 				List<Node> nodesTargeted = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_AffectedRange, m_CachedNode, true);
 				nodesTargetable = nodesTargetable.Except(nodesTargeted).ToList();
 				nodesTargeted.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.EffectRange));
+
+				// Show/clear heath previews
+				List<Unit> newAffectedUnits = nodesTargeted.Where(n => n.unit && IsTargetable(m_SelectedUnit, n.unit, m_SelectedSkill)).Select(n => n.unit).Distinct().ToList();
+				foreach (Unit affectedUnit in newAffectedUnits.Except(m_AffectedUnits)) // Only new affected units
+				{
+					affectedUnit.m_Healthbar.m_KeepFocus = true;
+
+					switch (m_SelectedSkill)
+					{
+						case DamageSkill ds:
+							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() - (ds.m_DamageAmount + ds.m_ExtraDamage)) / affectedUnit.GetStartingHealth(), false);
+							break;
+						case HealSkill hs:
+							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() - hs.m_HealAmount) / affectedUnit.GetStartingHealth(), false);
+							break;
+						default:
+							break;
+					}
+				}
+
+				foreach (Unit unaffectedUnit in m_AffectedUnits.Except(newAffectedUnits)) // No longer affected units
+				{
+					unaffectedUnit.m_Healthbar.m_KeepFocus = false;
+					unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), false);
+				}
+
+				m_AffectedUnits = newAffectedUnits;
+			}
+			else
+			{
+				foreach (Unit unaffectedUnit in m_AffectedUnits) // No longer affected units
+				{
+					unaffectedUnit.m_Healthbar.m_KeepFocus = false;
+					unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), false);
+				}
+
+				m_AffectedUnits.Clear();
 			}
 		}
 
