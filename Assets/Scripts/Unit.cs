@@ -736,6 +736,7 @@ public class Unit : MonoBehaviour
 						if (pp != null)
 						{
 							pp.UseHealResource();
+							StatusEffectTooltipManager.m_Instance.UpdatePassive();
 						}
 					}
 				}

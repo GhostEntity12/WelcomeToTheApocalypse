@@ -527,7 +527,7 @@ public class GameManager : MonoBehaviour
 				if (pesPassive != null)
 				{
 					// If there is no heal resource remaining, output warning about it and leave function.
-					if (pesPassive.GetHealResource() <= 0)
+					if (pesPassive.GetHealResource() < pesPassive.m_HealResourceCastCost)
 					{
 						Debug.LogWarning("Not enough heal resource for Pestilence to heal with.");
 						return;
