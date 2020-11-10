@@ -518,6 +518,23 @@ public class GameManager : MonoBehaviour
 		// Make sure the player has a unit selected.
 		if (m_SelectedUnit != null)
 		{
+			// Check if the skill being cast is the heal skill.
+			HealSkill hs = skill as HealSkill;
+			if (hs != null)
+			{
+				// Check if this unit has Pestilence's passive (should be Pestilence but you never know).
+				PestilencePassive pesPassive = m_SelectedUnit.GetPassiveSkill() as PestilencePassive;
+				if (pesPassive != null)
+				{
+					// If there is no heal resource remaining, output warning about it and leave function.
+					if (pesPassive.GetHealResource() < pesPassive.m_HealResourceCastCost)
+					{
+						Debug.LogWarning("Not enough heal resource for Pestilence to heal with.");
+						return;
+					}
+				}
+			}
+
 			// Make sure the unit can afford to cast the skill and the skill isn't on cooldown before selecting it.
 			// Just in case.
 			if (m_SelectedUnit.GetActionPoints() >= skill.m_Cost && skill.GetCurrentCooldown() == 0)
