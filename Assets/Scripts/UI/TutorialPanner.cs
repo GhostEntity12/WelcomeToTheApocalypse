@@ -24,6 +24,11 @@ public class TutorialPanner : MonoBehaviour
 				transform.GetChild(i).GetComponent<TutorialPanel>().m_CloseButton.SetActive(false);
 			}
 		}
+
+		for (int i = 0; i < m_PanelCount; i++)
+		{
+			transform.GetChild(i).GetComponent<TutorialPanel>().m_Page.text = $"Page {i + 1}/{m_PanelCount}";
+		}
 	}
 
 	public void PanLeft()
