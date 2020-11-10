@@ -457,7 +457,7 @@ public class GameManager : MonoBehaviour
 	{
 		if (hitNode != null && hitNode == m_CachedNode) return;
 
-		List<Node> nodesToClear = m_ClearRange;
+		List<Node> nodesToClear = m_ClearRange.Concat(m_maxSkillRange).ToList();
 		List<Node> nodesWalkable = m_SelectedUnit.m_MovableNodes;
 
 		nodesToClear = nodesToClear.Except(nodesWalkable).ToList();
@@ -569,10 +569,7 @@ public class GameManager : MonoBehaviour
 	/// Select a skill.
 	/// </summary>
 	/// <param name="skillNumber"> Index of the skill being selected. </param>
-	public void SkillSelection(int skillNumber)
-	{
-		SkillSelection(m_SelectedUnit.GetSkill(skillNumber), UIManager.m_Instance.m_SkillSlots[skillNumber]);
-	}
+	public void SkillSelection(int skillNumber) => SkillSelection(m_SelectedUnit.GetSkill(skillNumber), UIManager.m_Instance.m_SkillSlots[skillNumber]);
 
 	/// <summary>
 	/// Determines whether a given skill can hit a given target
