@@ -202,8 +202,11 @@ public class GameManager : MonoBehaviour
 				s.DecrementCooldown();
 			}
 
-			// Deal with infliceted statuses
-			foreach (InflictableStatus status in unit.GetInflictableStatuses())
+			// Deal with inflicted statuses
+			// So using .ToList() creates a compy of the list to iterate through
+			// but continues romoving from the source list. Not particularly
+			// efficient for large lists, but easy enough here.
+			foreach (InflictableStatus status in unit.GetInflictableStatuses().ToList())
 			{
 				// If returns true, status effect's duration has reached 0, remove the status effect.
 				if (status.DecrementDuration())
