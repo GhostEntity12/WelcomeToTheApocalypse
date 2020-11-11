@@ -166,7 +166,10 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	public void EndCurrentTurn()
 	{
-		m_TeamCurrentTurn = m_TeamCurrentTurn == Allegiance.Enemy ? Allegiance.Player : Allegiance.Enemy;
+		if (m_TeamCurrentTurn == Allegiance.Enemy)
+			m_TeamCurrentTurn = Allegiance.Player;
+		else if (m_TeamCurrentTurn == Allegiance.Player)
+			m_TeamCurrentTurn = Allegiance.Enemy;
 
 		Debug.Log($"============{m_TeamCurrentTurn} turn============");
 
@@ -295,7 +298,8 @@ public class GameManager : MonoBehaviour
 					{
 						// The player is choosing a tile to move a unit to.
 						if (m_SelectedUnit.GetAllegiance() == Allegiance.Player &&
-							m_SelectedUnit.m_MovableNodes.Contains(hitNode))
+							m_SelectedUnit.m_MovableNodes.Contains(hitNode) &&
+							m_SelectedUnit.GetCurrentMovement() > 0)
 						{
 							// On click, make sure a unit is selected.
 							if (m_LeftMouseDown)
