@@ -580,6 +580,12 @@ public class GameManager : MonoBehaviour
 			UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
 
 			m_SelectedSkill = null;
+
+			foreach (Unit unaffectedUnit in m_AffectedUnits) // No longer affected units
+			{
+				unaffectedUnit.m_Healthbar.m_KeepFocus = false;
+				unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), false);
+			}
 		}
 	}
 
