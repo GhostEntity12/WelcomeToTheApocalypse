@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum TargetingState
@@ -100,6 +101,9 @@ public class GameManager : MonoBehaviour
 
 	public bool m_DidHealthBonus;
 
+	public TextAsset m_FailScript;
+	public TextAsset m_WinScript;
+
 	[FMODUnity.EventRef]
 	public string m_TurnEndSound = "";
 
@@ -116,7 +120,8 @@ public class GameManager : MonoBehaviour
 
 		if (!FindObjectOfType<MusicManager>())
 		{
-			gameObject.AddComponent<MusicManager>();
+			GameObject musicManager = new GameObject("MusicManager", typeof(MusicManager));
+			musicManager.GetComponent<MusicManager>().m_MusicEvent = "event:/Music";
 		}
 	}
 
@@ -723,5 +728,11 @@ public class GameManager : MonoBehaviour
 		rt.position = Vector3.zero;
 		versionText.autoSizeTextContainer = true;
 		versionText.text = Application.version;
+	}
+
+	public void LoadMainMenu()
+	{
+		MusicManager.m_Instance.SetHorsemen(0);
+		SceneManager.LoadScene(0);
 	}
 }
