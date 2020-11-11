@@ -55,7 +55,11 @@ public class SkillButton : MonoBehaviour
 		{
 			try
 			{
-				baseDescription = baseDescription.Replace("{duration}", (m_Skill as StatusSkill).m_Effect.m_StartingDuration.ToString()).Replace("{effectDamage}", (m_Skill as StatusSkill).m_DamageAmount.ToString());
+				baseDescription = baseDescription.Replace("{duration}", (m_Skill as StatusSkill).m_Effect.m_StartingDuration.ToString());
+				if ((m_Skill as StatusSkill).m_Effect is DamageOverTimeEffect)
+				{
+					baseDescription = baseDescription.Replace("{effectDamage}", ((m_Skill as StatusSkill).m_Effect as DamageOverTimeEffect).m_DamageOverTime.ToString());
+				}
 			}
 			catch (NullReferenceException)
 			{
