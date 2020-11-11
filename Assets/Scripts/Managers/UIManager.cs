@@ -335,7 +335,7 @@ public class UIManager : MonoBehaviour
 
 	public void ShowCrawlButtons()
 	{
-		LeanTween.move(m_CrawlDisplay.m_CrawlButtons, Vector3.zero, 2f);
+		LeanTween.move(m_CrawlDisplay.m_CrawlButtons, Vector3.zero, 2f).setEaseOutCubic();
 	}
 
 	public void LoadSceneIndex(int index) => SceneManager.LoadScene(index);

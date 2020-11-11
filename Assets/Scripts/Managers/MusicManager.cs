@@ -25,6 +25,10 @@ public class MusicManager : MonoBehaviour
 
     private void Start()
     {
+        if (FindObjectsOfType<MusicManager>().Length > 1)
+        {
+            Destroy(gameObject);
+        }
         m_Instance = this;
         DontDestroyOnLoad(this);
         m_MusicState = RuntimeManager.CreateInstance(m_MusicEvent);

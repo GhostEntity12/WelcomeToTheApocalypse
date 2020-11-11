@@ -29,7 +29,6 @@ public class CrawlDisplay : MonoBehaviour
 
 	public void LoadCrawl(Outcome outcome)
 	{
-
 		UIManager.m_Instance.m_ActiveUI = true;
 		m_Display.text = string.Empty;
 		m_ScriptLines = (outcome == Outcome.Win ? m_WinScript : m_FailScript).text.Split(
@@ -83,6 +82,7 @@ public class CrawlDisplay : MonoBehaviour
 			{
 				oldString += line + "\n";
 				m_Display.text = oldString; // Update the textbox
+				continue;
 			}
 			int alpha = 0;
 
@@ -112,7 +112,6 @@ public class CrawlDisplay : MonoBehaviour
 			}
 			else
 			{
-				// TODO: Load next scene I guess
 				m_OnEndCrawlEvent?.Invoke();
 				m_OnEndCrawlEvent = null;
 				Debug.Log($"Finished crawl");
@@ -120,8 +119,5 @@ public class CrawlDisplay : MonoBehaviour
 		}
 	}
 
-	void StartDisplay()
-	{
-		StartCoroutine(DisplayScreen(m_CurrentScreen));
-	}
+	void StartDisplay() => StartCoroutine(DisplayScreen(m_CurrentScreen));
 }

@@ -13,12 +13,12 @@ GameObject:
   - component: {fileID: 1103733457735074578}
   - component: {fileID: 1994864972112717210}
   - component: {fileID: 8542797098482852539}
-  m_Layer: 30
+  m_Layer: 0
   m_Name: 2x2_Fountain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &8642039103684236176
 Transform:
@@ -27,8 +27,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5197001040104230315}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -11.47, y: 1.0430964, z: -24.31}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5197001040104230315}
-  m_Mesh: {fileID: -7545831556655825222, guid: 27dc07be08df1784fbc860f6976392f9, type: 3}
+  m_Mesh: {fileID: -7545831556655825222, guid: 9320054512f55f3439eab3058d0e08c0, type: 3}
 --- !u!23 &1103733457735074578
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -61,6 +61,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 271befb581f8e19468d80823a5454373, type: 2}
+  - {fileID: 2100000, guid: b9dc81a7fd70a4543becbf4d2e512f48, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -94,7 +95,7 @@ CapsuleCollider:
   m_Radius: 1.2138762
   m_Height: 2.0661929
   m_Direction: 1
-  m_Center: {x: 0, y: 1.0330964, z: 0.00000011920929}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8542797098482852539
 MonoBehaviour:
   m_ObjectHideFlags: 0

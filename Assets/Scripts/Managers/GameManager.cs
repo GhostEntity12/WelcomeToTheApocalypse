@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum TargetingState
@@ -116,7 +117,8 @@ public class GameManager : MonoBehaviour
 
 		if (!FindObjectOfType<MusicManager>())
 		{
-			gameObject.AddComponent<MusicManager>();
+			GameObject musicManager = new GameObject("MusicManager", typeof(MusicManager));
+			musicManager.GetComponent<MusicManager>().m_MusicEvent = "event:/Music";
 		}
 	}
 
@@ -720,4 +722,6 @@ public class GameManager : MonoBehaviour
 		versionText.autoSizeTextContainer = true;
 		versionText.text = Application.version;
 	}
+
+	public void LoadMainMenu() => SceneManager.LoadScene(0);
 }
