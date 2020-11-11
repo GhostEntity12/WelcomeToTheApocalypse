@@ -27,6 +27,23 @@ public class UnitsManager : MonoBehaviour
 		foreach (Unit playerUnit in m_PlayerUnits)
 		{
 			Grid.m_Instance.SetUnitInitial(playerUnit);
+			switch (playerUnit.m_CharacterName)
+			{
+				case "Death":
+					MusicManager.m_Instance.AddHorseman(Horseman.Death);
+					break;
+				case "Pestilence":
+					MusicManager.m_Instance.AddHorseman(Horseman.Pestilence);
+					break;
+				case "Famine":
+					MusicManager.m_Instance.AddHorseman(Horseman.Pestilence);
+					break;
+				case "War":
+					MusicManager.m_Instance.AddHorseman(Horseman.War);
+					break;
+				default:
+					break;
+			}
 		}
 	}
 }

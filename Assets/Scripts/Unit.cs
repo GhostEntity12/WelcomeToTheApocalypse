@@ -522,6 +522,24 @@ public class Unit : MonoBehaviour
 				DialogueManager.instance.QueueDialogue(m_KillDialogue, KillUnit);
 			}
 		}
+
+		switch (m_CharacterName)
+		{
+			case "Death":
+				MusicManager.m_Instance.AddHorseman(Horseman.Death);
+				break;
+			case "Pestilence":
+				MusicManager.m_Instance.AddHorseman(Horseman.Pestilence);
+				break;
+			case "Famine":
+				MusicManager.m_Instance.AddHorseman(Horseman.Famine);
+				break;
+			case "War":
+				MusicManager.m_Instance.AddHorseman(Horseman.War);
+				break;
+			default:
+				break;
+		}
 	}
 
 	/// <summary>

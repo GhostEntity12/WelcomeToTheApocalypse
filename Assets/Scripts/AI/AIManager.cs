@@ -742,6 +742,24 @@ public class AIManager : MonoBehaviour
 				}
 				UnitsManager.m_Instance.m_ActiveEnemyUnits.Add(unit);
 			}
+
+			switch (unit.m_CharacterName)
+			{
+				case "Death":
+					MusicManager.m_Instance.AddHorseman(Horseman.Death);
+					break;
+				case "Pestilence":
+					MusicManager.m_Instance.AddHorseman(Horseman.Pestilence);
+					break;
+				case "Famine":
+					MusicManager.m_Instance.AddHorseman(Horseman.Famine);
+					break;
+				case "War":
+					MusicManager.m_Instance.AddHorseman(Horseman.War);
+					break;
+				default:
+					break;
+			}
 		}
 
 		// In case of units already added being in the list, remove dupes.
