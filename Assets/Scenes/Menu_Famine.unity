@@ -153,6 +153,7 @@ GameObject:
   - component: {fileID: 298527587}
   - component: {fileID: 298527588}
   - component: {fileID: 298527583}
+  - component: {fileID: 298527589}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -298,6 +299,21 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
+--- !u!114 &298527589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 298527582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1d8b0830f553c54aa9afc0d7291e798, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DebugAdd: 0
+  m_HorsemanMask: 0
+  m_MusicEvent: event:/Music
 --- !u!1 &472549985
 GameObject:
   m_ObjectHideFlags: 0
@@ -490,6 +506,52 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 114.19, y: -15.487976, z: 20.043991}
+--- !u!1 &603118573
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 603118575}
+  - component: {fileID: 603118574}
+  m_Layer: 0
+  m_Name: MusicManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &603118574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603118573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1d8b0830f553c54aa9afc0d7291e798, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DebugAdd: 0
+  m_HorsemanMask: 0
+  m_MusicEvent: event:/Music
+--- !u!4 &603118575
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603118573}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 352.92645, y: 357.6663, z: -49.6875}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &622141898 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5845777154290069344, guid: d3ab74c1c007a284b8836efd90e1e2d3,
