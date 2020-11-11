@@ -113,6 +113,8 @@ public class GameManager : MonoBehaviour
 		m_Instance = this;
 
 		CreateVersionText();
+
+		m_TeamCurrentTurn = Allegiance.Player;
 	}
 
 	private void Start()
@@ -161,7 +163,10 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	public void EndCurrentTurn()
 	{
-		m_TeamCurrentTurn = m_TeamCurrentTurn == Allegiance.Enemy ? Allegiance.Player : Allegiance.Enemy;
+		if (m_TeamCurrentTurn == Allegiance.Enemy)
+			m_TeamCurrentTurn = Allegiance.Player;
+		else if (m_TeamCurrentTurn == Allegiance.Player)
+			m_TeamCurrentTurn = Allegiance.Enemy;
 
 		Debug.Log($"============{m_TeamCurrentTurn} turn============");
 
