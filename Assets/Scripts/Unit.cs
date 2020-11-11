@@ -513,12 +513,12 @@ public class Unit : MonoBehaviour
 			if (GetComponent<DefeatEnemyWinCondition>())
 			{
 				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = GameManager.m_Instance.LoadMainMenu;
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win));
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_WinScript));
 			}
 			else if (!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive())
 			{
 				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = UIManager.m_Instance.ShowCrawlButtons;
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss));
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_FailScript));
 			}
 			else
 			{

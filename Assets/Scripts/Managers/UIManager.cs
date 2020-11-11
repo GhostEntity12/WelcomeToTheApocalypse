@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
 	public static UIManager m_Instance;
 	public CanvasGroup m_BlackScreen;
 
+	public RectTransform m_CrawlButtons;
+
 	/// <summary>
 	/// List of UI elements that block the player from being able to interact with the game.
 	/// </summary>
@@ -335,7 +337,7 @@ public class UIManager : MonoBehaviour
 
 	public void ShowCrawlButtons()
 	{
-		LeanTween.move(m_CrawlDisplay.m_CrawlButtons, Vector3.zero, 2f).setEaseOutCubic();
+		LeanTween.move(m_CrawlButtons, Vector3.zero, 2f).setEaseOutCubic();
 	}
 
 	public void LoadSceneIndex(int index) => SceneManager.LoadScene(index);

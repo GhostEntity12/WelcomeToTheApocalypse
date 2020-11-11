@@ -101,6 +101,9 @@ public class GameManager : MonoBehaviour
 
 	public bool m_DidHealthBonus;
 
+	public TextAsset m_FailScript;
+	public TextAsset m_WinScript;
+
 	[FMODUnity.EventRef]
 	public string m_TurnEndSound = "";
 
@@ -723,5 +726,9 @@ public class GameManager : MonoBehaviour
 		versionText.text = Application.version;
 	}
 
-	public void LoadMainMenu() => SceneManager.LoadScene(0);
+	public void LoadMainMenu()
+	{
+		MusicManager.m_Instance.SetHorsemen(0);
+		SceneManager.LoadScene(0);
+	}
 }

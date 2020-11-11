@@ -25,19 +25,21 @@ public class MusicManager : MonoBehaviour
 
     private void Start()
     {
-        if (FindObjectsOfType<MusicManager>().Length > 1)
+        if (m_Instance)
         {
             Destroy(gameObject);
         }
-        m_Instance = this;
-        DontDestroyOnLoad(this);
-        m_MusicState = RuntimeManager.CreateInstance(m_MusicEvent);
-        m_MusicState.start();
+        else
+        {
+            m_Instance = this;
+            DontDestroyOnLoad(this);
+            m_MusicState = RuntimeManager.CreateInstance(m_MusicEvent);
+            m_MusicState.start();
 
-        m_MusicState.getDescription(out EventDescription musicEventDescription);
-        musicEventDescription.getParameterDescriptionByName("HorsemenNum", out PARAMETER_DESCRIPTION musicParameterDescription);
-        m_MusicParameterID = musicParameterDescription.id;
-        
+            m_MusicState.getDescription(out EventDescription musicEventDescription);
+            musicEventDescription.getParameterDescriptionByName("HorsemenNum", out PARAMETER_DESCRIPTION musicParameterDescription);
+            m_MusicParameterID = musicParameterDescription.id;
+        }
     }
 
     public void AddHorseman(Horseman horseman)
@@ -49,6 +51,12 @@ public class MusicManager : MonoBehaviour
     public void RemoveHorseman(Horseman horseman)
     {
         m_HorsemanMask &= ~(1 << (int)horseman);
+        m_MusicState.setParameterByID(m_MusicParameterID, m_HorsemanMask);
+    }
+
+    public void SetHorsemen(int horsemenMask)
+    {
+        m_HorsemanMask = horsemenMask;
         m_MusicState.setParameterByID(m_MusicParameterID, m_HorsemanMask);
     }
 }
