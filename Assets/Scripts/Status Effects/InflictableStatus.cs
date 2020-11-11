@@ -8,6 +8,8 @@
 	// Check the preconditions for the status effect to take effect.
 	public override abstract bool CheckPrecondition(TriggerType trigger);
 
+	public StatusSkill m_Source;
+
 	/// <summary>
 	/// Decrement the duration of the status effect.
 	/// </summary>

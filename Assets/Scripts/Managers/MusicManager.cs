@@ -25,6 +25,8 @@ public class MusicManager : MonoBehaviour
 
     private void Start()
     {
+        m_Instance = this;
+        DontDestroyOnLoad(this);
         m_MusicState = RuntimeManager.CreateInstance(m_MusicEvent);
         m_MusicState.start();
 
@@ -44,17 +46,5 @@ public class MusicManager : MonoBehaviour
     {
         m_HorsemanMask &= ~(1 << (int)horseman);
         m_MusicState.setParameterByID(m_MusicParameterID, m_HorsemanMask);
-    }
-
-    [ContextMenu("Add")]
-    void Add()
-    {
-        AddHorseman((Horseman)DebugAdd);
-    }
-
-    [ContextMenu("Remove")]
-    void Remove()
-    {
-        RemoveHorseman((Horseman)DebugAdd);
     }
 }
