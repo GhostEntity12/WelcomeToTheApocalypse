@@ -101,7 +101,7 @@ public class Unit : MonoBehaviour
 	/// <summary>
 	/// The image representing the unit's health.
 	/// </summary>
-	private HealthbarContainer m_Healthbar = null;
+	public HealthbarContainer m_Healthbar = null;
 
 	/// <summary>
 	/// The script for the health change indicator.
@@ -231,7 +231,7 @@ public class Unit : MonoBehaviour
 		{
 			m_Healthbar.gameObject.SetActive(true);
 			m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
-			m_Healthbar.m_HealthbarImage.fillAmount = (float)m_CurrentHealth / m_StartingHealth;
+			m_Healthbar.ChangeFill((float)m_CurrentHealth / m_StartingHealth, true);
 			m_Healthbar.SetChildrenActive(true);
 			m_HealthChangeIndicatorScript.SetStartPositionToCurrent();
 			m_HealthChangeIndicatorScript.Reset();
@@ -272,6 +272,8 @@ public class Unit : MonoBehaviour
 
 		int damage = (int)m_DealingDamage + m_TakeExtraDamage;
 
+
+		m_Healthbar.m_KeepFocus = false;
 		SetCurrentHealth(m_CurrentHealth - damage);
 		m_TakeExtraDamage = 0;
 
@@ -317,6 +319,8 @@ public class Unit : MonoBehaviour
 	private void AddHealingFromSkill(int heal)
 	{
 		ParticlesManager.m_Instance.RemoveUnitFromTarget();
+
+		m_Healthbar.m_KeepFocus = false;
 		IncreaseCurrentHealth(heal);
 	}
 
@@ -433,6 +437,8 @@ public class Unit : MonoBehaviour
 	{
 		Debug.Log($"<color=#a87932>[Death] </color>{name} died");
 		m_IsAlive = false;
+
+		m_Healthbar.m_KeepFocus = false;
 
 		while (m_ParentedParticleSystems.Count > 0)
 		{
@@ -729,26 +735,14 @@ public class Unit : MonoBehaviour
 								m_PassiveSkill.TakeEffect(this);
 						}
 					}
-
-					// Check if the skill being cast is the heal skill.
 					HealSkill hs = skill as HealSkill;
 					if (hs != null)
 					{
-						// Check if this unit has Pestilence's passive (should be Pestilence but you never know).
-						PestilencePassive pesPassive = m_PassiveSkill as PestilencePassive;
-						if (pesPassive != null)
+						PestilencePassive pp = m_PassiveSkill as PestilencePassive;
+						if (pp != null)
 						{
-							// Use the heal resource before casting the skill.
-							if (pesPassive.GetHealResource() > 0)
-							{
-								pesPassive.UseHealResource();
-							}
-							// If there is no heal resource remaining, output warning about it and leave function.
-							else
-							{
-								Debug.LogWarning("Not enough heal resource for Pestilence to heal with.");
-								return;
-							}
+							pp.UseHealResource();
+							StatusEffectTooltipManager.m_Instance.UpdatePassive();
 						}
 					}
 				}

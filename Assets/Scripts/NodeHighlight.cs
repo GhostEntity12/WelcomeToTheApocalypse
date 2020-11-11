@@ -7,6 +7,7 @@ public enum TileState
 	MovementRange,
 	TargetRange,
 	EffectRange,
+	TargetMovement,
 	None
 }
 

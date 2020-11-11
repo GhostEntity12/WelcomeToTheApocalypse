@@ -869,7 +869,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1493,7 +1493,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -4712,26 +4712,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2009398871674605415}
     m_Modifications:
-    - target: {fileID: 2304012889974300096, guid: 072f8c0e6c200e9468cc62f7925795a4,
-        type: 3}
-      propertyPath: m_FillAmount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2304012889974300097, guid: 072f8c0e6c200e9468cc62f7925795a4,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0.8500061
-      objectReference: {fileID: 0}
-    - target: {fileID: 2304012889974300097, guid: 072f8c0e6c200e9468cc62f7925795a4,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -1.2000122
-      objectReference: {fileID: 0}
-    - target: {fileID: 2304012890430777609, guid: 072f8c0e6c200e9468cc62f7925795a4,
-        type: 3}
-      propertyPath: m_PreserveAspect
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4740,6 +4720,11 @@ PrefabInstance:
     - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
         type: 3}
       propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
+        type: 3}
+      propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
@@ -4784,6 +4769,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
         type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -150
+      objectReference: {fileID: 0}
+    - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 275
+      objectReference: {fileID: 0}
+    - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
+        type: 3}
       propertyPath: m_AnchorMin.x
       value: 0.5
       objectReference: {fileID: 0}
@@ -4812,20 +4817,15 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 125
-      objectReference: {fileID: 0}
-    - target: {fileID: 2304012890430777610, guid: 072f8c0e6c200e9468cc62f7925795a4,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -150
-      objectReference: {fileID: 0}
     - target: {fileID: 2304012890430777611, guid: 072f8c0e6c200e9468cc62f7925795a4,
         type: 3}
       propertyPath: m_Name
       value: HealthBarBack
+      objectReference: {fileID: 0}
+    - target: {fileID: 7976590476443671615, guid: 072f8c0e6c200e9468cc62f7925795a4,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 16.6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 072f8c0e6c200e9468cc62f7925795a4, type: 3}

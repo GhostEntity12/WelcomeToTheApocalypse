@@ -9,6 +9,11 @@ public class HealthbarContainer : MonoBehaviour
 	/// </summary>
 	public Image m_HealthbarImage = null;
 
+	///<summary>
+	///The preview healthbar
+	/// </summary>
+	public Image m_HealthbarPreview = null;
+
 	/// <summary>
 	/// The background healthbar image.
 	/// </summary>
@@ -39,7 +44,7 @@ public class HealthbarContainer : MonoBehaviour
 	/// </summary>
 	Camera m_MainCam;
 
-	private float m_Timer = 0.0f;
+	private float m_Timer = 1.0f;
 
 	private Color m_NoAlpha = new Color(0, 0, 0, 0);
 
@@ -47,11 +52,14 @@ public class HealthbarContainer : MonoBehaviour
 
 	private Color m_BackColor;
 
+	public bool m_KeepFocus;
+
 	private void Awake()
 	{
-		m_FillColor = m_HealthbarImage.color;
 		m_HealthbarBackImage = GetComponent<Image>();
+		m_FillColor = m_HealthbarImage.color;
 		m_BackColor = m_HealthbarBackImage.color;
+		m_HealthbarPreview.material = new Material(m_HealthbarPreview.material);
 	}
 
 	private void Start()
@@ -72,6 +80,15 @@ public class HealthbarContainer : MonoBehaviour
 
 	private void Update()
 	{
+		if (m_KeepFocus)
+		{
+			Reset();
+		}
+		else
+		{
+			m_Timer += Time.deltaTime;
+		}
+
 		if (m_IsMagnetic && m_HealthbarImage.color != m_NoAlpha)
 		{
 			transform.position = m_MainCam.WorldToScreenPoint(m_Transform.position);
@@ -79,15 +96,15 @@ public class HealthbarContainer : MonoBehaviour
 
 		m_HealthbarImage.color = Color.Lerp(m_FillColor, m_NoAlpha, m_Timer);
 		m_HealthbarBackImage.color = Color.Lerp(m_BackColor, m_NoAlpha, m_Timer);
-
-		m_Timer += Time.deltaTime;
+		m_HealthbarPreview.material.SetFloat("_Transparency", Mathf.Lerp(1, 0, m_Timer));
 	}
 
 	public void Reset()
 	{
-		m_Timer = 0.0f;
+		m_Timer = -0.5f;
 		m_HealthbarImage.color = m_FillColor;
 		m_HealthbarBackImage.color = m_BackColor;
+		m_HealthbarPreview.material.SetFloat("_Transparency", 1);
 	}
 
 	public void UnitSetHealthbar()
@@ -99,5 +116,14 @@ public class HealthbarContainer : MonoBehaviour
 	public void SetUnit(Unit unit)
 	{
 		m_Unit = unit;
+	}
+
+	public void ChangeFill(float amount, bool changeBoth)
+	{
+		m_HealthbarImage.fillAmount = amount;
+		if (changeBoth)
+		{
+			m_HealthbarPreview.fillAmount = amount;
+		}
 	}
 }

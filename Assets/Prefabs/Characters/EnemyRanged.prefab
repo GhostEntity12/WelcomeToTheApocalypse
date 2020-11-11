@@ -10536,7 +10536,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4708277921971670830}
-  - component: {fileID: 1906855281425514696}
   - component: {fileID: 4230620152452059970}
   m_Layer: 11
   m_Name: RangedAttack
@@ -10560,19 +10559,6 @@ Transform:
   m_Father: {fileID: 8026390694884032189}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1906855281425514696
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7099483271612344119}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.2
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4230620152452059970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10676,6 +10662,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a00bf960e6a84df4b911439c0dd4ccd3, type: 2}
   m_Passive: {fileID: 0}
   m_Allegiance: 1
+  m_Healthbar: {fileID: 0}
   m_StartingActionPoints: 1
   m_HealthbarPosition: {fileID: 4490674637043435819}
   m_AIHeuristicCalculator: {fileID: 11400000, guid: 1c0844bd67f2af2439b07d94651a5d0f,
