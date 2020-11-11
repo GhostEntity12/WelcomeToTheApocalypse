@@ -329,7 +329,8 @@ public class Unit : MonoBehaviour
 		switch (skill)
 		{
 			case StatusSkill ss:
-
+				InflictableStatus infS = Instantiate(ss.m_Effect);
+				infS.m_Source = ss;
 				if (ss.m_DamageAmount > 0)
 				{
 					m_DealingDamage = ss.m_DamageAmount + ss.m_ExtraDamage;
@@ -342,11 +343,11 @@ public class Unit : MonoBehaviour
 						m_animator.SetTrigger("TriggerDamage");
 						// Trigger Death Particle
 					}
-					AddStatusEffect(ss.m_Effect);
+					AddStatusEffect(infS);
 				}
 				else
 				{
-					AddStatusEffectFromSkill(ss.m_Effect);
+					AddStatusEffectFromSkill(infS);
 				}
 				break;
 			case DamageSkill ds:

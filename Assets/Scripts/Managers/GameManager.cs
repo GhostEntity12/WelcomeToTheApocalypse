@@ -113,6 +113,11 @@ public class GameManager : MonoBehaviour
 		m_Instance = this;
 
 		CreateVersionText();
+
+		if (!FindObjectOfType<MusicManager>())
+		{
+			gameObject.AddComponent<MusicManager>();
+		}
 	}
 
 	private void Start()
@@ -297,6 +302,7 @@ public class GameManager : MonoBehaviour
 							{
 								if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out Stack<Node> path, out m_MovementCost, true))
 								{
+									print(path.Peek().m_NodeHighlight.name);
 									// Set the unit's path
 									m_SelectedUnit.SetMovementPath(path);
 									m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
@@ -465,7 +471,7 @@ public class GameManager : MonoBehaviour
 							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() - (ds.m_DamageAmount + ds.m_ExtraDamage)) / affectedUnit.GetStartingHealth(), false);
 							break;
 						case HealSkill hs:
-							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() - hs.m_HealAmount) / affectedUnit.GetStartingHealth(), false);
+							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() + hs.m_HealAmount) / affectedUnit.GetStartingHealth(), false);
 							break;
 						default:
 							break;
