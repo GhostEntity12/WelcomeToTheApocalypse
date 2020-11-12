@@ -15,6 +15,7 @@ public class CrawlDisplay : MonoBehaviour
 
 	[Space(20)]
 	public TextMeshProUGUI m_Display;
+	public CanvasGroup m_Prompt;
 
 	int m_CurrentScreen = 0;
 	bool m_AcceptingInput = false;
@@ -56,6 +57,7 @@ public class CrawlDisplay : MonoBehaviour
 
 	public IEnumerator DisplayScreen(int screen)
 	{
+		LeanTween.alphaCanvas(m_Prompt, 0, 0.2f);
 		string oldString = string.Empty;
 
 		// Fade old text out (if it exists)
@@ -99,11 +101,12 @@ public class CrawlDisplay : MonoBehaviour
 		}
 		m_AcceptingInput = true;
 		m_CurrentScreen++;
+		LeanTween.alphaCanvas(m_Prompt, 1, 0.5f);
 	}
 
 	private void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Return) && m_AcceptingInput)
+		if (GetAnyKeyDown(KeyCode.Return, KeyCode.Space, KeyCode.Mouse0) && m_AcceptingInput)
 		{
 			if (m_CurrentScreen < m_LinesByScreen.Count)
 			{
@@ -120,4 +123,12 @@ public class CrawlDisplay : MonoBehaviour
 	}
 
 	void StartDisplay() => StartCoroutine(DisplayScreen(m_CurrentScreen));
+
+	bool GetAnyKeyDown(params KeyCode[] aKeys)
+	{
+		foreach (var key in aKeys)
+			if (Input.GetKeyDown(key))
+				return true;
+		return false;
+	}
 }
