@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum TargetingState
@@ -100,6 +101,9 @@ public class GameManager : MonoBehaviour
 
 	public bool m_DidHealthBonus;
 
+	public TextAsset m_FailScript;
+	public TextAsset m_WinScript;
+
 	[FMODUnity.EventRef]
 	public string m_TurnEndSound = "";
 
@@ -113,6 +117,12 @@ public class GameManager : MonoBehaviour
 		m_Instance = this;
 
 		CreateVersionText();
+
+		if (!FindObjectOfType<MusicManager>())
+		{
+			GameObject musicManager = new GameObject("MusicManager", typeof(MusicManager));
+			musicManager.GetComponent<MusicManager>().m_MusicEvent = "event:/Music";
+		}
 	}
 
 	private void Start()
@@ -161,7 +171,10 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	public void EndCurrentTurn()
 	{
-		m_TeamCurrentTurn = m_TeamCurrentTurn == Allegiance.Enemy ? Allegiance.Player : Allegiance.Enemy;
+		if (m_TeamCurrentTurn == Allegiance.Enemy)
+			m_TeamCurrentTurn = Allegiance.Player;
+		else if (m_TeamCurrentTurn == Allegiance.Player)
+			m_TeamCurrentTurn = Allegiance.Enemy;
 
 		Debug.Log($"============{m_TeamCurrentTurn} turn============");
 
@@ -290,13 +303,15 @@ public class GameManager : MonoBehaviour
 					{
 						// The player is choosing a tile to move a unit to.
 						if (m_SelectedUnit.GetAllegiance() == Allegiance.Player &&
-							m_SelectedUnit.m_MovableNodes.Contains(hitNode))
+							m_SelectedUnit.m_MovableNodes.Contains(hitNode) &&
+							m_SelectedUnit.GetCurrentMovement() > 0)
 						{
 							// On click, make sure a unit is selected.
 							if (m_LeftMouseDown)
 							{
 								if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out Stack<Node> path, out m_MovementCost, true))
 								{
+									print(path.Peek().m_NodeHighlight.name);
 									// Set the unit's path
 									m_SelectedUnit.SetMovementPath(path);
 									m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
@@ -465,7 +480,7 @@ public class GameManager : MonoBehaviour
 							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() - (ds.m_DamageAmount + ds.m_ExtraDamage)) / affectedUnit.GetStartingHealth(), false);
 							break;
 						case HealSkill hs:
-							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() - hs.m_HealAmount) / affectedUnit.GetStartingHealth(), false);
+							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() + hs.m_HealAmount) / affectedUnit.GetStartingHealth(), false);
 							break;
 						default:
 							break;
@@ -565,6 +580,12 @@ public class GameManager : MonoBehaviour
 			UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
 
 			m_SelectedSkill = null;
+
+			foreach (Unit unaffectedUnit in m_AffectedUnits) // No longer affected units
+			{
+				unaffectedUnit.m_Healthbar.m_KeepFocus = false;
+				unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), false);
+			}
 		}
 	}
 
@@ -713,5 +734,11 @@ public class GameManager : MonoBehaviour
 		rt.position = Vector3.zero;
 		versionText.autoSizeTextContainer = true;
 		versionText.text = Application.version;
+	}
+
+	public void LoadMainMenu()
+	{
+		MusicManager.m_Instance.SetHorsemen(0);
+		SceneManager.LoadScene(0);
 	}
 }

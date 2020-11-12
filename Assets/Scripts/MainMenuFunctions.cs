@@ -16,17 +16,23 @@ public class MainMenuFunctions : MonoBehaviour
 	/// </summary>
 	public CanvasGroup m_BlackScreen = null;
 
+	public TextAsset m_StartScript;
+
+	public CrawlDisplay m_Crawl;
+
 	public CanvasGroup m_Prompt = null;
 
 	public List<Renderer> m_ArtistPosters = new List<Renderer>();
 	public List<Renderer> m_DesignerPosters = new List<Renderer>();
 	public List<Renderer> m_ProgrammerPosters = new List<Renderer>();
+	public List<Renderer> m_ExtraPosters = new List<Renderer>();
 
 	List<Renderer> m_AllPosters = new List<Renderer>();
 
 	public Collider m_ArtistCollider = null;
 	public Collider m_DesignerCollider = null;
 	public Collider m_ProgrammingCollider = null;
+	public Collider m_ExtraCollider = null;
 
 	/// <summary>
 	/// On startup.
@@ -35,7 +41,7 @@ public class MainMenuFunctions : MonoBehaviour
 	{
 		m_Anim = Camera.main.GetComponent<Animator>();
 
-		m_AllPosters = m_ArtistPosters.Concat(m_DesignerPosters).Concat(m_ProgrammerPosters).ToList();
+		m_AllPosters = m_ArtistPosters.Concat(m_DesignerPosters).Concat(m_ProgrammerPosters).Concat(m_ExtraPosters).ToList();
 
 		foreach (Renderer renderer in m_AllPosters)
 		{
@@ -58,7 +64,13 @@ public class MainMenuFunctions : MonoBehaviour
 	{
 		m_Anim.SetTrigger("isMainGame");
 		LeanTween.alphaCanvas(m_BlackScreen, 1.0f, 1.5f);
-		LeanTween.delayedCall(1.5f, LoadMainScene);
+		LeanTween.delayedCall(1.5f, LoadStartCrawl);
+	}
+
+	void LoadStartCrawl()
+	{
+		m_Crawl.m_OnEndCrawlEvent = LoadMainScene;
+		m_Crawl.LoadCrawl(m_StartScript);
 	}
 
 	void LoadMainScene() => SceneManager.LoadScene("Famine_Split");
@@ -106,6 +118,9 @@ public class MainMenuFunctions : MonoBehaviour
 				break;
 			case "programming":
 				postersToUpdate = m_ProgrammerPosters;
+				break;
+			case "extra":
+				postersToUpdate = m_ExtraPosters;
 				break;
 			default:
 				break;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum Allegiance
 {
@@ -329,7 +330,8 @@ public class Unit : MonoBehaviour
 		switch (skill)
 		{
 			case StatusSkill ss:
-
+				InflictableStatus infS = Instantiate(ss.m_Effect);
+				infS.m_Source = ss;
 				if (ss.m_DamageAmount > 0)
 				{
 					m_DealingDamage = ss.m_DamageAmount + ss.m_ExtraDamage;
@@ -342,11 +344,11 @@ public class Unit : MonoBehaviour
 						m_animator.SetTrigger("TriggerDamage");
 						// Trigger Death Particle
 					}
-					AddStatusEffect(ss.m_Effect);
+					AddStatusEffect(infS);
 				}
 				else
 				{
-					AddStatusEffectFromSkill(ss.m_Effect);
+					AddStatusEffectFromSkill(infS);
 				}
 				break;
 			case DamageSkill ds:
@@ -510,12 +512,13 @@ public class Unit : MonoBehaviour
 		{
 			if (GetComponent<DefeatEnemyWinCondition>())
 			{
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Win));
+				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = GameManager.m_Instance.LoadMainMenu;
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_WinScript));
 			}
 			else if (!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive())
 			{
 				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = UIManager.m_Instance.ShowCrawlButtons;
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(Outcome.Loss));
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_FailScript));
 			}
 			else
 			{
@@ -526,16 +529,16 @@ public class Unit : MonoBehaviour
 		switch (m_CharacterName)
 		{
 			case "Death":
-				MusicManager.m_Instance.AddHorseman(Horseman.Death);
+				MusicManager.m_Instance.RemoveHorseman(Horseman.Death);
 				break;
 			case "Pestilence":
-				MusicManager.m_Instance.AddHorseman(Horseman.Pestilence);
+				MusicManager.m_Instance.RemoveHorseman(Horseman.Pestilence);
 				break;
 			case "Famine":
-				MusicManager.m_Instance.AddHorseman(Horseman.Famine);
+				MusicManager.m_Instance.RemoveHorseman(Horseman.Famine);
 				break;
 			case "War":
-				MusicManager.m_Instance.AddHorseman(Horseman.War);
+				MusicManager.m_Instance.RemoveHorseman(Horseman.War);
 				break;
 			default:
 				break;
