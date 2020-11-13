@@ -122,7 +122,7 @@ public class DialogueManager : MonoBehaviour
 								 // Set the portrait
 		try
 		{
-			switch (parsedText[3].ToLower()[1])
+			switch (parsedText[3].ToLower()[0])
 			{
 				case 'l':
 					ManageDialoguePortrait(Side.Left);
@@ -336,21 +336,21 @@ public class DialogueManager : MonoBehaviour
 		}
 	}
 
-	public void QueueDialogue(TextAsset _sceneName, Action onEndAction = null)
+	public void QueueDialogue(TextAsset _sceneName, float darkenAmount = 0.9f, Action onEndAction = null)
 	{
 		Debug.Log($"<color=#5cd3e0>[Dialogue]</color> Queuing dialogue {_sceneName.name}");
 		sceneQueue.Enqueue(_sceneName);
 		onFinishDialogueActions.Enqueue(onEndAction);
 		if (!dialogueActive)
 		{
-			TriggerDialogue(sceneQueue.Dequeue());
+			TriggerDialogue(sceneQueue.Dequeue(), darkenAmount);
 		}
 	}
 
-	public void TriggerDialogue(TextAsset _sceneName)
+	public void TriggerDialogue(TextAsset _sceneName, float darkenAmount = 0.9f)
 	{
 		UIManager.m_Instance.m_ActiveUI = true;
-		LeanTween.alphaCanvas(darkenedBackground, 0.9f, 0.4f);
+		LeanTween.alphaCanvas(darkenedBackground, darkenAmount, 0.4f);
 		UIManager.m_Instance.HideTurnIndicator();
 		dialogueActive = true;
 		ClearDialogueBox();

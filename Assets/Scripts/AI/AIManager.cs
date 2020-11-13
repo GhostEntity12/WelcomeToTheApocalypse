@@ -112,8 +112,6 @@ public class AIManager : MonoBehaviour
 
 	public HeuristicResult m_BestOption;
 
-	List<Unit> m_UnitCloseList = new List<Unit>();
-
 	bool m_MakingAction;
 
 	//On Awake, initialise the instance of this manager.
@@ -743,22 +741,25 @@ public class AIManager : MonoBehaviour
 				UnitsManager.m_Instance.m_ActiveEnemyUnits.Add(unit);
 			}
 
-			switch (unit.m_CharacterName)
+			if (MusicManager.m_Instance)
 			{
-				case "Death":
-					MusicManager.m_Instance.AddHorseman(Horseman.Death);
-					break;
-				case "Pestilence":
-					MusicManager.m_Instance.AddHorseman(Horseman.Pestilence);
-					break;
-				case "Famine":
-					MusicManager.m_Instance.AddHorseman(Horseman.Famine);
-					break;
-				case "War":
-					MusicManager.m_Instance.AddHorseman(Horseman.War);
-					break;
-				default:
-					break;
+				switch (unit.m_CharacterName)
+				{
+					case "Death":
+						MusicManager.m_Instance.AddHorseman(Horseman.Death);
+						break;
+					case "Pestilence":
+						MusicManager.m_Instance.AddHorseman(Horseman.Pestilence);
+						break;
+					case "Famine":
+						MusicManager.m_Instance.AddHorseman(Horseman.Famine);
+						break;
+					case "War":
+						MusicManager.m_Instance.AddHorseman(Horseman.War);
+						break;
+					default:
+						break;
+				}
 			}
 		}
 
@@ -796,9 +797,6 @@ public class AIManager : MonoBehaviour
 		// If the AI's turn is starting, check what AI units are alive.
 		if (m_AITurn == true)
 		{
-			// Clear the unit closed list, to be able to go through all the units now.
-			m_UnitCloseList.Clear();
-
 			// Prune the active units
 			DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 

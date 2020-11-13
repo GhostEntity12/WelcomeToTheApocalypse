@@ -238,7 +238,6 @@ public class ParticlesManager : MonoBehaviour
 
 	void Update()
 	{
-
 		//Checks if there is an active ranged particle to start moving it
 		//Stops all code within if statement from running when not needed
 		if (m_activeRangedParticle.Count > 0)

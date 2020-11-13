@@ -5,7 +5,7 @@ public class CombatTrigger : MonoBehaviour
 	public GameObject m_EnemyGroupToActivate;
 	private Unit[] m_EnemiesToActivate = new Unit[] { };
 
-	public TextAsset scene;
+	public TextAsset m_Scene;
 
 
 	private void Awake()
@@ -26,15 +26,15 @@ public class CombatTrigger : MonoBehaviour
 				AIManager.m_Instance.EnableUnits(m_EnemiesToActivate);
 			}
 
-			if (scene)
+			if (m_Scene)
 			{
-				if (scene.name.Contains("Start"))
+				if (m_Scene.name.Contains("Start"))
 				{
-					UIManager.m_Instance.SwapToDialogue(scene, () => UIManager.m_Instance.m_Tutorial.OpenTutorial());
+					UIManager.m_Instance.SwapToDialogue(m_Scene, onDialogueEndAction: () => UIManager.m_Instance.m_Tutorial.OpenTutorial());
 				}
 				else
 				{
-					UIManager.m_Instance.SwapToDialogue(scene);
+					UIManager.m_Instance.SwapToDialogue(m_Scene);
 				}
 			}
 

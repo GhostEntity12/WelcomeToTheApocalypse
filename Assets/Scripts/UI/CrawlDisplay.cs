@@ -20,7 +20,7 @@ public class CrawlDisplay : MonoBehaviour
 	int m_CurrentScreen = 0;
 	bool m_AcceptingInput = false;
 	string[] m_ScriptLines;
-	List<List<string>> m_LinesByScreen = new List<List<string>>();
+	private List<List<string>> m_LinesByScreen = new List<List<string>>();
 
 	public Action m_OnEndCrawlEvent;
 
