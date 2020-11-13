@@ -311,7 +311,6 @@ public class GameManager : MonoBehaviour
 							{
 								if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out Stack<Node> path, out m_MovementCost, true))
 								{
-									print(path.Peek().m_NodeHighlight.name);
 									// Set the unit's path
 									m_SelectedUnit.SetMovementPath(path);
 									m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
@@ -545,7 +544,7 @@ public class GameManager : MonoBehaviour
 			}
 			else
 			{
-				Debug.Log("Not enough action points!", m_SelectedUnit);
+				Debug.Log("<color=#9c4141>[Skill]</color> Not enough action points!", m_SelectedUnit);
 			}
 		}
 	}

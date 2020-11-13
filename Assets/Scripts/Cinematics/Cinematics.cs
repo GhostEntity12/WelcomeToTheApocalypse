@@ -2,6 +2,8 @@
 
 public class Cinematics : MonoBehaviour
 {
+    public Transform m_TrailerConversationPosition;
+
     [Header("Death")]
     public Unit m_Death;
     public Unit m_DeathTarget;
@@ -27,9 +29,11 @@ public class Cinematics : MonoBehaviour
 
     public Transform m_FamineDialoguePosition;
 
+    bool m_Prepped = false;
+
     Animator m_Anim;
     // Start is called before the first frame update
-    void Start()
+    void Prep()
     {
         m_Anim = GetComponent<Animator>();
         AIManager.m_Instance.EnableUnits(new Unit[] { m_DeathTarget });
@@ -38,6 +42,7 @@ public class Cinematics : MonoBehaviour
 
         m_DeathEnemyAnim = m_DeathTarget.GetComponent<Animator>();
         m_DefaultHash = m_Anim.GetCurrentAnimatorStateInfo(0).fullPathHash;
+        m_Prepped = true;
     }
 
     // Update is called once per frame
@@ -45,6 +50,7 @@ public class Cinematics : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Keypad9)) 
         {
+            if (!m_Prepped) Prep();
             transform.parent = null;
             GameManager.m_Instance.m_SelectedUnit = m_Famine;
 
@@ -53,6 +59,7 @@ public class Cinematics : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Keypad8))
         {
+            if (!m_Prepped) Prep();
             transform.parent = m_Holder.transform;
             GameManager.m_Instance.m_SelectedUnit = m_Pestilence;
 
@@ -67,6 +74,7 @@ public class Cinematics : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Keypad7))
         {
+            if (!m_Prepped) Prep();
             transform.parent = null;
             GameManager.m_Instance.m_SelectedUnit = m_Death;
 
@@ -84,24 +92,34 @@ public class Cinematics : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Keypad5))
         {
+            if (!m_Prepped) Prep();
             transform.parent = m_FamineDialoguePosition;
             transform.position = m_FamineDialoguePosition.transform.position;
             transform.rotation = m_FamineDialoguePosition.transform.rotation;
         }
         else if (Input.GetKeyDown(KeyCode.Keypad6))
         {
+            if (!m_Prepped) Prep();
             transform.parent = m_PestilenceDialoguePosition;
             transform.position = m_PestilenceDialoguePosition.transform.position;
             transform.rotation = m_PestilenceDialoguePosition.transform.rotation;
         }
         else if (Input.GetKeyDown(KeyCode.Keypad4))
         {
+            if (!m_Prepped) Prep();
             transform.parent = m_DeathDialoguePosition;
             transform.position = m_DeathDialoguePosition.transform.position;
             transform.rotation = m_DeathDialoguePosition.transform.rotation;
         }
+        else if (Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            transform.parent = m_TrailerConversationPosition;
+            transform.position = m_TrailerConversationPosition.transform.position;
+            transform.rotation = m_TrailerConversationPosition.transform.rotation;
+        }
         else if (Input.GetKeyDown(KeyCode.Keypad0))
         {
+            if (!m_Prepped) Prep();
             transform.parent = null;
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.identity;

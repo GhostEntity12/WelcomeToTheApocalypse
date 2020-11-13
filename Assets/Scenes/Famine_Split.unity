@@ -591,26 +591,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 200022368, guid: 6163158d0fab414439820319eca89b89, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 200022368, guid: 6163158d0fab414439820319eca89b89, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 200022368, guid: 6163158d0fab414439820319eca89b89, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 200022368, guid: 6163158d0fab414439820319eca89b89, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -10
-      objectReference: {fileID: 0}
-    - target: {fileID: 200022368, guid: 6163158d0fab414439820319eca89b89, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0
-      objectReference: {fileID: 0}
     - target: {fileID: 200022371, guid: 6163158d0fab414439820319eca89b89, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -12094,7 +12074,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EnemyGroupToActivate: {fileID: 0}
-  scene: {fileID: 4900000, guid: 7f720de1fe4297a48841c94c3e918237, type: 3}
+  m_Scene: {fileID: 4900000, guid: 7f720de1fe4297a48841c94c3e918237, type: 3}
 --- !u!65 &267703224
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -43264,6 +43244,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3746970823148160190, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
+        type: 3}
+      propertyPath: blur
+      value: 
+      objectReference: {fileID: 838488337}
     - target: {fileID: 3996351675828880204, guid: 0e6f8412f6d9e6c40b5a24cbc31452de,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -44128,6 +44113,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0e6f8412f6d9e6c40b5a24cbc31452de, type: 3}
+--- !u!114 &838488337 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6711187208314862781, guid: 6163158d0fab414439820319eca89b89,
+    type: 3}
+  m_PrefabInstance: {fileID: 12435647}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &838860723
 GameObject:
   m_ObjectHideFlags: 0
@@ -60570,7 +60567,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EnemyGroupToActivate: {fileID: 2077961980}
-  scene: {fileID: 4900000, guid: 127ffd720bf4feb42bd1be63ac250bdc, type: 3}
+  m_Scene: {fileID: 4900000, guid: 127ffd720bf4feb42bd1be63ac250bdc, type: 3}
 --- !u!65 &1163861454
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -105060,7 +105057,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EnemyGroupToActivate: {fileID: 663766248}
-  scene: {fileID: 4900000, guid: 04a8eb710e465a84498acd413712bdd0, type: 3}
+  m_Scene: {fileID: 4900000, guid: 04a8eb710e465a84498acd413712bdd0, type: 3}
 --- !u!4 &1494162784818388198
 Transform:
   m_ObjectHideFlags: 0
@@ -105435,7 +105432,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EnemyGroupToActivate: {fileID: 2134568841}
-  scene: {fileID: 4900000, guid: 141a97f0b3cbc114fa6262ee162d825c, type: 3}
+  m_Scene: {fileID: 4900000, guid: 141a97f0b3cbc114fa6262ee162d825c, type: 3}
 --- !u!1 &4675087792577283647
 GameObject:
   m_ObjectHideFlags: 0
@@ -105497,7 +105494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EnemyGroupToActivate: {fileID: 1330643247}
-  scene: {fileID: 4900000, guid: 645aa83635b699446bcf6137d645d3b6, type: 3}
+  m_Scene: {fileID: 4900000, guid: 645aa83635b699446bcf6137d645d3b6, type: 3}
 --- !u!1 &4943507786852888406
 GameObject:
   m_ObjectHideFlags: 0
@@ -105571,7 +105568,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EnemyGroupToActivate: {fileID: 988094726}
-  scene: {fileID: 4900000, guid: b45c1b775db61af4f8b3b9a71419efc7, type: 3}
+  m_Scene: {fileID: 4900000, guid: b45c1b775db61af4f8b3b9a71419efc7, type: 3}
 --- !u!54 &5497454447051505398
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -106897,7 +106894,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EnemyGroupToActivate: {fileID: 1920292812}
-  scene: {fileID: 4900000, guid: bc7d5d9f1daa3a64699e9d39c3dfd5f7, type: 3}
+  m_Scene: {fileID: 4900000, guid: bc7d5d9f1daa3a64699e9d39c3dfd5f7, type: 3}
 --- !u!54 &6692583357133835063
 Rigidbody:
   m_ObjectHideFlags: 0

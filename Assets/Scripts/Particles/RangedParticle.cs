@@ -106,7 +106,6 @@ public class RangedParticle : MonoBehaviour
 		//Check if the collider is not its self
 		if (hitUnit)
 		{
-			print(hitUnit);
 			if (hitUnit == m_Target)
 			{
 				ParticlesManager.m_Instance.TakeSkillEffects();
