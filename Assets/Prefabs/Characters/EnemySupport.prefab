@@ -1168,6 +1168,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bf288053408c5914f89f7a964469d057, type: 2}
   m_Passive: {fileID: 0}
   m_Allegiance: 1
+  m_Healthbar: {fileID: 0}
   m_StartingActionPoints: 1
   m_HealthbarPosition: {fileID: 8716332603324684885}
   m_AIHeuristicCalculator: {fileID: 11400000, guid: acb2549c551ec3e4581e0e6e2d76c5bb,
@@ -1176,6 +1177,7 @@ MonoBehaviour:
   m_SummonParticle: {fileID: 4430781644277618743}
   m_KillDialogue: {fileID: 0}
   m_UIData: {fileID: 11400000, guid: 6f56fcc96de94e9498893a35f515614f, type: 2}
+  m_ParentedParticleSystems: []
   m_DeathSound: 
 --- !u!136 &4890577196982342505
 CapsuleCollider:
@@ -1564,7 +1566,7 @@ PrefabInstance:
     - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
         type: 3}
@@ -1574,7 +1576,7 @@ PrefabInstance:
     - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -9.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8119811429617214558, guid: 18c5590218b47b544bbd0beb4b5609dd,
         type: 3}
