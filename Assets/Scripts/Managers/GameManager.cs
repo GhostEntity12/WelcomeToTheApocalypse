@@ -182,6 +182,8 @@ public class GameManager : MonoBehaviour
 
 		UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
 
+		m_TargetingState = TargetingState.None;
+
 		// Play the end turn sound on the camera.
 		FMODUnity.RuntimeManager.PlayOneShot(m_TurnEndSound, Camera.main.transform.position);
 
@@ -435,6 +437,8 @@ public class GameManager : MonoBehaviour
 
 	void UpdateSkillPreview(Node hitNode)
 	{
+		if (!m_SelectedSkill) return; 
+
 		List<Node> nodesToClear = m_maxSkillRange.Concat(m_SelectedUnit.m_MovableNodes).ToList();
 		List<Node> nodesTargetable = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
 
