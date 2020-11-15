@@ -32,10 +32,19 @@ public class Cinematics : MonoBehaviour
     bool m_Prepped = false;
 
     Animator m_Anim;
+
     // Start is called before the first frame update
-    void Prep()
+    private void Start()
     {
         m_Anim = GetComponent<Animator>();
+        m_Death.gameObject.SetActive(false);
+        m_Pestilence.gameObject.SetActive(false);
+    }
+
+    void Prep()
+    {
+        m_Death.gameObject.SetActive(true);
+        m_Pestilence.gameObject.SetActive(true);
         AIManager.m_Instance.EnableUnits(new Unit[] { m_DeathTarget });
         AIManager.m_Instance.EnableUnits(m_PestilenceUnits);
         AIManager.m_Instance.EnableUnits(new Unit[] { m_Famine });
@@ -90,14 +99,14 @@ public class Cinematics : MonoBehaviour
             m_Anim.SetTrigger("Death");
             LeanTween.delayedCall(m_DeathDelay, () => m_Death.ActivateSkill(m_Death.GetSkill(1), Grid.m_Instance.GetNode(m_DeathTarget.transform.position)));
         }
-        else if (Input.GetKeyDown(KeyCode.Keypad5))
+        else if (Input.GetKeyDown(KeyCode.Keypad6))
         {
             if (!m_Prepped) Prep();
             transform.parent = m_FamineDialoguePosition;
             transform.position = m_FamineDialoguePosition.transform.position;
             transform.rotation = m_FamineDialoguePosition.transform.rotation;
         }
-        else if (Input.GetKeyDown(KeyCode.Keypad6))
+        else if (Input.GetKeyDown(KeyCode.Keypad5))
         {
             if (!m_Prepped) Prep();
             transform.parent = m_PestilenceDialoguePosition;
@@ -116,6 +125,7 @@ public class Cinematics : MonoBehaviour
             transform.parent = m_TrailerConversationPosition;
             transform.position = m_TrailerConversationPosition.transform.position;
             transform.rotation = m_TrailerConversationPosition.transform.rotation;
+            LeanTween.delayedCall(2f, () => m_TrailerConversationPosition.GetComponent<Collider>().enabled = true);
         }
         else if (Input.GetKeyDown(KeyCode.Keypad0))
         {
@@ -123,6 +133,26 @@ public class Cinematics : MonoBehaviour
             transform.parent = null;
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.identity;
+        }
+        else if (Input.GetKeyDown(KeyCode.KeypadPlus))
+        {
+            transform.parent = null;
+            m_Anim.SetTrigger("Establishing0");
+        }
+        else if (Input.GetKeyDown(KeyCode.KeypadDivide))
+        {
+            transform.parent = null;
+            m_Anim.SetTrigger("Establishing1");
+        }
+        else if (Input.GetKeyDown(KeyCode.KeypadMultiply))
+        {
+            transform.parent = null;
+            m_Anim.SetTrigger("Establishing2");
+        }
+        else if (Input.GetKeyDown(KeyCode.KeypadMinus))
+        {
+            transform.parent = null;
+            m_Anim.SetTrigger("Establishing3");
         }
     }
 }
