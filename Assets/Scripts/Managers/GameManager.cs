@@ -718,6 +718,7 @@ public class GameManager : MonoBehaviour
 	{
 		if (GameObject.Find("VersionCanvas")) return;
 		if (Application.version.Contains("Gold")) return;
+		if (Application.version.Contains("RC")) return;
 
 		GameObject cgo = new GameObject("VersionCanvas", typeof(Canvas), typeof(CanvasScaler));
 		DontDestroyOnLoad(cgo);
