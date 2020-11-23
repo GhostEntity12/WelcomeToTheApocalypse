@@ -112,8 +112,6 @@ public class AIManager : MonoBehaviour
 
 	public HeuristicResult m_BestOption;
 
-	List<Unit> m_UnitCloseList = new List<Unit>();
-
 	bool m_MakingAction;
 
 	//On Awake, initialise the instance of this manager.
@@ -142,7 +140,7 @@ public class AIManager : MonoBehaviour
 	{
 		if (UnitsManager.m_Instance.m_ActiveEnemyUnits.Count == 0)
 		{
-			Debug.Log("No enemies. Ending turn");
+			Debug.Log("<color=#471d1d>[AI]</color> No enemies. Ending turn");
 			GameManager.m_Instance.EndCurrentTurn();
 			return;
 		}
@@ -156,7 +154,7 @@ public class AIManager : MonoBehaviour
 				// Only calculate movement heuristics if the unit can move
 				if (unit.GetCurrentMovement() > 0)
 				{
-					print($"{unit} has {unit.GetCurrentMovement()} movement");
+					Debug.Log($"<color=#8440a8>[Movement]</color> {unit.name} has {unit.GetCurrentMovement()} movement");
 					// Movement Heuristics
 					DoMovementHeuristics(unit);
 				}
@@ -187,7 +185,7 @@ public class AIManager : MonoBehaviour
 								DoHealHeuristic(nodesWithUnits, hs, unit);
 								break;
 							default:
-								Debug.LogError("Bad skill!", skill);
+								Debug.LogError("<color=#9c4141>[Skill]</color><color=#6e4747> Bad skill!</color>", skill);
 								break;
 						}
 					}
@@ -223,7 +221,7 @@ public class AIManager : MonoBehaviour
 					m_BestOption = choice;
 					m_CurrentAIUnit = m_BestOption.m_Unit;
 					Debug.Log($"===={m_CurrentAIUnit.name} taking turn====");
-					Debug.Log($"<color=#3f5c9e>[Heuristics] </color>Found best option: {m_CurrentAIUnit.name} moving to {m_BestOption.m_Node.m_NodeHighlight.name} from {Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position).m_NodeHighlight.name}");
+					Debug.Log($"<color=#3f5c9e>[Heuristics]</color> Found best option: {m_CurrentAIUnit.name} moving to {m_BestOption.m_Node.m_NodeHighlight.name} from {Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position).m_NodeHighlight.name}");
 					m_MakingAction = true;
 					GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
 					if (m_BestOption.m_MoveDistance != 0)
@@ -240,7 +238,7 @@ public class AIManager : MonoBehaviour
 				}
 				else
 				{
-					Debug.Log($"<color=#6e4747> A better move for {aiUnit.name} was found outside of the movable area</color>");
+					Debug.Log($"<color=#3f5c9e>[Heuristics]</color><color=#6e4747> A better move for {aiUnit.name} was found outside of the movable area</color>");
 				}
 			}
 
@@ -406,7 +404,6 @@ public class AIManager : MonoBehaviour
 							continue;
 						else
 						{
-							print(currentUnit + " " + castNode.m_NodeHighlight.name);
 							if (nodesCastable[j] != null)
 							{
 								AddOrUpdateHeuristic(
@@ -697,7 +694,7 @@ public class AIManager : MonoBehaviour
 		}
 		else
 		{
-			Debug.Log($"<color=#9c4141>[Skill] </color><color=#4f1212>{m_BestOption.m_Unit.name} can't cast any skills from {m_BestOption.m_Node.m_NodeHighlight.name}</color>");
+			Debug.Log($"<color=#9c4141>[Skill]</color> <color=#4f1212>{m_BestOption.m_Unit.name} can't cast any skills from {m_BestOption.m_Node.m_NodeHighlight.name}</color>");
 			m_CurrentAIUnit = null;
 			ParticlesManager.m_Instance.m_ActiveSkill = null;
 		}
@@ -743,22 +740,25 @@ public class AIManager : MonoBehaviour
 				UnitsManager.m_Instance.m_ActiveEnemyUnits.Add(unit);
 			}
 
-			switch (unit.m_CharacterName)
+			if (MusicManager.m_Instance)
 			{
-				case "Death":
-					MusicManager.m_Instance.AddHorseman(Horseman.Death);
-					break;
-				case "Pestilence":
-					MusicManager.m_Instance.AddHorseman(Horseman.Pestilence);
-					break;
-				case "Famine":
-					MusicManager.m_Instance.AddHorseman(Horseman.Famine);
-					break;
-				case "War":
-					MusicManager.m_Instance.AddHorseman(Horseman.War);
-					break;
-				default:
-					break;
+				switch (unit.m_CharacterName)
+				{
+					case "Death":
+						MusicManager.m_Instance.AddHorseman(Horseman.Death);
+						break;
+					case "Pestilence":
+						MusicManager.m_Instance.AddHorseman(Horseman.Pestilence);
+						break;
+					case "Famine":
+						MusicManager.m_Instance.AddHorseman(Horseman.Famine);
+						break;
+					case "War":
+						MusicManager.m_Instance.AddHorseman(Horseman.War);
+						break;
+					default:
+						break;
+				}
 			}
 		}
 
@@ -796,13 +796,10 @@ public class AIManager : MonoBehaviour
 		// If the AI's turn is starting, check what AI units are alive.
 		if (m_AITurn == true)
 		{
-			// Clear the unit closed list, to be able to go through all the units now.
-			m_UnitCloseList.Clear();
-
 			// Prune the active units
 			DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
 
-			Debug.Log($"Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
+			Debug.Log($"<color=#471d1d>[AI]</color> Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
 		}
 	}
 

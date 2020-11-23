@@ -52,14 +52,23 @@ public class HealthbarContainer : MonoBehaviour
 
 	private Color m_BackColor;
 
+	private Color m_PreviewColor;
+
 	public bool m_KeepFocus;
+
+	public enum Heathbars
+	{
+		Preview,
+		Main,
+		Both
+	}
 
 	private void Awake()
 	{
 		m_HealthbarBackImage = GetComponent<Image>();
 		m_FillColor = m_HealthbarImage.color;
 		m_BackColor = m_HealthbarBackImage.color;
-		m_HealthbarPreview.material = new Material(m_HealthbarPreview.material);
+		m_PreviewColor = m_HealthbarPreview.color;
 	}
 
 	private void Start()
@@ -96,7 +105,7 @@ public class HealthbarContainer : MonoBehaviour
 
 		m_HealthbarImage.color = Color.Lerp(m_FillColor, m_NoAlpha, m_Timer);
 		m_HealthbarBackImage.color = Color.Lerp(m_BackColor, m_NoAlpha, m_Timer);
-		m_HealthbarPreview.material.SetFloat("_Transparency", Mathf.Lerp(1, 0, m_Timer));
+		m_HealthbarPreview.color = Color.Lerp(m_PreviewColor, m_NoAlpha, m_Timer);
 	}
 
 	public void Reset()
@@ -104,7 +113,7 @@ public class HealthbarContainer : MonoBehaviour
 		m_Timer = -0.5f;
 		m_HealthbarImage.color = m_FillColor;
 		m_HealthbarBackImage.color = m_BackColor;
-		m_HealthbarPreview.material.SetFloat("_Transparency", 1);
+		m_HealthbarPreview.color = m_PreviewColor;
 	}
 
 	public void UnitSetHealthbar()
@@ -118,12 +127,20 @@ public class HealthbarContainer : MonoBehaviour
 		m_Unit = unit;
 	}
 
-	public void ChangeFill(float amount, bool changeBoth)
+	public void ChangeFill(float amount, Heathbars heathbarsToChange)
 	{
-		m_HealthbarImage.fillAmount = amount;
-		if (changeBoth)
+		switch (heathbarsToChange)
 		{
-			m_HealthbarPreview.fillAmount = amount;
+			case Heathbars.Preview:
+				m_HealthbarPreview.fillAmount = amount;
+				break;
+			case Heathbars.Main:
+				m_HealthbarImage.fillAmount = amount;
+				break;
+			case Heathbars.Both:
+				m_HealthbarPreview.fillAmount = amount;
+				m_HealthbarImage.fillAmount = amount;
+				break;
 		}
 	}
 }

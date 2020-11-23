@@ -182,6 +182,8 @@ public class GameManager : MonoBehaviour
 
 		UIManager.m_Instance.SlideSkills(UIManager.ScreenState.Offscreen);
 
+		m_TargetingState = TargetingState.Move;
+
 		// Play the end turn sound on the camera.
 		FMODUnity.RuntimeManager.PlayOneShot(m_TurnEndSound, Camera.main.transform.position);
 
@@ -266,7 +268,7 @@ public class GameManager : MonoBehaviour
 				case TargetingState.Move:
 					if (m_SelectedUnit && !m_SelectedUnit.GetMoving())
 					{
-						UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+						UpdateMoveablePreview(null);
 					}
 					// Selecting new unit
 					if (m_LeftMouseDown)
@@ -275,7 +277,7 @@ public class GameManager : MonoBehaviour
 						if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAlive())
 						{
 							SelectUnit(rayHitUnit);
-							UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+							UpdateMoveablePreview(null);
 						}
 					}
 					break;
@@ -311,7 +313,6 @@ public class GameManager : MonoBehaviour
 							{
 								if (Grid.m_Instance.FindPath(m_SelectedUnit.transform.position, m_MouseWorldRayHit.transform.position, out Stack<Node> path, out m_MovementCost, true))
 								{
-									print(path.Peek().m_NodeHighlight.name);
 									// Set the unit's path
 									m_SelectedUnit.SetMovementPath(path);
 									m_SelectedUnit.DecreaseCurrentMovement(m_MovementCost);
@@ -319,16 +320,16 @@ public class GameManager : MonoBehaviour
 
 								m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), hitNode);
 								// Should we do this after the unit has finished moving? - James L
-								UpdateMoveablePreview(null, hitNode);
+								UpdateMoveablePreview(null);
 							}
 							else
 							{
-								UpdateMoveablePreview(hitNode, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+								UpdateMoveablePreview(hitNode);
 							}
 						}
 						else
 						{
-							UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+							UpdateMoveablePreview(null);
 						}
 					}
 					break;
@@ -403,7 +404,7 @@ public class GameManager : MonoBehaviour
 
 		// Highlight the appropriate tiles
 		m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-		UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+		UpdateMoveablePreview(null);
 
 		StatusEffectTooltipManager.m_Instance.UpdateActiveEffects();
 
@@ -418,12 +419,13 @@ public class GameManager : MonoBehaviour
 	public void RefreshHighlights()
 	{
 		if (GetSelectedUnit())
-		{
+		{	
 			m_ClearRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
 			switch (m_TargetingState)
 			{
 				case TargetingState.Move:
-					UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+					m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+					UpdateMoveablePreview(null);
 					break;
 				case TargetingState.Skill:
 					UpdateSkillPreview(null);
@@ -436,6 +438,8 @@ public class GameManager : MonoBehaviour
 
 	void UpdateSkillPreview(Node hitNode)
 	{
+		if (!m_SelectedSkill) return; 
+
 		List<Node> nodesToClear = m_maxSkillRange.Concat(m_SelectedUnit.m_MovableNodes).ToList();
 		List<Node> nodesTargetable = Grid.m_Instance.GetNodesWithinRadius(m_SelectedSkill.m_CastableDistance, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
 
@@ -477,10 +481,10 @@ public class GameManager : MonoBehaviour
 					switch (m_SelectedSkill)
 					{
 						case DamageSkill ds:
-							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() - (ds.m_DamageAmount + ds.m_ExtraDamage)) / affectedUnit.GetStartingHealth(), false);
+							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() - (ds.m_DamageAmount + ds.m_ExtraDamage)) / affectedUnit.GetStartingHealth(), HealthbarContainer.Heathbars.Main);
 							break;
 						case HealSkill hs:
-							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() + hs.m_HealAmount) / affectedUnit.GetStartingHealth(), false);
+							affectedUnit.m_Healthbar.ChangeFill(((float)affectedUnit.GetCurrentHealth() + hs.m_HealAmount) / affectedUnit.GetStartingHealth(), HealthbarContainer.Heathbars.Preview);
 							break;
 						default:
 							break;
@@ -490,7 +494,7 @@ public class GameManager : MonoBehaviour
 				foreach (Unit unaffectedUnit in m_AffectedUnits.Except(newAffectedUnits)) // No longer affected units
 				{
 					unaffectedUnit.m_Healthbar.m_KeepFocus = false;
-					unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), false);
+					unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), HealthbarContainer.Heathbars.Both);
 				}
 
 				m_AffectedUnits = newAffectedUnits;
@@ -500,17 +504,17 @@ public class GameManager : MonoBehaviour
 				foreach (Unit unaffectedUnit in m_AffectedUnits) // No longer affected units
 				{
 					unaffectedUnit.m_Healthbar.m_KeepFocus = false;
-					unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), false);
+					unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), HealthbarContainer.Heathbars.Both);
 				}
 
 				m_AffectedUnits.Clear();
 			}
 		}
-
-		nodesTargetable.ForEach(n => n.m_NodeHighlight.ChangeHighlight(TileState.TargetRange));
+		TileState attackType = m_SelectedSkill is HealSkill ? TileState.TargetRangeHeal : TileState.TargetRangeDamage;
+		nodesTargetable.ForEach(n => n.m_NodeHighlight.ChangeHighlight(attackType));
 	}
 
-	void UpdateMoveablePreview(Node hitNode, Node centerNode)
+	void UpdateMoveablePreview(Node hitNode)
 	{
 		if (hitNode != null && hitNode == m_CachedNode) return;
 
@@ -545,7 +549,7 @@ public class GameManager : MonoBehaviour
 			}
 			else
 			{
-				Debug.Log("Not enough action points!", m_SelectedUnit);
+				Debug.Log("<color=#9c4141>[Skill]</color> Not enough action points!", m_SelectedUnit);
 			}
 		}
 	}
@@ -577,14 +581,14 @@ public class GameManager : MonoBehaviour
 
 			m_TargetingState = TargetingState.Move;
 
-			UpdateMoveablePreview(null, Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+			UpdateMoveablePreview(null);
 
 			m_SelectedSkill = null;
 
 			foreach (Unit unaffectedUnit in m_AffectedUnits) // No longer affected units
 			{
 				unaffectedUnit.m_Healthbar.m_KeepFocus = false;
-				unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), false);
+				unaffectedUnit.m_Healthbar.ChangeFill((float)unaffectedUnit.GetCurrentHealth() / unaffectedUnit.GetStartingHealth(), HealthbarContainer.Heathbars.Both);
 			}
 		}
 	}
@@ -597,7 +601,7 @@ public class GameManager : MonoBehaviour
 	{
 		if (ParticlesManager.m_Instance.m_ActiveSkill != null)// || (ParticlesManager.m_Instance.m_ActiveSkill.m_Skill != null && ParticlesManager.m_Instance.m_ActiveSkill.m_Targets != null))
 		{
-			Debug.LogWarning($"{ParticlesManager.m_Instance.m_ActiveSkill.m_Skill} is currently active!");
+			Debug.LogWarning($"<color=#9c4141>[Skill]</color> {ParticlesManager.m_Instance.m_ActiveSkill.m_Skill.m_SkillName} is currently active!");
 			return;
 		}
 		// Don't allow progress if the character is an enemy (player can mouse over for info, but not use the skill)
@@ -714,6 +718,7 @@ public class GameManager : MonoBehaviour
 	{
 		if (GameObject.Find("VersionCanvas")) return;
 		if (Application.version.Contains("Gold")) return;
+		if (Application.version.Contains("RC")) return;
 
 		GameObject cgo = new GameObject("VersionCanvas", typeof(Canvas), typeof(CanvasScaler));
 		DontDestroyOnLoad(cgo);

@@ -243,12 +243,12 @@ public class UIManager : MonoBehaviour
 		onComplete?.Invoke();
 	}
 
-	public void SwapToDialogue(TextAsset sourceFile, Action onDialogueEndAction = null)
+	public void SwapToDialogue(TextAsset sourceFile, float darkenAmount = 0.9f, Action onDialogueEndAction = null)
 	{
 		if (sourceFile)
 		{
 			SlideSkills(ScreenState.Offscreen,
-				() => DialogueManager.instance.QueueDialogue(sourceFile, onDialogueEndAction));
+				() => DialogueManager.instance.QueueDialogue(sourceFile, darkenAmount, onDialogueEndAction));
 		}
 		else
 		{

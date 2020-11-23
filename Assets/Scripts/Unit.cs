@@ -132,6 +132,8 @@ public class Unit : MonoBehaviour
 
 	public ParticleSystem m_SummonParticle;
 
+	public ParticleSystem m_DeathParticle;
+
 	private int m_TakeExtraDamage = 0;
 
 	private int m_DealExtraDamage = 0;
@@ -232,7 +234,7 @@ public class Unit : MonoBehaviour
 		{
 			m_Healthbar.gameObject.SetActive(true);
 			m_Healthbar.transform.position = Camera.main.WorldToScreenPoint(m_HealthbarPosition.position);
-			m_Healthbar.ChangeFill((float)m_CurrentHealth / m_StartingHealth, true);
+			m_Healthbar.ChangeFill((float)m_CurrentHealth / m_StartingHealth, HealthbarContainer.Heathbars.Both);
 			m_Healthbar.SetChildrenActive(true);
 			m_HealthChangeIndicatorScript.SetStartPositionToCurrent();
 			m_HealthChangeIndicatorScript.Reset();
@@ -342,7 +344,10 @@ public class Unit : MonoBehaviour
 					else
 					{
 						m_animator.SetTrigger("TriggerDamage");
-						// Trigger Death Particle
+						if (m_DeathParticle)
+						{
+							m_DeathParticle.Play();
+						}
 					}
 					AddStatusEffect(infS);
 				}
@@ -356,11 +361,14 @@ public class Unit : MonoBehaviour
 				if (m_CurrentHealth - m_DealingDamage <= 0)
 				{
 					m_animator.SetTrigger("TriggerDeath");
+					if (m_DeathParticle)
+					{
+						m_DeathParticle.Play();
+					}
 				}
 				else
 				{
 					m_animator.SetTrigger("TriggerDamage");
-					// Trigger Death Particle
 				}
 				break;
 			case HealSkill hs:
@@ -377,11 +385,14 @@ public class Unit : MonoBehaviour
 		if (m_CurrentHealth - m_DealingDamage <= 0)
 		{
 			m_animator.SetTrigger("TriggerDeath");
+			if (m_DeathParticle)
+			{
+				m_DeathParticle.Play();
+			}
 		}
 		else
 		{
 			m_animator.SetTrigger("TriggerDamage");
-			// Trigger Death Particle
 		}
 	}
 
@@ -513,16 +524,16 @@ public class Unit : MonoBehaviour
 			if (GetComponent<DefeatEnemyWinCondition>())
 			{
 				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = GameManager.m_Instance.LoadMainMenu;
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_WinScript));
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_WinScript));
 			}
 			else if (!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive())
 			{
 				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = UIManager.m_Instance.ShowCrawlButtons;
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_FailScript));
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_FailScript));
 			}
 			else
 			{
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, KillUnit);
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: KillUnit);
 			}
 		}
 

@@ -27,7 +27,6 @@ public class PestilencePassive : PassiveSkill
 
 	public override void TakeEffect()
 	{
-		Debug.Log("Gained Charge");
 		m_CurrentHealResource += m_HealResourceForDealingDamage;
 	}
 
