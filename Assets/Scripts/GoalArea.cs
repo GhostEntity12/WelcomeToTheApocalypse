@@ -8,7 +8,7 @@ public class GoalArea : MonoBehaviour
 {
 	public CanvasGroup m_BlackScreen;
 	public TextAsset m_Scene;
-	public int m_SceneToLoad;
+	public string m_SceneToLoad;
 
 	private void OnTriggerEnter(Collider other)
 	{

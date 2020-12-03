@@ -2,6 +2,7 @@
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public class MainMenuFunctions : MonoBehaviour
@@ -27,12 +28,16 @@ public class MainMenuFunctions : MonoBehaviour
 	public List<Renderer> m_ProgrammerPosters = new List<Renderer>();
 	public List<Renderer> m_ExtraPosters = new List<Renderer>();
 
+	public List<Renderer> m_AssortedRenderers = new List<Renderer>();
+
 	List<Renderer> m_AllPosters = new List<Renderer>();
 
 	public Collider m_ArtistCollider = null;
 	public Collider m_DesignerCollider = null;
 	public Collider m_ProgrammingCollider = null;
 	public Collider m_ExtraCollider = null;
+
+	public string m_SceneToLoad = null;
 
 	/// <summary>
 	/// On startup.
@@ -41,7 +46,7 @@ public class MainMenuFunctions : MonoBehaviour
 	{
 		m_Anim = Camera.main.GetComponent<Animator>();
 
-		m_AllPosters = m_ArtistPosters.Concat(m_DesignerPosters).Concat(m_ProgrammerPosters).Concat(m_ExtraPosters).ToList();
+		m_AllPosters = m_ArtistPosters.Concat(m_DesignerPosters).Concat(m_ProgrammerPosters).Concat(m_ExtraPosters).Concat(m_AssortedRenderers).ToList();
 
 		foreach (Renderer renderer in m_AllPosters)
 		{
@@ -56,24 +61,6 @@ public class MainMenuFunctions : MonoBehaviour
 			FromSubsection();
 		}
 	}
-
-	/// <summary>
-	/// Fade to black and start the game.
-	/// </summary>
-	public void StartGame()
-	{
-		m_Anim.SetTrigger("isMainGame");
-		LeanTween.alphaCanvas(m_BlackScreen, 1.0f, 1.5f);
-		LeanTween.delayedCall(1.5f, LoadStartCrawl);
-	}
-
-	void LoadStartCrawl()
-	{
-		m_Crawl.m_OnEndCrawlEvent = LoadMainScene;
-		m_Crawl.LoadCrawl(m_StartScript);
-	}
-
-	void LoadMainScene() => SceneManager.LoadScene("Famine_Split");
 
 	/// <summary>
 	/// Fade to black and quit the game.
@@ -131,6 +118,11 @@ public class MainMenuFunctions : MonoBehaviour
 		}
 	}
 
+	public void ToggleGlow(Renderer r)
+	{
+		r.material.SetFloat("_DoOutline", r.material.GetFloat("_DoOutline") == 1 ? 0 : 1);
+	}
+
 	public void ToSubsection(string boolName)
 	{
 		m_Anim.SetBool(boolName, true);
@@ -151,4 +143,27 @@ public class MainMenuFunctions : MonoBehaviour
 		m_Anim.SetBool("isExtra", false);
 		LeanTween.alphaCanvas(m_Prompt, 0, 0.5f);
 	}
+
+	public void ToLevelSelect(bool inSelect)
+	{
+		m_Anim.SetBool("isLevelSelect", inSelect);
+	}
+
+	/// <summary>
+	/// Fade to black and start the game.
+	/// </summary>
+	public void StartGame(string map)
+	{
+		m_SceneToLoad = map;
+		m_Anim.SetTrigger("isMainGame");
+		LeanTween.alphaCanvas(m_BlackScreen, 1.0f, 1.5f).setOnComplete(LoadStartCrawl);
+	}
+
+	void LoadStartCrawl()
+	{
+		m_Crawl.m_OnEndCrawlEvent = LoadMainScene;
+		m_Crawl.LoadCrawl(m_StartScript);
+	}
+
+	void LoadMainScene() => SceneManager.LoadScene(m_SceneToLoad);
 }
