@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
@@ -13,6 +14,8 @@ public class DialogueManager : MonoBehaviour
 	public bool dialogueActive;
 	bool isDisplayingText;
 	IEnumerator displayDialogueCoroutine;
+
+	public Volume blur;
 
 	[Header("UI")]
 	[Tooltip("Fow quickly the UI fades in")]
@@ -122,7 +125,7 @@ public class DialogueManager : MonoBehaviour
 								 // Set the portrait
 		try
 		{
-			switch (parsedText[3].ToLower()[1])
+			switch (parsedText[3].ToLower()[0])
 			{
 				case 'l':
 					ManageDialoguePortrait(Side.Left);
@@ -308,6 +311,10 @@ public class DialogueManager : MonoBehaviour
 	{
 		Debug.Log($"<color=#5cd3e0>[Dialogue]</color> Finished dialogue {sceneName.name}");
 		LeanTween.alphaCanvas(darkenedBackground, 0.0f, 0.2f);
+		if (blur)
+		{
+			LeanTween.value(blur.gameObject, Blur, 1, 0, 0.2f);
+		}
 		StopCoroutine(displayDialogueCoroutine); // Stops the typing out
 		dialogueBox.text = characterDialogue; // Fills the textbox with the entirety of the character's line
 		isDisplayingText = false; // Marks the system as no longer typing out
@@ -336,21 +343,25 @@ public class DialogueManager : MonoBehaviour
 		}
 	}
 
-	public void QueueDialogue(TextAsset _sceneName, Action onEndAction = null)
+	public void QueueDialogue(TextAsset _sceneName, float darkenAmount = 0.9f, Action onEndAction = null)
 	{
 		Debug.Log($"<color=#5cd3e0>[Dialogue]</color> Queuing dialogue {_sceneName.name}");
 		sceneQueue.Enqueue(_sceneName);
 		onFinishDialogueActions.Enqueue(onEndAction);
 		if (!dialogueActive)
 		{
-			TriggerDialogue(sceneQueue.Dequeue());
+			TriggerDialogue(sceneQueue.Dequeue(), darkenAmount);
 		}
 	}
 
-	public void TriggerDialogue(TextAsset _sceneName)
+	public void TriggerDialogue(TextAsset _sceneName, float darkenAmount = 0.9f)
 	{
 		UIManager.m_Instance.m_ActiveUI = true;
-		LeanTween.alphaCanvas(darkenedBackground, 0.9f, 0.4f);
+		LeanTween.alphaCanvas(darkenedBackground, darkenAmount, 0.4f);
+		if (blur)
+		{
+			LeanTween.value(blur.gameObject, Blur, 0, 1, 0.4f);
+		}
 		UIManager.m_Instance.HideTurnIndicator();
 		dialogueActive = true;
 		ClearDialogueBox();
@@ -388,5 +399,10 @@ public class DialogueManager : MonoBehaviour
 			if (Input.GetKeyDown(key))
 				return true;
 		return false;
+	}
+
+	void Blur(float f)
+	{
+		blur.weight = f;
 	}
 }

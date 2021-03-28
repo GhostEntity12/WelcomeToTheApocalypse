@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
 	public static UIManager m_Instance;
 	public CanvasGroup m_BlackScreen;
 
+	public RectTransform m_CrawlButtons;
+
 	/// <summary>
 	/// List of UI elements that block the player from being able to interact with the game.
 	/// </summary>
@@ -241,12 +243,12 @@ public class UIManager : MonoBehaviour
 		onComplete?.Invoke();
 	}
 
-	public void SwapToDialogue(TextAsset sourceFile, Action onDialogueEndAction = null)
+	public void SwapToDialogue(TextAsset sourceFile, float darkenAmount = 0.9f, Action onDialogueEndAction = null)
 	{
 		if (sourceFile)
 		{
 			SlideSkills(ScreenState.Offscreen,
-				() => DialogueManager.instance.QueueDialogue(sourceFile, onDialogueEndAction));
+				() => DialogueManager.instance.QueueDialogue(sourceFile, darkenAmount, onDialogueEndAction));
 		}
 		else
 		{
@@ -335,7 +337,7 @@ public class UIManager : MonoBehaviour
 
 	public void ShowCrawlButtons()
 	{
-		LeanTween.move(m_CrawlDisplay.m_CrawlButtons, Vector3.zero, 2f);
+		LeanTween.move(m_CrawlButtons, Vector3.zero, 2f).setEaseOutCubic();
 	}
 
 	public void LoadSceneIndex(int index) => SceneManager.LoadScene(index);

@@ -264,7 +264,7 @@ public class Grid : MonoBehaviour
 	public void SetUnit(Unit unit)
 	{
 		Node n = GetNode(unit.transform.position);
-		n.unit = unit.GetComponent<Unit>();
+		n.unit = unit;
 		n.m_isBlocked = true;
 	}
 

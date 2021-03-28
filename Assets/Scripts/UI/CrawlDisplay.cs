@@ -8,8 +8,6 @@ public enum Outcome { Win, Loss }
 
 public class CrawlDisplay : MonoBehaviour
 {
-	public TextAsset m_FailScript;
-	public TextAsset m_WinScript;
 	[SerializeField]
 	float m_TimeBetweenLines = 0.5f;
 	[SerializeField]
@@ -17,22 +15,19 @@ public class CrawlDisplay : MonoBehaviour
 
 	[Space(20)]
 	public TextMeshProUGUI m_Display;
+	public CanvasGroup m_Prompt;
 
 	int m_CurrentScreen = 0;
 	bool m_AcceptingInput = false;
 	string[] m_ScriptLines;
-	List<List<string>> m_LinesByScreen = new List<List<string>>();
+	private List<List<string>> m_LinesByScreen = new List<List<string>>();
 
 	public Action m_OnEndCrawlEvent;
 
-	public RectTransform m_CrawlButtons;
-
-	public void LoadCrawl(Outcome outcome)
+	public void LoadCrawl(TextAsset script)
 	{
-
-		UIManager.m_Instance.m_ActiveUI = true;
 		m_Display.text = string.Empty;
-		m_ScriptLines = (outcome == Outcome.Win ? m_WinScript : m_FailScript).text.Split(
+		m_ScriptLines = script.text.Split(
 			new[] { "\r\n", "\r", "\n", Environment.NewLine },
 			StringSplitOptions.None
 			);
@@ -52,11 +47,17 @@ public class CrawlDisplay : MonoBehaviour
 				m_LinesByScreen[screen].Add(line);
 			}
 		}
-		LeanTween.alphaCanvas(UIManager.m_Instance.m_BlackScreen, 1, 2).setOnComplete(StartDisplay);
+		if (UIManager.m_Instance)
+		{
+			UIManager.m_Instance.m_ActiveUI = true;
+			LeanTween.alphaCanvas(UIManager.m_Instance.m_BlackScreen, 1, 2).setOnComplete(StartDisplay);
+		}
+		else StartDisplay();
 	}
 
 	public IEnumerator DisplayScreen(int screen)
 	{
+		LeanTween.alphaCanvas(m_Prompt, 0, 0.2f);
 		string oldString = string.Empty;
 
 		// Fade old text out (if it exists)
@@ -83,6 +84,7 @@ public class CrawlDisplay : MonoBehaviour
 			{
 				oldString += line + "\n";
 				m_Display.text = oldString; // Update the textbox
+				continue;
 			}
 			int alpha = 0;
 
@@ -99,11 +101,12 @@ public class CrawlDisplay : MonoBehaviour
 		}
 		m_AcceptingInput = true;
 		m_CurrentScreen++;
+		LeanTween.alphaCanvas(m_Prompt, 1, 0.5f);
 	}
 
 	private void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Return) && m_AcceptingInput)
+		if (GetAnyKeyDown(KeyCode.Return, KeyCode.Space, KeyCode.Mouse0) && m_AcceptingInput)
 		{
 			if (m_CurrentScreen < m_LinesByScreen.Count)
 			{
@@ -112,7 +115,6 @@ public class CrawlDisplay : MonoBehaviour
 			}
 			else
 			{
-				// TODO: Load next scene I guess
 				m_OnEndCrawlEvent?.Invoke();
 				m_OnEndCrawlEvent = null;
 				Debug.Log($"Finished crawl");
@@ -120,8 +122,13 @@ public class CrawlDisplay : MonoBehaviour
 		}
 	}
 
-	void StartDisplay()
+	void StartDisplay() => StartCoroutine(DisplayScreen(m_CurrentScreen));
+
+	bool GetAnyKeyDown(params KeyCode[] aKeys)
 	{
-		StartCoroutine(DisplayScreen(m_CurrentScreen));
+		foreach (var key in aKeys)
+			if (Input.GetKeyDown(key))
+				return true;
+		return false;
 	}
 }

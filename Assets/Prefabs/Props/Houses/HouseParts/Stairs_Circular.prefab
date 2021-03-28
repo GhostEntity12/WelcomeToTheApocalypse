@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 3962570285523858298}
   - component: {fileID: 52490867022878443}
   - component: {fileID: 4460249584025124410}
+  - component: {fileID: 6825917835841594053}
+  - component: {fileID: 1146909027674931464}
   m_Layer: 30
   m_Name: Stairs_Circular
   m_TagString: Untagged
@@ -79,3 +81,29 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!135 &6825917835841594053
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7370071251145931044}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.6786906
+  m_Center: {x: 0, y: 0.27084637, z: -0.05}
+--- !u!114 &1146909027674931464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7370071251145931044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 004472b9d557a9f438d2c50b3489fe9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWalkable: 0

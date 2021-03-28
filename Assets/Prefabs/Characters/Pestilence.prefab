@@ -1132,6 +1132,7 @@ GameObject:
   - component: {fileID: 3634105245664109800}
   - component: {fileID: -4122941542599818729}
   - component: {fileID: 6322484522666345922}
+  - component: {fileID: 2583278830635211373}
   m_Layer: 9
   m_Name: Pestilence
   m_TagString: Untagged
@@ -1198,6 +1199,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 55f22032fefa38c4b874a055ee92b9c9, type: 2}
   m_Passive: {fileID: 11400000, guid: 071e5c623ec67db40a0eb4a8ea8a3c94, type: 2}
   m_Allegiance: 0
+  m_Healthbar: {fileID: 0}
   m_StartingActionPoints: 2
   m_HealthbarPosition: {fileID: 2460461366541579917}
   m_AIHeuristicCalculator: {fileID: 0}
@@ -1295,6 +1297,127 @@ MonoBehaviour:
   m_EndOffset: {x: 0, y: 0, z: 0}
   m_Gravity: {x: 0, y: 0, z: 0}
   m_Force: {x: 0, y: -0.065, z: 0}
+  m_Colliders: []
+  m_Exclusions: []
+  m_FreezeAxis: 0
+  m_DistantDisable: 0
+  m_ReferenceObject: {fileID: 0}
+  m_DistanceToObject: 20
+--- !u!114 &2583278830635211373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5305189824182486066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9ac8d30c6a0d9642a11e5be4c440740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Root: {fileID: 4966243926521419848}
+  m_UpdateRate: 120
+  m_UpdateMode: 0
+  m_Damping: 0.8
+  m_DampingDistrib:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_Elasticity: 0.25
+  m_ElasticityDistrib:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_Stiffness: 0.2
+  m_StiffnessDistrib:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -0.12286097
+      outSlope: -0.12286097
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.083333336
+    - serializedVersion: 3
+      time: 0.9916687
+      value: 0.94929504
+      inSlope: -0.0003703151
+      outSlope: -0.0003703151
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.30416667
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_Inert: 0.025
+  m_InertDistrib:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_Friction: 0.1
+  m_FrictionDistrib:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -2.5997255
+      outSlope: -2.5997255
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.033333335
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -0.0003703151
+      outSlope: -0.0003703151
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.30416667
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_Radius: 0.025
+  m_RadiusDistrib:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_EndLength: 1.5
+  m_EndOffset: {x: 0, y: 0, z: 0}
+  m_Gravity: {x: 0.15, y: -0.3, z: -0.1}
+  m_Force: {x: 0, y: 0, z: 0}
   m_Colliders: []
   m_Exclusions: []
   m_FreezeAxis: 0
