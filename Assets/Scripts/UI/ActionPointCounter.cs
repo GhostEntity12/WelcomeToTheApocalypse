@@ -31,7 +31,7 @@ public class ActionPointCounter : MonoBehaviour
 	/// </summary>
 	public void UpdateActionPointCounter()
 	{
-		for (int i = m_Counters.Count; i > GameManager.m_Instance.GetSelectedUnit().GetActionPoints(); --i)
+		for (int i = m_Counters.Count; i > PlayerManager.m_Instance.GetSelectedUnit().GetActionPoints(); --i)
 		{
 			m_Counters[i - 1].color = m_InactiveColor;
 		}
@@ -44,7 +44,7 @@ public class ActionPointCounter : MonoBehaviour
 	{
 		for (int i = 0; i < m_Counters.Count; ++i)
 		{
-			m_Counters[i].gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().m_StartingActionPoints);
+			m_Counters[i].gameObject.SetActive(i < PlayerManager.m_Instance.GetSelectedUnit().m_StartingActionPoints);
 			m_Counters[i].color = m_ActiveColor;
 		}
 	}

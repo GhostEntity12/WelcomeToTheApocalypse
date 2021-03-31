@@ -102,8 +102,8 @@ public class UIManager : MonoBehaviour
 	/// </summary>
 	private void Start()
 	{
-		m_EndTurnButton.UpdateCurrentTeamTurn(GameManager.m_Instance.m_TeamCurrentTurn);
-		m_TurnIndicator.UpdateTurnIndicator(GameManager.m_Instance.m_TeamCurrentTurn);
+		m_EndTurnButton.UpdateCurrentTeamTurn(GameManager.m_Instance.GetCurrentTurn());
+		m_TurnIndicator.UpdateTurnIndicator(GameManager.m_Instance.GetCurrentTurn());
 
 		// Cache the positions
 		SetCachesAndPosition(m_PortraitUI, new Vector2(-400, -400));
@@ -185,8 +185,8 @@ public class UIManager : MonoBehaviour
 		for (int i = 0; i < m_SkillSlots.Length; i++)
 		{
 			SkillButton slot = m_SkillSlots[i];
-			m_SkillSlots[i].transform.parent.gameObject.SetActive(i < GameManager.m_Instance.GetSelectedUnit().GetSkills().Count);
-			slot.m_Skill = GameManager.m_Instance.GetSelectedUnit().GetSkill(i);
+			m_SkillSlots[i].transform.parent.gameObject.SetActive(i < PlayerManager.m_Instance.GetSelectedUnit().GetSkills().Count);
+			slot.m_Skill = PlayerManager.m_Instance.GetSelectedUnit().GetSkill(i);
 			if (slot.m_Skill)
 			{
 				slot.m_LightIcon.sprite = slot.m_Skill.m_LightIcon;
@@ -260,7 +260,7 @@ public class UIManager : MonoBehaviour
 	{
 		SlideElement(m_DialogueUI, ScreenState.Offscreen, () =>
 		{
-			if (GameManager.m_Instance.GetSelectedUnit())
+			if (PlayerManager.m_Instance.GetSelectedUnit())
 			{
 				SlideSkills(ScreenState.Onscreen);
 			}

@@ -73,8 +73,8 @@ public class BaseSkill : ScriptableObject
 	// Where to spawn the particle system
 	public ParticleSpawnType m_SpawnLocation;
 
-	[FMODUnity.EventRef]
-	public string m_CastEvent = "";
+	// [FMODUnity.EventRef]
+	// public string m_CastEvent = "";
 
 	protected List<Unit> m_AffectedUnits;
 	public List<Node> m_AffectedNodes;
@@ -148,7 +148,7 @@ public class BaseSkill : ScriptableObject
 	public List<Unit> FindAffectedUnits()
 	{
 		return m_AffectedNodes.Select(t => t.unit)
-			.Where(c => GameManager.IsTargetable(GameManager.m_Instance.GetSelectedUnit(), c, this))
+			.Where(c => PlayerManager.IsTargetable(PlayerManager.m_Instance.GetSelectedUnit(), c, this))
 			.Distinct() // Had to add this - for some reason, it grabbed the same character multiple times somehow
 			.ToList();
 

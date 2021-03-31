@@ -223,7 +223,7 @@ public class AIManager : MonoBehaviour
 					Debug.Log($"===={m_CurrentAIUnit.name} taking turn====");
 					Debug.Log($"<color=#3f5c9e>[Heuristics]</color> Found best option: {m_CurrentAIUnit.name} moving to {m_BestOption.m_Node.m_NodeHighlight.name} from {Grid.m_Instance.GetNode(m_CurrentAIUnit.transform.position).m_NodeHighlight.name}");
 					m_MakingAction = true;
-					GameManager.m_Instance.m_SelectedUnit = m_CurrentAIUnit;
+					PlayerManager.m_Instance.SetSelectedUnit(m_CurrentAIUnit);
 					if (m_BestOption.m_MoveDistance != 0)
 					{
 						m_CurrentAIUnit.DecreaseCurrentMovement(m_BestOption.m_MoveDistance);
@@ -764,7 +764,7 @@ public class AIManager : MonoBehaviour
 
 		// In case of units already added being in the list, remove dupes.
 		UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Distinct().ToList();
-		GameManager.m_Instance.m_DidHealthBonus = false;
+		PlayerManager.m_Instance.SetDidHealthBonus(false);
 	}
 
 	/// <summary>
@@ -775,7 +775,7 @@ public class AIManager : MonoBehaviour
 	{
 		UnitsManager.m_Instance.m_ActiveEnemyUnits = UnitsManager.m_Instance.m_ActiveEnemyUnits.Except(deadUnits).ToList();
 
-		GameManager.m_Instance.PodClearCheck();
+		PlayerManager.m_Instance.PodClearCheck();
 	}
 
 	/// <summary>
@@ -786,7 +786,7 @@ public class AIManager : MonoBehaviour
 	{
 		UnitsManager.m_Instance.m_ActiveEnemyUnits.Remove(deadUnit);
 
-		GameManager.m_Instance.PodClearCheck();
+		PlayerManager.m_Instance.PodClearCheck();
 	}
 
 	public void SetAITurn(bool aiTurn)

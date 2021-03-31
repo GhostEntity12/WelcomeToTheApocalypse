@@ -61,7 +61,7 @@ public class Cinematics : MonoBehaviour
         {
             if (!m_Prepped) Prep();
             transform.parent = null;
-            GameManager.m_Instance.m_SelectedUnit = m_Famine;
+            PlayerManager.m_Instance.SetSelectedUnit(m_Famine);
 
             m_Anim.SetTrigger("Famine");
             LeanTween.delayedCall(m_FamineDelay, () => m_Famine.ActivateSkill(m_Famine.GetSkill(2), Grid.m_Instance.GetNode(m_Famine.transform.position)));
@@ -70,7 +70,7 @@ public class Cinematics : MonoBehaviour
         {
             if (!m_Prepped) Prep();
             transform.parent = m_Holder.transform;
-            GameManager.m_Instance.m_SelectedUnit = m_Pestilence;
+            PlayerManager.m_Instance.SetSelectedUnit(m_Pestilence);
 
             Grid.m_Instance.RemoveUnit(Grid.m_Instance.GetNode(m_Death.transform.position));
             m_Death.transform.position = m_PestilenceTarget.position;
@@ -85,7 +85,7 @@ public class Cinematics : MonoBehaviour
         {
             if (!m_Prepped) Prep();
             transform.parent = null;
-            GameManager.m_Instance.m_SelectedUnit = m_Death;
+            PlayerManager.m_Instance.SetSelectedUnit(m_Death);
 
             Grid.m_Instance.RemoveUnit(Grid.m_Instance.GetNode(m_Death.transform.position));
             m_Death.transform.position = m_DeathPosition.position;
