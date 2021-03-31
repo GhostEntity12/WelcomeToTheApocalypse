@@ -24,7 +24,7 @@ public class UIHealthBar : MonoBehaviour
 	{
 		if (m_HealthbarTooltip.activeSelf)
 		{
-			m_HealthBarTooltipText.text = $"{GameManager.m_Instance.GetSelectedUnit().GetCurrentHealth()}/{GameManager.m_Instance.GetSelectedUnit().GetStartingHealth()} HP";
+			m_HealthBarTooltipText.text = $"{PlayerManager.m_Instance.GetSelectedUnit().GetCurrentHealth()}/{PlayerManager.m_Instance.GetSelectedUnit().GetStartingHealth()} HP";
 		}
 	}
 

@@ -35,7 +35,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 
 	public void UpdateActiveEffects()
 	{
-		Unit selectedUnit = GameManager.m_Instance.GetSelectedUnit();
+		Unit selectedUnit = PlayerManager.m_Instance.GetSelectedUnit();
 
 		UpdatePassive();
 
@@ -68,7 +68,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 	}
 	public void UpdatePassive()
 	{
-		PassiveSkill passive = GameManager.m_Instance.GetSelectedUnit().GetPassiveSkill();
+		PassiveSkill passive = PlayerManager.m_Instance.GetSelectedUnit().GetPassiveSkill();
 		if (passive)
 		{
 			m_PassiveName.text = passive.m_StatusName;
@@ -94,7 +94,7 @@ public class StatusEffectTooltipManager : MonoBehaviour
 					break;
 			}
 
-			SetupSkin(m_PassiveEffect, passive, GameManager.m_Instance.GetSelectedUnit());
+			SetupSkin(m_PassiveEffect, passive, PlayerManager.m_Instance.GetSelectedUnit());
 		}
 		m_PassiveEffect.gameObject.SetActive(passive);
 	}

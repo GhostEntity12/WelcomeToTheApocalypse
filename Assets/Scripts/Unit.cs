@@ -146,8 +146,8 @@ public class Unit : MonoBehaviour
 
 	public List<Transform> m_ParentedParticleSystems = new List<Transform>();
 
-	[FMODUnity.EventRef]
-	public string m_DeathSound = "";
+	// [FMODUnity.EventRef]
+	// public string m_DeathSound = "";
 
 	// On startup.
 
@@ -430,7 +430,7 @@ public class Unit : MonoBehaviour
 				activeSkill.m_Skill.PlayEffect(activeSkill.m_Targets[0]);
 				break;
 			case ParticleSpawnType.Caster:
-				activeSkill.m_Skill.PlayEffect(GameManager.m_Instance.m_SelectedUnit);
+				activeSkill.m_Skill.PlayEffect(PlayerManager.m_Instance.GetSelectedUnit());
 				break;
 			case ParticleSpawnType.Tile:
 				activeSkill.m_Skill.PlayEffect(activeSkill.m_Skill.m_CastNode.worldPosition);
@@ -478,10 +478,10 @@ public class Unit : MonoBehaviour
 		currentNode.unit = null;
 		currentNode.m_isBlocked = false;
 
-		if (m_DeathSound != "")
-			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+		// if (m_DeathSound != "")
+		// 	FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
 
-		GameManager.m_Instance.RefreshHighlights();
+		PlayerManager.m_Instance.RefreshHighlights();
 
 		gameObject.SetActive(false);
 	}
@@ -516,20 +516,20 @@ public class Unit : MonoBehaviour
 		currentNode.unit = null;
 		currentNode.m_isBlocked = false;
 
-		if (m_DeathSound != "")
-			FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
+		// if (m_DeathSound != "")
+		// 	FMODUnity.RuntimeManager.PlayOneShot(m_DeathSound, transform.position);
 
 		if (m_KillDialogue)
 		{
 			if (GetComponent<DefeatEnemyWinCondition>())
 			{
 				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = GameManager.m_Instance.LoadMainMenu;
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_WinScript));
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.GetWinScript()));
 			}
 			else if (!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive())
 			{
 				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = UIManager.m_Instance.ShowCrawlButtons;
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.m_FailScript));
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.GetFailScript()));
 			}
 			else
 			{
@@ -712,7 +712,7 @@ public class Unit : MonoBehaviour
 	/// <param name="skill"> The skill to activate. </param>
 	public void ActivateSkill(BaseSkill skill, Node castLocation)
 	{
-		Debug.Log($"<color=#9c4141>[Skill] </color>{GameManager.m_Instance.GetSelectedUnit().name} casts {skill.m_SkillName}" +
+		Debug.Log($"<color=#9c4141>[Skill] </color>{PlayerManager.m_Instance.GetSelectedUnit().name} casts {skill.m_SkillName}" +
 			$" {(castLocation.unit ? $"at {castLocation.unit.name}" : "")} ({castLocation.m_NodeHighlight.name})");
 		// Doing my own search cause List.Find is gross.
 		for (int i = 0; i < m_Skills.Count; ++i)
@@ -789,7 +789,7 @@ public class Unit : MonoBehaviour
 				m_animator.SetTrigger("TriggerSkill");
 
 				// Play the damage sound effect.
-				FMODUnity.RuntimeManager.PlayOneShot(m_Skills[i].m_CastEvent, transform.position);
+				//FMODUnity.RuntimeManager.PlayOneShot(m_Skills[i].m_CastEvent, transform.position);
 				return;
 			}
 		}
