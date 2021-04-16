@@ -60,7 +60,7 @@ public class AIUnit : Unit
 
 	private void Update()
 	{
-		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
+		if (BattleManager.m_Instance.GetCurrentTurn() == Allegiance.Enemy)
 		{
 			foreach (Unit unit in UnitsManager.m_Instance.m_PlayerUnits)
 			{

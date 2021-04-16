@@ -92,16 +92,17 @@ public class PlayerManager : MonoBehaviour
 		m_CameraMovement = m_MainCamera.GetComponentInParent<CameraMovement>();
 	}
 
-	void Update()
+	public void PlayerBattleUpdate()
 	{
-		// If it's currently the player's turn, check their inputs.
-		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Player)
+		if (!UIManager.m_Instance.m_ActiveUI)
 		{
-			if (!UIManager.m_Instance.m_ActiveUI)
-			{
-				PlayerInputs();
-			}
+			PlayerInputs();
 		}
+	}
+
+	public void PlayerRoamUpdate()
+	{
+		Debug.Log("Roam Update, there is litterally nothing here oh god I have to program so much.");
 	}
 
 	/// <summary>
@@ -253,7 +254,7 @@ public class PlayerManager : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
 			// If the turn ended, forget things for the next turn.
-			if (GameManager.m_Instance.TryEndTurn())
+			if (BattleManager.m_Instance.TryEndTurn())
 			{
 				m_TargetingState = TargetingState.Move;
 				// Remove all the highlights

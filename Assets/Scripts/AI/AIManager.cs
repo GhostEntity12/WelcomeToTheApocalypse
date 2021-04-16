@@ -106,8 +106,6 @@ public class AIManager : MonoBehaviour
 	//The path for the AI to walk on.
 	public Stack<Node> m_Path = new Stack<Node>();
 
-	private bool m_AITurn = false;
-
 	private List<HeuristicResult> m_HeuristicResults = new List<HeuristicResult>();
 
 	public HeuristicResult m_BestOption;
@@ -125,14 +123,6 @@ public class AIManager : MonoBehaviour
 		ParticlesManager.m_Instance.m_ListEmptied += ListEmpty;
 	}
 
-	void Update()
-	{
-		if (m_AITurn == true)
-		{
-			TakeAITurn();
-		}
-	}
-
 	/// <summary>
 	/// Makes all AI units take their turns
 	/// </summary>
@@ -141,7 +131,7 @@ public class AIManager : MonoBehaviour
 		if (UnitsManager.m_Instance.m_ActiveEnemyUnits.Count == 0)
 		{
 			Debug.Log("<color=#471d1d>[AI]</color> No enemies. Ending turn");
-			GameManager.m_Instance.EndCurrentTurn();
+			BattleManager.m_Instance.EndCurrentTurn();
 			return;
 		}
 
@@ -199,7 +189,7 @@ public class AIManager : MonoBehaviour
 			if (m_HeuristicResults.Count == 0)
 			{
 				// No AI moves left, end your turn.
-				GameManager.m_Instance.EndCurrentTurn();
+				BattleManager.m_Instance.EndCurrentTurn();
 				return;
 			}
 
@@ -245,7 +235,7 @@ public class AIManager : MonoBehaviour
 			if (!m_CurrentAIUnit)
 			{
 				// Assume no more units left.
-				GameManager.m_Instance.EndCurrentTurn();
+				BattleManager.m_Instance.EndCurrentTurn();
 				return;
 			}
 		}
@@ -703,7 +693,7 @@ public class AIManager : MonoBehaviour
 
 	public void ListEmpty()
 	{
-		if (!m_MakingAction && m_AITurn)
+		if (!m_MakingAction)
 		{
 			m_CurrentAIUnit = null;
 		}
@@ -787,20 +777,6 @@ public class AIManager : MonoBehaviour
 		UnitsManager.m_Instance.m_ActiveEnemyUnits.Remove(deadUnit);
 
 		PlayerManager.m_Instance.PodClearCheck();
-	}
-
-	public void SetAITurn(bool aiTurn)
-	{
-		m_AITurn = aiTurn;
-
-		// If the AI's turn is starting, check what AI units are alive.
-		if (m_AITurn == true)
-		{
-			// Prune the active units
-			DisableUnits(UnitsManager.m_Instance.m_ActiveEnemyUnits.Where(u => u.GetCurrentHealth() <= 0).ToList());
-
-			Debug.Log($"<color=#471d1d>[AI]</color> Taking AI Turn: {UnitsManager.m_Instance.m_ActiveEnemyUnits.Count} units");
-		}
 	}
 
 
