@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.AI;
 
 public enum Allegiance
 {
@@ -92,7 +93,7 @@ public class Unit : MonoBehaviour
 	/// <summary>
 	/// The node the unit is targeting for their movement.
 	/// </summary>
-	private Node m_CurrentTargetNode = null;
+	private Vector3 m_TargetPosition = Vector3.zero;
 
 	/// <summary>
 	/// The node's the unit can move to.
@@ -189,13 +190,13 @@ public class Unit : MonoBehaviour
 		// If have a target that the unit hasn't arrived at yet, move towards the target position.
 		if (m_IsMoving)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, m_CurrentTargetNode.worldPosition, m_MoveSpeed * Time.deltaTime);
+			transform.position = Vector3.MoveTowards(transform.position, m_TargetPosition, m_MoveSpeed * Time.deltaTime);
 
 			// If have arrived at position (0.1 units close to target is close enough).
-			if ((transform.position - m_CurrentTargetNode.worldPosition).magnitude < 0.1f)
+			if ((transform.position - m_TargetPosition).magnitude < 0.1f)
 			{
 				// Set the actual position to the target
-				transform.position = m_CurrentTargetNode.worldPosition; // Just putting this here so it sets the position exactly. - James L
+				transform.position = m_TargetPosition; // Just putting this here so it sets the position exactly. - James L
 
 				// Target the next node.
 
@@ -523,13 +524,13 @@ public class Unit : MonoBehaviour
 		{
 			if (GetComponent<DefeatEnemyWinCondition>())
 			{
-				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = GameManager.m_Instance.LoadMainMenu;
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.GetWinScript()));
+				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = BattleManager.m_Instance.LoadMainMenu;
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(BattleManager.m_Instance.GetWinScript()));
 			}
-			else if (!GameManager.m_Instance.CheckIfAnyPlayerUnitsAlive())
+			else if (!BattleManager.m_Instance.CheckIfAnyPlayerUnitsAlive())
 			{
 				UIManager.m_Instance.m_CrawlDisplay.m_OnEndCrawlEvent = UIManager.m_Instance.ShowCrawlButtons;
-				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(GameManager.m_Instance.GetFailScript()));
+				DialogueManager.instance.QueueDialogue(m_KillDialogue, onEndAction: () => UIManager.m_Instance.m_CrawlDisplay.LoadCrawl(BattleManager.m_Instance.GetFailScript()));
 			}
 			else
 			{
@@ -608,10 +609,16 @@ public class Unit : MonoBehaviour
 		// Had to add a hack around this. sorry - James L
 		if (!onlySetNode)
 		{
-			Grid.m_Instance.RemoveUnit(m_CurrentTargetNode);
+			Grid.m_Instance.RemoveUnit(Grid.m_Instance.GetNode(m_TargetPosition));
 		}
-		m_CurrentTargetNode = target;
-		transform.LookAt(m_CurrentTargetNode.worldPosition);
+		m_TargetPosition = target.worldPosition;
+		transform.LookAt(m_TargetPosition);
+	}
+
+	public void SetDestination(Vector3 destination)
+	{
+		m_TargetPosition = destination;
+		GetComponent<NavMeshAgent>().destination = m_TargetPosition;
 	}
 
 	/// <summary>

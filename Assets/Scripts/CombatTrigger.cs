@@ -37,7 +37,7 @@ public class CombatTrigger : MonoBehaviour
 					UIManager.m_Instance.SwapToDialogue(m_Scene);
 				}
 			}
-
+			GameManager.m_Instance.SetGameState(GameState.Battle);
 			gameObject.SetActive(false);
 		}
 	}

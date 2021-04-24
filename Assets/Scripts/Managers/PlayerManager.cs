@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -78,6 +78,9 @@ public class PlayerManager : MonoBehaviour
 
 	private bool m_DidHealthBonus;
 
+	private bool m_MouseOverUnit = false;
+	private bool m_MouseOverTile = false;
+
 	void Awake()
 	{
 		m_Instance = this;
@@ -92,15 +95,19 @@ public class PlayerManager : MonoBehaviour
 		m_CameraMovement = m_MainCamera.GetComponentInParent<CameraMovement>();
 	}
 
-	void Update()
+	public void PlayerBattleUpdate()
 	{
-		// If it's currently the player's turn, check their inputs.
-		if (GameManager.m_Instance.GetCurrentTurn() == Allegiance.Player)
+		if (!UIManager.m_Instance.m_ActiveUI)
 		{
-			if (!UIManager.m_Instance.m_ActiveUI)
-			{
-				PlayerInputs();
-			}
+			BattleInputs();
+		}
+	}
+
+	public void PlayerRoamUpdate()
+	{
+		if (!UIManager.m_Instance.m_ActiveUI)
+		{
+			RoamInputs();
 		}
 	}
 
@@ -115,7 +122,7 @@ public class PlayerManager : MonoBehaviour
 	/// <summary>
 	/// Gets the player's inputs.
 	/// </summary>
-	public void PlayerInputs()
+	public void BattleInputs()
 	{
 		m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -144,7 +151,7 @@ public class PlayerManager : MonoBehaviour
 						// If the unit the player is clicking on isn't the selected unit and the unit is alive, select that unit.
 						if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAlive())
 						{
-							SelectUnit(rayHitUnit);
+							SelectUnit(rayHitUnit, GameState.Battle);
 							UpdateMoveablePreview(null);
 						}
 					}
@@ -215,6 +222,40 @@ public class PlayerManager : MonoBehaviour
 		}
 	}
 
+	public void RoamInputs()
+	{
+		m_MouseRay = m_MainCamera.ScreenPointToRay(Input.mousePosition);
+		m_LeftMouseDown = Input.GetMouseButtonDown(0);
+
+		// Clicked on a character
+		if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity, 1 << 9))
+		{
+			Unit rayHitUnit = m_MouseWorldRayHit.collider.GetComponent<Unit>();
+
+			if (m_LeftMouseDown)
+			{
+				if (rayHitUnit != null)
+				{
+					if (rayHitUnit != m_SelectedUnit && rayHitUnit.GetAlive())
+					{
+						SelectUnit(rayHitUnit, GameState.Roam);
+						UpdateMoveablePreview(null);
+					}
+				}
+			}
+		}
+		// Else hit the terrain, move the currently selected unit.
+		else if (Physics.Raycast(m_MouseRay, out m_MouseWorldRayHit, Mathf.Infinity))
+		{
+			if (m_SelectedUnit != null)
+			{
+				if (m_LeftMouseDown)
+					m_SelectedUnit.SetDestination(m_MouseWorldRayHit.point);
+			}
+		}
+		Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point, Color.white, 0.0f);
+	}
+
 	void HotKeys()
 	{
 		// Cancelling skill targeting.
@@ -253,7 +294,7 @@ public class PlayerManager : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
 			// If the turn ended, forget things for the next turn.
-			if (GameManager.m_Instance.TryEndTurn())
+			if (BattleManager.m_Instance.TryEndTurn())
 			{
 				m_TargetingState = TargetingState.Move;
 				// Remove all the highlights
@@ -285,7 +326,7 @@ public class PlayerManager : MonoBehaviour
 		}
 	}
 
-	void SelectUnit(Unit unit)
+	void SelectUnit(Unit unit, GameState gameState)
 	{
 		// Auto focus
 		m_CameraMovement.m_AutoMoveDestination = new Vector3(unit.transform.position.x, 0, unit.transform.position.z);
@@ -300,17 +341,21 @@ public class PlayerManager : MonoBehaviour
 		UIManager.m_Instance.m_UIHealthBar.SetHealthAmount((float)m_SelectedUnit.GetCurrentHealth() / m_SelectedUnit.GetStartingHealth());
 
 		// Highlight the appropriate tiles
-		m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
-		UpdateMoveablePreview(null);
+		if (gameState == GameState.Battle)
+		{
+			m_SelectedUnit.m_MovableNodes = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position));
+			UpdateMoveablePreview(null);
+		
 
-		StatusEffectTooltipManager.m_Instance.UpdateActiveEffects();
+			StatusEffectTooltipManager.m_Instance.UpdateActiveEffects();
 
-		// Update the UIs action point counter to display the newly selected unit's action points.
-		UIManager.m_Instance.m_ActionPointCounter.ResetActionPointCounter();
-		UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
+			// Update the UIs action point counter to display the newly selected unit's action points.
+			UIManager.m_Instance.m_ActionPointCounter.ResetActionPointCounter();
+			UIManager.m_Instance.m_ActionPointCounter.UpdateActionPointCounter();
 
-		// Store all the reachable nodes so they can be easily cleared
-		m_ClearRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
+			// Store all the reachable nodes so they can be easily cleared
+			m_ClearRange = Grid.m_Instance.GetNodesWithinRadius(m_SelectedUnit.GetCurrentMovement(), Grid.m_Instance.GetNode(m_SelectedUnit.transform.position), true);
+		}
 	}
 
 	public void RefreshHighlights()

@@ -102,8 +102,8 @@ public class UIManager : MonoBehaviour
 	/// </summary>
 	private void Start()
 	{
-		m_EndTurnButton.UpdateCurrentTeamTurn(GameManager.m_Instance.GetCurrentTurn());
-		m_TurnIndicator.UpdateTurnIndicator(GameManager.m_Instance.GetCurrentTurn());
+		m_EndTurnButton.UpdateCurrentTeamTurn(BattleManager.m_Instance.GetCurrentTurn());
+		m_TurnIndicator.UpdateTurnIndicator(BattleManager.m_Instance.GetCurrentTurn());
 
 		// Cache the positions
 		SetCachesAndPosition(m_PortraitUI, new Vector2(-400, -400));
