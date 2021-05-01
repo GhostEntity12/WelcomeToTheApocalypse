@@ -78,8 +78,8 @@ public class PlayerManager : MonoBehaviour
 
 	private bool m_DidHealthBonus;
 
-	private bool m_MouseOverUnit = false;
-	private bool m_MouseOverTile = false;
+	[SerializeField]
+	private Formation m_GroupFormation = null;
 
 	void Awake()
 	{
@@ -88,6 +88,8 @@ public class PlayerManager : MonoBehaviour
 		m_MainCamera = Camera.main;
 
 		m_MouseRay.origin = m_MainCamera.transform.position;
+
+		Instantiate(m_GroupFormation.gameObject, Vector3.zero, Quaternion.identity);
 	}
 
 	void Start()
@@ -250,7 +252,35 @@ public class PlayerManager : MonoBehaviour
 			if (m_SelectedUnit != null)
 			{
 				if (m_LeftMouseDown)
-					m_SelectedUnit.SetDestination(m_MouseWorldRayHit.point);
+				{
+					//m_SelectedUnit.SetDestination(m_MouseWorldRayHit.point);
+					// Move the formation object to the position of the player's cursor in the world.
+					m_GroupFormation.transform.position = m_MouseWorldRayHit.point;
+
+					// Go through all the player units.
+					foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+					{
+						// Set all the units to move to their respective positions in the formation.
+						switch (u.m_CharacterName)
+						{
+							case "Death":
+							u.SetDestination(m_GroupFormation.GetDeathPosition().position);
+							break;
+
+							case "Pestilence":
+							u.SetDestination(m_GroupFormation.GetPestilencePosition().position);
+							break;
+
+							case "Famine":
+							u.SetDestination(m_GroupFormation.GetFaminePosition().position);
+							break;
+
+							case "War":
+							u.SetDestination(m_GroupFormation.GetWarPosition().position);
+							break;
+						}
+					}
+				}
 			}
 		}
 		Debug.DrawLine(m_MainCamera.transform.position, m_MouseWorldRayHit.point, Color.white, 0.0f);
