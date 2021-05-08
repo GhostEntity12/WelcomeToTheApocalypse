@@ -52,6 +52,34 @@ public class GameManager : MonoBehaviour
 	public void SetGameState(GameState state)
 	{
 		m_GameState = state;
+
+		// If transition to battle state - move all the player units to their nearest grid space.
+		if (m_GameState == GameState.Battle)
+		{
+			foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+			{
+				Node nearestNode = Grid.m_Instance.GetNearestNode(u.transform.position);
+
+				// Movement path to nearest node is just the closest node.
+				Stack<Node> targetMoveNode = new Stack<Node>();
+				targetMoveNode.Push(nearestNode);
+
+				// Move the unit to the closest grid node.
+				u.SetMovementPath(targetMoveNode);
+				u.ActivateNavMeshAgent(false);
+
+				Debug.Log(u.name + "'s nearest Node is at " + nearestNode.worldPosition);
+			}
+
+			PlayerManager.m_Instance.RefreshHighlights();
+		}
+		else if (m_GameState == GameState.Roam)
+		{
+			foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
+			{
+				u.ActivateNavMeshAgent(true);
+			}
+		}
 	}
 
 	public GameState GetGameState()

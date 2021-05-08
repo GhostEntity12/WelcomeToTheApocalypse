@@ -621,6 +621,11 @@ public class Unit : MonoBehaviour
 		GetComponent<NavMeshAgent>().destination = m_TargetPosition;
 	}
 
+	public void ActivateNavMeshAgent(bool activate)
+	{
+		GetComponent<NavMeshAgent>().enabled = activate;
+	}
+
 	/// <summary>
 	/// Get the unit's path.
 	/// </summary>
