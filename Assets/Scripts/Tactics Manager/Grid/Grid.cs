@@ -15,6 +15,7 @@ public class Grid : MonoBehaviour
 	public static Grid m_Instance = null;
 
 	Node[,] m_Grid;
+
 	[SerializeField]
 	float xzScale = 1f;
 
@@ -27,6 +28,7 @@ public class Grid : MonoBehaviour
 
 	[Tooltip("Used to show the node position with something like a really small plane or something")]
 	public GameObject m_Tile;
+
 	[Tooltip("Used to store the objects for the nodes")]
 	private GameObject m_NodeArray;
 
@@ -247,6 +249,38 @@ public class Grid : MonoBehaviour
 		int z = Mathf.FloorToInt(p.z / xzScale);
 
 		return GetNode(x, z);
+	}
+
+	public Node GetNearestNode(Vector3 wp)
+	{
+		Node nearest = null;
+		Node currentNode = null;
+
+		// Go through all the nodes of this grid.
+		for(int y = 0; y < posZ; ++y)
+		{
+			for(int x = 0; x < posX; ++x)
+			{
+				currentNode = m_Grid[x, y];
+
+				// Make sure nearest isn't null.
+				if (nearest != null)
+				{
+					// If the current node is closer to the given position than the current nearest node - set the nearest node to be current node.
+					if ((currentNode.worldPosition - wp).magnitude < (nearest.worldPosition - wp).magnitude)
+					{
+						nearest = currentNode;
+					}
+				}
+				// If nearest hasn't been assigned - assign it to current node.
+				else
+				{
+					nearest = currentNode;
+				}
+			}
+		}
+
+		return nearest;
 	}
 
 	public Node GetNode(int a_x, int a_z)
@@ -475,7 +509,7 @@ public class Grid : MonoBehaviour
 		}
 
 		// The below is the same as FindPath(), so why not just call it?
-		// Might have f'ed something up, but it works ¯\_(._.)_/¯
+		// Might have f'ed something up, but it works ï¿½\_(._.)_/ï¿½
 		// - James L
 
 		return FindPath(startPos, endPos, out path, out cost);
