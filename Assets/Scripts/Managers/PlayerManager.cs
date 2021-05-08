@@ -253,13 +253,15 @@ public class PlayerManager : MonoBehaviour
 			{
 				if (m_LeftMouseDown)
 				{
-					//m_SelectedUnit.SetDestination(m_MouseWorldRayHit.point);
 					// Move the formation object to the position of the player's cursor in the world.
 					m_GroupFormation.transform.position = m_MouseWorldRayHit.point;
+
+					Vector3 meanPosition = Vector3.zero;
 
 					// Go through all the player units.
 					foreach(Unit u in UnitsManager.m_Instance.m_PlayerUnits)
 					{
+						meanPosition += u.transform.position;
 						// Set all the units to move to their respective positions in the formation.
 						switch (u.m_CharacterName)
 						{
@@ -280,6 +282,11 @@ public class PlayerManager : MonoBehaviour
 							break;
 						}
 					}
+					
+					meanPosition /= UnitsManager.m_Instance.m_PlayerUnits.Count;
+
+					// Rotate the formation object to look away from the characters.
+					m_GroupFormation.transform.rotation = Quaternion.LookRotation(m_GroupFormation.transform.position - meanPosition);
 				}
 			}
 		}
