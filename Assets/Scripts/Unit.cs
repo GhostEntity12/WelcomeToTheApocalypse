@@ -147,6 +147,8 @@ public class Unit : MonoBehaviour
 
 	public List<Transform> m_ParentedParticleSystems = new List<Transform>();
 
+	private NavMeshAgent m_NavMeshAgent = null;
+
 	// [FMODUnity.EventRef]
 	// public string m_DeathSound = "";
 
@@ -161,6 +163,8 @@ public class Unit : MonoBehaviour
 		m_CurrentActionPoints = m_StartingActionPoints;
 
 		m_Skills = m_LearnedSkills.Select(s => Instantiate(s)).ToList();
+
+		m_NavMeshAgent = GetComponent<NavMeshAgent>();
 
 		if (m_Passive)
 		{
@@ -618,12 +622,16 @@ public class Unit : MonoBehaviour
 	public void SetDestination(Vector3 destination)
 	{
 		m_TargetPosition = destination;
-		GetComponent<NavMeshAgent>().destination = m_TargetPosition;
+		m_NavMeshAgent.destination = m_TargetPosition;
 	}
 
 	public void ActivateNavMeshAgent(bool activate)
 	{
-		GetComponent<NavMeshAgent>().enabled = activate;
+		m_NavMeshAgent.enabled = activate;
+
+		// If nav mesh agent component is being turned on - set the destination to current position, so the unit doesn't run off.
+		if (activate == true)
+			m_NavMeshAgent.destination = transform.position;
 	}
 
 	/// <summary>
